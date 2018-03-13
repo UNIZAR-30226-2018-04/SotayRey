@@ -20,80 +20,51 @@ var game = new Phaser.Game(ejeX, ejeY, Phaser.CANVAS, '', { preload: preload, cr
 
 
 function preload() {
-	game.load.spritesheet("cartas", "assets/naipes.png", ejeXCarta, ejeYCarta);
-	game.load.image('naipe', 'assets/naipe.png');
+    game.load.spritesheet("cartas", "assets/naipes.png", ejeXCarta, ejeYCarta);
+    game.load.image('naipe', 'assets/naipe.png');
+    game.load.image('cuadroCarta', 'assets/cuadroCarta.png');
 
 }
+
+/* VARIABLES GLOBALES */
+
+var misCartas;
+
 
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.stage.backgroundColor = "#009933";
+    misCartas = game.add.group();
+    anyadirCarta(misCartas,0);
+    anyadirCarta(misCartas,1);
+    actualizarCartas(misCartas);
 
-    
-    // Juego de cartas
-    
- // Add some items to left side, and set a onDragStop listener
-    // to limit its location when dropped.
-
-    var cartas = game.add.group();
-    cartas.inputEnabled = true;
-    //cartas.input.enableDrag(true);
-
-    for (var i = 0; i < 6; i++)
-    {
-    	//stars.create(i * 70, 0, 'star');
-        // Directly create sprites on the left group.
-    	
-    	//var carta = game.add.sprite(ejeXCarta * escalaCarta / -2, ejeY / 2, "cartas");
-    	var carta = cartas.create(ejeXCarta * escalaCarta * i, ejeY -  200, 'cartas', i);
-    	//carta.anchor.set(0.5);
-        carta.scale.setTo(escalaCarta, escalaCarta);
-        carta.frame = i + 10;
-        //carta.width = ejeXCarta * escalaCarta;
-        //carta.height = ejeYCarta * escalaCarta;
-        //carta.smoothed = false;
-    	
-    	//var carta = cartas.create(95 * i, ejeY -  200, 'naipe', i); el bueno
-        //var carta = game.add.sprite(15 * i, 400 , 'naipe', i);
-        carta.nombre = "carta bonita";
-        carta.events.onInputDown.add(listener, this);
-        carta.inputEnabled = true;
-        // Enable input detection, then it's possible be dragged.
-        
-
-        // Make this item draggable.
-        //carta.input.enableDrag(true);
-        //carta.scale.setTo(scaleRatio, scaleRatio);
-        
-        // Then we make it snap to left and right side,
-        // also we make it only snap when released.
-        //item.input.enableSnap(90, 90, false, true);
-
-        // Limit drop location to only the 2 columns.
-        //item.events.onDragStop.add(fixLocation);
-    }
-    console.log("probando la consola");
-    cartas.forEach(function(item) {
-        console.log("consolita");
-        console.log(item.nombre);
-    }, this);
-    
-    
-    
     // Botones de acción
     cantarVeinte = game.add.text(ejeX - 300, ejeY - 200, '', { fill: '#ffffff' });
     cantarCuarenta = game.add.text(ejeX - 300, ejeY - 150, '', { fill: '#ffffff' });
     cambiarTriunfo = game.add.text(ejeX - 300, ejeY - 100, '', { fill: '#ffffff' });
-    
+
     cantarVeinte.text = "CANTAR 20";
     cantarCuarenta.text = "CANTAR 40";
     cambiarTriunfo.text = "CAMBIAR TRIUNFO";
+
+    // Los huecos para tirar las cartas de los jugadores
+    yo = game.add.sprite(game.world.centerX-50, game.world.centerY-50, 'cuadroCarta');
+    yo.scale.setTo(0.1, 0.1);
+}
+
+function onDragStop(sprite) {
+
+    sprite.x = sprite.origenX;
+    sprite.y = sprite.origenY;
+
+
 }
 
 function listener (item) {
-	console.log("pulsaron la cartita");
+    console.log("pulsaron la cartita");
     console.log(item.nombre);
 }
 
@@ -109,5 +80,66 @@ function render() {
 
 function update() {
 
-   // Nada por el momento
+    // Nada por el momento
+}
+
+/* Funciones de Cartas */
+
+
+
+
+function anyadirCarta(conjuntoCartas, numCarta){
+    var carta = conjuntoCartas.create(0, 0, 'cartas');
+    carta.frame = numCarta; // TODO indexar la correspondiente
+
+    /* OPCIONES */
+    carta.nombre = "carta bonita";
+    carta.events.onInputDown.add(lanzarCarta, this);
+    carta.inputEnabled = true;
+}
+
+function actualizarCartas(grupoCartas){
+    //cartas.inputEnabled = true;
+    //cartas.input.enableDrag();
+    //cartas.input.enableDrag();
+    //cartas.input.enableDrag(false, true);
+    var i = 0;
+
+    grupoCartas.forEach(function(item) {
+        item.x = ejeXCarta * escalaCarta * i;
+        item.y = ejeY - 200;
+        item.scale.setTo(escalaCarta, escalaCarta);
+        i = i + 1;
+    }, this);
+
+}
+
+function lanzarCartaConfirmar(numCarta){
+    misCartas.forEach(function(item) {
+        if (item.frame == numCarta){
+            item.x = game.world.centerX-50;
+            item.y = game.world.centerY-50;
+            //item.scale.setTo(escalaCarta, escalaCarta);
+            game.world.bringToTop(item);
+        }
+    }, this);
+}
+
+function lanzarCarta (item) {
+    console.log("pulsaron la carta " + item.frame +", enviando mensaje");
+    console.log(item.nombre);
+    enviarMensaje("-----");
+    lanzarCartaConfirmar(item.frame);
+}
+
+
+/* PROXY */
+
+var tipoPartida = 0; // 0 = 1vs1, 1 = 2vs2
+function enviarMensaje(mensaje){
+    // TODO se envia el mensaje al backend
+}
+
+function recibirMensaje(){
+
 }
