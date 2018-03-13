@@ -1,16 +1,21 @@
 /*
- * Autor: Crisan, Marius Sorin
+ * Autor: Crisan, Marius Sorin, Ignacio Bitrian, Victor Soria
  * Fecha: 11-03-18
  * Fichero: Fichero de pruebas del módulo de lógica del juego
  */
 
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Pruebas {
     public static void main(String[] args){
+        EstadoPartida estado = new EstadoPartida(new ArrayList<>());
+        List<Carta> baraja = estado.crearBaraja();
+        baraja = estado.barajar(baraja);
+        baraja = estado.barajar(baraja);
+
+        /*
         System.out.println("---- INICIO PRUEBAS CARTAS----");
         // PRUEBAS DE CAJA NEGRA
         List<Carta> lista_cartas = new ArrayList<Carta>();

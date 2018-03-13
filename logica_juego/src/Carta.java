@@ -19,7 +19,26 @@ public class Carta {
         palo = "E";
     }
 
-    public Carta(int valor, String palo) throws ExceptionCartaIncorrecta {
+    public Carta(int valor, int palo) throws Exception{
+        if ((valor>0 && valor<8) || (valor >= 10 && valor <= 12)){
+            this.valor = valor;
+        } else throw new ExceptionCartaIncorrecta("Valor incorrecto: " + valor);
+        switch (palo){
+            case 1:
+                this.palo = "B";
+                break;
+            case 2:
+                this.palo = "C";
+                break;
+            case 3:
+                this.palo = "E";
+                break;
+            default:
+                this.palo = "O";
+        }
+    }
+
+    public Carta(int valor, String palo) throws Exception {
         if ((valor>0 && valor<8) || (valor >= 10 && valor <= 12)){
             this.valor = valor;
         } else throw new ExceptionCartaIncorrecta("Valor incorrecto: " + valor);
