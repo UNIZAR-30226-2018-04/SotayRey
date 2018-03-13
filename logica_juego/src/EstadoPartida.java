@@ -4,7 +4,9 @@
  * Fichero: Estado de la partida del guiñote que permite ver las cartas de la partida y sus jugadores
  */
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class EstadoPartida {
     private List<Jugador> jugadores;
@@ -12,13 +14,49 @@ public class EstadoPartida {
     private List<Carta> mazo;
     private Jugador turno;
     private Carta triunfo;
+    private Random random;
 
     public EstadoPartida(List<Jugador> jugadores){
-
+        this.random = new Random();
+        this.mazo = crearBaraja();
+        //this.mazo = barajar(this.mazo);
     }
 
-    public List<Jugador> getJugadores() {
-        return jugadores;
+    /**
+     * Devuelve la lista de cartas de el jugador "jugador". Si "jugador" no está en la partida lanza una excepcion
+     * @return List<Carta>
+     */
+    public List<Carta> crearBaraja(){
+        List<Carta> baraja = new ArrayList<>();
+        Carta a = new Carta();
+        int num;
+        for (int i = 0; i < 40; ++i){
+            try {
+                num = i%10+1;
+                if (num == 8 || num == 9) {
+                    num += 3;
+                }
+                a = new Carta(num, i/10+1);
+                System.out.println(i/10+1);
+            } catch (Exception e){
+                System.err.println("Excepción generando baraja: " + e.getMessage());
+            }
+            baraja.add(a);
+        }
+        return baraja;
+    }
+
+    public List<Carta> barajar(List<Carta> baraja){
+        Carta uno, dos;
+        int num;
+        for (int i = 0; i < 40; ++i){
+            num = random.nextInt()%40;
+            uno = baraja.get(num);
+            dos = baraja.get(i);
+            baraja.set(num, dos);
+            baraja.set(i, uno);
+        }
+        return baraja;
     }
 
     /**
