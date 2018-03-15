@@ -10,16 +10,16 @@ public class LogicaPartida {
 
     private EstadoPartida estado;
 
-    public LogicaPartida(List<Integer> jugadores ){
+    public LogicaPartida(List<Integer> jugadores){
+        estado = new EstadoPartida(jugadores);
     }
 
-    void crearPartida(List<Integer> jugadores){
-        if (jugadores.size() == 2){
-
-        } else if (jugadores.size() == 4){
-
-        }
+    public void crearPartida(List<Integer> jugadores){
+        estado.crearBaraja();
+        estado.barajar();
     }
 
+    public EstadoPartida lanzarCarta(int jugador, Carta carta) {
 
+    }
 }
