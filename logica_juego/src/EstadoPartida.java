@@ -183,11 +183,20 @@ public class EstadoPartida {
         this.triunfo = nuevoTriunfo;
     }
 
-
+    /**
+     * Mueve las cartas del tapete a ganadas del jugador identificado por el entero "jugador". Si no existe ningún
+     * jugador en la partida con ese identificador lanza una excepcion. Si todos los jugadores no han lanzado su carta
+     * lanza una excepcion.
+     * TODO: ExceptionRondaNoAcabada
+     * @param jugador
+     */
     public void anyadirAGanadas(int jugador) throws{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         if( jugadorEncontrado != null){
-
+            if(cartasEnTapete.size() == jugadores.size()){
+                jugadorEncontrado.anyadirCartasGanadas(cartasEnTapete);
+                cartasEnTapete = new ArrayList<Carta>();
+            }
         }
         else{
             throw new Exception();
