@@ -11,17 +11,24 @@ public class Jugador {
     private List<Carta> cartasEnMano;
     private List<Carta> cartasGanadas;
     private int puntos;
+    private int id;
 
-    public Jugador() {
+    public Jugador(int id) {
         cartasEnMano = new ArrayList<>();
         cartasGanadas = new ArrayList<>();
         puntos = 0;
+        this.id = id;
     }
 
-    public Jugador(List<Carta> cartasEnMano, List<Carta> cartasGanadas, int puntos) {
+    public Jugador(int id, List<Carta> cartasEnMano, List<Carta> cartasGanadas, int puntos) {
+        this.id = id;
         this.cartasEnMano = cartasEnMano;
         this.cartasGanadas = cartasGanadas;
         this.puntos = puntos;
+    }
+
+    public int getId(){
+        return id;
     }
 
     /*

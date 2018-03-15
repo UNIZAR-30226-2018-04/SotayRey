@@ -16,7 +16,7 @@ public class EstadoPartida {
     private Carta triunfo;
     private Random random;
 
-    public EstadoPartida(List<Jugador> jugadores){
+    public EstadoPartida(List<Usuarios> jugadores){
         this.random = new Random();
         this.mazo = crearBaraja();
         //this.mazo = barajar(this.mazo);
@@ -59,6 +59,15 @@ public class EstadoPartida {
         return baraja;
     }
 
+    private Jugador encuentraJugador(int jugador){
+        for (Jugador actual : jugadores){
+            if(actual.getId() == jugador){
+                return actual;
+            }
+        }
+        return null;
+    }
+
     /**
      * Devuelve la lista de cartas de el jugador "jugador". Si "jugador" no está en la partida lanza una excepcion
      *
@@ -68,9 +77,10 @@ public class EstadoPartida {
      * @return
      * @throws Exception
      */
-    public List<Carta> getCartas(Jugador jugador) throws Exception{
-        if(jugadores.contains(jugador)){
-            return jugador.getCartasEnMano();
+    public List<Carta> getCartas(int jugador) throws Exception{
+        Jugador jugadorEncontrado = encuentraJugador(jugador);
+        if( jugadorEncontrado != null){
+            return jugadorEncontrado.getCartasEnMano();
         }
         else{
             throw new Exception();
@@ -87,13 +97,14 @@ public class EstadoPartida {
      * @param carta
      * @throws Exception
      */
-    public void addCartaJugador(Jugador jugador, Carta carta) throws Exception{
-        if(jugadores.contains(jugador)){
-            if(jugador.getCartasEnMano().size() > 6){
+    public void addCartaJugador(int jugador, Carta carta) throws Exception{
+        Jugador jugadorEncontrado = encuentraJugador(jugador);
+        if( jugadorEncontrado != null){
+            if(jugadorEncontrado.getCartasEnMano().size() > 6){
                 throw new Exception();
             }
             else{
-                jugador.anyadirCartaEnMano(carta);
+                jugadorEncontrado.anyadirCartaEnMano(carta);
             }
         }
         else{
@@ -111,11 +122,12 @@ public class EstadoPartida {
      * @param carta
      * @throws Exception
      */
-    public void moverCartaJugadorTapete(Jugador jugador, Carta carta) throws Exception{
-        if(jugadores.contains(jugador)){
-            if(turno.equals(jugador)) {
-                if (jugador.getCartasEnMano().contains(carta)) {
-                    jugador.quitarCartaEnMano(carta);
+    public void moverCartaJugadorTapete(int jugador, Carta carta) throws Exception{
+        Jugador jugadorEncontrado = encuentraJugador(jugador);
+        if( jugadorEncontrado != null){
+            if(turno.equals(jugadorEncontrado)) {
+                if (jugadorEncontrado.getCartasEnMano().contains(carta)) {
+                    jugadorEncontrado.quitarCartaEnMano(carta);
                     cartasEnTapete.add(carta);
                 } else {
                     throw new Exception();
@@ -147,6 +159,38 @@ public class EstadoPartida {
         }
     }
 
+    /**
+     * Devuelve las cartas que están encima de la mesa.
+     * @return
+     */
+    public  List<Carta> getCartasEnTapete(){
+        return cartasEnTapete;
+    }
+
+    /**
+     * Devuelve el triunfo de la partida.
+     * @return
+     */
+    public Carta getTriunfo(){
+        return triunfo;
+    }
+
+    /**
+     * Cambia el triunfo por nuevoTriunfo.
+     * @param nuevoTriunfo
+     */
+    public void setTriunfo(Carta nuevoTriunfo){
+        this.triunfo = nuevoTriunfo;
+    }
 
 
+    public void anyadirAGanadas(int jugador) throws{
+        Jugador jugadorEncontrado = encuentraJugador(jugador);
+        if( jugadorEncontrado != null){
+
+        }
+        else{
+            throw new Exception();
+        }
+    }
 }
