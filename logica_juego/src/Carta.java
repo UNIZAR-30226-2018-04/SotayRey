@@ -4,11 +4,10 @@
  * Fichero: Clase carta de la lógica del guiñote
  */
 
-/*
+/**
  * Los valores de una carta pueden ser [1..7, 10..12]y los palos [C,O,B,E] siendo cada letra la inicial de cada uno de
  * los palos de la baraja española
  */
-
 public class Carta {
     private int valor;
     private String palo;
@@ -23,12 +22,12 @@ public class Carta {
      * Constructor que realiza una copia exacta de "carta".
      * @param carta
      */
-    public Carta(Carta carta){
+    public Carta(Carta carta) {
         this.palo = new String(carta.palo);
         this.valor = carta.valor;
     }
 
-    public Carta(int valor, int palo) implements Cloneable throws Exception{
+    public Carta(int valor, int palo) throws ExceptionCartaIncorrecta{
         if ((valor>0 && valor<8) || (valor >= 10 && valor <= 12)){
             this.valor = valor;
         } else throw new ExceptionCartaIncorrecta("Valor incorrecto: " + valor);
@@ -47,7 +46,7 @@ public class Carta {
         }
     }
 
-    public Carta(int valor, String palo) throws Exception {
+    public Carta(int valor, String palo) throws ExceptionCartaIncorrecta {
         if ((valor>0 && valor<8) || (valor >= 10 && valor <= 12)){
             this.valor = valor;
         } else throw new ExceptionCartaIncorrecta("Valor incorrecto: " + valor);
@@ -95,8 +94,7 @@ public class Carta {
             return false;
         Carta carta = (Carta) o;
         // field comparison
-        return Object.equals(valor, carta.valor)
-                && Object.equals(palo, carta.palo);
+        return (valor == valor)
+                && palo.equals(carta.palo);
     }
-
 }

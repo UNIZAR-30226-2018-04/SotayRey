@@ -133,7 +133,7 @@ public class Jugador {
     public void anyadirCartasGanadas(ArrayList<Carta> cartas) {
         for (Carta c: cartas) {
             if(!this.cartasGanadas.contains(c)){
-                Carta copia = new Carta(c)
+                Carta copia = new Carta(c);
                 this.cartasGanadas.add(copia);
             }
         }
@@ -178,9 +178,9 @@ public class Jugador {
             return false;
         Jugador jugador = (Jugador) o;
         // field comparison
-        return     Object.equals(id, jugador.id)
-                && Object.equals(puntos, jugador.puntos)
-                && Object.equals(cartasEnMano, jugador.cartasEnMano)
-                && Object.equals(cartasGanadas, jugador.cartasGanadas);
+        return     (id == jugador.id)
+                && (puntos == puntos)
+                && cartasEnMano.equals(jugador.cartasEnMano)
+                && cartasGanadas.equals(jugador.cartasGanadas);
     }
 }

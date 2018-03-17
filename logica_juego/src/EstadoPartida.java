@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.Random;
 
 public class EstadoPartida {
-    private List<Jugador> jugadores;
-    private List<Carta> cartasEnTapete;
-    private List<Carta> mazo;
+    private ArrayList<Jugador> jugadores;
+    private ArrayList<Carta> cartasEnTapete;
+    private ArrayList<Carta> mazo;
     private Jugador turno;
     private Carta triunfo;
     private Random random;
 
-    public EstadoPartida(List<Usuarios> jugadores){
+    public EstadoPartida(ArrayList<Usuarios> jugadores){
         this.random = new Random();
         this.mazo = crearBaraja();
         //this.mazo = barajar(this.mazo);
@@ -26,8 +26,8 @@ public class EstadoPartida {
      * Devuelve la lista de cartas de el jugador "jugador". Si "jugador" no está en la partida lanza una excepcion
      * @return List<Carta>
      */
-    public List<Carta> crearBaraja(){
-        List<Carta> baraja = new ArrayList<>();
+    public ArrayList<Carta> crearBaraja(){
+        ArrayList<Carta> baraja = new ArrayList<>();
         Carta a = new Carta();
         int num;
         for (int i = 0; i < 40; ++i){
@@ -46,7 +46,7 @@ public class EstadoPartida {
         return baraja;
     }
 
-    public List<Carta> barajar(List<Carta> baraja){
+    public ArrayList<Carta> barajar(ArrayList<Carta> baraja){
         Carta uno, dos;
         int num;
         for (int i = 0; i < 40; ++i){
@@ -59,6 +59,11 @@ public class EstadoPartida {
         return baraja;
     }
 
+    /**
+     * Busca un jugador identificado por "id" == "jugador" en la partida.
+     * @param jugador
+     * @return
+     */
     private Jugador encuentraJugador(int jugador){
         for (Jugador actual : jugadores){
             if(actual.getId() == jugador){
@@ -145,7 +150,7 @@ public class EstadoPartida {
     /**
      * Devuelve la primera carta del mazo y la elimina. Si en el mazo no quedan cartas lanza una excepcion.
      *
-     * TODO: ExceptionMazoVacio
+     * TODO: ExceptionMazoVacio, proteger función.
      *
      * @return
      * @throws Exception
@@ -163,8 +168,13 @@ public class EstadoPartida {
      * Devuelve las cartas que están encima de la mesa.
      * @return
      */
-    public  List<Carta> getCartasEnTapete(){
-        return cartasEnTapete;
+    public  ArrayList<Carta> getCartasEnTapete(){
+        ArrayList<Carta> copia = new ArrayList<>();
+        for(Carta iterador : cartasEnTapete){
+            Carta nueva =  new Carta(iterador);
+            copia.add(nueva);
+        }
+        return copia;
     }
 
     /**
@@ -172,7 +182,8 @@ public class EstadoPartida {
      * @return
      */
     public Carta getTriunfo(){
-        return triunfo;
+        Carta copia = new Carta(triunfo);
+        return copia;
     }
 
     /**
@@ -180,7 +191,8 @@ public class EstadoPartida {
      * @param nuevoTriunfo
      */
     public void setTriunfo(Carta nuevoTriunfo){
-        this.triunfo = nuevoTriunfo;
+        Carta copia = new Carta(nuevoTriunfo);
+        this.triunfo = copia;
     }
 
     /**
@@ -190,7 +202,7 @@ public class EstadoPartida {
      * TODO: ExceptionRondaNoAcabada
      * @param jugador
      */
-    public void anyadirAGanadas(int jugador) throws{
+    public void anyadirAGanadas(int jugador) throws Exception{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         if( jugadorEncontrado != null){
             if(cartasEnTapete.size() == jugadores.size()){

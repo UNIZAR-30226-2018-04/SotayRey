@@ -4,17 +4,18 @@
  * Fichero: Fichero de la lógica del guiñote accesible desde al interfaz
  */
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LogicaPartida {
 
     private EstadoPartida estado;
 
-    public LogicaPartida(List<Integer> jugadores){
+    public LogicaPartida(ArrayList<Usuarios> jugadores){
         estado = new EstadoPartida(jugadores);
     }
 
-    public void crearPartida(List<Integer> jugadores){
+    public void crearPartida(ArrayList<Usuarios> jugadores){
         estado.crearBaraja();
         estado.barajar();
     }
