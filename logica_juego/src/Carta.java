@@ -19,7 +19,16 @@ public class Carta {
         palo = "E";
     }
 
-    public Carta(int valor, int palo) throws Exception{
+    /**
+     * Constructor que realiza una copia exacta de "carta".
+     * @param carta
+     */
+    public Carta(Carta carta){
+        this.palo = new String(carta.palo);
+        this.valor = carta.valor;
+    }
+
+    public Carta(int valor, int palo) implements Cloneable throws Exception{
         if ((valor>0 && valor<8) || (valor >= 10 && valor <= 12)){
             this.valor = valor;
         } else throw new ExceptionCartaIncorrecta("Valor incorrecto: " + valor);
@@ -72,4 +81,22 @@ public class Carta {
     public String toString(){
         return "[" + valor + "," + palo + "]";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        // self check
+        if (this == o)
+            return true;
+        // null check
+        if (o == null)
+            return false;
+        // type check and cast
+        if (getClass() != o.getClass())
+            return false;
+        Carta carta = (Carta) o;
+        // field comparison
+        return Object.equals(valor, carta.valor)
+                && Object.equals(palo, carta.palo);
+    }
+
 }
