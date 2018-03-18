@@ -6,7 +6,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <form class="form-inline my-2 my-lg-0" action="#" method="post">
-            <input class="form-control mr-sm-2" type="text" placeholder="Buscar productos" name="barQuery" id="barQuery"
+            <input class="form-control mr-sm-2" type="text" placeholder="Buscar jugadores" name="barQuery" id="barQuery"
                    aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
                 <i class="fa fa-search"></i>
@@ -15,9 +15,16 @@
         <ul class="navbar-nav ml-auto mr-2">
             <li class="nav-item">
                 <a class="btn btn-outline" href="#" role="button">
-                    <i class="fa fa-shopping-basket mr-2"></i>Cesta</a>
+                    <i class="fa fa-play mr-2"></i>Jugar</a>
             </li>
-
+            <li class="nav-item">
+                <a class="btn btn-outline" href="#" role="button">
+                    <i class="fa fa-trophy mr-2"></i>Ligas</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline" href="#" role="button">
+                    <i class="fa fa-shopping-basket mr-2"></i>Tienda</a>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" id="Preview" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-user mr-2"></i>ABASVS
@@ -26,8 +33,6 @@
                     <a class="dropdown-item" href="../jsp/perfil.jsp">
                         <i class="fa fa-user-circle-o mr-2"></i>Perfil</a>
                     <a class="dropdown-item" href="#">
-                        <i class="fa fa-archive mr-2"></i>Pedidos</a>
-                    <a class="dropdown-item" href="../jsp/modificar_datos.jsp">
                         <i class="fa fa-gear mr-2"></i>Opciones</a>
                     <a class="dropdown-item" href="#">
                         <i class="fa fa-power-off mr-2"></i>Cerrar sesi&oacuten</a>

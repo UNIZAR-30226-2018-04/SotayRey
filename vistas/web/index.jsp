@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
   <head>
-    <title>SneakerSeek</title>
+    <title>SotaYRey</title>
     <%@ include file="html/imports.html"%>
   </head>
   <body>
