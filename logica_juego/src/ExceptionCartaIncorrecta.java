@@ -10,5 +10,4 @@ public class ExceptionCartaIncorrecta extends Exception{
     public ExceptionCartaIncorrecta(String message) { super(message); }
     public ExceptionCartaIncorrecta(String message, Throwable cause) { super(message, cause); }
     public ExceptionCartaIncorrecta(Throwable cause) { super(cause); }
-
 }

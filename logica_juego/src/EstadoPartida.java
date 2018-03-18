@@ -1,168 +1,180 @@
-/*
- * Autor: Crisan, Marius Sorin
- * Fecha: 11-03-18
- * Fichero: Estado de la partida del guiñote que permite ver las cartas de la partida y sus jugadores
+/**
+ * @Autores: Crisan, Marius Sorin; Ignacio Bitrian; Victor Soria
+ * @Fecha: 11-03-18
+ * @Fichero: Estado de la partida del guiñote que permite ver las cartas de la partida y sus jugadores
  */
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Mazo:  almacena todas las cartas no utilizadas de la baraja española
+ * CartasEnTapete: las cartas que están en la mesa en un turno
+ * Jugadores:  información de cada uno de los jugadores que están
+ * participando, almacenada en el mismo orden en el que jugarán
+ * Turno:  jugador que tiene que lanzar
+ * lanzar la carta
+ * Triunfo:  carta que indica el palo al que se juega
+ */
 public class EstadoPartida {
-    private ArrayList<Jugador> jugadores;
-    private ArrayList<Carta> cartasEnTapete;
     private ArrayList<Carta> mazo;
+    private ArrayList<Carta> cartasEnTapete;
+    private ArrayList<Jugador> jugadores;
     private Jugador turno;
     private Carta triunfo;
     private Random random;
 
-    public EstadoPartida(ArrayList<Usuarios> jugadores){
-        this.random = new Random();
-        this.mazo = crearBaraja();
-        //this.mazo = barajar(this.mazo);
+    public EstadoPartida(){
+        barajear();
+        this.cartasEnTapete = new ArrayList<>();
+        //this.turno =
+        this.triunfo = new Carta();
+        this.random = new Random(); //Utilizado para generar baraja
     }
 
     /**
-     * Devuelve la lista de cartas de el jugador "jugador". Si "jugador" no está en la partida lanza una excepcion
+     * Devuelve la lista de cartas de la baraja española
      * @return List<Carta>
      */
-    public ArrayList<Carta> crearBaraja(){
+    private ArrayList<Carta> crearBaraja(){
         ArrayList<Carta> baraja = new ArrayList<>();
-        Carta a = new Carta();
-        int num;
-        for (int i = 0; i < 40; ++i){
-            try {
+        try {
+            Carta a;
+            int num;
+            for (int i = 0; i < 40; ++i){
                 num = i%10+1;
                 if (num == 8 || num == 9) {
                     num += 3;
                 }
-                a = new Carta(num, i/10+1);
-                System.out.println(i/10+1);
-            } catch (Exception e){
-                System.err.println("Excepción generando baraja: " + e.getMessage());
+                baraja.add(new Carta(num, i/10+1));
             }
-            baraja.add(a);
+        } catch (Exception e){
+            System.err.println("Excepción generando baraja: " + e.getMessage());
         }
         return baraja;
     }
 
-    public ArrayList<Carta> barajar(ArrayList<Carta> baraja){
+
+    /**
+     * Asigna al mazo las 4o cartas de la baraja española en un orden aleatorio.
+     */
+    public void barajear(){
+        mazo = crearBaraja();
         Carta uno, dos;
         int num;
         for (int i = 0; i < 40; ++i){
             num = random.nextInt()%40;
-            uno = baraja.get(num);
-            dos = baraja.get(i);
-            baraja.set(num, dos);
-            baraja.set(i, uno);
+            uno = mazo.get(num);
+            dos = mazo.get(i);
+            mazo.set(num, dos);
+            mazo.set(i, uno);
         }
-        return baraja;
     }
+
+
+    /**
+     * Devuelve una lista con los identificadores de todos los jugadores
+     * @return List<Integer>
+     */
+    public ArrayList<Integer> getJugadores(){
+        ArrayList<Integer> res = new ArrayList<>();
+        for (Jugador j: jugadores) {
+            res.add(j.getId());
+        }
+        return res;
+    }
+
 
     /**
      * Busca un jugador identificado por "id" == "jugador" en la partida.
      * @param jugador
      * @return
+     * @throws ExceptionJugadorIncorrecto
      */
-    private Jugador encuentraJugador(int jugador){
+    private Jugador encuentraJugador(int jugador) throws ExceptionJugadorIncorrecto{
         for (Jugador actual : jugadores){
             if(actual.getId() == jugador){
                 return actual;
             }
         }
-        return null;
+        throw new ExceptionJugadorIncorrecto();
     }
 
+
     /**
-     * Devuelve la lista de cartas de el jugador "jugador". Si "jugador" no está en la partida lanza una excepcion
-     *
-     * TODO: ExceptionJugadorIncorrecto
-     *
+     * Devuelve la lista de cartas de el jugador "jugador". Si "jugador" no
+     * está en la partida lanza una excepcion
      * @param jugador
      * @return
-     * @throws Exception
+     * @throws ExceptionJugadorIncorrecto
      */
-    public List<Carta> getCartas(int jugador) throws Exception{
+    public List<Carta> getCartas(int jugador) throws ExceptionJugadorIncorrecto{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        if( jugadorEncontrado != null){
-            return jugadorEncontrado.getCartasEnMano();
-        }
-        else{
-            throw new Exception();
-        }
+        return jugadorEncontrado.getCartasEnMano();
     }
 
+
     /**
-     * Añade una carta al jugador "jugador". Si "jugador" no está en la partida lanza una excepcion. Si el jugador
-     * posee ya 6 cartas lanza otra excepcion
-     *
-     * TODO: ExceptionNumeroCartasMaximo
-     *
+     * Añade una carta al jugador "jugador". Si "jugador" no está en la
+     * partida lanza una excepción. Si el jugador posee la carta u otras 6
+     * cartas lanza otras excepciones.
      * @param jugador
      * @param carta
-     * @throws Exception
+     * @throws ExceptionNumeroMaximoCartas
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionCartaYaExiste
      */
-    public void addCartaJugador(int jugador, Carta carta) throws Exception{
+    public void anyadirCartaJugador(int jugador, Carta carta) throws
+            ExceptionNumeroMaximoCartas, ExceptionJugadorIncorrecto,
+            ExceptionCartaYaExiste {
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        if( jugadorEncontrado != null){
-            if(jugadorEncontrado.getCartasEnMano().size() > 6){
-                throw new Exception();
-            }
-            else{
-                jugadorEncontrado.anyadirCartaEnMano(carta);
-            }
-        }
-        else{
-            throw new Exception();
-        }
+        jugadorEncontrado.anyadirCartaEnMano(carta);
     }
 
+
     /**
-     * Mueve una carta de jugador "jugador" al tapete.Si "jugador" no está en la partida lanza una excepcion.
-     * Si el turno no es de "jugador" lanza otra excepcion. Y si "jugador" no posee la carta lanza otra excepcion.
-     *
-     * TODO: ExceptionTurnoIncorrecto, ExceptionCartaIncorrecta.
-     *
+     * Mueve una carta de jugador "jugador" al tapete.Si "jugador" no está en
+     * la partida lanza una excepcion. Si el turno no es de "jugador" lanza
+     * otra excepcion. Y si "jugador" no posee la carta lanza otra excepcion.
      * @param jugador
      * @param carta
-     * @throws Exception
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionJugadorSinCarta
+     * @throws ExceptionTurnoIncorrecto
      */
-    public void moverCartaJugadorTapete(int jugador, Carta carta) throws Exception{
+    public void lanzarCartaJugador(int jugador, Carta carta) throws
+            ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
+            ExceptionTurnoIncorrecto {
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        if( jugadorEncontrado != null){
-            if(turno.equals(jugadorEncontrado)) {
-                if (jugadorEncontrado.getCartasEnMano().contains(carta)) {
-                    jugadorEncontrado.quitarCartaEnMano(carta);
-                    cartasEnTapete.add(carta);
-                } else {
-                    throw new Exception();
-                }
+        if(turno.equals(jugadorEncontrado)) {
+            if (jugadorEncontrado.getCartasEnMano().contains(carta)) {
+                jugadorEncontrado.quitarCartaEnMano(carta);
+                cartasEnTapete.add(carta);
+            } else {
+                throw new ExceptionJugadorSinCarta();
             }
-            else{
-                throw new Exception();
-            }
-        }
-        else{
-            throw new Exception();
+        } else{
+            throw new ExceptionTurnoIncorrecto();
         }
     }
 
+
     /**
-     * Devuelve la primera carta del mazo y la elimina. Si en el mazo no quedan cartas lanza una excepcion.
-     *
-     * TODO: ExceptionMazoVacio, proteger función.
-     *
+     * Devuelve la primera carta del mazo y la elimina. Si en el mazo no
+     * quedan cartas lanza una excepcion.
      * @return
-     * @throws Exception
+     * @throws ExceptionMazoVacio
      */
-    public Carta getPrimeraCartaMazo() throws Exception{
+    public Carta getPrimeraCartaMazo() throws ExceptionMazoVacio {
         if(mazo.size() != 0){
-            return mazo.remove(0);
+            return new Carta(mazo.remove(0));
         }
         else{
-            throw new Exception();
+            throw new ExceptionMazoVacio();
         }
     }
+
 
     /**
      * Devuelve las cartas que están encima de la mesa.
@@ -177,6 +189,7 @@ public class EstadoPartida {
         return copia;
     }
 
+
     /**
      * Devuelve el triunfo de la partida.
      * @return
@@ -185,6 +198,7 @@ public class EstadoPartida {
         Carta copia = new Carta(triunfo);
         return copia;
     }
+
 
     /**
      * Cambia el triunfo por nuevoTriunfo.
@@ -195,23 +209,27 @@ public class EstadoPartida {
         this.triunfo = copia;
     }
 
+
     /**
-     * Mueve las cartas del tapete a ganadas del jugador identificado por el entero "jugador". Si no existe ningún
-     * jugador en la partida con ese identificador lanza una excepcion. Si todos los jugadores no han lanzado su carta
-     * lanza una excepcion.
-     * TODO: ExceptionRondaNoAcabada
+     * Mueve las cartas del tapete a ganadas del jugador identificado por el
+     * entero "jugador". Si no existe ningún jugador en la partida con ese
+     * identificador lanza una excepcion. Si todos los jugadores no han
+     * lanzado su carta lanza otra excepcion. Si la carta ya está añadida a
+     * ganadas lanza otra excepción.
      * @param jugador
+     * @throws ExceptionRondaNoAcabada
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionCartaYaExiste
      */
-    public void anyadirAGanadas(int jugador) throws Exception{
+    public void anyadirAGanadas(int jugador) throws
+            ExceptionJugadorIncorrecto, ExceptionRondaNoAcabada,
+            ExceptionCartaYaExiste {
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        if( jugadorEncontrado != null){
-            if(cartasEnTapete.size() == jugadores.size()){
-                jugadorEncontrado.anyadirCartasGanadas(cartasEnTapete);
-                cartasEnTapete = new ArrayList<Carta>();
-            }
-        }
-        else{
-            throw new Exception();
+        if(cartasEnTapete.size() == jugadores.size()){
+            jugadorEncontrado.anyadirCartasGanadas(cartasEnTapete);
+            cartasEnTapete = new ArrayList<>();
+        } else {
+            throw new ExceptionRondaNoAcabada();
         }
     }
 }

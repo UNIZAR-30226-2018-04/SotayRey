@@ -11,7 +11,7 @@ public class LogicaPartida {
 
     private EstadoPartida estado;
 
-    public LogicaPartida(ArrayList<Usuarios> jugadores){
+   /* public LogicaPartida(ArrayList<Usuarios> jugadores){
         estado = new EstadoPartida(jugadores);
     }
 
@@ -23,4 +23,9 @@ public class LogicaPartida {
     public EstadoPartida lanzarCarta(int jugador, Carta carta) {
 
     }
+    */
+
+
+   //TODO: al iniciar la partida hay que hacer setTriunfo y poner la carta al
+    // final
 }

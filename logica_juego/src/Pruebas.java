@@ -5,17 +5,16 @@
  */
 
 
-import org.omg.CORBA.TRANSACTION_MODE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Pruebas {
     public static void main(String[] args){
 
-        pruebasCartas();
-        pruebasJugador();
+        //pruebasCartas();
+        //pruebasJugador();
+        pruebasEstadoPartida();
 
     }
 
@@ -27,19 +26,19 @@ public class Pruebas {
      * @param d
      */
     private static void comprobarCartas(Carta a, Carta b, Carta c, Carta d){
-        if (a.getPalo()=="B" && a.getValor() == 1)
+        if (a.getPalo().equals("B") && a.getValor() == 1)
             System.out.println("[[CORRECTO]]: 1 ");
         else
             System.out.println("[[IN--CORRECTO]]: 1");
-        if (b.getPalo()=="C" && b.getValor() == 7)
+        if (b.getPalo().equals("C") && b.getValor() == 7)
             System.out.println("[[CORRECTO]]: 2 ");
         else
             System.out.println("[[IN--CORRECTO]]: 2");
-        if (c.getPalo()=="E" && c.getValor() == 10)
+        if (c.getPalo().equals("E") && c.getValor() == 10)
             System.out.println("[[CORRECTO]]: 3 ");
         else
             System.out.println("[[IN--CORRECTO]]: 3");
-        if (d.getPalo()=="O" && d.getValor() == 12)
+        if (d.getPalo().equals("O") && d.getValor() == 12)
             System.out.println("[[CORRECTO]]: 4 ");
         else 
             System.out.println("[[IN--CORRECTO]]: 4");
@@ -57,9 +56,9 @@ public class Pruebas {
         if (tam >0 && (palos.size() == tam || tam == palosInt.size()) ){
             try {
                 if (palos.size()> 0){
-                    Carta a = new Carta(valores.remove(0), palos.remove(0));
+                    new Carta(valores.remove(0), palos.remove(0));
                 } else {
-                    Carta a = new Carta(valores.remove(0), palosInt.remove
+                    new Carta(valores.remove(0), palosInt.remove
                             (0));
                 }
                 System.err.println("[ERROR]: no ha provocado excepción");
@@ -75,7 +74,7 @@ public class Pruebas {
     /**
      * Pruebas de caja negra de la clase Carta con clases de equivalencia.
      */
-    public static void pruebasCartas() {
+    private static void pruebasCartas() {
         /** Para el parámetro del valor se han utilizado también pruebas de
          * análisis de valores límite. Como los setters son iguales que los
          * constructores no se prueban.Para verificar el funcionamiento de
@@ -83,7 +82,7 @@ public class Pruebas {
          * de los constructores
          */
 
-        System.out.println("---- INICIO PRUEBAS CARTA ----\n Pruebas " +
+        System.out.println("\n---- INICIO PRUEBAS CARTA ----\n Pruebas " +
                 "Constructor con string");
         try {
             Carta a = new Carta(1, "B");
@@ -95,11 +94,10 @@ public class Pruebas {
                 System.err.println("CASOS VÁLIDOS, NO DEBE HABER EXCEPCIÓN:"
                         + e.getMessage());
         }
-        ArrayList<Integer> valores = new ArrayList<>();
-        valores.addAll(Arrays.asList(0, 8, 9, 13, 6));
-        ArrayList<String> palos = new ArrayList<>();
-        palos.addAll(Arrays.asList("B", "B", "B", "B", "D"));
-        provocarErrorCarta(valores, palos, new ArrayList<Integer>());
+        ArrayList<Integer> valores = new ArrayList<>((Arrays.asList(0, 8, 9,
+                13, 6)));
+        ArrayList<String> palos = new ArrayList<>(Arrays.asList("B", "B", "B", "B", "D"));
+        provocarErrorCarta(valores, palos, new ArrayList<>());
 
         System.out.println("\n Pruebas Constructor con enteros");
         try {
@@ -112,11 +110,9 @@ public class Pruebas {
             System.err.println("CASOS VÁLIDOS, NO DEBE HABER EXCEPCIÓN:"
                     + e.getMessage());
         }
-        valores = new ArrayList<>();
-        valores.addAll(Arrays.asList(0, 8, 9, 13, 6));
-        ArrayList<Integer> palosInt = new ArrayList<>();
-        palosInt.addAll(Arrays.asList(1, 2, 3 , 4, 5));
-        provocarErrorCarta(valores, new ArrayList<String>(), palosInt);
+        valores = new ArrayList<>(Arrays.asList(0, 8, 9, 13, 6));
+        ArrayList<Integer> palosInt = new ArrayList<>(Arrays.asList(1, 2, 3 , 4, 5));
+        provocarErrorCarta(valores, new ArrayList<>(), palosInt);
     }
 
 
@@ -125,14 +121,12 @@ public class Pruebas {
      * análisis de extremos, y preubas de caja blanca con pruebas de caminos
      * para bucles.
      */
-    public static void pruebasJugador(){
-        System.out.println("---- INICIO PRUEBAS JUGADOR----\n");
+    private static void pruebasJugador(){
+        System.out.println("\n---- INICIO PRUEBAS JUGADOR----");
         /* CONSTRUCTORES, GETTERS Y QUITAR CARTAS EN MANO*/
         try {
-            Carta c1 = new Carta();
-            Carta c2 = new Carta();
-            c1 = new Carta(1, "B");
-            c2 = new Carta(2, "E");
+            Carta c1 = new Carta(1, "B");
+            Carta c2 = new Carta(2, "E");
             ArrayList<Carta> cartasEnMano = new ArrayList<>();
             ArrayList<Carta> cartasGanadas = new ArrayList<>();
             cartasEnMano.add(c1);
@@ -215,6 +209,13 @@ public class Pruebas {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    /**
+     *
+     */
+    private static void pruebasEstadoPartida(){
+
     }
 }
 

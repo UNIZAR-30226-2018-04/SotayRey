@@ -16,7 +16,6 @@ public class Carta {
 
     /**
      * Constructor que crea una carta de 1 de espadas.
-     * @param
      */
     public Carta(){
         valor = 1;
@@ -39,7 +38,8 @@ public class Carta {
      * referencia a cada uno de los palos de la baraja española:
      * 1 --> bastos, 2 --> copas, 3 --> espadas, 4 --> oros
      * 0 < Valor < 8, 9 < Valor <= 12
-     * @param valor,palo
+     * @param valor
+     * @param palo
      * @throws ExceptionCartaIncorrecta
      */
     public Carta(int valor, int palo) throws ExceptionCartaIncorrecta{
@@ -68,7 +68,8 @@ public class Carta {
     /**
      * Constructor que crea una carta con "valor" y "palo" siendo palo la
      * inicial de uno de los palos de la baraja española
-     * @param valor,palo
+     * @param valor
+     * @param palo
      * @throws ExceptionCartaIncorrecta
      */
     public Carta(int valor, String palo) throws ExceptionCartaIncorrecta {
@@ -107,7 +108,8 @@ public class Carta {
      * @return
      */
     public String getPalo() {
-        return palo;
+        String aux = new String(palo);
+        return aux;
     }
 
     /**
@@ -135,7 +137,6 @@ public class Carta {
     @Override
     public boolean equals(Object o) {
         // self check
-        //TODO: no sobra esto
          if (this == o)
             return true;
         // null check
