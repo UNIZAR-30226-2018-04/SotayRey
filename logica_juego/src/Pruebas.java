@@ -5,6 +5,8 @@
  */
 
 
+import org.omg.CORBA.TRANSACTION_MODE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,38 +15,7 @@ public class Pruebas {
     public static void main(String[] args){
 
         pruebasCartas();
-
-
-    //    EstadoPartida estado = new EstadoPartida(new ArrayList<>());
-    //    List<Carta> baraja = estado.crearBaraja();
-    //    baraja = estado.barajar(baraja);
-    //    baraja = estado.barajar(baraja);
-
-    /*    System.out.println("---- INICIO PRUEBAS JUGADOR ----");
-        Jugador j = new Jugador();
-        System.out.println("Cartas inicial:" + j.getCartasEnMano());
-        Carta c = new Carta();
-        List<Carta> lista_cartas = new ArrayList<Carta>();
-        try{
-            c =  new Carta(4,"E");
-        } catch (ExceptionCartaIncorrecta e){
-            System.err.print(e.getMessage());
-        }
-        j.anyadirCartaEnMano(c);
-        System.out.println("Cartas en mano tras añadir:" + j.getCartasEnMano());
-        j.anyadirCartaEnMano(c);
-        System.out.println("Cartas en mano tras añadirla misma carta:" + j.getCartasEnMano());
-        j.quitarCartaEnMano(c);
-        System.out.println("Quita la carta:" + j.getCartasEnMano());
-        System.out.println("Quita una carta que no existe:" + j.getCartasEnMano());
-        lista_cartas.add(c);
-        j.anyadirCartasGanadas(lista_cartas);
-        System.out.println("Cartas añade a cartas ganadas:" + j.getCartasGanadas());
-        j.anyadirCartasGanadas(lista_cartas);
-        System.out.println("Vuelve a añadir a cartas ganadas la misma:" + j.getCartasGanadas());
-        j.sumarPuntos(10);
-        System.out.println("Jugador tiene 10 pts:" + j.getPuntos());
-*/
+        pruebasJugador();
 
     }
 
@@ -146,6 +117,104 @@ public class Pruebas {
         ArrayList<Integer> palosInt = new ArrayList<>();
         palosInt.addAll(Arrays.asList(1, 2, 3 , 4, 5));
         provocarErrorCarta(valores, new ArrayList<String>(), palosInt);
+    }
+
+
+    /**
+     * Pruebas para la clase Jugador de caja negra, clases de equivalencia y
+     * análisis de extremos, y preubas de caja blanca con pruebas de caminos
+     * para bucles.
+     */
+    public static void pruebasJugador(){
+        System.out.println("---- INICIO PRUEBAS JUGADOR----\n");
+        /* CONSTRUCTORES, GETTERS Y QUITAR CARTAS EN MANO*/
+        try {
+            Carta c1 = new Carta();
+            Carta c2 = new Carta();
+            c1 = new Carta(1, "B");
+            c2 = new Carta(2, "E");
+            ArrayList<Carta> cartasEnMano = new ArrayList<>();
+            ArrayList<Carta> cartasGanadas = new ArrayList<>();
+            cartasEnMano.add(c1);
+            cartasGanadas.add(c2);
+            Jugador j1 = new Jugador(0, cartasEnMano,
+                    cartasGanadas, 0);
+            Jugador j2 = new Jugador(j1);
+            cartasEnMano = j2.getCartasEnMano();
+            if (cartasEnMano.size() == 1 && cartasEnMano.get(0).equals(c1))
+                    System.out.println("[[CORRECTO]]: Pruebas de constructores y " +
+                            "getCartasEnMano SUPERADAS");
+            else System.out.println("[[IN--CORRECTO]]: Algún error en " +
+                        "constructores o getCartasEnMano");
+            try {
+                j2.quitarCartaEnMano(c1);
+                System.out.println("[[CORRECTO]]: quitarCartasEnMano v1");
+                j2.quitarCartaEnMano(c1);
+                System.out.println("[[IN--CORRECTO]]: quitarCartasEnMano v2");
+            } catch (Exception e){
+                System.out.println("[[CORRECTO]]: quitarCartasEnMano v2");
+            }
+
+            /* GET GANADAS*/
+            cartasGanadas = j2.getCartasGanadas();
+            if (cartasGanadas.size() == 1 && cartasGanadas.get(0).equals(c2))
+                System.out.println("[[CORRECTO]]: getCartasGanadas");
+            else System.out.println("[[IN--CORRECTO]]: getCartasGanadas");
+
+            /* ANYADIR CARTA EN MANO */
+            j1 = new Jugador(0, new ArrayList<>(), new ArrayList<>(), 0);
+            try {
+                j1.anyadirCartaEnMano(c1);
+                System.out.println("[[CORRECTO]]: anyadirCartasEnMano v1");
+                j1.anyadirCartaEnMano(c1);
+                System.out.println("[[IN--CORRECTO]]: anyadirCartasEnMano v2");
+            } catch (ExceptionCartaYaExiste e){
+                System.out.println("[[CORRECTO]]: anyadirCartasEnMano v2");
+            } catch (ExceptionNumeroMaximoCartas e){
+                System.out.println("[[IN--CORRECTO]]: anyadirCartasEnMano v2");
+            }
+            try {
+                for (int i = 2; i <= 6; ++i) {
+                    Carta a = new Carta(i, "C");
+                    j1.anyadirCartaEnMano(a);
+                }
+            } catch (Exception e){
+                System.out.println("[[IN--CORRECTO]]: anyadirCartasEnMano " +
+                        "antes v3");
+            }
+            Carta c6 = new Carta(6, "C");
+            Carta c7 = new Carta(7, "C");
+
+            try {
+                j1.anyadirCartaEnMano(c7);
+            } catch (ExceptionNumeroMaximoCartas e){
+                System.out.println("[[CORRECTO]]: anyadirCartasEnMano v3");
+                try {
+                    j1.anyadirCartaEnMano(c6);
+                } catch (ExceptionNumeroMaximoCartas e1){
+                    System.out.println("[[CORRECTO]]: anyadirCartasEnMano v4");
+                }  catch (Exception e1) {
+                    System.out.println("[[IN--CORRECTO]]: anyadirCartasEnMano v4");
+                }
+            } catch (Exception e){
+                System.out.println("[[IN--CORRECTO]]: anyadirCartasEnMano v3 ");
+            }
+
+            /* pruebas anyadirCartasGanadas */
+            try {
+                cartasGanadas = new ArrayList<>();
+                cartasGanadas.add(c7);
+                j1.anyadirCartasGanadas(cartasGanadas);
+                System.out.println("[[CORRECTO]]: anyadirCartasGanadas v1");
+                j1.anyadirCartasGanadas(cartasGanadas);
+                System.out.println("[[IN--CORRECTO]]: anyadirCartasGanadas v2");
+            } catch (ExceptionCartaYaExiste e){
+                System.out.println("[[CORRECTO]]: anyadirCartasGanadas v2");
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
 

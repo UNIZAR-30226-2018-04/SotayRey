@@ -135,7 +135,8 @@ public class Carta {
     @Override
     public boolean equals(Object o) {
         // self check
-        if (this == o)
+        //TODO: no sobra esto
+         if (this == o)
             return true;
         // null check
         if (o == null)
@@ -145,7 +146,7 @@ public class Carta {
             return false;
         Carta carta = (Carta) o;
         // field comparison
-        return (valor == valor)
+        return (valor == carta.valor)
                 && palo.equals(carta.palo);
     }
 }

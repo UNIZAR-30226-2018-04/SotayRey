@@ -1,11 +1,11 @@
-/*
- * Autor: Crisan, Marius Sorin
- * Fecha: 11-03-18
- * Fichero: Clase jugador de la lógica del guiñote
+/**
+ * @Autores: Crisan, Marius Sorin; Ignacio Bitrian; Victor Soria
+ * @Fecha: 11-03-18
+ * @Fichero: Clase jugador de la lógica del guiñote
  */
 
 import java.util.ArrayList;
-import java.util.List;
+//TODO: que pasa si un jugador tiene una carta ganada y también la tiene otro jugador o la tiene el en la mano
 
 public class Jugador {
     private ArrayList<Carta> cartasEnMano;
@@ -14,7 +14,8 @@ public class Jugador {
     private int id;
 
     /**
-     * Constructor que genera un nuevo jugador con identificador "id". Sin cartas en la mano, con 0 puntos y sin cartas
+     * Constructor que genera un nuevo jugador con identificador "id". Sin
+     * cartas en la mano, con 0 puntos y sin cartas
      * ganadas.
      * @param id
      */
@@ -25,14 +26,17 @@ public class Jugador {
         this.id = id;
     }
 
+
     /**
-     * Constructor que genera un nuevo jugador asignando id, cartas en la mano, ganadas y puntos.
+     * Constructor que genera un nuevo jugador asignando id, cartas en la
+     * mano, ganadas y puntos.
      * @param id
      * @param cartasEnMano
      * @param cartasGanadas
      * @param puntos
      */
-    public Jugador(int id, ArrayList<Carta> cartasEnMano, ArrayList<Carta> cartasGanadas, int puntos) {
+    public Jugador(int id, ArrayList<Carta> cartasEnMano,
+                   ArrayList<Carta> cartasGanadas, int puntos) {
         this.id = id;
         this.puntos = puntos;
 
@@ -48,6 +52,7 @@ public class Jugador {
             this.cartasGanadas.add(nueva);
         }
     }
+
 
     /**
      * Constructor que genera una copia identica de "jugador"
@@ -70,12 +75,19 @@ public class Jugador {
         }
     }
 
+
+    /**
+     * Devuelve el id del jugador
+     * @return
+     */
     public int getId(){
         return id;
     }
 
-    /*
+
+    /**
      * Devuelve una lista con las cartas en mano de cada jugador
+     * @return
      */
     public ArrayList<Carta> getCartasEnMano() {
         ArrayList<Carta> copia = new ArrayList<>();
@@ -88,30 +100,42 @@ public class Jugador {
 
 
     /**
-     * Añade una carta c al conjunto de cartas en mano si no está
+     * Añade una carta c al conjunto de cartas en mano si no está en el
+     * conjunto y si el jugador tiene menos de 6 cartas
      * @param c
+     * @throws ExceptionNumeroMaximoCartas,ExceptionCartaYaExiste
      */
-    public void anyadirCartaEnMano(Carta c) {
+    public void anyadirCartaEnMano(Carta c) throws
+            ExceptionNumeroMaximoCartas, ExceptionCartaYaExiste {
+        if (this.cartasEnMano.size() == 6){
+            throw new ExceptionNumeroMaximoCartas();
+        }
         if (!this.cartasEnMano.contains(c)){
             Carta copia = new Carta(c);
             this.cartasEnMano.add(copia);
+        } else {
+            throw new ExceptionCartaYaExiste();
         }
     }
 
 
     /**
-     * Quita la carta c de las cartasEnMano sy y solo si está en el conjunto
+     * Quita la carta c de las cartasEnMano si y solo si está en las cartas
+     * en mano del jugador
      * @param c
+     * @throws ExceptionJugadorSinCarta
      */
-    public void quitarCartaEnMano(Carta c){
+    public void quitarCartaEnMano(Carta c) throws ExceptionJugadorSinCarta{
         if (this.cartasEnMano.contains(c)){
             this.cartasEnMano.remove(c);
+        } else {
+            throw new ExceptionJugadorSinCarta();
         }
     }
 
 
     /**
-     * Devuelve las cartas ganadas por el jugador
+     * Devuelve una copia de las cartas ganadas por el jugador
      * @return
      */
     public ArrayList<Carta> getCartasGanadas() {
@@ -123,18 +147,21 @@ public class Jugador {
         return copia;
     }
 
-    /*
-     */
 
     /**
-     * Añade cada una de las cartas del conjunto de cartas a las cartasGanadas sin repeticiones de cartas
+     * Añade cada una de las cartas del conjunto de cartas a las
+     * cartasGanadas sin repeticiones de cartas
      * @param cartas
+     * @throws ExceptionCartaYaExiste
      */
-    public void anyadirCartasGanadas(ArrayList<Carta> cartas) {
+    public void anyadirCartasGanadas(ArrayList<Carta> cartas) throws
+            ExceptionCartaYaExiste {
         for (Carta c: cartas) {
             if(!this.cartasGanadas.contains(c)){
                 Carta copia = new Carta(c);
                 this.cartasGanadas.add(copia);
+            } else {
+                throw new ExceptionCartaYaExiste();
             }
         }
     }
