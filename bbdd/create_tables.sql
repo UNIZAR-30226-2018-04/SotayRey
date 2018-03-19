@@ -118,7 +118,7 @@ CREATE TABLE participa_fase (
     usuario VARCHAR(15),
     fase_num INT UNSIGNED, -- null si la partida no pertenece a un torneo
     fase_torneo BIGINT UNSIGNED,
-    FOREIGN KEY (fase_num, fase_torneo) REFERENCES fase(num, torneo) ON DELETE RESTRICT ON UPDATE CASCADE    
+    FOREIGN KEY (fase_num, fase_torneo) REFERENCES fase(num, torneo) ON DELETE RESTRICT ON UPDATE CASCADE,    
     FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT participa_fase_pk PRIMARY KEY (usuario, fase_num, fase_torneo)
 );
