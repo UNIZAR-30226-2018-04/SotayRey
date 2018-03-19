@@ -26,6 +26,7 @@ CREATE TABLE usuario (
     divisa INT UNSIGNED NOT NULL, -- No se contempla perder dinero una vez tienes 0 (dinero negativo)
     timeEspera DATETIME, -- Momento de inicio de la espera, si está esperando a encontrar participante, null en caso contrario
     puesto INT UNSIGNED, -- TODO: no puede ser 0
+    conectado BOOL NOT NULL,
     CONSTRAINT correo_unique UNIQUE(correo) -- no se permite más de un usuario con el mismo correo electrónico
 );
 -- Usuario borrado: pw_hash = null && token = null (los datos de ese usuario no se borran)
@@ -63,7 +64,8 @@ CREATE TABLE partida (
 CREATE TABLE liga (
     nombre VARCHAR(50) PRIMARY KEY,
     descripcion TEXT,
-    porcentaje TINYINT UNSIGNED NOT NULL
+    porcentaje_min TINYINT UNSIGNED NOT NULL,
+    porcentaje_max TINYINT UNSIGNED NOT NULL -- TODO solo valores entre 0 y 100 y max mayor que min y que no se crucen
 );
 
 CREATE TABLE articulo (
@@ -109,4 +111,13 @@ CREATE TABLE posee (
     FOREIGN KEY (articulo) REFERENCES articulo(nombre) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
     -- Si se borra un articulo, dejan de poseerlo todos los usuarios que lo tenían
     CONSTRAINT pertenece_liga_pk PRIMARY KEY (usuario, articulo)
+);
+
+CREATE TABLE participa_fase (
+    usuario VARCHAR(15),
+    fase_num INT UNSIGNED, -- null si la partida no pertenece a un torneo
+    fase_torneo BIGINT UNSIGNED,
+    FOREIGN KEY (fase_num, fase_torneo) REFERENCES fase(num, torneo) ON DELETE RESTRICT ON UPDATE CASCADE    
+    FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT participa_fase_pk PRIMARY KEY (usuario, fase_num, fase_torneo)
 );
