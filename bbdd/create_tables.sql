@@ -83,8 +83,8 @@ CREATE TABLE juega (
     partida BIGINT UNSIGNED,
     equipo CHAR(1), -- TODO: solo puede ser 1:equipo1, 2:equipo2
     puntos TINYINT UNSIGNED, -- puntos conseguidos por ese equipo en esa partida (distinto de la puntuación conseguida por ganar o perder)
-    veintes TINYINT UNSIGNED,
-    cuarentas TINYINT UNSIGNED,
+    veintes TINYINT UNSIGNED,  -- numero de veintes cantados por ese equipo (TODO: podría ser máximo 6 si es partida de ida y vuelta)
+    cuarentas TINYINT UNSIGNED, -- numero de cuarentas cantados por ese equipo (TODO: podría ser máximo 2 si es partida de ida y vuelta)
     abandonador BOOL, -- true: este jugador ha abandonado la partida, false en caso contrario
     FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
     -- Si se borra un usuario, se borran todas sus relaciones 'juega' (se borra por tanto parte de la información de esa partida)
