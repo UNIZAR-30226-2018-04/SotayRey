@@ -18,10 +18,6 @@ public class ConexionBD {
         Properties dbProps = new Properties();
         dbProps.load(new FileInputStream("db.properties"));
         cpds = new ComboPooledDataSource();
-/*      cpds.setDriverClass("com.mysql.jdbc.Driver"); //loads the jdbc driver
-        cpds.setJdbcUrl("jdbc:mysql://sotayrey-aurora.cxpexzsumhbd.us-west-2.rds.amazonaws.com:3306/sotayrey_db");
-        cpds.setUser("sotaoros");
-        cpds.setPassword("sotaoros");*/
 
         cpds.setDriverClass(dbProps.getProperty("driver")); //loads the jdbc driver
         cpds.setJdbcUrl(dbProps.getProperty("url"));
