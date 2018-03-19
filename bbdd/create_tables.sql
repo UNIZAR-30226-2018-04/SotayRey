@@ -2,6 +2,7 @@
 
 USE sotayrey_db;
 
+DROP TABLE IF EXISTS participa_fase;
 DROP TABLE IF EXISTS juega;
 DROP TABLE IF EXISTS pertenece_liga;
 DROP TABLE IF EXISTS posee;
