@@ -22,8 +22,7 @@ var game = new Phaser.Game(ejeX, ejeY, Phaser.CANVAS, '', { preload: preload, cr
 function preload() {
     game.load.spritesheet("cartas", "assets/naipes.png", ejeXCarta, ejeYCarta);
     game.load.image('naipe', 'assets/naipe.png');
-    game.load.image('cuadroCarta', 'assets/cuadroCarta.png');
-
+    game.load.image('cuadroCarta', 'assets/dragHere.png');
 }
 
 /* VARIABLES GLOBALES */
@@ -42,7 +41,7 @@ jRef.YPosMedia = ejeY * 0.80;
 jRef.sumX = ejeXCarta;
 jRef.sumY = 0;
 jRef.XLanzar = jRef.XPosMedia;
-jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 2;
+jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 1.5;
 //jRef.YLanzar = 300;
 jRef.cartaLanzada;
 //jRef.numCartas;
@@ -255,6 +254,35 @@ function enviarMensaje(mensaje){
     // TODO se envia el mensaje al backend
 }
 
-function recibirMensaje(){
+function recibirMensaje(msg){
+    // TODO hay que parsear el mensaje
+}
 
+function jugadorLanzaCarta(idJugador, numero, palo){
+    // indexar jugador
+    // coger la primera carta de la mano y eliminarla
+    // cambiar el sprite al de la carta correspondiente en el cuadro de lanzar
+}
+
+function rondaAcabada(){
+    // cambiar todos los cuadros de lanzar por el sprite del cuadro de lanzar
+}
+
+/* Devuelve el numero a indexar en el sprite de cartas */
+function buscarCarta(numero, palo){
+    var indice = numero - 1;
+    var numCartas = 13;
+    if (palo == "oros"){
+
+    }
+    else if (palo == "copas"){
+        indice = indice + numCartas;
+    }
+    else if (palo == "espadas"){
+        indice = indice + numCartas*2;
+    }
+    else { // palo == "bastos"
+        indice = indice + numCartas*3;
+    }
+    return indice;
 }

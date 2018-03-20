@@ -27,11 +27,12 @@
                 
                 this.webSocket.onmessage = function(event) {
                     var msg = event.data;
-                    
-                    score += 10;
-                    scoreText.text = 'Score: ' + score;
+                    // msg es el mensaje recibido
+                    //score += 10;
+                    //scoreText.text = 'Score: ' + score;
                     
                     console.log('onmessage::' + JSON.stringify(msg, null, 4));
+                    recibirMensaje(msg);
                 }
                 this.webSocket.onclose = function(event) {
                     console.log('onclose::' + JSON.stringify(event, null, 4));                
