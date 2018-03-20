@@ -79,6 +79,11 @@
                             <input type="password" class="form-control" name="passwd" id="passwd"
                                    placeholder="Contraseña">
                         </div>
+                        <div class="form-group">
+                            <label for="passwdRep">Repite contraseña</label>
+                            <input type="password" class="form-control" name="passwdRe" id="passwdRe"
+                                   placeholder="Contraseña">
+                        </div>
                         <button type="submit" class="btn btn-primary">Registrarme</button>
                     </form>
                 </div>
