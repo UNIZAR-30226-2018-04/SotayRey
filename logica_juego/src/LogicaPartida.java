@@ -24,6 +24,9 @@ public class LogicaPartida {
 
     }
     */
+    public EstadoPartida cantar20(String jugador){
+        return estado;
+    }
 
 
    //TODO: al iniciar la partida hay que hacer setTriunfo y poner la carta al

@@ -77,8 +77,8 @@ public class EstadoPartida {
      * Devuelve una lista con los identificadores de todos los jugadores
      * @return List<Integer>
      */
-    public ArrayList<Integer> getJugadores(){
-        ArrayList<Integer> res = new ArrayList<>();
+    public ArrayList<String> getJugadores(){
+        ArrayList<String> res = new ArrayList<>();
         for (Jugador j: jugadores) {
             res.add(j.getId());
         }
@@ -92,9 +92,9 @@ public class EstadoPartida {
      * @return
      * @throws ExceptionJugadorIncorrecto
      */
-    private Jugador encuentraJugador(int jugador) throws ExceptionJugadorIncorrecto{
+    private Jugador encuentraJugador(String jugador) throws ExceptionJugadorIncorrecto{
         for (Jugador actual : jugadores){
-            if(actual.getId() == jugador){
+            if(jugador.equals(actual.getId())){
                 return actual;
             }
         }
@@ -109,7 +109,7 @@ public class EstadoPartida {
      * @return
      * @throws ExceptionJugadorIncorrecto
      */
-    public List<Carta> getCartas(int jugador) throws ExceptionJugadorIncorrecto{
+    public List<Carta> getCartas(String jugador) throws ExceptionJugadorIncorrecto{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         return jugadorEncontrado.getCartasEnMano();
     }
@@ -125,7 +125,7 @@ public class EstadoPartida {
      * @throws ExceptionJugadorIncorrecto
      * @throws ExceptionCartaYaExiste
      */
-    public void anyadirCartaJugador(int jugador, Carta carta) throws
+    public void anyadirCartaJugador(String jugador, Carta carta) throws
             ExceptionNumeroMaximoCartas, ExceptionJugadorIncorrecto,
             ExceptionCartaYaExiste {
         Jugador jugadorEncontrado = encuentraJugador(jugador);
@@ -143,7 +143,7 @@ public class EstadoPartida {
      * @throws ExceptionJugadorSinCarta
      * @throws ExceptionTurnoIncorrecto
      */
-    public void lanzarCartaJugador(int jugador, Carta carta) throws
+    public void lanzarCartaJugador(String jugador, Carta carta) throws
             ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
             ExceptionTurnoIncorrecto {
         Jugador jugadorEncontrado = encuentraJugador(jugador);
@@ -221,7 +221,7 @@ public class EstadoPartida {
      * @throws ExceptionJugadorIncorrecto
      * @throws ExceptionCartaYaExiste
      */
-    public void anyadirAGanadas(int jugador) throws
+    public void anyadirAGanadas(String jugador) throws
             ExceptionJugadorIncorrecto, ExceptionRondaNoAcabada,
             ExceptionCartaYaExiste {
         Jugador jugadorEncontrado = encuentraJugador(jugador);

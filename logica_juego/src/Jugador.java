@@ -11,7 +11,7 @@ public class Jugador {
     private ArrayList<Carta> cartasEnMano;
     private ArrayList<Carta> cartasGanadas;
     private int puntos;
-    private int id;
+    private String id;
 
     /**
      * Constructor que genera un nuevo jugador con identificador "id". Sin
@@ -19,11 +19,12 @@ public class Jugador {
      * ganadas.
      * @param id
      */
-    public Jugador(int id) {
+    public Jugador(String id) {
         cartasEnMano = new ArrayList<>();
         cartasGanadas = new ArrayList<>();
         puntos = 0;
-        this.id = id;
+        String copia = new String(id);
+        this.id = copia;
     }
 
 
@@ -35,9 +36,10 @@ public class Jugador {
      * @param cartasGanadas
      * @param puntos
      */
-    public Jugador(int id, ArrayList<Carta> cartasEnMano,
+    public Jugador(String id, ArrayList<Carta> cartasEnMano,
                    ArrayList<Carta> cartasGanadas, int puntos) {
-        this.id = id;
+        String copia = new String(id);
+        this.id = copia;
         this.puntos = puntos;
 
         this.cartasEnMano = new ArrayList<>();
@@ -59,6 +61,7 @@ public class Jugador {
      * @param jugador
      */
     public Jugador(Jugador jugador){
+        String copia = new String(jugador.id);
         this.id = jugador.id;
         this.puntos = jugador.puntos;
         this.cartasEnMano = new ArrayList<>();
@@ -80,8 +83,9 @@ public class Jugador {
      * Devuelve el id del jugador
      * @return
      */
-    public int getId(){
-        return id;
+    public String getId(){
+        String copia = new String(id);
+        return copia;
     }
 
 

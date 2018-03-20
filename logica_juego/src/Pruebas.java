@@ -12,9 +12,9 @@ import java.util.Arrays;
 public class Pruebas {
     public static void main(String[] args){
 
-        //pruebasCartas();
-        //pruebasJugador();
-        pruebasEstadoPartida();
+        pruebasCartas();
+        pruebasJugador();
+        //pruebasEstadoPartida();
 
     }
 
@@ -131,7 +131,7 @@ public class Pruebas {
             ArrayList<Carta> cartasGanadas = new ArrayList<>();
             cartasEnMano.add(c1);
             cartasGanadas.add(c2);
-            Jugador j1 = new Jugador(0, cartasEnMano,
+            Jugador j1 = new Jugador("0", cartasEnMano,
                     cartasGanadas, 0);
             Jugador j2 = new Jugador(j1);
             cartasEnMano = j2.getCartasEnMano();
@@ -156,7 +156,7 @@ public class Pruebas {
             else System.out.println("[[IN--CORRECTO]]: getCartasGanadas");
 
             /* ANYADIR CARTA EN MANO */
-            j1 = new Jugador(0, new ArrayList<>(), new ArrayList<>(), 0);
+            j1 = new Jugador("0", new ArrayList<>(), new ArrayList<>(), 0);
             try {
                 j1.anyadirCartaEnMano(c1);
                 System.out.println("[[CORRECTO]]: anyadirCartasEnMano v1");
