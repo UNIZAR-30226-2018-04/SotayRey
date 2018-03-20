@@ -24,7 +24,33 @@ public class LogicaPartida {
 
     }
     */
-    public EstadoPartida cantar20(String jugador){
+
+    /**
+     *
+     * @param jugador
+     * @return
+     * @throws ExceptionJugadorIncorrecto
+     */
+    public EstadoPartida cantar20(String jugador) throws    ExceptionJugadorIncorrecto,
+                                                            ExceptionRondaNoAcabada,
+                                                            ExceptionTurnoIncorrecto{
+        ArrayList<String> jugadores = estado.getJugadores();
+        if(jugadores.contains(jugador)){
+            if(estado.getCartasEnTapete().size() == 0){
+                if(jugador.equals(estado.getTurno())){
+                    estado.sumaCante20(jugador);
+                }
+                else{
+                    throw new ExceptionTurnoIncorrecto();
+                }
+            }
+            else {
+                throw new ExceptionRondaNoAcabada();
+            }
+        }
+        else{
+            throw new ExceptionJugadorIncorrecto();
+        }
         return estado;
     }
 

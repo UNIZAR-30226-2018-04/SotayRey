@@ -215,21 +215,45 @@ public class EstadoPartida {
      * entero "jugador". Si no existe ningún jugador en la partida con ese
      * identificador lanza una excepcion. Si todos los jugadores no han
      * lanzado su carta lanza otra excepcion. Si la carta ya está añadida a
-     * ganadas lanza otra excepción.
+     * ganadas lanza otra excepción. Además cambia el siguiente turno al jugador
+     * identificado por el string "jugador"
      * @param jugador
      * @throws ExceptionRondaNoAcabada
      * @throws ExceptionJugadorIncorrecto
      * @throws ExceptionCartaYaExiste
      */
-    public void anyadirAGanadas(String jugador) throws
-            ExceptionJugadorIncorrecto, ExceptionRondaNoAcabada,
-            ExceptionCartaYaExiste {
+    public void anyadirAGanadas(String jugador) throws  ExceptionJugadorIncorrecto,
+                                                        ExceptionRondaNoAcabada,
+                                                        ExceptionCartaYaExiste {
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         if(cartasEnTapete.size() == jugadores.size()){
             jugadorEncontrado.anyadirCartasGanadas(cartasEnTapete);
             cartasEnTapete = new ArrayList<>();
+            turno = jugadorEncontrado;
         } else {
             throw new ExceptionRondaNoAcabada();
         }
+    }
+
+    /**
+     * Devuelve el identificador del jugador que debe lanzar la siguiente carta
+     * @return
+     */
+    public String getTurno() {
+        String copia = new String(this.turno.getId());
+        return copia;
+    }
+
+    /**
+     * Función que encuentra un usuario e intenta cantar 20 por el jugador
+     * identificado por "jugador". Si no existe ningún jugador en la partida
+     * con ese identificador lanza una excepcion. Si el jugador no puede cantar
+     * las 20 lanza una excepción.
+     * @param jugador
+     * @throws ExceptionJugadorIncorrecto
+     */
+    public void sumaCante20(String jugador) throws ExceptionJugadorIncorrecto{
+        Jugador jugadorEncontrado = encuentraJugador(jugador);
+        jugadorEncontrado.anyadirCante20();
     }
 }

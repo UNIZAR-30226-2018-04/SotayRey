@@ -192,6 +192,15 @@ public class Jugador {
     }
 
     /**
+     * Función que consulta si se puede cantar 20 con la sota y el rey de
+     * cualquier palo que no sea triunfo. Si no puede cantar 20 lanza una
+     * excepcción.
+     */
+    public void anyadirCante20(){
+
+    }
+
+    /**
      * @param o
      * @return
      */
