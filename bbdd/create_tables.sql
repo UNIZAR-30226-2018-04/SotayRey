@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS torneo;
 DROP TABLE IF EXISTS usuario;
 
 CREATE TABLE usuario (
-    username VARCHAR(15) PRIMARY KEY,
+    username VARCHAR(15) PRIMARY KEY, -- IA es un usuario especial con username = IA y tratado de forma especial
     pw_hash CHAR(60),
     correo VARCHAR(320) NOT NULL, 
     -- fb_token VARCHAR(100), TODO: aprender a usar tokens de Facebook
@@ -23,11 +23,11 @@ CREATE TABLE usuario (
     apellidos VARCHAR(50) NOT NULL,
     fechaNac DATE,
     admin BOOL NOT NULL, -- true si administrador, false si usuario normal
-    puntuacion INT UNSIGNED NOT NULL, -- No se contemplan puntuaciones negativas
-    divisa INT UNSIGNED NOT NULL, -- No se contempla perder dinero una vez tienes 0 (dinero negativo)
-    timeEspera DATETIME, -- Momento de inicio de la espera, si está esperando a encontrar participante, null en caso contrario
+    puntuacion INT UNSIGNED NOT NULL DEFAULT 0, -- No se contemplan puntuaciones negativas
+    divisa INT UNSIGNED NOT NULL DEFAULT 0, -- No se contempla perder dinero una vez tienes 0 (dinero negativo)
+    -- timeEspera DATETIME, Momento de inicio de la espera, si está esperando a encontrar participante, null en caso contrario
     puesto INT UNSIGNED, -- TODO: no puede ser 0
-    conectado BOOL NOT NULL,
+    -- conectado BOOL NOT NULL,
     CONSTRAINT correo_unique UNIQUE(correo) -- no se permite más de un usuario con el mismo correo electrónico
 );
 -- Usuario borrado: pw_hash = null && token = null (los datos de ese usuario no se borran)
