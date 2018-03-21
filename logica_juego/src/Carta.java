@@ -124,6 +124,28 @@ public class Carta {
         } else throw new ExceptionCartaIncorrecta("Palo incorrecto: " + palo);
     }
 
+    /**
+     * Pre: ---
+     * Post: Devuelve la puntuación de la carta
+     * @return
+     */
+    //TODO: que pruebas hacer
+    public int getPuntuación(){
+        switch (this.valor){
+            case 1:
+                return 11;
+            case 3:
+                return 10;
+            case 12:
+                return 4;
+            case 10:
+                return 3;
+            case 11:
+                return 2;
+            default:
+                return 0;
+        }
+    }
 
     /**
      * Devuelve un cadena con el valor y palo de la carta: "[ <valor>, <palo> ]"

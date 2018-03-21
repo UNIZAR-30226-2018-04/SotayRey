@@ -146,7 +146,7 @@ public class Pruebas {
                 j2.quitarCartaEnMano(c1);
                 System.out.println("[[IN--CORRECTO]]: quitarCartasEnMano v2");
             } catch (Exception e){
-                System.out.println("[[CORRECTO]]: quitarCartasEnMano v2");
+                System.out.println("[[CORRECTO]]: quitarCartasEnMano v2-f");
             }
 
             /* GET GANADAS*/
@@ -186,7 +186,7 @@ public class Pruebas {
                 try {
                     j1.anyadirCartaEnMano(c6);
                 } catch (ExceptionNumeroMaximoCartas e1){
-                    System.out.println("[[CORRECTO]]: anyadirCartasEnMano v4");
+                    System.out.println("[[CORRECTO]]: anyadirCartasEnMano v4-f");
                 }  catch (Exception e1) {
                     System.out.println("[[IN--CORRECTO]]: anyadirCartasEnMano v4");
                 }
@@ -203,7 +203,7 @@ public class Pruebas {
                 j1.anyadirCartasGanadas(cartasGanadas);
                 System.out.println("[[IN--CORRECTO]]: anyadirCartasGanadas v2");
             } catch (ExceptionCartaYaExiste e){
-                System.out.println("[[CORRECTO]]: anyadirCartasGanadas v2");
+                System.out.println("[[CORRECTO]]: anyadirCartasGanadas v2-f");
             }
 
         } catch (Exception e){

@@ -25,6 +25,11 @@ public class EstadoPartida {
     private Carta triunfo;
     private Random random;
 
+    public EstadoPartida(EstadoPartida p){
+        //this.mazo = new ArrayList<>(p.mazo);
+
+    }
+
     public EstadoPartida(){
         barajear();
         this.cartasEnTapete = new ArrayList<>();
@@ -133,6 +138,17 @@ public class EstadoPartida {
     }
 
 
+
+    public void pasarTurno(String jugador){
+        //Asigna el turno al siguiente jugador
+        int n_jug = jugadores.size();
+        for (int i = 0; i < n_jug; i++) {
+            if (jugador.equals(jugadores.get(i))) {
+                turno = jugadores.get((i + 1) % n_jug);
+                break;
+            }
+        }
+    }
     /**
      * Mueve una carta de jugador "jugador" al tapete.Si "jugador" no está en
      * la partida lanza una excepcion. Si el turno no es de "jugador" lanza
@@ -147,16 +163,66 @@ public class EstadoPartida {
             ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
             ExceptionTurnoIncorrecto {
         Jugador jugadorEncontrado = encuentraJugador(jugador);
+        /*
         if(turno.equals(jugadorEncontrado)) {
             if (jugadorEncontrado.getCartasEnMano().contains(carta)) {
-                jugadorEncontrado.quitarCartaEnMano(carta);
-                cartasEnTapete.add(carta);
-            } else {
+                //Ronda de descarte o es el primero
+                if (mazo.size() > 0 || cartasEnTapete.size() == 0) {
+                    jugadorEncontrado.quitarCartaEnMano(carta);
+                    cartasEnTapete.add(carta);
+                    pasarTurno(jugador);
+                    }
+                }
+                //Ronda de arrastre
+                else{
+                    //Obligación de jugar al Palo de arrastre
+                    Carta inicial = cartasEnTapete.get(0);
+                    /*
+                    if (carta.getPalo().equals(inicial.getPalo())){
+                        //es del mismo palo
+                        if (carta.getPuntuación()>inicial.getPuntuación()){
+                            //tira la carta porque es de mayor valor que la
+                            // que hay
+                            jugadorEncontrado.quitarCartaEnMano(carta);
+                            cartasEnTapete.add(new Carta(carta));
+                            pasarTurno(jugador);
+                        } else {
+                            //se mira el resto de cartas para ver si tiene
+                            // alguna mayor del mismo palo
+                            if (1){
+                            } else {
+                                //si tiene una del mismo palo mayor que la
+                                // inicial lanzar excepción
+                                //TODO: mirar en la mano
+                                jugadorEncontrado.quitarCartaEnMano(carta);
+                                cartasEnTapete.add(new Carta(carta));
+                                pasarTurno(jugador);
+                            }
+                        }
+                    }
+                    //Obligación de hacer baza
+                    else{//DIFERENTE PALO
+                        if (){
+                            //mirar si tiene del mismo palo
+                            throw new ExceptionCartaIncorrecta("Tienes otra " +
+                                    "carta del arrastre");
+                        } else if (){
+                            //mirar si tiene triunfo
+                            // y no
+
+                        }
+
+                    }
+                    //cualquier carta
+
+                }
+            }
+            else {
                 throw new ExceptionJugadorSinCarta();
             }
         } else{
             throw new ExceptionTurnoIncorrecto();
-        }
+        } */
     }
 
 
@@ -255,5 +321,19 @@ public class EstadoPartida {
     public void sumaCante20(String jugador) throws ExceptionJugadorIncorrecto{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         jugadorEncontrado.anyadirCante20();
+    }
+
+
+    /**
+     * Devuelve las cartas ganadas por un jugador. Si el jugador no pertenece
+     * a la partida lanza un excepción.
+     * @param jugador
+     * @return
+     * @throws ExceptionJugadorIncorrecto
+     */
+    public ArrayList<Carta> getCartasGanadas(String jugador) throws
+            ExceptionJugadorIncorrecto {
+        Jugador j = encuentraJugador(jugador);
+        return j.getCartasGanadas();
     }
 }

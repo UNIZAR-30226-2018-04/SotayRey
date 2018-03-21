@@ -26,6 +26,52 @@ public class LogicaPartida {
     */
 
     /**
+     * Pre: Jugador debe pertenecer a la lista de jugadores de la partida
+     * Post: Coge la primera carta del mazo y se la asigna al "Jugador". Si
+     * el jugador no existe, no quedan cartas en el mazo, o ya tiene esa
+     * carta o 6 cartas en la mano lanza una excepción.
+     * @param jugador
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionMazoVacio
+     * @throws ExceptionNumeroMaximoCartas
+     * @throws ExceptionCartaYaExiste
+     */
+   public void repartirCarta(String jugador) throws
+           ExceptionJugadorIncorrecto, ExceptionMazoVacio,
+           ExceptionNumeroMaximoCartas, ExceptionCartaYaExiste{
+       Carta a = estado.getPrimeraCartaMazo();
+       estado.anyadirCartaJugador(jugador, a);
+   }
+
+
+    /**
+     * Pre: Jugador debe pertenecer a la lista de jugadores de la partida
+     * Post: Devuelve los
+     * @param jugador
+     * @return
+     * @throws ExceptionRondaNoAcabada
+     * @throws ExceptionJugadorIncorrecto
+     */
+   public int consultarPuntos(String jugador) throws ExceptionRondaNoAcabada,
+           ExceptionJugadorIncorrecto {
+       if (estado.getCartasEnTapete().size() == 0){
+           int puntos = 0;
+           for (Carta c: estado.getCartasGanadas(jugador)){
+                    puntos += c.getPuntuación();
+           }
+           return puntos;
+       } else {
+           throw new ExceptionRondaNoAcabada();
+       }
+   }
+
+   public void lanzarCarta(String jugador, Carta c)throws
+           ExceptionJugadorIncorrecto, ExceptionCartaIncorrecta,
+           ExceptionTurnoIncorrecto, ExceptionJugadorSinCarta {
+        estado.lanzarCartaJugador(jugador, c);
+   }
+
+    /**
      *
      * @param jugador
      * @return
@@ -51,6 +97,8 @@ public class LogicaPartida {
         else{
             throw new ExceptionJugadorIncorrecto();
         }
+        //TODO: no hay que devolver otro estado
+        //EstadoPartida res = new EstadoPartida(estado);
         return estado;
     }
 
