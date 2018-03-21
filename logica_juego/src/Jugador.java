@@ -12,6 +12,7 @@ public class Jugador {
     private ArrayList<Carta> cartasGanadas;
     private int puntos;
     private String id;
+    private boolean cantes[] = {false, false, false, false};
 
     /**
      * Constructor que genera un nuevo jugador con identificador "id". Sin
@@ -196,8 +197,45 @@ public class Jugador {
      * cualquier palo que no sea triunfo. Si no puede cantar 20 lanza una
      * excepcción.
      */
-    public void anyadirCante20(){
+    public void anyadirCante20(Carta triunfo){
+        boolean reyes[] = {false, false, false, false};
+        boolean sotas[] = {false, false, false, false};
 
+        for(Carta iterador : cartasEnMano){
+            if(iterador.getValor() == 10){
+                marcaSotaORey(triunfo, sotas, iterador);
+            }
+            if(iterador.getValor() == 12){
+                marcaSotaORey(triunfo, reyes, iterador);
+            }
+        }
+
+        for(int i = 0; i < 4; i++){
+            if(reyes[i] && sotas[i] && !cantes[i]){
+                cantes[i] = true;
+                puntos += 20;
+            }
+        }
+
+    }
+
+    private void marcaSotaORey(Carta triunfo, boolean[] vectorApariciones, Carta iterador) {
+        if(!iterador.getPalo().equals(triunfo.getPalo())){
+            switch (iterador.getPalo()){
+                case "B":
+                    vectorApariciones[0] = true;
+                    break;
+                case "C":
+                    vectorApariciones[1] = true;
+                    break;
+                case "E":
+                    vectorApariciones[2] = true;
+                    break;
+                case "O":
+                    vectorApariciones[3] = true;
+                    break;
+            }
+        }
     }
 
     /**

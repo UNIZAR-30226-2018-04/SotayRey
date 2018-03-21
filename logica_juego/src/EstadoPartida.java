@@ -320,7 +320,7 @@ public class EstadoPartida {
      */
     public void sumaCante20(String jugador) throws ExceptionJugadorIncorrecto{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        jugadorEncontrado.anyadirCante20();
+        jugadorEncontrado.anyadirCante20(triunfo);
     }
 
 
