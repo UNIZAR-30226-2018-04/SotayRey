@@ -13,10 +13,10 @@ public class ConexionBD {
     private static ConexionBD condb;
     private ComboPooledDataSource cpds;
 
-    private ConexionBD() throws IOException, SQLException, PropertyVetoException {
+    private ConexionBD() throws IOException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
-        dbProps.load(new FileInputStream("db.properties"));
+        dbProps.load(new FileInputStream("bbdd/db.properties"));
         cpds = new ComboPooledDataSource();
 
         cpds.setDriverClass(dbProps.getProperty("driver")); //loads the jdbc driver
@@ -32,7 +32,7 @@ public class ConexionBD {
 
     }
 
-    public static ConexionBD instancia() throws IOException, SQLException, PropertyVetoException {
+    public static ConexionBD instancia() throws IOException, PropertyVetoException {
         if (condb == null) {
             condb = new ConexionBD();
             return condb;
