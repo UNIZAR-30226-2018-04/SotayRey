@@ -1,3 +1,10 @@
+/*
+ * Autores: Guerrero Viu, Julia y Izquierdo Barranco, Sergio
+ * Fecha: 20-03-2018
+ * Fichero: InterfazDatos.java
+ * Descripción: Interfaz de acceso a datos
+ */
+
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
@@ -41,11 +48,40 @@ public class InterfazDatos {
         }
     }
 
+    /* 
+     * Crea un usuario nuevo en el sistema. U debe contener (not null) como mínimo: username, correo, nombre, apellidos y admin
+     */
     public void crearUsuario(UsuarioVO u) {
         UsuarioDAO.crearUsuario(u, this.cpds);
     }
 
+    /* 
+     * Devuelve un usuario con todos sus datos (datos de perfil de usuario), a partir de su username
+     */
     public UsuarioVO obtenerDatosUsuario(String username) {
         return UsuarioDAO.obtenerDatosUsuario(username, this.cpds);
     }
+
+    /*
+     * Elimina un usuario del sistema a partir de su username (no lo elimina por completo, solo le impide el acceso)
+     */
+    public void eliminarUsuario(String username){
+        UsuarioDAO.eliminarUsuario(username, this.cpds);    
+    }
+
+    /*
+     * Modifica los datos de perfil del usuario u
+     */
+    public void modificarDatosUsuario(UsuarioVO u){
+        UsuarioDAO.modificarDatosUsuario(u, this.cpds);
+    }
+    
+    /*
+     * Devuelve true si el usuario identificado por username es un administrador, false en caso contrario
+     */
+    public boolean esAdministrador(String username){
+        return UsuarioDAO.esAdministrador(username, this.cpds);
+    }
+
+    
 }
