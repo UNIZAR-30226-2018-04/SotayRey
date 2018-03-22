@@ -138,6 +138,22 @@ public class EstadoPartida {
     }
 
 
+    /**
+     * Quita la carta c de las cartas en mano del jugador. Si el jugador no
+     * pertenece a la partida o no tiene la carta en la mano lanza una
+     * excepción.
+     * @param jugador
+     * @param c
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionJugadorSinCarta
+     */
+    public void quitarCartaJugador(String jugador, Carta c) throws
+            ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta {
+        Jugador j = encuentraJugador(jugador);
+        j.quitarCartaEnMano(c);
+    }
+
+
 
     public void pasarTurno(String jugador){
         //Asigna el turno al siguiente jugador
@@ -163,7 +179,6 @@ public class EstadoPartida {
             ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
             ExceptionTurnoIncorrecto {
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        /*
         if(turno.equals(jugadorEncontrado)) {
             if (jugadorEncontrado.getCartasEnMano().contains(carta)) {
                 //Ronda de descarte o es el primero
@@ -171,16 +186,16 @@ public class EstadoPartida {
                     jugadorEncontrado.quitarCartaEnMano(carta);
                     cartasEnTapete.add(carta);
                     pasarTurno(jugador);
-                    }
                 }
+
                 //Ronda de arrastre
-                else{
+                else {
+                   /*
                     //Obligación de jugar al Palo de arrastre
                     Carta inicial = cartasEnTapete.get(0);
-                    /*
-                    if (carta.getPalo().equals(inicial.getPalo())){
+                    if (carta.getPalo().equals(inicial.getPalo())) {
                         //es del mismo palo
-                        if (carta.getPuntuación()>inicial.getPuntuación()){
+                        if (carta.getPuntuación() > inicial.getPuntuación()) {
                             //tira la carta porque es de mayor valor que la
                             // que hay
                             jugadorEncontrado.quitarCartaEnMano(carta);
@@ -189,7 +204,7 @@ public class EstadoPartida {
                         } else {
                             //se mira el resto de cartas para ver si tiene
                             // alguna mayor del mismo palo
-                            if (1){
+                            if (1) {
                             } else {
                                 //si tiene una del mismo palo mayor que la
                                 // inicial lanzar excepción
@@ -201,28 +216,28 @@ public class EstadoPartida {
                         }
                     }
                     //Obligación de hacer baza
-                    else{//DIFERENTE PALO
-                        if (){
-                            //mirar si tiene del mismo palo
-                            throw new ExceptionCartaIncorrecta("Tienes otra " +
-                                    "carta del arrastre");
-                        } else if (){
-                            //mirar si tiene triunfo
-                            // y no
+                        /*
+                        else{//DIFERENTE PALO
+                            if (){
+                                //mirar si tiene del mismo palo
+                                throw new ExceptionCartaIncorrecta("Tienes otra " +
+                                        "carta del arrastre");
+                            } else if (){
+                                //mirar si tiene triunfo
+                                // y no
+
+                            }
 
                         }
-
-                    }
-                    //cualquier carta
-
+                        //cualquier carta
+                    */
                 }
-            }
-            else {
+            } else {
                 throw new ExceptionJugadorSinCarta();
             }
         } else{
             throw new ExceptionTurnoIncorrecto();
-        } */
+        }
     }
 
 
@@ -246,7 +261,7 @@ public class EstadoPartida {
      * Devuelve las cartas que están encima de la mesa.
      * @return
      */
-    public  ArrayList<Carta> getCartasEnTapete(){
+    public ArrayList<Carta> getCartasEnTapete(){
         ArrayList<Carta> copia = new ArrayList<>();
         for(Carta iterador : cartasEnTapete){
             Carta nueva =  new Carta(iterador);

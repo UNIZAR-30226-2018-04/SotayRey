@@ -103,6 +103,37 @@ public class LogicaPartida {
     }
 
 
+    /**
+     * Si la carta del jugador es un 7 del mismo palo que el triunfo y el
+     * triunfo es la SOTA, el CABALLO, el REY, el AS o el TRES las intercambia.
+     * En caso contrario, lanza una excepción.
+     * @param jugador
+     * @param c
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionJugadorSinCarta
+     * @throws ExceptionCartaIncorrecta
+     * @throws ExceptionCartaYaExiste
+     * @throws ExceptionNumeroMaximoCartas
+     */
+    public void cambiarCartaPorTriunfo(String jugador, Carta c) throws
+            ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
+            ExceptionCartaIncorrecta, ExceptionCartaYaExiste,
+            ExceptionNumeroMaximoCartas {
+            Carta triunfo = estado.getTriunfo();
+            //Cambia la carta si y solo si es un 7 del mismo palo y su
+            // puntuación es mayor
+            if (triunfo.getPalo().equals(c.getPalo()) && triunfo.getValor()
+                    == 7 && (triunfo.getPuntuación() > 0)){
+                //TODO: hacer que solo se cambie después de ganar la ultima baza
+                estado.setTriunfo(c);
+                estado.quitarCartaJugador(jugador, c);
+                estado.anyadirCartaJugador(jugador, triunfo);
+            } else {
+                throw new ExceptionCartaIncorrecta("Palo incorrecto o valor " +
+                        "de la carta menor que el triunfo");
+            }
+    }
+
    //TODO: al iniciar la partida hay que hacer setTriunfo y poner la carta al
     // final
 }
