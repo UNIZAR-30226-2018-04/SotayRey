@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.io.FileInputStream;
 
@@ -41,9 +42,13 @@ public class InterfazDatos {
         }
     }
 
-//    public void crear_usuario(UsuarioVO u) {
-//        UsuarioDAO.crear_usuario(u, this.cpds);
-//    }
+    public void crearUsuario(UsuarioVO u) {
+        UsuarioDAO.crearUsuario(u, this.cpds);
+    }
+
+    public UsuarioVO obtenerDatosUsuario(String username) {
+        return UsuarioDAO.obtenerDatosUsuario(username, this.cpds);
+    }
 
     /* La función inserta una nueva partida empezada en la base de datos y modifica el objeto PartidaVO
      * de forma que contiene el id de la partida.
@@ -55,4 +60,11 @@ public class InterfazDatos {
      */
     public void finalizarPartida(PartidaVO p) { PartidaDAO.finalizarPartida(p, this.cpds); }
 
+    /* Devuelve un array con todas las partidas jugadas por el usuario con username username
+     */
+    public ArrayList<PartidaVO> obtenerHistorialPartidas(String username) { return PartidaDAO.obtenerHistorialPartidas(username, this.cpds); }
+
+    /* Devuelve un array con todas las partidas públicas que todavía no han finalizado
+     */
+    public  ArrayList<PartidaVO> obtenerPartidasPublicasCurso() { return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds); }
 }

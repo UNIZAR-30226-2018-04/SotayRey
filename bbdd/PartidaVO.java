@@ -5,13 +5,13 @@
  */
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.Date;
 
 public class PartidaVO {
     private BigInteger id;
-    private Date timeInicio;
-    private Date timeFin;
+    private Timestamp timeInicio;
+    private Timestamp timeFin;
     private boolean publica;
     private char ganador;
     private List<UsuarioVO> usuarios;
@@ -25,7 +25,7 @@ public class PartidaVO {
      * uno deben ir en las posiciones pares del vector, los miembros del equipo dos
      * en las impares
      */
-    public PartidaVO(Date timeInicio, boolean publica, List<UsuarioVO> usuarios) {
+    public PartidaVO(Timestamp timeInicio, boolean publica, List<UsuarioVO> usuarios) {
         this.timeInicio = timeInicio;
         this.publica = publica;
         this.usuarios = usuarios;
@@ -35,7 +35,7 @@ public class PartidaVO {
      * uno deben ir en las posiciones pares del vector, los miembros del equipo dos
      * en las impares
      */
-    public PartidaVO(BigInteger id, Date timeInicio, Date timeFin, boolean publica, char ganador, List<UsuarioVO> usuarios, List<Integer> cuarentas, List<Integer> veintes, int puntos1, int puntos2, int abandonador) {
+    public PartidaVO(BigInteger id, Timestamp timeInicio, Timestamp timeFin, boolean publica, char ganador, List<UsuarioVO> usuarios, List<Integer> cuarentas, List<Integer> veintes, int puntos1, int puntos2, int abandonador) {
         this.id = id;
         this.timeInicio = timeInicio;
         this.timeFin = timeFin;
@@ -57,19 +57,19 @@ public class PartidaVO {
         this.id = id;
     }
 
-    public Date getTimeInicio() {
+    public Timestamp getTimeInicio() {
         return timeInicio;
     }
 
-    public void setTimeInicio(Date timeInicio) {
+    public void setTimeInicio(Timestamp timeInicio) {
         this.timeInicio = timeInicio;
     }
 
-    public Date getTimeFin() {
+    public Timestamp getTimeFin() {
         return timeFin;
     }
 
-    public void setTimeFin(Date timeFin) {
+    public void setTimeFin(Timestamp timeFin) {
         this.timeFin = timeFin;
     }
 
