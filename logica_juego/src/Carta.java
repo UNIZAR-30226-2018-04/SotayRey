@@ -147,6 +147,9 @@ public class Carta {
         }
     }
 
+
+
+
     /**
      * Devuelve un cadena con el valor y palo de la carta: "[ <valor>, <palo> ]"
      * @return
@@ -172,4 +175,45 @@ public class Carta {
         return (valor == carta.valor)
                 && palo.equals(carta.palo);
     }
+
+    /**
+     * Devuelve true si y solo las cartas son del mismo palo
+     * @param otra
+     * @return
+     */
+    public boolean esMismoPalo(Carta otra){
+        return otra.getPalo().equals(palo);
+    }
+
+    /**
+     * Devuelve true si y solo la carta "otra" aporta más puntuación que la
+     * actual
+     * @param otra
+     * @return
+     */
+    public boolean masPuntuacion(Carta otra){
+        return otra.getPuntuación() > getPuntuación();
+    }
+
+    /*
+    public boolean mata(Carta otra, Carta triunfo){
+        // Son del mismo palo
+        if (palo.equals(otra.getPalo())){
+            return getPuntuación()> otra.getPuntuación();
+        }
+        else{// No son del mismo palo
+            // La carta es triunfo
+            if (palo.equals(triunfo.getPalo())){
+
+            }
+
+        }
+
+        return otra.getPalo().equals(triunfo.getPalo()) && mia.getPuntuación
+                () > otra.getPuntuación() && mia.getPalo().equals(triunfo
+                .getPalo());
+
+
+    }
+    */
 }
