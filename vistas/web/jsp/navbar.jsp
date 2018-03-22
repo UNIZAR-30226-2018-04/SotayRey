@@ -25,24 +25,29 @@
                 <a class="btn btn-outline" href="#" role="button">
                     <i class="fa fa-shopping-basket mr-2"></i>Tienda</a>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" id="Preview" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-user mr-2"></i>ABASVS
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="Preview">
-                    <a class="dropdown-item" href="../jsp/perfil.jsp">
-                        <i class="fa fa-user-circle-o mr-2"></i>Perfil</a>
-                    <a class="dropdown-item" href="#">
-                        <i class="fa fa-gear mr-2"></i>Opciones</a>
-                    <a class="dropdown-item" href="#">
-                        <i class="fa fa-power-off mr-2"></i>Cerrar sesi&oacuten</a>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="btn btn-outline" href="../jsp/login.jsp" role="button">
-                    <i class="fa fa-sign-in mr-2"></i>Entrar/Registrarse</span>
-                </a>
-            </li>
+
+            <%
+               if (session.getAttribute("usuario") == null) { %>
+                <li class="nav-item">
+                    <a class="btn btn-outline" href="../jsp/login.jsp" role="button">
+                        <i class="fa fa-sign-in mr-2"></i>Entrar/Registrarse</span>
+                    </a>
+                </li>
+            <% } else { %>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" id="Preview" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-user mr-2"></i>ABASVS
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="Preview">
+                        <a class="dropdown-item" href="../jsp/perfil.jsp">
+                            <i class="fa fa-user-circle-o mr-2"></i>Perfil</a>
+                        <a class="dropdown-item" href="#">
+                            <i class="fa fa-gear mr-2"></i>Opciones</a>
+                        <a class="dropdown-item" href="#">
+                            <i class="fa fa-power-off mr-2"></i>Cerrar sesi&oacuten</a>
+                    </div>
+                </li>
+            <% }%>
         </ul>
     </div>
 </nav>

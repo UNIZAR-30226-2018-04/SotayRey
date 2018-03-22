@@ -16,10 +16,8 @@
     <%@ include file="../html/imports.html"%>
 </head>
 <% /*String nick = null;
-    String aps = null;
     String nombre = null;
     String email = null;
-    String foto = null;
     if (session.getAttribute("usuario") == null) {
         response.sendRedirect("../jsp/login.jsp");
     } else {

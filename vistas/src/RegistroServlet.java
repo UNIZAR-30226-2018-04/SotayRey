@@ -5,22 +5,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
 
+
 /**
  * @author Víctor Soria
  *
  * @version 1.0
  * @since 	1.0
  *
- * Servlet implementation class RegistrarUsuario
+ * Servlet implementation class RegistroServlet
  */
-@WebServlet("/RegistrarUsuario")
-public class RegistrarUsuarioServlet extends HttpServlet {
+@WebServlet("/RegistroServlet")
+public class RegistroServlet extends HttpServlet {
 
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = -2484162939395285925L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
         String login = request.getParameter("user");
@@ -36,89 +32,80 @@ public class RegistrarUsuarioServlet extends HttpServlet {
             if(login=="" || login ==null){
                 error= "Introduce un nombre de usuario.";
                 request.setAttribute("errors",error);
-                //RequestDispatcher dispatcher=request.getRequestDispatcher("registro.jsp");
-                //dispatcher.forward(request,response);
+                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                dispatcher.forward(request,response);
             }
             else if(apellidos=="" || apellidos ==null){
                 error= "Introduce tus apellidos.";
                 request.setAttribute("errors",error);
-                //RequestDispatcher dispatcher=request.getRequestDispatcher("registro.jsp");
-                //dispatcher.forward(request,response);
+                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                dispatcher.forward(request,response);
             }
             else if(nombre=="" || nombre ==null){
                 error= "Introduce tu nombre.";
                 request.setAttribute("errors",error);
-                //RequestDispatcher dispatcher=request.getRequestDispatcher("registro.jsp");
-                //dispatcher.forward(request,response);
+                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                dispatcher.forward(request,response);
             }
             else if(email=="" || email ==null){
                 error= "Introduce el email.";
                 request.setAttribute("errors",error);
-                //RequestDispatcher dispatcher=request.getRequestDispatcher("registro.jsp");
-                //dispatcher.forward(request,response);
+                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                dispatcher.forward(request,response);
             }
             else if(password=="" || password ==null){
                 error= "Introduce la contraseña.";
                 request.setAttribute("errors",error);
-                //RequestDispatcher dispatcher=request.getRequestDispatcher("registro.jsp");
-                //dispatcher.forward(request,response);
+                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                dispatcher.forward(request,response);
             }
             else if(passwordRep=="" || passwordRep ==null){
                 error= "Repite la contraseña.";
                 request.setAttribute("errors",error);
-                //RequestDispatcher dispatcher=request.getRequestDispatcher("registro.jsp");
-                //dispatcher.forward(request,response);
+                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                dispatcher.forward(request,response);
             }
             else if(!password.equals(passwordRep)){
                 error= "La contraseña no coincide.";
                 request.setAttribute("errors",error);
-                //RequestDispatcher dispatcher=request.getRequestDispatcher("registro.jsp");
-                //dispatcher.forward(request,response);
+                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                dispatcher.forward(request,response);
             }
-            else{//NO hay dato null
-                /*SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
-                Date fechaNacimiento=new java.sql.Date(sdf.parse(fech).getTime());
+            else{//Si todos los datos no son null
+                //UsuarioVO usuarioVo = null;
+                //InterfazDatos facade = null;
 
-                SimpleDateFormat s = new SimpleDateFormat("yyyy");
-                int year=Integer.parseInt((s.format(fechaNacimiento)));
-                System.out.print(year);
-
-                if(fechaNacimiento==null || year > 2012 || year < 1900){
-                    error= "Introduce una fecha valida.";
-                    request.setAttribute("errors",error);
-                    RequestDispatcher dispatcher=request.getRequestDispatcher("registro.jsp");
-                    dispatcher.forward(request,response);
+                try {
+                    //TODO: Falta añadir la contraseña
+                    //usuarioVo = new UsuarioVO(login, email, nombre, apellidos, false);
                 }
-                else{
+                catch(Exception e){
+                    //TODO: Tratar error
+                }
 
-                    UsuarioVO usuarioVo =  new UsuarioVO(email,login,password,null);
-                    DatosPersonalesVO datosPersonalesVO = new DatosPersonalesVO(email,fechaNacimiento,nombre,apellidos);
-                    System.out.println("LA FECHA ES" +fechaNacimiento);
-                    WebLibrosFacade.crearCliente(usuarioVo);
-                    WebLibrosFacade.crearDatosPersonales(datosPersonalesVO);
-                    //HttpSession s= request.getSession();
-                    //s.setAttribute("email", email);
-                    Cookie emailCookie = new Cookie("email",email);
-                    Cookie passwordCookie = new Cookie("password",password);
+                try {
+                    //facade = new InterfazDatos();
+                }
+                catch(Exception e){
+                    //TODO: Tratar error
+                }
 
-                    //Expira en una hora
-                    emailCookie.setMaxAge(60*60);
-                    passwordCookie.setMaxAge(60*60);
+                //facade.crearUsuario(usuarioVo);
 
-                    //Añade las cookies a la respuesta
-                    response.addCookie( emailCookie );
-                    response.addCookie( passwordCookie);
+                HttpSession sesion= request.getSession();
+                sesion.setAttribute("userId", login);
+                sesion.setMaxInactiveInterval(24*60*60);
 
-                    response.sendRedirect("home.jsp");
-                }*/
+
+                response.sendRedirect("home.jsp");
             }
 
-            //response.sendRedirect("home.html");
-        } catch (Exception e){
+        } catch(Exception e){
             System.out.println(e);
+
             if((e.toString()).contains("PRIMARY")){
                 //Registro incorrecto, email esta en uso
-                error= "El e-mail ya esta en uso.";
+                error = "El e-mail ya esta en uso.";
             }
             else if((e.toString()).contains("login")){
                 error= "El usuario ya esta en uso.";
@@ -126,14 +113,12 @@ public class RegistrarUsuarioServlet extends HttpServlet {
             else if((e.toString()).contains("date")){
                 error= "Introduce una fecha de nacimiento.";
             }
-            else{//No ha introducido la fecha
+            else{
                 error= "No se ha podido completar el registro. Intentalo de nuevo.";
             }
             request.setAttribute("errors",error);
-            //RequestDispatcher dispatcher=request.getRequestDispatcher("registro.jsp");
-            //dispatcher.forward(request,response);
+
         }
-        //response.sendRedirect("home.html");
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
