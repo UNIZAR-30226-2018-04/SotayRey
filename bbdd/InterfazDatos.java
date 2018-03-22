@@ -1,5 +1,5 @@
 /*
- * Autores: Guerrero Viu, Julia y Izquierdo Barranco, Sergio
+ * Autores: Guerrero Viu, Julia & Izquierdo Barranco, Sergio
  * Fecha: 20-03-2018
  * Fichero: InterfazDatos.java
  * Descripción: Interfaz de acceso a datos

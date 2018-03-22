@@ -73,13 +73,16 @@ public class UsuarioDAO {
         }
     }
 
+    /* 
+     * No elimina al usuario por completo, solo le impide el acceso poniendo los campos de autenticación: pw_hash y fb_token a null 
+     */
     public static void eliminarUsuario(String username, ComboPooledDataSource pool){
         Connection connection = null;
         Statement statement = null;
         try {
             connection = pool.getConnection();
             statement = connection.createStatement();
-            String delete = "DELETE FROM usuario WHERE username = " + "'" + username + "'";
+            String delete = "UPDATE usuario SET pw_hash = null, fb_token = null WHERE username = " + "'" + username + "'";
             statement.executeUpdate(delete);
         } catch (SQLException e) {
             e.printStackTrace();

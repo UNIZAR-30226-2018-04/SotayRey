@@ -1,7 +1,7 @@
 /*
  * Autor: Guerrero Viu, Julia
- * Fecha: 20-03-2018
- * Fichero: UsuarioDAO.java
+ * Fecha: 21-03-2018
+ * Fichero: StatsUsuarioDAO.java
  */
 
 import java.text.SimpleDateFormat;
