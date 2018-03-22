@@ -1,6 +1,3 @@
-
-package RegistroServlet
-
 import java.io.*;
 
 import javax.servlet.*;
@@ -15,10 +12,10 @@ import javax.servlet.http.*;
  * @version 1.0
  * @since 	1.0
  *
- * Servlet implementation class RegistrarUsuario
+ * Servlet implementation class RegistroServlet
  */
-@WebServlet("/RegistrarUsuario")
-public class RegistrarUsuarioServlet extends HttpServlet {
+@WebServlet("/RegistroServlet")
+public class RegistroServlet extends HttpServlet {
 
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
@@ -75,40 +72,40 @@ public class RegistrarUsuarioServlet extends HttpServlet {
                 dispatcher.forward(request,response);
             }
             else{//Si todos los datos no son null
-                UsuarioVO usuarioVo = null;
-                InterfazDatos facade = null;
+                //UsuarioVO usuarioVo = null;
+                //InterfazDatos facade = null;
 
                 try {
                     //TODO: Falta añadir la contraseña
-                    usuarioVo = new UsuarioVO(login, email, nombre, apellidos, false);
+                    //usuarioVo = new UsuarioVO(login, email, nombre, apellidos, false);
                 }
                 catch(Exception e){
                     //TODO: Tratar error
                 }
 
                 try {
-                    facade = new InterfazDatos();
+                    //facade = new InterfazDatos();
                 }
                 catch(Exception e){
                     //TODO: Tratar error
                 }
 
-                facade.crearUsuario(usuarioVo);
+                //facade.crearUsuario(usuarioVo);
 
                 HttpSession sesion= request.getSession();
                 sesion.setAttribute("userId", login);
-                session.setMaxInactiveInterval(24*60*60);
+                sesion.setMaxInactiveInterval(24*60*60);
 
 
                 response.sendRedirect("home.jsp");
-                }
             }
 
-        } catch (Exception e){
+        } catch(Exception e){
             System.out.println(e);
+
             if((e.toString()).contains("PRIMARY")){
                 //Registro incorrecto, email esta en uso
-                error= "El e-mail ya esta en uso.";
+                error = "El e-mail ya esta en uso.";
             }
             else if((e.toString()).contains("login")){
                 error= "El usuario ya esta en uso.";
@@ -116,12 +113,11 @@ public class RegistrarUsuarioServlet extends HttpServlet {
             else if((e.toString()).contains("date")){
                 error= "Introduce una fecha de nacimiento.";
             }
-            else{//No ha introducido la fecha
+            else{
                 error= "No se ha podido completar el registro. Intentalo de nuevo.";
             }
             request.setAttribute("errors",error);
-            //RequestDispatcher dispatcher=request.getRequestDispatcher("registro.jsp");
-            //dispatcher.forward(request,response);
+
         }
     }
 
