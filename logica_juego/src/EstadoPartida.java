@@ -335,8 +335,7 @@ public class EstadoPartida {
      */
     public void sumaCante20(String jugador) throws ExceptionJugadorIncorrecto{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        //TODO: hay que comprobar si tiene las cartas y si es último ganador
-        // jugadorEncontrado.;
+        jugadorEncontrado.anyadirCante20(triunfo);
     }
 
 
