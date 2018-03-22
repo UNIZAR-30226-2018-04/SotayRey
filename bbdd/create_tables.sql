@@ -17,7 +17,7 @@ CREATE TABLE usuario (
     username VARCHAR(15) PRIMARY KEY, -- IA es un usuario especial con username = IA y tratado de forma especial
     pw_hash CHAR(60),
     correo VARCHAR(320) NOT NULL, 
-    -- fb_token VARCHAR(100), TODO: aprender a usar tokens de Facebook
+    fb_token VARCHAR(100), -- TODO: aprender a usar tokens de Facebook
     timeCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha de creación del usuario
     nombre VARCHAR(25) NOT NULL,
     apellidos VARCHAR(50) NOT NULL,

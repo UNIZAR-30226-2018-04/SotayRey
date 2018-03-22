@@ -1,3 +1,10 @@
+/*
+ * Autor: Guerrero Viu, Julia
+ * Fecha: 20-03-2018
+ * Fichero: UsuarioVO.java
+ * Descripción: Representa un usuario con todos sus datos de perfil de usuario
+ */
+
 import java.util.Date;
 import java.sql.Timestamp;
 
@@ -13,13 +20,13 @@ public class UsuarioVO {
     private Date fechaNac;
     private boolean admin;
 
-    public UsuarioVO() {}
+    public UsuarioVO() { admin = false;}
 
     public UsuarioVO(String username, String correo, String nombre, String apellidos, boolean admin) throws ExceptionCampoInvalido {
         // Comprobar que la longitud de los campos no sea mayor que los limites de la base de datos
-        if (username.length()>15){
+        if (username.length()>15 || nombre.length()>25 || apellidos.length()>50){
             // Lanzar excepción de campo no válido 
-            throw new ExceptionCampoInvalido("Campo username invalido, longitud: " + username.length() + " (longitud máxima 15)");       
+            throw new ExceptionCampoInvalido("Campo invalido, longitud " + username.length() + " mayor que la máxima permitida");       
         }
         this.username = username;
         this.correo = correo;
@@ -30,9 +37,9 @@ public class UsuarioVO {
 
     public UsuarioVO(String username, String correo, String nombre, String apellidos, boolean admin, Date fechaNac) throws ExceptionCampoInvalido {
         // Comprobar que la longitud de los campos no sea mayor que los limites de la base de datos
-        if (username.length()>15){
-            // Lanzar excepción de campo no válido
-            throw new ExceptionCampoInvalido("Campo username invalido, longitud: " + username.length() + " (longitud máxima 15)");         
+        if (username.length()>15 || nombre.length()>25 || apellidos.length()>50){
+            // Lanzar excepción de campo no válido 
+            throw new ExceptionCampoInvalido("Campo invalido, longitud " + username.length() + " mayor que la máxima permitida");       
         }
         this.username = username;
         this.correo = correo;
