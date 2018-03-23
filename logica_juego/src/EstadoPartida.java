@@ -46,7 +46,6 @@ public class EstadoPartida {
     private ArrayList<Carta> crearBaraja(){
         ArrayList<Carta> baraja = new ArrayList<>();
         try {
-            Carta a;
             int num;
             for (int i = 0; i < 40; ++i){
                 num = i%10+1;
@@ -65,7 +64,7 @@ public class EstadoPartida {
     /**
      * Asigna al mazo las 4o cartas de la baraja española en un orden aleatorio.
      */
-    public void barajear(){
+    private void barajear(){
         mazo = crearBaraja();
         Carta uno, dos;
         int num;
@@ -91,6 +90,23 @@ public class EstadoPartida {
         return res;
     }
 
+
+    /**
+     * Devuelve la posición ocupada en la lista por el jugador.
+     * @param jugador
+     * @return >= 0
+     */
+    private int posJugador(Jugador jugador) throws ExceptionJugadorIncorrecto {
+        int i = 0;
+        for (Jugador j : jugadores) {
+            if (jugador.equals(j)){
+                return i;
+            }
+            ++i;
+        }
+        throw new ExceptionJugadorIncorrecto();
+
+    }
 
     /**
      * Busca un jugador identificado por "id" == "jugador" en la partida.
@@ -156,8 +172,12 @@ public class EstadoPartida {
     }
 
 
-
-    public void pasarTurno(String jugador){
+    /**
+     * Asigna el turno al jugador que ocupa la siguiente posición en
+     * la lista de jugadores respecto al "jugador" indica
+     * @param jugador
+     */
+    private void pasarTurno(String jugador){
         //Asigna el turno al siguiente jugador
         int n_jug = jugadores.size();
         for (int i = 0; i < n_jug; i++) {
@@ -240,6 +260,7 @@ public class EstadoPartida {
                 else {
 
                     /** Obligación de jugar al Palo de arrastre **/
+                    //TODO: identificar al primero
                     Carta inicial = cartasEnTapete.get(0);
 
                     //Solo ha lanzado uno
@@ -341,25 +362,54 @@ public class EstadoPartida {
 
 
     /**
-     * Mueve las cartas del tapete a ganadas del jugador identificado por el
-     * entero "jugador". Si no existe ningún jugador en la partida con ese
-     * identificador lanza una excepcion. Si todos los jugadores no han
-     * lanzado su carta lanza otra excepcion. Si la carta ya está añadida a
-     * ganadas lanza otra excepción. Además cambia el siguiente turno al jugador
-     * identificado por el string "jugador"
-     * @param jugador
-     * @throws ExceptionRondaNoAcabada
+     * Si la ronda ha terminado asigna al jugador ganador el turno de la
+     * siguiente ronda, las cartas del tapete como cartas ganadas por el
+     * jugador y le suma la puntuación correspondiente a las nuevas cartas
+     * ganadas
      * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionRondaNoAcabada
      * @throws ExceptionCartaYaExiste
      */
-    public void anyadirAGanadas(String jugador) throws  ExceptionJugadorIncorrecto,
-                                                        ExceptionRondaNoAcabada,
-                                                        ExceptionCartaYaExiste {
-        Jugador jugadorEncontrado = encuentraJugador(jugador);
-        if(cartasEnTapete.size() == jugadores.size()){
-            jugadorEncontrado.anyadirCartasGanadas(cartasEnTapete);
-            cartasEnTapete = new ArrayList<>();
-            turno = jugadorEncontrado;
+    public void terminarRonda() throws ExceptionRondaNoAcabada,
+            ExceptionCartaYaExiste {
+        int n_jug = jugadores.size();
+        if (cartasEnTapete.size() == n_jug){
+            Carta aux, mejor_triunfo = null,
+                    mejor_otro = cartasEnTapete.get(0);
+            int ganador = 0;
+
+            //Busqueda del ganador
+            for (int i = 0; i < n_jug; i++) {
+                aux = cartasEnTapete.get(i);
+                if (aux.esMismoPalo(triunfo)) { // Si hay triunfo gana el mejor
+                    if (mejor_triunfo == null ||
+                            aux.masPuntuacion(mejor_triunfo)) {
+                        // Pirmer triunfo o encontrado un triunfo mejor
+                        mejor_triunfo = aux;
+                        ganador = i;
+                    }
+                } else if (aux.esMismoPalo(mejor_otro)){
+                    if (mejor_otro == null ||
+                            aux.masPuntuacion(mejor_otro)) {
+                        // Pirmer triunfo o encontrado un triunfo mejor
+                        mejor_otro = aux;
+                        ganador = i;
+                    }
+                }
+            }
+
+            //TODO: verificar si asigna todo bien por el tema de los punteros
+            // Asigna turno a jugador ganador
+            turno = jugadores.get(ganador);
+
+            // Suma puntos y cartas a ganador
+            asignaCartasJugador(turno);
+
+            // Suma 10 puntos al ganador de la última ronda
+            if (jugadores.get(0).getCartasEnMano().size() == 0){
+                // Se ha primera vuelta
+                turno.sumarPuntos(10);
+            }
         } else {
             throw new ExceptionRondaNoAcabada();
         }
@@ -403,51 +453,34 @@ public class EstadoPartida {
 
 
     /**
-     * Devuelve los puntos de las cartas ganadas por el jugador
-     * @param j
+     * Asigna las carta del tapete al jugador j y le suma el total de
+     * la puntuación de todas las cartas en tapete
      * @return
      */
-    private int getPuntosCartas(Jugador j){
+    private void asignaCartasJugador(Jugador j) throws
+            ExceptionCartaYaExiste {
         int res = 0;
-        for (Carta c: j.getCartasGanadas()){
+        for (Carta c: cartasEnTapete){
             res += c.getPuntuación();
+            j.anyadirCartaGanadas(c);
         }
-        return res;
+        //Elimina todas las del tapete
+        cartasEnTapete = new ArrayList<Carta>();
+        j.sumarPuntos(res);
     }
 
     /**
-     * Devuelve los puntos del jugador o equipo del jugador, si es por
-     * parejas, si y solo si la ronda ha terminado. En caso contrario lanza
-     * una excepción.
+     * Devuelve los puntos del jugador si pertenece a la partida. En caso
+     * contrario lanza una excepción.
      * @param jugador
      * @return
      * @throws ExceptionJugadorIncorrecto
-     * @throws ExceptionRondaNoAcabada
      */
-    public int consultarPuntos(String jugador) throws
-            ExceptionJugadorIncorrecto,
-            ExceptionRondaNoAcabada {
-        int res = 0;
-        Jugador j;
-        if (!jugadores.contains(jugador)) {
-            throw new ExceptionJugadorIncorrecto();
-        }
-        if (cartasEnTapete.size() != 0){
-            throw new ExceptionRondaNoAcabada();
-        }
-        for (int i = 0; i < 4; i++) {
-            j = jugadores.get(i);
-            if (j.equals(jugador)) {
-                res += j.getPuntos();
-                res += getPuntosCartas(j);
-                if (jugadores.size() == 4) {
-                    j = jugadores.get(i + 2);
-                    res += j.getPuntos();
-                    res += getPuntosCartas(j);
-                }
-                break;
-            }
-        }
-        return res;
+    public int getPuntosJugador(String jugador) throws
+            ExceptionJugadorIncorrecto {
+        Jugador j = encuentraJugador(jugador);
+        return j.getPuntos();
     }
+
+    //TODO: sistema de puntos en caso de empate
 }

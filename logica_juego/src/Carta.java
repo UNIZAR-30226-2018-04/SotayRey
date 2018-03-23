@@ -194,26 +194,4 @@ public class Carta {
     public boolean masPuntuacion(Carta otra){
         return otra.getPuntuación() > getPuntuación();
     }
-
-    /*
-    public boolean mata(Carta otra, Carta triunfo){
-        // Son del mismo palo
-        if (palo.equals(otra.getPalo())){
-            return getPuntuación()> otra.getPuntuación();
-        }
-        else{// No son del mismo palo
-            // La carta es triunfo
-            if (palo.equals(triunfo.getPalo())){
-
-            }
-
-        }
-
-        return otra.getPalo().equals(triunfo.getPalo()) && mia.getPuntuación
-                () > otra.getPuntuación() && mia.getPalo().equals(triunfo
-                .getPalo());
-
-
-    }
-    */
 }
