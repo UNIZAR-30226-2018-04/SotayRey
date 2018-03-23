@@ -31,10 +31,12 @@ public class LogicaPartida {
      * el jugador no existe, no quedan cartas en el mazo, o ya tiene esa
      * carta o 6 cartas en la mano lanza una excepción.
      * @param jugador
-     * @throws ExceptionJugadorIncorrecto
-     * @throws ExceptionMazoVacio
-     * @throws ExceptionNumeroMaximoCartas
-     * @throws ExceptionCartaYaExiste
+     * @throws ExceptionJugadorIncorrecto si el jugador no pertenece a la
+     * partida
+     * @throws ExceptionMazoVacio si no quedan cartas en mazo
+     * @throws ExceptionNumeroMaximoCartas si el jugador tiene 6 o más cartas
+     * en la mano
+     * @throws ExceptionCartaYaExiste si ya tiene esa carta en la mano
      */
    public void repartirCarta(String jugador) throws
            ExceptionJugadorIncorrecto, ExceptionMazoVacio,
@@ -43,27 +45,6 @@ public class LogicaPartida {
        estado.anyadirCartaJugador(jugador, a);
    }
 
-
-    /**
-     * Pre: Jugador debe pertenecer a la lista de jugadores de la partida
-     * Post: Devuelve los
-     * @param jugador
-     * @return
-     * @throws ExceptionRondaNoAcabada
-     * @throws ExceptionJugadorIncorrecto
-     */
-   public int consultarPuntos(String jugador) throws ExceptionRondaNoAcabada,
-           ExceptionJugadorIncorrecto {
-       if (estado.getCartasEnTapete().size() == 0){
-           int puntos = 0;
-           for (Carta c: estado.getCartasGanadas(jugador)){
-                    puntos += c.getPuntuación();
-           }
-           return puntos;
-       } else {
-           throw new ExceptionRondaNoAcabada();
-       }
-   }
 
    public void lanzarCarta(String jugador, Carta c)throws
            ExceptionJugadorIncorrecto, ExceptionCartaIncorrecta,
@@ -75,7 +56,8 @@ public class LogicaPartida {
      *
      * @param jugador
      * @return
-     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionJugadorIncorrecto si el jugador no pertenece a la
+     * partida
      */
     public EstadoPartida cantar20(String jugador) throws    ExceptionJugadorIncorrecto,
                                                             ExceptionRondaNoAcabada,
@@ -109,11 +91,15 @@ public class LogicaPartida {
      * En caso contrario, lanza una excepción.
      * @param jugador
      * @param c
-     * @throws ExceptionJugadorIncorrecto
-     * @throws ExceptionJugadorSinCarta
-     * @throws ExceptionCartaIncorrecta
-     * @throws ExceptionCartaYaExiste
-     * @throws ExceptionNumeroMaximoCartas
+     * @throws ExceptionJugadorIncorrecto si el jugador no pertenece a la
+     * partida
+     * @throws ExceptionJugadorSinCarta si el jugador no tiene esa carta
+     * @throws ExceptionCartaIncorrecta si la carta no cumple las normas del
+     * guiñote para cambiarla por el triungo
+     * @throws ExceptionCartaYaExiste si el jugador ya tiene esa carta en la
+     * mano
+     * @throws ExceptionNumeroMaximoCartas si el jugador tiene 6 o más cartas
+     * en la mano
      */
     public void cambiarCartaPorTriunfo(String jugador, Carta c) throws
             ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
@@ -132,6 +118,12 @@ public class LogicaPartida {
                 throw new ExceptionCartaIncorrecta("Palo incorrecto o valor " +
                         "de la carta menor que el triunfo");
             }
+    }
+
+
+    public int consultarPuntos(String jugador) throws
+            ExceptionJugadorIncorrecto, ExceptionRondaNoAcabada{
+        return estado.consultarPuntos(jugador);
     }
 
    //TODO: al iniciar la partida hay que hacer setTriunfo y poner la carta al

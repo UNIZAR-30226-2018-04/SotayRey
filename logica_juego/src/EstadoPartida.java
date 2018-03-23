@@ -12,7 +12,8 @@ import java.util.Random;
  * Mazo:  almacena todas las cartas no utilizadas de la baraja española
  * CartasEnTapete: las cartas que están en la mesa en un turno
  * Jugadores:  información de cada uno de los jugadores que están
- * participando, almacenada en el mismo orden en el que jugarán
+ * participando, almacenada en el mismo orden en el que jugarán. Si se juega
+ * por equipos se almacena [j1_equipo1, j2_equipo2, j3_equipo1, j4_equipo2]
  * Turno:  jugador que tiene que lanzar
  * lanzar la carta
  * Triunfo:  carta que indica el palo al que se juega
@@ -114,7 +115,8 @@ public class EstadoPartida {
      * @return
      * @throws ExceptionJugadorIncorrecto
      */
-    public List<Carta> getCartas(String jugador) throws ExceptionJugadorIncorrecto{
+    public List<Carta> getCartasEnMano(String jugador) throws
+            ExceptionJugadorIncorrecto{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         return jugadorEncontrado.getCartasEnMano();
     }
@@ -165,10 +167,57 @@ public class EstadoPartida {
             }
         }
     }
+
+
     /**
-     * Mueve una carta de jugador "jugador" al tapete.Si "jugador" no está en
-     * la partida lanza una excepcion. Si el turno no es de "jugador" lanza
-     * otra excepcion. Y si "jugador" no posee la carta lanza otra excepcion.
+     * Devuelve true si y solo el jugador tiene una carta del mismo palo con
+     * mejor puntuación
+     * @param j
+     * @param carta
+     * @return
+     */
+    private boolean tieneOtraMejorDelPalo(Jugador j, Carta carta){
+        boolean tieneMejor = true;
+        for (Carta c: j.getCartasEnMano()) {
+            if (!c.equals(carta)){
+                tieneMejor = tieneMejor && c.masPuntuacion(carta);
+            }
+        }
+        return tieneMejor;
+    }
+
+
+    /**
+     * Devuelve true si y solo el jugador tiene una carta en mano con el
+     * mismo palo que el triunfo.
+     * @param j
+     * @return
+     */
+    private boolean tieneTriunfoEnMano(Jugador j){
+        boolean tieneTriunfo = true;
+        for (Carta c: j.getCartasEnMano()) {
+                tieneTriunfo = tieneTriunfo && c.esMismoPalo(triunfo);
+        }
+        return tieneTriunfo;
+    }
+
+    /**
+     * Quita la carta de la mano del jugador y la pone en la mesa. Además
+     * pasa el turno al siguiente jugador
+     * @param carta
+     * @param j
+     * @throws ExceptionJugadorSinCarta
+     */
+    private void ponerCartaMesa(Carta carta, Jugador j) throws
+            ExceptionJugadorSinCarta {
+        j.quitarCartaEnMano(carta);
+        cartasEnTapete.add(carta);
+        pasarTurno(j.getId());
+    }
+
+    /**
+     * El jugador pone la carta en la mesa si cumple con las normas del
+     * guiñote. Si no se lanza un excepción.
      * @param jugador
      * @param carta
      * @throws ExceptionJugadorIncorrecto
@@ -177,60 +226,60 @@ public class EstadoPartida {
      */
     public void lanzarCartaJugador(String jugador, Carta carta) throws
             ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
-            ExceptionTurnoIncorrecto {
+            ExceptionTurnoIncorrecto, ExceptionCartaIncorrecta {
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         if(turno.equals(jugadorEncontrado)) {
             if (jugadorEncontrado.getCartasEnMano().contains(carta)) {
+                int n_cartas = cartasEnTapete.size();
                 //Ronda de descarte o es el primero
-                if (mazo.size() > 0 || cartasEnTapete.size() == 0) {
-                    jugadorEncontrado.quitarCartaEnMano(carta);
-                    cartasEnTapete.add(carta);
-                    pasarTurno(jugador);
+                if (mazo.size() > 0 || n_cartas == 0) {
+                    ponerCartaMesa(carta, jugadorEncontrado);
                 }
 
                 //Ronda de arrastre
                 else {
-                   /*
-                    //Obligación de jugar al Palo de arrastre
+
+                    /** Obligación de jugar al Palo de arrastre **/
                     Carta inicial = cartasEnTapete.get(0);
-                    if (carta.getPalo().equals(inicial.getPalo())) {
-                        //es del mismo palo
-                        if (carta.getPuntuación() > inicial.getPuntuación()) {
-                            //tira la carta porque es de mayor valor que la
-                            // que hay
-                            jugadorEncontrado.quitarCartaEnMano(carta);
-                            cartasEnTapete.add(new Carta(carta));
-                            pasarTurno(jugador);
-                        } else {
-                            //se mira el resto de cartas para ver si tiene
-                            // alguna mayor del mismo palo
-                            if (1) {
+
+                    //Solo ha lanzado uno
+                    if (cartasEnTapete.size() == 1) {
+
+                        if (carta.esMismoPalo(inicial)) {
+                            //Carta es del mismo palo
+
+                            if (carta.masPuntuacion(inicial)) {
+                                ponerCartaMesa(carta, jugadorEncontrado);
                             } else {
-                                //si tiene una del mismo palo mayor que la
-                                // inicial lanzar excepción
-                                //TODO: mirar en la mano
-                                jugadorEncontrado.quitarCartaEnMano(carta);
-                                cartasEnTapete.add(new Carta(carta));
-                                pasarTurno(jugador);
+                                if (tieneOtraMejorDelPalo(jugadorEncontrado,
+                                        carta)) {
+                                    throw new ExceptionCartaIncorrecta
+                                            ("Tienes otra carta mejor del " +
+                                                    "mismo palo");
+                                } else {
+                                    ponerCartaMesa(carta, jugadorEncontrado);
+                                }
+                            }
+                        } else {
+
+                            /** Obligación de jugar al Triunfo **/
+                            if (carta.esMismoPalo(triunfo)) {
+                                //Lanza un triunfo
+                                ponerCartaMesa(carta, jugadorEncontrado);
+                            } else { // Mira si no tiene un triunfo en la mano
+                                if (tieneTriunfoEnMano(jugadorEncontrado)) {
+                                    throw new ExceptionCartaIncorrecta
+                                            ("Jugador tiene un triunfo en " +
+                                                    "mano para lanzar");
+                                } else {
+                                    /** Cualquier carta **/
+                                    ponerCartaMesa(carta, jugadorEncontrado);
+                                }
                             }
                         }
+                    } else {
+                        //TODO: hacer casos si es el 3º o 4º lanzador
                     }
-                    //Obligación de hacer baza
-                        /*
-                        else{//DIFERENTE PALO
-                            if (){
-                                //mirar si tiene del mismo palo
-                                throw new ExceptionCartaIncorrecta("Tienes otra " +
-                                        "carta del arrastre");
-                            } else if (){
-                                //mirar si tiene triunfo
-                                // y no
-
-                            }
-
-                        }
-                        //cualquier carta
-                    */
                 }
             } else {
                 throw new ExceptionJugadorSinCarta();
@@ -350,5 +399,55 @@ public class EstadoPartida {
             ExceptionJugadorIncorrecto {
         Jugador j = encuentraJugador(jugador);
         return j.getCartasGanadas();
+    }
+
+
+    /**
+     * Devuelve los puntos de las cartas ganadas por el jugador
+     * @param j
+     * @return
+     */
+    private int getPuntosCartas(Jugador j){
+        int res = 0;
+        for (Carta c: j.getCartasGanadas()){
+            res += c.getPuntuación();
+        }
+        return res;
+    }
+
+    /**
+     * Devuelve los puntos del jugador o equipo del jugador, si es por
+     * parejas, si y solo si la ronda ha terminado. En caso contrario lanza
+     * una excepción.
+     * @param jugador
+     * @return
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionRondaNoAcabada
+     */
+    public int consultarPuntos(String jugador) throws
+            ExceptionJugadorIncorrecto,
+            ExceptionRondaNoAcabada {
+        int res = 0;
+        Jugador j;
+        if (!jugadores.contains(jugador)) {
+            throw new ExceptionJugadorIncorrecto();
+        }
+        if (cartasEnTapete.size() != 0){
+            throw new ExceptionRondaNoAcabada();
+        }
+        for (int i = 0; i < 4; i++) {
+            j = jugadores.get(i);
+            if (j.equals(jugador)) {
+                res += j.getPuntos();
+                res += getPuntosCartas(j);
+                if (jugadores.size() == 4) {
+                    j = jugadores.get(i + 2);
+                    res += j.getPuntos();
+                    res += getPuntosCartas(j);
+                }
+                break;
+            }
+        }
+        return res;
     }
 }
