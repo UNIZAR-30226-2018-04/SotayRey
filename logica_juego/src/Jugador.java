@@ -154,20 +154,18 @@ public class Jugador {
 
 
     /**
-     * Añade cada una de las cartas del conjunto de cartas a las
-     * cartasGanadas sin repeticiones de cartas
-     * @param cartas
+     * Añade la carta c a las cartasGanadas. Si la carta ya está en el
+     * conjunto se lanza una excepción.
+     * @param c
      * @throws ExceptionCartaYaExiste
      */
-    public void anyadirCartasGanadas(ArrayList<Carta> cartas) throws
+    public void anyadirCartaGanadas(Carta c) throws
             ExceptionCartaYaExiste {
-        for (Carta c: cartas) {
-            if(!this.cartasGanadas.contains(c)){
-                Carta copia = new Carta(c);
-                this.cartasGanadas.add(copia);
-            } else {
-                throw new ExceptionCartaYaExiste();
-            }
+        if(!this.cartasGanadas.contains(c)){
+            Carta copia = new Carta(c);
+            this.cartasGanadas.add(copia);
+        } else {
+            throw new ExceptionCartaYaExiste();
         }
     }
 
