@@ -191,48 +191,79 @@ public class Jugador {
     }
 
     /**
-     * Función que consulta si se puede cantar 20 con la sota y el rey de
-     * cualquier palo que no sea triunfo. Si no puede cantar 20 lanza una
+     * Función que consulta si se puede cantar con la sota y el rey de
+     * cualquier palo. Si no puede cantar lanza una
      * excepcción.
      */
-    public void anyadirCante20(Carta triunfo){
+    public void anyadirCante(Carta triunfo){
         boolean reyes[] = {false, false, false, false};
         boolean sotas[] = {false, false, false, false};
 
         for(Carta iterador : cartasEnMano){
             if(iterador.getValor() == 10){
-                marcaSotaORey(triunfo, sotas, iterador);
+                marcaSotaORey(sotas, iterador);
             }
             if(iterador.getValor() == 12){
-                marcaSotaORey(triunfo, reyes, iterador);
+                marcaSotaORey(reyes, iterador);
             }
         }
 
         for(int i = 0; i < 4; i++){
             if(reyes[i] && sotas[i] && !cantes[i]){
                 cantes[i] = true;
-                puntos += 20;
+                if(esPaloTriunfo(triunfo,i)) {
+                    puntos += 40;
+                }
+                else{
+                    puntos += 20;
+                }
             }
         }
-
     }
 
-    private void marcaSotaORey(Carta triunfo, boolean[] vectorApariciones, Carta iterador) {
-        if(!iterador.getPalo().equals(triunfo.getPalo())){
-            switch (iterador.getPalo()){
-                case "B":
-                    vectorApariciones[0] = true;
-                    break;
-                case "C":
-                    vectorApariciones[1] = true;
-                    break;
-                case "E":
-                    vectorApariciones[2] = true;
-                    break;
-                case "O":
-                    vectorApariciones[3] = true;
-                    break;
-            }
+
+    /**
+     * Devuelve true si "i" corresponde al palo de triunfo.
+     */
+    private boolean esPaloTriunfo(Carta triunfo, int i){
+        String palo="B";
+        switch (i){
+            case 0:
+                palo="B";
+                break;
+            case 1:
+                palo="C";
+                break;
+            case 2:
+                palo="E";
+                break;
+            case 3:
+                palo="O";
+                break;
+        }
+
+        if (triunfo.getPalo()==palo){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    private void marcaSotaORey(boolean[] vectorApariciones, Carta iterador) {
+        switch (iterador.getPalo()){
+            case "B":
+                vectorApariciones[0] = true;
+                break;
+            case "C":
+                vectorApariciones[1] = true;
+                break;
+            case "E":
+                vectorApariciones[2] = true;
+                break;
+            case "O":
+                vectorApariciones[3] = true;
+                break;
         }
     }
 

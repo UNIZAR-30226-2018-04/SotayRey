@@ -425,16 +425,16 @@ public class EstadoPartida {
     }
 
     /**
-     * Función que encuentra un usuario e intenta cantar 20 por el jugador
+     * Función que encuentra un usuario e intenta cantar por el jugador
      * identificado por "jugador". Si no existe ningún jugador en la partida
      * con ese identificador lanza una excepcion. Si el jugador no puede cantar
-     * las 20 lanza una excepción.
+     *  lanza una excepción.
      * @param jugador
      * @throws ExceptionJugadorIncorrecto
      */
-    public void sumaCante20(String jugador) throws ExceptionJugadorIncorrecto{
+    public void sumaCante(String jugador) throws ExceptionJugadorIncorrecto{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        jugadorEncontrado.anyadirCante20(triunfo);
+        jugadorEncontrado.anyadirCante(triunfo);
     }
 
 
