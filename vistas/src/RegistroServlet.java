@@ -14,9 +14,9 @@ import javax.servlet.http.*;
  *
  * Servlet implementation class RegistroServlet
  */
-@WebServlet("/RegistroServlet")
 public class RegistroServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 102831973239L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
         String login = request.getParameter("user");

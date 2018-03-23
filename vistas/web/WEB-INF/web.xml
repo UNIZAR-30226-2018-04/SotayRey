@@ -13,6 +13,6 @@
 
     <servlet-mapping>
         <servlet-name>Registro</servlet-name>
-        <url-pattern>/RegistroServlet</url-pattern>
+        <url-pattern>/RegistroServlet.do</url-pattern>
     </servlet-mapping>
 </web-app>
