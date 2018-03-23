@@ -469,5 +469,18 @@ public class EstadoPartida {
         j.sumarPuntos(res);
     }
 
+    /**
+     * Devuelve los puntos del jugador si pertenece a la partida. En caso
+     * contrario lanza una excepción.
+     * @param jugador
+     * @return
+     * @throws ExceptionJugadorIncorrecto
+     */
+    public int getPuntosJugador(String jugador) throws
+            ExceptionJugadorIncorrecto {
+        Jugador j = encuentraJugador(jugador);
+        return j.getPuntos();
+    }
+
     //TODO: sistema de puntos en caso de empate
 }

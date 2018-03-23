@@ -122,10 +122,9 @@ public class LogicaPartida {
 
 
     public int consultarPuntos(String jugador) throws
-            ExceptionJugadorIncorrecto, ExceptionRondaNoAcabada{
-        return estado.consultarPuntos(jugador);
+            ExceptionJugadorIncorrecto{
+        return estado.getPuntosJugador(jugador);
     }
 
-   //TODO: al iniciar la partida hay que hacer setTriunfo y poner la carta al
-    // final
+   //TODO: al iniciar la partida hay que hacer setTriunfo y poner la carta al final
 }
