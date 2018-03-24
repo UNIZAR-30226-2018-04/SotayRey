@@ -78,6 +78,23 @@ jArriba.dorso;
 jArriba.rotacion = 0;
 
 var jDer;
+jDer = {};
+jDer.XPosMedia = ejeX * 0.85;
+jDer.YPosMedia = (ejeY / 2) * 1.2;
+jDer.sumX = 0;
+jDer.sumY = ejeXCarta;
+jDer.XLanzar = jDer.XPosMedia - ejeYCarta * 1.10;
+jDer.YLanzar = jDer.YPosMedia;
+jDer.cartaLanzada;
+//jArriba.numCartas;
+jDer.dorso;
+jDer.rotacion = 270;
+
+var triunfo;
+triunfo = {};
+triunfo.carta = {}
+triunfo.x = ejeX / 2;
+triunfo.y = (ejeY / 2) * 0.85;
 
 var arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
 var arrayJugadores = [];
@@ -87,6 +104,13 @@ function mapearJugadores(){
     for (i = 0; i < numJugadores; i++) {
         arrayJugadores[i] = arrayJugadoresDefecto[(miID + i)%numJugadores];
     }
+}
+
+function modificarTriunfo(numero, palo){
+    triunfo.carta = crearCarta(numero, palo);
+    triunfo.carta.x = triunfo.x;
+    triunfo.carta.y = triunfo.y;
+
 }
 
 
@@ -111,6 +135,8 @@ function inicializarJugadores(){
         crearCartas(jIzq);
         //dibujarCuadroCarta(jIzq);
         inicializarCuadroCarta(jIzq);
+        crearCartas(jDer);
+        inicializarCuadroCarta(jDer);
    }
 }
 
@@ -223,12 +249,37 @@ function create() {
     jArriba.cartasEnMano = game.add.group();
     jIzq.cartasEnMano = game.add.group();
     jRef.cartasEnMano = game.add.group();
+    jDer.cartasEnMano = game.add.group();
     inicializarJugadores();
     dibujarJugador(jArriba);
     dibujarJugador(jIzq);
+    dibujarJugador(jDer);
     inicializarRef();
 
+    modificarTriunfo(12, "copas");
 
+
+    // Simulacion partida
+
+
+    jugadorLanzaCarta(0, 3, "oros");
+
+    jugadorLanzaCarta(1, 3, "bastos");
+
+
+    jugadorLanzaCarta(2, 6, "espadas");
+
+    jugadorLanzaCarta(3, 11, "copas");
+
+}
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
+    }
 }
 
 function onDragStop(sprite) {
@@ -322,8 +373,16 @@ function recibirMensaje(msg){
 
 function crearCarta(numero, palo){
     var carta = game.add.sprite(0, 0, 'cartas');
+    carta.numero = numero;
+    carta.palo = palo;
     console.log("BUSCO CARTA" + buscarCarta(numero, palo));
     carta.frame = buscarCarta(numero, palo);
+    return carta;
+}
+
+function crearDorso(numero, palo){
+    var carta = game.add.sprite(0, 0, 'cartas');
+    carta.frame = 13;
     return carta;
 }
 
@@ -345,6 +404,7 @@ function jugadorLanzaCarta(idJugador, numero, palo){
     else {
         var salir = false;
         jugador.cartasEnMano.forEach(function(item) {
+           // console.log("entro a buscar en el referencia" + item.numero + " " + item.palo);
             if (salir == false && item.numero == numero && item.palo == palo){ // Porque se elimina la carta entonces la funcion no encuentra la carta, por eso el salir
                 console.log("EJECUTO ESTO");
                 jugador.cartasEnMano.removeChild(item);
@@ -354,6 +414,24 @@ function jugadorLanzaCarta(idJugador, numero, palo){
                 salir = true;
             }
         }, this);
+    }
+}
+
+/* Un jugador roba una carta, si no es el referencia da igual el numero y palo */
+function jugadorRobaCarta(idJugador, numero, palo){
+    var jugador = arrayJugadores[idJugador];
+    if (idJugador!= miID){
+        var carta = crearDorso(numero, palo);
+        jugador.cartasEnMano.add(carta);
+        dibujarJugador(jugador);
+        dibujarCartaLanzada(jugador);
+
+    }
+    else {
+        var carta = crearCarta(numero, palo);
+        jugador.cartasEnMano.add(carta);
+        dibujarJugador(jugador);
+        dibujarCartaLanzada(jugador);
     }
 }
 
