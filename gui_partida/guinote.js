@@ -27,11 +27,13 @@ function preload() {
 
 /* VARIABLES GLOBALES */
 
-var tipoPartida = 1; // 0 = 1vs1, 1 = 2vs2
+var numJugadores = 4; // Define el tipo de partida en función del número de jugadores
 
 var misCartas;
 
 // Variables de los jugadores
+var miID = 0;
+
 
 var jRef;
 jRef = {};
@@ -77,32 +79,68 @@ jArriba.rotacion = 0;
 
 var jDer;
 
-var arrayJugadoresDefecto = [jRef, jIzq, jArriba, jDer];
-var arrayJugadores;
+var arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
+var arrayJugadores = [];
+
+/* Mapeo en funcion  del tipo de partida y mi identificador */
+function mapearJugadores(){
+    for (i = 0; i < numJugadores; i++) {
+        arrayJugadores[i] = arrayJugadoresDefecto[(miID + i)%numJugadores];
+    }
+}
+
 
 function inicializarRef(){ // TODO esto al final creo que no debería estar
     for (i = 0; i < 6; i++){
         var carta = jRef.cartasEnMano.create(0, 0, 'cartas');
         carta.frame = i;
+        carta.numero = i+1;
+        carta.palo = "oros";
     }
     dibujarJugador(jRef);
-    dibujarCuadroCarta(jRef);
+    inicializarCuadroCarta(jRef);
+    //dibujarCuadroCarta(jRef);
 }
 
+/* Inicializa los jugadores dependiendo del numero que haya, excepto el de referencia */
 function inicializarJugadores(){
     crearCartas(jArriba);
-    dibujarCuadroCarta(jArriba);
-    if (tipoPartida == 1){
+    //dibujarCuadroCarta(jArriba);
+    inicializarCuadroCarta(jArriba);
+    if (numJugadores == 4){
         crearCartas(jIzq);
-        dibujarCuadroCarta(jIzq);
+        //dibujarCuadroCarta(jIzq);
+        inicializarCuadroCarta(jIzq);
    }
 }
 
+function inicializarCuadroCarta(jugador){
+    crearCuadroCarta(jugador);
+    dibujarCuadroCarta(jugador);
+}
+
+function crearCuadroCarta(jugador){
+    jugador.cartaLanzada = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
+}
+
+
 function dibujarCuadroCarta(jugador){
-    var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
-    cuadro.width = ejeXCarta;
-    cuadro.height = ejeYCarta;
-    cuadro.angle = jugador.rotacion;
+    //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
+    jugador.cartaLanzada.loadTexture('cuadroCarta');
+    jugador.cartaLanzada.width = ejeXCarta;
+    jugador.cartaLanzada.height = ejeYCarta;
+    jugador.cartaLanzada.angle = jugador.rotacion;
+    //cuadro.scale.setTo(escalaCarta, escalaCarta);
+}
+
+function dibujarCartaLanzada(jugador){
+    //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
+    console.log("dibujo la carta en el medio");
+    jugador.cartaLanzada.width = ejeXCarta;
+    jugador.cartaLanzada.height = ejeYCarta;
+    jugador.cartaLanzada.x = jugador.XLanzar;
+    jugador.cartaLanzada.y = jugador.YLanzar;
+    jugador.cartaLanzada.angle = jugador.rotacion;
     //cuadro.scale.setTo(escalaCarta, escalaCarta);
 }
 
@@ -110,6 +148,7 @@ function crearCartas(jugador){
     for (i = 0; i < 6; i++){
         jugador.cartasEnMano.create(0, 0, 'cartas');
     }
+
 }
 
 function dibujarJugador(identificador){
@@ -135,7 +174,24 @@ function dibujarJugador(identificador){
 
 }
 
+/* Dibuja las cartas del jugador de referencia */
+/*
+function dibujarJugadorRef(){
+    var jugador = jRef;
+    jugador.cartasEnMano.forEach(function(item) {
+        item.x = jugador.XPosMedia + i*jugador.sumX;
+        item.y = jugador.YPosMedia + i*jugador.sumY;
+        item.angle = jugador.rotacion;
+        //item.scale.setTo(escalaCarta, escalaCarta);
+        console.log("pongo carta en mesa");
+        console.log(item.x);
+        console.log(item.y);
+        i = i + 1;
+    }, this);
 
+}
+
+*/
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
@@ -161,6 +217,9 @@ function create() {
 
 
     // Pruebas
+
+    mapearJugadores();
+
     jArriba.cartasEnMano = game.add.group();
     jIzq.cartasEnMano = game.add.group();
     jRef.cartasEnMano = game.add.group();
@@ -168,6 +227,8 @@ function create() {
     dibujarJugador(jArriba);
     dibujarJugador(jIzq);
     inicializarRef();
+
+
 }
 
 function onDragStop(sprite) {
@@ -258,19 +319,57 @@ function recibirMensaje(msg){
     // TODO hay que parsear el mensaje
 }
 
+
+function crearCarta(numero, palo){
+    var carta = game.add.sprite(0, 0, 'cartas');
+    console.log("BUSCO CARTA" + buscarCarta(numero, palo));
+    carta.frame = buscarCarta(numero, palo);
+    return carta;
+}
+
+/* Elimina la carta del mazo (cualquiera si no es referencia) y la pone en el centro en la variable cartaLanzada */
 function jugadorLanzaCarta(idJugador, numero, palo){
     // indexar jugador
     // coger la primera carta de la mano y eliminarla
     // cambiar el sprite al de la carta correspondiente en el cuadro de lanzar
+    var jugador = arrayJugadores[idJugador];
+    console.log("ELll parametros es: " + numero);
+    if (idJugador!= miID){
+        var cartita = jugador.cartasEnMano.getFirstAlive();
+        jugador.cartasEnMano.removeChild(cartita);
+        dibujarJugador(jugador);
+        jugador.cartaLanzada = crearCarta(numero, palo);
+        dibujarCartaLanzada(jugador);
+
+    }
+    else {
+        var salir = false;
+        jugador.cartasEnMano.forEach(function(item) {
+            if (salir == false && item.numero == numero && item.palo == palo){ // Porque se elimina la carta entonces la funcion no encuentra la carta, por eso el salir
+                console.log("EJECUTO ESTO");
+                jugador.cartasEnMano.removeChild(item);
+                dibujarJugador(jugador);
+                jugador.cartaLanzada = crearCarta(numero, palo);
+                dibujarCartaLanzada(jugador);
+                salir = true;
+            }
+        }, this);
+    }
 }
 
 function rondaAcabada(){
     // cambiar todos los cuadros de lanzar por el sprite del cuadro de lanzar
+    for (i = 0; i < numJugadores; i++){
+        console.log(i);
+        var jugador = arrayJugadores[i];
+        dibujarCuadroCarta(jugador);
+    }
 }
 
 /* Devuelve el numero a indexar en el sprite de cartas */
 function buscarCarta(numero, palo){
     var indice = numero - 1;
+    console.log("EL indice es: " + numero);
     var numCartas = 13;
     if (palo == "oros"){
 
@@ -284,5 +383,6 @@ function buscarCarta(numero, palo){
     else { // palo == "bastos"
         indice = indice + numCartas*3;
     }
+    console.log("EL indice es: " + indice);
     return indice;
 }
