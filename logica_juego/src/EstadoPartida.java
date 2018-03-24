@@ -14,7 +14,7 @@ import java.util.Random;
  * Jugadores:  información de cada uno de los jugadores que están
  * participando, almacenada en el mismo orden en el que jugarán. Si se juega
  * por equipos se almacena [j1_equipo1, j2_equipo2, j3_equipo1, j4_equipo2]
- * Turno:  jugador que tiene que lanzar
+ * Turno:  indíce del jugador que tiene que lanzar
  * lanzar la carta
  * Triunfo:  carta que indica el palo al que se juega
  */
@@ -22,21 +22,94 @@ public class EstadoPartida {
     private ArrayList<Carta> mazo;
     private ArrayList<Carta> cartasEnTapete;
     private ArrayList<Jugador> jugadores;
-    private Jugador turno;
+    private int turno;
     private Carta triunfo;
     private Random random;
 
-    public EstadoPartida(EstadoPartida p){
-        //this.mazo = new ArrayList<>(p.mazo);
 
+    /**
+     * Constructor que genera un estado de partida sin ninguna carta en
+     * tapete, turno y triunfo. El mazo está compuesto por las
+     * cartas de la baraja española en un orden aleatorio. Para cada
+     * identificador de "jugadores" añade un nuevo jugador a la partida con
+     * ese identificador, sin cartas en la mano ni ganadas y con 0 puntos.
+     * @param jugadores
+     * @throws ExceptionEquipoIncompleto si el número de jugadores es incorrecto
+     */
+    public EstadoPartida(ArrayList<String> jugadores) throws
+            ExceptionEquipoIncompleto {
+        if (jugadores.size() != 2 && jugadores.size() != 4){
+            throw new ExceptionEquipoIncompleto();
+        }
+        this.mazo = barajear();
+        this.cartasEnTapete = new ArrayList<>();
+        this.jugadores = new ArrayList<>();
+        Jugador j;
+        for (String id : jugadores) {
+            j = new Jugador(id);
+            this.jugadores.add(j);
+        }
+        //TODO: está bien poner al primer jugador
+        this.turno = 0;
+        this.triunfo = null;
+        this.random = new Random();
     }
 
+
+    /**
+     * Constructor que genera un estado de partida sin ninguna carta en
+     * tapete, ni jugadores, turno y triunfo. El mazo está compuesto por las
+     * cartas de la baraja española en un orden aleatorio.
+     */
     public EstadoPartida(){
-        barajear();
+        this.mazo = barajear();
         this.cartasEnTapete = new ArrayList<>();
-        //this.turno =
-        this.triunfo = new Carta();
-        this.random = new Random(); //Utilizado para generar baraja
+        this.jugadores = new ArrayList<>();
+        this.turno = - 1;
+        this.triunfo = null;
+        this.random = new Random();
+    }
+
+
+    /**
+     * Constructor que genera una copia del estado partida "p".
+     */
+    public EstadoPartida(EstadoPartida p){
+        this.mazo = p.getMazo();
+        this.cartasEnTapete = p.getCartasEnTapete();
+        this.jugadores = p.getJugadores();
+        this.turno = p.getTurno();
+        this.triunfo = p.getTriunfo();
+        this.random = new Random();
+    }
+
+    /**
+     * Devuelve una copia de las cartas del mazo.
+     * @return
+     */
+    public ArrayList<Carta> getMazo(){
+        return copiarCartas(this.mazo);
+    }
+
+    /**
+     * Devuelve una copia de cartas
+     * @param cartas
+     * @return
+     */
+    private ArrayList<Carta> copiarCartas(ArrayList<Carta> cartas) {
+        ArrayList<Carta> res = new ArrayList<>();
+        for (Carta c: cartas) {
+            res.add(new Carta(c));
+        }
+        return res;
+    }
+
+    private ArrayList<Jugador> getJugadores(){
+        ArrayList<Jugador> res = new ArrayList<>();
+        for (Jugador j: this.jugadores) {
+            res.add(new Jugador(j));
+        }
+        return res;
     }
 
     /**
@@ -62,19 +135,20 @@ public class EstadoPartida {
 
 
     /**
-     * Asigna al mazo las 4o cartas de la baraja española en un orden aleatorio.
+     * Devuelve las cartas de la baraja española en un orden aleatorio.
      */
-    private void barajear(){
-        mazo = crearBaraja();
+    private ArrayList<Carta> barajear(){
+        ArrayList<Carta> cartas = crearBaraja();
         Carta uno, dos;
         int num;
         for (int i = 0; i < 40; ++i){
             num = random.nextInt()%40;
-            uno = mazo.get(num);
-            dos = mazo.get(i);
-            mazo.set(num, dos);
-            mazo.set(i, uno);
+            uno = cartas.get(num);
+            dos = cartas.get(i);
+            cartas.set(num, dos);
+            cartas.set(i, uno);
         }
+        return cartas;
     }
 
 
@@ -82,7 +156,7 @@ public class EstadoPartida {
      * Devuelve una lista con los identificadores de todos los jugadores
      * @return List<Integer>
      */
-    public ArrayList<String> getJugadores(){
+    public ArrayList<String> getJugadoresId(){
         ArrayList<String> res = new ArrayList<>();
         for (Jugador j: jugadores) {
             res.add(j.getId());
@@ -182,7 +256,7 @@ public class EstadoPartida {
         int n_jug = jugadores.size();
         for (int i = 0; i < n_jug; i++) {
             if (jugador.equals(jugadores.get(i))) {
-                turno = jugadores.get((i + 1) % n_jug);
+                turno = (i + 1) % n_jug;
                 break;
             }
         }
@@ -248,7 +322,7 @@ public class EstadoPartida {
             ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
             ExceptionTurnoIncorrecto, ExceptionCartaIncorrecta {
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        if(turno.equals(jugadorEncontrado)) {
+        if(jugadores.get(turno).equals(jugadorEncontrado)) {
             if (jugadorEncontrado.getCartasEnMano().contains(carta)) {
                 int n_cartas = cartasEnTapete.size();
                 //Ronda de descarte o es el primero
@@ -260,7 +334,6 @@ public class EstadoPartida {
                 else {
 
                     /** Obligación de jugar al Palo de arrastre **/
-                    //TODO: identificar al primero
                     Carta inicial = cartasEnTapete.get(0);
 
                     //Solo ha lanzado uno
@@ -270,8 +343,10 @@ public class EstadoPartida {
                             //Carta es del mismo palo
 
                             if (carta.masPuntuacion(inicial)) {
+                                //TODO: es más grande que todas las demás del mismo palo
                                 ponerCartaMesa(carta, jugadorEncontrado);
                             } else {
+                                //TODO: que pasa si hay un triunfo en la mesa...
                                 if (tieneOtraMejorDelPalo(jugadorEncontrado,
                                         carta)) {
                                     throw new ExceptionCartaIncorrecta
@@ -332,12 +407,7 @@ public class EstadoPartida {
      * @return
      */
     public ArrayList<Carta> getCartasEnTapete(){
-        ArrayList<Carta> copia = new ArrayList<>();
-        for(Carta iterador : cartasEnTapete){
-            Carta nueva =  new Carta(iterador);
-            copia.add(nueva);
-        }
-        return copia;
+        return copiarCartas(this.cartasEnTapete);
     }
 
 
@@ -398,17 +468,16 @@ public class EstadoPartida {
                 }
             }
 
-            //TODO: verificar si asigna todo bien por el tema de los punteros
             // Asigna turno a jugador ganador
-            turno = jugadores.get(ganador);
+            turno = ganador;
 
             // Suma puntos y cartas a ganador
-            asignaCartasJugador(turno);
+            asignaCartasJugador(jugadores.get(turno));
 
             // Suma 10 puntos al ganador de la última ronda
             if (jugadores.get(0).getCartasEnMano().size() == 0){
                 // Se ha primera vuelta
-                turno.sumarPuntos(10);
+                jugadores.get(turno).sumarPuntos(10);
             }
         } else {
             throw new ExceptionRondaNoAcabada();
@@ -419,9 +488,18 @@ public class EstadoPartida {
      * Devuelve el identificador del jugador que debe lanzar la siguiente carta
      * @return
      */
-    public String getTurno() {
-        String copia = new String(this.turno.getId());
+    public String getTurnoId() {
+        String copia = new String(this.jugadores.get(turno).getId());
         return copia;
+    }
+
+
+    /**
+     * Devuelve la posición del jugador que le toca lanzar una carta
+     * @return
+     */
+    public int getTurno(){
+        return turno;
     }
 
     /**
@@ -464,6 +542,7 @@ public class EstadoPartida {
             res += c.getPuntuación();
             j.anyadirCartaGanadas(c);
         }
+
         //Elimina todas las del tapete
         cartasEnTapete = new ArrayList<Carta>();
         j.sumarPuntos(res);

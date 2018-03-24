@@ -11,19 +11,17 @@ public class LogicaPartida {
 
     private EstadoPartida estado;
 
-   /* public LogicaPartida(ArrayList<Usuarios> jugadores){
+    /**
+     * Constructor que define una lógica partida compuesta por jugadores que
+     * contiene cada uno con un identificador perteneciente a "jugadores".
+     * @param jugadores
+     * @throws ExceptionEquipoIncompleto si el número de jugadores es incorrecto
+     */
+    public LogicaPartida(ArrayList<String> jugadores) throws
+           ExceptionEquipoIncompleto {
         estado = new EstadoPartida(jugadores);
-    }
+   }
 
-    public void crearPartida(ArrayList<Usuarios> jugadores){
-        estado.crearBaraja();
-        estado.barajar();
-    }
-
-    public EstadoPartida lanzarCarta(int jugador, Carta carta) {
-
-    }
-    */
 
     /**
      * Pre: Jugador debe pertenecer a la lista de jugadores de la partida
@@ -62,7 +60,7 @@ public class LogicaPartida {
     public EstadoPartida cantar(String jugador) throws    ExceptionJugadorIncorrecto,
                                                             ExceptionRondaNoAcabada,
                                                             ExceptionTurnoIncorrecto{
-        ArrayList<String> jugadores = estado.getJugadores();
+        ArrayList<String> jugadores = estado.getJugadoresId();
         if(jugadores.contains(jugador)){
             if(estado.getCartasEnTapete().size() == 0){
                 if(jugador.equals(estado.getTurno())){
@@ -79,9 +77,7 @@ public class LogicaPartida {
         else{
             throw new ExceptionJugadorIncorrecto();
         }
-        //TODO: no hay que devolver otro estado
-        //EstadoPartida res = new EstadoPartida(estado);
-        return estado;
+        return new EstadoPartida(estado);
     }
 
 
@@ -104,20 +100,33 @@ public class LogicaPartida {
     public void cambiarCartaPorTriunfo(String jugador, Carta c) throws
             ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
             ExceptionCartaIncorrecta, ExceptionCartaYaExiste,
-            ExceptionNumeroMaximoCartas {
+            ExceptionNumeroMaximoCartas, ExceptionRondaNoAcabada {
             Carta triunfo = estado.getTriunfo();
-            //Cambia la carta si y solo si es un 7 del mismo palo y su
-            // puntuación es mayor
-            if (triunfo.getPalo().equals(c.getPalo()) && triunfo.getValor()
-                    == 7 && (triunfo.getPuntuación() > 0)){
-                //TODO: hacer que solo se cambie después de ganar la ultima baza
-                estado.setTriunfo(c);
-                estado.quitarCartaJugador(jugador, c);
-                estado.anyadirCartaJugador(jugador, triunfo);
+
+            //Ha terminado la ronda y ha sido el ganador
+            if (estado.getJugadoresId().get(estado.getTurno()).equals(jugador)
+                    && estado.getCartasEnTapete().size() == 0 &&
+                    estado.getMazo().size() > 0){
+
+                //Cambia la carta si y solo si es un 7 del mismo palo y su
+                // puntuación es mayor
+                if (triunfo.getPalo().equals(c.getPalo
+                        ()) && triunfo
+                        .getValor()
+                        == 7 && (triunfo.getPuntuación() > 0)){
+                    estado.setTriunfo(c);
+                    estado.quitarCartaJugador(jugador, c);
+                    estado.anyadirCartaJugador(jugador, triunfo);
+                } else {
+                    throw new ExceptionCartaIncorrecta("Palo incorrecto o valor " +
+                            "de la carta menor que el triunfo");
+                }
             } else {
-                throw new ExceptionCartaIncorrecta("Palo incorrecto o valor " +
-                        "de la carta menor que el triunfo");
+                throw new ExceptionRondaNoAcabada("No se puede cambiar el " +
+                        "triunfo si no has sido ganador o no ha terminado la " +
+                        "ronda");
             }
+
     }
 
 
