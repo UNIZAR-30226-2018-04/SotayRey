@@ -223,6 +223,31 @@ public class Jugador {
         }
     }
 
+    /**
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        // self check
+        if (this == o)
+            return true;
+        // null check
+        if (o == null)
+            return false;
+        // type check and cast
+        if (getClass() != o.getClass())
+            return false;
+        Jugador jugador = (Jugador) o;
+        // field comparison
+        return     (id == jugador.id)
+                && (puntos == puntos)
+                && cartasEnMano.equals(jugador.cartasEnMano)
+                && cartasGanadas.equals(jugador.cartasGanadas);
+    }
+
+
+    /*********************** FUNCIONES PRIVADAS *******************************/
 
     /**
      * Devuelve true si "i" corresponde al palo de triunfo.
@@ -267,28 +292,5 @@ public class Jugador {
                 vectorApariciones[3] = true;
                 break;
         }
-    }
-
-    /**
-     * @param o
-     * @return
-     */
-    @Override
-    public boolean equals(Object o) {
-        // self check
-        if (this == o)
-            return true;
-        // null check
-        if (o == null)
-            return false;
-        // type check and cast
-        if (getClass() != o.getClass())
-            return false;
-        Jugador jugador = (Jugador) o;
-        // field comparison
-        return     (id == jugador.id)
-                && (puntos == puntos)
-                && cartasEnMano.equals(jugador.cartasEnMano)
-                && cartasGanadas.equals(jugador.cartasGanadas);
     }
 }

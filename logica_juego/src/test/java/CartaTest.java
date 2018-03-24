@@ -3,14 +3,16 @@ package test.java;
 /**
  * @Autores: Crisan, Marius Sorin; Ignacio Bitrian; Victor Soria
  * @Fecha: 11-03-18
- * @Fichero: Fichero de pruebas del módulo de lógica del juego
+ * @Fichero: Fichero de pruebas con JUnit de la clase Carta
  */
 
 
-import main.java.*;
+import main.java.Carta;
+import main.java.ExceptionCartaIncorrecta;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+
 
 public class CartaTest {
 
@@ -20,12 +22,12 @@ public class CartaTest {
      * valores límite. Como los setters son iguales que los constructores no
      * se prueban.
      */
+
+
+
     @Test
     public void pruebasConstructores() {
         System.out.println("\n---- INICIO PRUEBAS CARTA ----\n");
-        /**
-         */
-
         System.out.println("Pruebas Constructores con enteros y cadenas");
         try {
             Carta a = new Carta(1, "B");
@@ -55,7 +57,33 @@ public class CartaTest {
     }
 
 
+    /**
+     * Comprueba que la puntuación de una carta es correcta. Análisis de
+     * valores límite
+     */
+    @Test
+    public void pruebaPuntuacionCartas(){
 
+        System.out.println("\nPruebas puntuación Carta");
+
+        compruebaPuntuacionCarta(1,11);
+        compruebaPuntuacionCarta(3, 10);
+        compruebaPuntuacionCarta(12, 4);
+        compruebaPuntuacionCarta(10, 3);
+        compruebaPuntuacionCarta(11, 2);
+
+        try {
+            Carta a = new Carta (2, "E");
+            assertTrue("Puntuación incorrecta de: " + a, a.getPuntuación()
+                    == 0);
+            System.out.println("Superado... " + a);
+        } catch (ExceptionCartaIncorrecta e){
+            fail("No debe generar interrupción una carta correcta: [2,E]");
+        }
+    }
+
+
+    /******************* FUNCIONES AUXILIARES *********************************/
 
     /**
      * Prueba que las carta a es del "palo" y "valor"
@@ -90,12 +118,12 @@ public class CartaTest {
      */
     private void comprobarCartaNoValida(int value, String palo, int palo_int){
         try {
-            Carta a = new Carta(value, palo);
+            new Carta(value, palo);
             fail("No ha generado excepción constructor con string");
         } catch (ExceptionCartaIncorrecta e){
             System.out.println("Superado... [" + value + "," + palo + "] ");
             try {
-                Carta b = new Carta(value, palo_int);
+                new Carta(value, palo_int);
                 fail("No ha generado excepción constructor con enteros");
             } catch (ExceptionCartaIncorrecta e1){
                 System.out.println("Superado... [" + value + "," + palo_int +
@@ -122,35 +150,5 @@ public class CartaTest {
                     + ",B]");
         }
     }
-
-
-    /**
-     * Comprueba que la puntuación de una carta es correcta. Análisis de
-     * valores límite
-     */
-    @Test
-    public void pruebaPuntuacionCartas(){
-
-        System.out.println("\nPruebas puntuación Carta");
-
-        compruebaPuntuacionCarta(1,11);
-        compruebaPuntuacionCarta(3, 10);
-        compruebaPuntuacionCarta(12, 4);
-        compruebaPuntuacionCarta(10, 3);
-        compruebaPuntuacionCarta(11, 2);
-
-        try {
-            Carta a = new Carta (2, "E");
-            assertTrue("Puntuación incorrecta de: " + a, a.getPuntuación()
-                    == 0);
-            System.out.println("Superado... " + a);
-        } catch (ExceptionCartaIncorrecta e){
-            fail("No debe generar interrupción una carta correcta: [2,E]");
-        }
-    }
-
-
-
-
 }
 
