@@ -1,3 +1,6 @@
+package main.java;
+
+
 /**
  * @Autores: Crisan, Marius Sorin; Ignacio Bitrian; Victor Soria
  * @Fecha: 11-03-18
@@ -129,7 +132,6 @@ public class Carta {
      * Post: Devuelve la puntuación de la carta
      * @return
      */
-    //TODO: que pruebas hacer
     public int getPuntuación(){
         switch (this.valor){
             case 1:
