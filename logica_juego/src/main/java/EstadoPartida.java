@@ -86,6 +86,7 @@ public class EstadoPartida {
         this.random = new Random();
     }
 
+
     /**
      * Devuelve una copia de las cartas del mazo.
      * @return
@@ -94,64 +95,23 @@ public class EstadoPartida {
         return copiarCartas(this.mazo);
     }
 
+
     /**
-     * Devuelve una copia de cartas
-     * @param cartas
+     * Devuelve el identificador del jugador que debe lanzar la siguiente carta
      * @return
      */
-    private ArrayList<Carta> copiarCartas(ArrayList<Carta> cartas) {
-        ArrayList<Carta> res = new ArrayList<>();
-        for (Carta c: cartas) {
-            res.add(new Carta(c));
-        }
-        return res;
-    }
-
-    private ArrayList<Jugador> getJugadores(){
-        ArrayList<Jugador> res = new ArrayList<>();
-        for (Jugador j: this.jugadores) {
-            res.add(new Jugador(j));
-        }
-        return res;
-    }
-
-    /**
-     * Devuelve la lista de cartas de la baraja española
-     * @return List<Carta>
-     */
-    private ArrayList<Carta> crearBaraja(){
-        ArrayList<Carta> baraja = new ArrayList<>();
-        try {
-            int num;
-            for (int i = 0; i < 40; ++i){
-                num = i%10+1;
-                if (num == 8 || num == 9) {
-                    num += 3;
-                }
-                baraja.add(new Carta(num, i/10+1));
-            }
-        } catch (Exception e){
-            System.err.println("Excepción generando baraja: " + e.getMessage());
-        }
-        return baraja;
+    public String getTurnoId() {
+        String copia = new String(this.jugadores.get(turno).getId());
+        return copia;
     }
 
 
     /**
-     * Devuelve las cartas de la baraja española en un orden aleatorio.
+     * Devuelve la posición del jugador que le toca lanzar una carta
+     * @return
      */
-    private ArrayList<Carta> barajear(){
-        ArrayList<Carta> cartas = crearBaraja();
-        Carta uno, dos;
-        int num;
-        for (int i = 0; i < 40; ++i){
-            num = random.nextInt()%40;
-            uno = cartas.get(num);
-            dos = cartas.get(i);
-            cartas.set(num, dos);
-            cartas.set(i, uno);
-        }
-        return cartas;
+    public int getTurno(){
+        return turno;
     }
 
 
@@ -169,39 +129,6 @@ public class EstadoPartida {
 
 
     /**
-     * Devuelve la posición ocupada en la lista por el jugador.
-     * @param jugador
-     * @return >= 0
-     */
-    private int posJugador(Jugador jugador) throws ExceptionJugadorIncorrecto {
-        int i = 0;
-        for (Jugador j : jugadores) {
-            if (jugador.equals(j)){
-                return i;
-            }
-            ++i;
-        }
-        throw new ExceptionJugadorIncorrecto();
-
-    }
-
-    /**
-     * Busca un jugador identificado por "id" == "jugador" en la partida.
-     * @param jugador
-     * @return
-     * @throws ExceptionJugadorIncorrecto
-     */
-    private Jugador encuentraJugador(String jugador) throws ExceptionJugadorIncorrecto{
-        for (Jugador actual : jugadores){
-            if(jugador.equals(actual.getId())){
-                return actual;
-            }
-        }
-        throw new ExceptionJugadorIncorrecto();
-    }
-
-
-    /**
      * Devuelve la lista de cartas de el jugador "jugador". Si "jugador" no
      * está en la partida lanza una excepcion
      * @param jugador
@@ -214,6 +141,103 @@ public class EstadoPartida {
         return jugadorEncontrado.getCartasEnMano();
     }
 
+
+    /**
+     * Devuelve la primera carta del mazo y la elimina. Si en el mazo no
+     * quedan cartas devuelve el triunfo una vez. La siguiente
+     * invocación lanza una excepcion.
+     * @return
+     * @throws ExceptionMazoVacio
+     */
+    public Carta getPrimeraCartaMazo() throws ExceptionMazoVacio {
+        if(mazo.size() != 0){
+            return new Carta(mazo.remove(0));
+        }
+        int totalCartas = 0;
+        for (Jugador j: jugadores) {
+            totalCartas += j.getCartasEnMano().size();
+        }
+        // Hay que entregar el triunfo
+        if (totalCartas%2 == 1){
+            return getTriunfo();
+        }
+        throw new ExceptionMazoVacio();
+    }
+
+
+    /**
+     * Devuelve los puntos del jugador si pertenece a la partida. En caso
+     * contrario lanza una excepción.
+     * @param jugador
+     * @return
+     * @throws ExceptionJugadorIncorrecto
+     */
+    public int getPuntosJugador(String jugador) throws
+            ExceptionJugadorIncorrecto {
+        Jugador j = encuentraJugador(jugador);
+        return j.getPuntos();
+    }
+
+
+    /**
+     * Devuelve las cartas que están encima de la mesa.
+     * @return
+     */
+    public ArrayList<Carta> getCartasEnTapete(){
+        return copiarCartas(this.cartasEnTapete);
+    }
+
+
+    /**
+     * Devuelve las cartas ganadas por un jugador. Si el jugador no pertenece
+     * a la partida lanza un excepción.
+     * @param jugador
+     * @return
+     * @throws ExceptionJugadorIncorrecto
+     */
+    public ArrayList<Carta> getCartasGanadas(String jugador) throws
+            ExceptionJugadorIncorrecto {
+        Jugador j = encuentraJugador(jugador);
+        return j.getCartasGanadas();
+    }
+
+
+    /**
+     * Devuelve el triunfo de la partida.
+     * @return
+     */
+    public Carta getTriunfo(){
+        Carta copia = new Carta(triunfo);
+        return copia;
+    }
+
+
+    /**
+     * Cambia el triunfo por nuevoTriunfo.
+     * @param nuevoTriunfo
+     */
+    public void setTriunfo(Carta nuevoTriunfo){
+        Carta copia = new Carta(nuevoTriunfo);
+        this.triunfo = copia;
+    }
+
+
+    /**
+     * Devuelve las cartas de la baraja española en un orden aleatorio.
+     */
+    public ArrayList<Carta> barajear(){
+        ArrayList<Carta> cartas = crearBaraja();
+        Carta uno, dos;
+        int num;
+        for (int i = 0; i < 40; ++i){
+            num = random.nextInt()%40;
+            uno = cartas.get(num);
+            dos = cartas.get(i);
+            cartas.set(num, dos);
+            cartas.set(i, uno);
+        }
+        return cartas;
+    }
 
     /**
      * Añade una carta al jugador "jugador". Si "jugador" no está en la
@@ -248,69 +272,6 @@ public class EstadoPartida {
         j.quitarCartaEnMano(c);
     }
 
-
-    /**
-     * Asigna el turno al jugador que ocupa la siguiente posición en
-     * la lista de jugadores respecto al "jugador" indica
-     * @param jugador
-     */
-    private void pasarTurno(String jugador){
-        //Asigna el turno al siguiente jugador
-        int n_jug = jugadores.size();
-        for (int i = 0; i < n_jug; i++) {
-            if (jugador.equals(jugadores.get(i))) {
-                turno = (i + 1) % n_jug;
-                break;
-            }
-        }
-    }
-
-
-    /**
-     * Devuelve true si y solo el jugador tiene una carta del mismo palo con
-     * mejor puntuación
-     * @param j
-     * @param carta
-     * @return
-     */
-    private boolean tieneOtraMejorDelPalo(Jugador j, Carta carta){
-        boolean tieneMejor = true;
-        for (Carta c: j.getCartasEnMano()) {
-            if (!c.equals(carta)){
-                tieneMejor = tieneMejor && c.masPuntuacion(carta);
-            }
-        }
-        return tieneMejor;
-    }
-
-
-    /**
-     * Devuelve true si y solo el jugador tiene una carta en mano con el
-     * mismo palo que el triunfo.
-     * @param j
-     * @return
-     */
-    private boolean tieneTriunfoEnMano(Jugador j){
-        boolean tieneTriunfo = true;
-        for (Carta c: j.getCartasEnMano()) {
-                tieneTriunfo = tieneTriunfo && c.esMismoPalo(triunfo);
-        }
-        return tieneTriunfo;
-    }
-
-    /**
-     * Quita la carta de la mano del jugador y la pone en la mesa. Además
-     * pasa el turno al siguiente jugador
-     * @param carta
-     * @param j
-     * @throws ExceptionJugadorSinCarta
-     */
-    private void ponerCartaMesa(Carta carta, Jugador j) throws
-            ExceptionJugadorSinCarta {
-        j.quitarCartaEnMano(carta);
-        cartasEnTapete.add(carta);
-        pasarTurno(j.getId());
-    }
 
     /**
      * El jugador pone la carta en la mesa si cumple con las normas del
@@ -390,51 +351,6 @@ public class EstadoPartida {
 
 
     /**
-     * Devuelve la primera carta del mazo y la elimina. Si en el mazo no
-     * quedan cartas lanza una excepcion.
-     * @return
-     * @throws ExceptionMazoVacio
-     */
-    public Carta getPrimeraCartaMazo() throws ExceptionMazoVacio {
-        if(mazo.size() != 0){
-            return new Carta(mazo.remove(0));
-        }
-        else{
-            throw new ExceptionMazoVacio();
-        }
-    }
-
-
-    /**
-     * Devuelve las cartas que están encima de la mesa.
-     * @return
-     */
-    public ArrayList<Carta> getCartasEnTapete(){
-        return copiarCartas(this.cartasEnTapete);
-    }
-
-
-    /**
-     * Devuelve el triunfo de la partida.
-     * @return
-     */
-    public Carta getTriunfo(){
-        Carta copia = new Carta(triunfo);
-        return copia;
-    }
-
-
-    /**
-     * Cambia el triunfo por nuevoTriunfo.
-     * @param nuevoTriunfo
-     */
-    public void setTriunfo(Carta nuevoTriunfo){
-        Carta copia = new Carta(nuevoTriunfo);
-        this.triunfo = copia;
-    }
-
-
-    /**
      * Si la ronda ha terminado asigna al jugador ganador el turno de la
      * siguiente ronda, las cartas del tapete como cartas ganadas por el
      * jugador y le suma la puntuación correspondiente a las nuevas cartas
@@ -487,23 +403,6 @@ public class EstadoPartida {
         }
     }
 
-    /**
-     * Devuelve el identificador del jugador que debe lanzar la siguiente carta
-     * @return
-     */
-    public String getTurnoId() {
-        String copia = new String(this.jugadores.get(turno).getId());
-        return copia;
-    }
-
-
-    /**
-     * Devuelve la posición del jugador que le toca lanzar una carta
-     * @return
-     */
-    public int getTurno(){
-        return turno;
-    }
 
     /**
      * Función que encuentra un usuario e intenta cantar por el jugador
@@ -518,20 +417,105 @@ public class EstadoPartida {
         jugadorEncontrado.anyadirCante(triunfo);
     }
 
+    //TODO: sistema de puntos en caso de empate
+
+
+    /***************************** FUNCIONES AUXILIARES ***********************/
 
     /**
-     * Devuelve las cartas ganadas por un jugador. Si el jugador no pertenece
-     * a la partida lanza un excepción.
+     * Devuelve la lista de cartas de la baraja española
+     * @return List<Carta>
+     */
+    private ArrayList<Carta> crearBaraja(){
+        ArrayList<Carta> baraja = new ArrayList<>();
+        try {
+            int num;
+            for (int i = 0; i < 40; ++i){
+                num = i%10+1;
+                if (num == 8 || num == 9) {
+                    num += 3;
+                }
+                baraja.add(new Carta(num, i/10+1));
+            }
+        } catch (Exception e){
+            System.err.println("Excepción generando baraja: " + e.getMessage());
+        }
+        return baraja;
+    }
+
+
+    /**
+     * Devuelve la posición ocupada en la lista por el jugador.
+     * @param jugador
+     * @return >= 0
+     */
+    private int posJugador(Jugador jugador) throws ExceptionJugadorIncorrecto {
+        int i = 0;
+        for (Jugador j : jugadores) {
+            if (jugador.equals(j)){
+                return i;
+            }
+            ++i;
+        }
+        throw new ExceptionJugadorIncorrecto();
+
+    }
+
+    /**
+     * Busca un jugador identificado por "id" == "jugador" en la partida.
      * @param jugador
      * @return
      * @throws ExceptionJugadorIncorrecto
      */
-    public ArrayList<Carta> getCartasGanadas(String jugador) throws
-            ExceptionJugadorIncorrecto {
-        Jugador j = encuentraJugador(jugador);
-        return j.getCartasGanadas();
+    private Jugador encuentraJugador(String jugador) throws ExceptionJugadorIncorrecto{
+        for (Jugador actual : jugadores){
+            if(jugador.equals(actual.getId())){
+                return actual;
+            }
+        }
+        throw new ExceptionJugadorIncorrecto();
     }
 
+    /**
+     * Devuelve los jugadores de una partida.
+     * @return
+     */
+    private ArrayList<Jugador> getJugadores(){
+        ArrayList<Jugador> res = new ArrayList<>();
+        for (Jugador j: this.jugadores) {
+            res.add(new Jugador(j));
+        }
+        return res;
+    }
+
+    /**
+     * Asigna el turno al jugador que ocupa la siguiente posición en
+     * la lista de jugadores respecto al "jugador" indica
+     * @param jugador
+     */
+    private void pasarTurno(String jugador){
+        //Asigna el turno al siguiente jugador
+        int n_jug = jugadores.size();
+        for (int i = 0; i < n_jug; i++) {
+            if (jugador.equals(jugadores.get(i).getId())) {
+                turno = (i + 1) % n_jug;
+                break;
+            }
+        }
+    }
+
+    /**
+     * Devuelve una copia de cartas
+     * @param cartas
+     * @return
+     */
+    private ArrayList<Carta> copiarCartas(ArrayList<Carta> cartas) {
+        ArrayList<Carta> res = new ArrayList<>();
+        for (Carta c: cartas) {
+            res.add(new Carta(c));
+        }
+        return res;
+    }
 
     /**
      * Asigna las carta del tapete al jugador j y le suma el total de
@@ -552,17 +536,48 @@ public class EstadoPartida {
     }
 
     /**
-     * Devuelve los puntos del jugador si pertenece a la partida. En caso
-     * contrario lanza una excepción.
-     * @param jugador
+     * Devuelve true si y solo el jugador tiene una carta en mano con el
+     * mismo palo que el triunfo.
+     * @param j
      * @return
-     * @throws ExceptionJugadorIncorrecto
      */
-    public int getPuntosJugador(String jugador) throws
-            ExceptionJugadorIncorrecto {
-        Jugador j = encuentraJugador(jugador);
-        return j.getPuntos();
+    private boolean tieneTriunfoEnMano(Jugador j){
+        boolean tieneTriunfo = true;
+        for (Carta c: j.getCartasEnMano()) {
+            tieneTriunfo = tieneTriunfo && c.esMismoPalo(triunfo);
+        }
+        return tieneTriunfo;
     }
 
-    //TODO: sistema de puntos en caso de empate
+    /**
+     * Devuelve true si y solo el jugador tiene una carta del mismo palo con
+     * mejor puntuación
+     * @param j
+     * @param carta
+     * @return
+     */
+    private boolean tieneOtraMejorDelPalo(Jugador j, Carta carta){
+        boolean tieneMejor = true;
+        for (Carta c: j.getCartasEnMano()) {
+            if (!c.equals(carta)){
+                tieneMejor = tieneMejor && c.masPuntuacion(carta);
+            }
+        }
+        return tieneMejor;
+    }
+
+    /**
+     * Quita la carta de la mano del jugador y la pone en la mesa. Además
+     * pasa el turno al siguiente jugador
+     * @param carta
+     * @param j
+     * @throws ExceptionJugadorSinCarta
+     */
+    private void ponerCartaMesa(Carta carta, Jugador j) throws
+            ExceptionJugadorSinCarta {
+        j.quitarCartaEnMano(carta);
+        cartasEnTapete.add(carta);
+        pasarTurno(j.getId());
+    }
+
 }
