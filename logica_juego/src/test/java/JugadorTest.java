@@ -20,10 +20,6 @@ import static org.junit.Assert.*;
 
 public class JugadorTest {
 
-    /**
-     * Prueba de caja blanca de caminos de bucle para los
-     * constructores de la clase Jugador.
-     */
     @Rule
     public ExpectedException exception = ExpectedException.none();
 

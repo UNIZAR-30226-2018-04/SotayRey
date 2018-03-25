@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Math.abs;
+
 /**
  * Mazo:  almacena todas las cartas no utilizadas de la baraja española
  * CartasEnTapete: las cartas que están en la mesa en un turno
@@ -41,6 +43,7 @@ public class EstadoPartida {
      */
     public EstadoPartida(ArrayList<String> jugadores) throws
             ExceptionEquipoIncompleto {
+        this.random = new Random();
         if (jugadores.size() != 2 && jugadores.size() != 4){
             throw new ExceptionEquipoIncompleto();
         }
@@ -52,10 +55,8 @@ public class EstadoPartida {
             j = new Jugador(id);
             this.jugadores.add(j);
         }
-        //TODO: está bien poner al primer jugador
         this.turno = 0;
         this.triunfo = null;
-        this.random = new Random();
     }
 
 
@@ -65,12 +66,12 @@ public class EstadoPartida {
      * cartas de la baraja española en un orden aleatorio.
      */
     public EstadoPartida(){
+        this.random = new Random();
         this.mazo = barajear();
         this.cartasEnTapete = new ArrayList<>();
         this.jugadores = new ArrayList<>();
         this.turno = - 1;
         this.triunfo = null;
-        this.random = new Random();
     }
 
 
@@ -78,12 +79,16 @@ public class EstadoPartida {
      * Constructor que genera una copia del estado partida "p".
      */
     public EstadoPartida(EstadoPartida p){
+        this.random = new Random();
         this.mazo = p.getMazo();
         this.cartasEnTapete = p.getCartasEnTapete();
         this.jugadores = p.getJugadores();
         this.turno = p.getTurno();
-        this.triunfo = p.getTriunfo();
-        this.random = new Random();
+        try {
+            this.triunfo = p.getTriunfo();
+        } catch (NullPointerException e){
+            this.triunfo = null;
+        }
     }
 
 
@@ -230,7 +235,7 @@ public class EstadoPartida {
         Carta uno, dos;
         int num;
         for (int i = 0; i < 40; ++i){
-            num = random.nextInt()%40;
+            num = abs(random.nextInt()) % 40;
             uno = cartas.get(num);
             dos = cartas.get(i);
             cartas.set(num, dos);
@@ -419,6 +424,17 @@ public class EstadoPartida {
 
     //TODO: sistema de puntos en caso de empate
 
+
+    //TODO: funcion para pruebas por terminal, eliminar al final
+    /**
+     * Asignar un mazo concreto a la partida
+     * @param baraja tiene que tener 40 cartas de la baraja española
+     */
+    public void setMazo(ArrayList<Carta> baraja){
+        if (baraja.size() == 40){
+            this.mazo = copiarCartas(baraja);
+        }
+    }
 
     /***************************** FUNCIONES AUXILIARES ***********************/
 

@@ -47,7 +47,6 @@ public class LogicaPartida {
         // Elige triunfo
         Carta triunfo = estado.getPrimeraCartaMazo();
         estado.setTriunfo(triunfo);
-
         return new EstadoPartida(estado);
     }
 
@@ -172,6 +171,10 @@ public class LogicaPartida {
     public int consultarPuntos(String jugador) throws
             ExceptionJugadorIncorrecto{
         return estado.getPuntosJugador(jugador);
+    }
+
+    public EstadoPartida getEstado(){
+        return new EstadoPartida(estado);
     }
 
 }
