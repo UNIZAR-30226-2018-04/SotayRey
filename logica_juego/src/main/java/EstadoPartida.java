@@ -140,7 +140,7 @@ public class EstadoPartida {
      * @return
      * @throws ExceptionJugadorIncorrecto
      */
-    public List<Carta> getCartasEnMano(String jugador) throws
+    public ArrayList<Carta> getCartasEnMano(String jugador) throws
             ExceptionJugadorIncorrecto{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         return jugadorEncontrado.getCartasEnMano();

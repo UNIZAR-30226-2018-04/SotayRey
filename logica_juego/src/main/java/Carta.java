@@ -80,7 +80,8 @@ public class Carta {
             this.valor = valor;
         } else throw new ExceptionCartaIncorrecta("Valor incorrecto: " + valor);
 
-        if (palo == "C" || palo == "B" || palo == "O"|| palo == "E"){
+        if (palo.equals("C") || palo.equals("B") || palo.equals("O")|| palo
+                .equals("E")) {
             this.palo = palo;
         } else throw new ExceptionCartaIncorrecta("Palo incorrecto: " + palo);
     }

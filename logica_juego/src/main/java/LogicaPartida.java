@@ -81,6 +81,19 @@ public class LogicaPartida {
    }
 
     /**
+     * Asigna el turno y puntuación de las cartas del tapete de cada ronda
+     * al ganador de la ronda.
+     * @return
+     * @throws ExceptionRondaNoAcabada
+     * @throws ExceptionCartaYaExiste
+     */
+   public EstadoPartida siguienteRonda() throws ExceptionRondaNoAcabada,
+           ExceptionCartaYaExiste {
+       estado.terminarRonda();
+       return new EstadoPartida(estado);
+   }
+
+    /**
      *
      * @param jugador
      * @return
