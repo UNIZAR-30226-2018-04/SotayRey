@@ -11,6 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import ExceptionCartaIncorrecta;
+import ExceptionCartaYaExiste;
+import ExceptionEquipoIncompleto;
+import ExceptionJugadorIncorrecto;
+import ExceptionJugadorSinCarta;
+
 import static java.lang.Math.abs;
 
 /**
