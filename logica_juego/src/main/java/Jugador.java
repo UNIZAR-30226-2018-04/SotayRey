@@ -197,7 +197,8 @@ public class Jugador {
      * cualquier palo. Si no puede cantar lanza una
      * excepcción.
      */
-    public void anyadirCante(Carta triunfo){
+    public void anyadirCante(Carta triunfo) throws
+               ExceptionNoHayCantes {
         boolean reyes[] = {false, false, false, false};
         boolean sotas[] = {false, false, false, false};
 
@@ -209,17 +210,21 @@ public class Jugador {
                 marcaSotaORey(reyes, iterador);
             }
         }
-
+        int sumaTotal=0;
         for(int i = 0; i < 4; i++){
             if(reyes[i] && sotas[i] && !cantes[i]){
                 cantes[i] = true;
                 if(esPaloTriunfo(triunfo,i)) {
-                    puntos += 40;
+                    sumaTotal += 40;
                 }
                 else{
-                    puntos += 20;
+                    sumaTotal += 20;
                 }
             }
+        }
+        puntos += sumaTotal;
+        if (sumaTotal == 0){
+            throw new ExceptionNoHayCantes();
         }
     }
 
@@ -269,7 +274,7 @@ public class Jugador {
                 break;
         }
 
-        if (triunfo.getPalo()==palo){
+        if (triunfo.getPalo().equals(palo)){
             return true;
         }
         else{

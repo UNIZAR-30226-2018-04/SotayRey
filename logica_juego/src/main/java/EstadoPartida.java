@@ -417,7 +417,8 @@ public class EstadoPartida {
      * @param jugador
      * @throws ExceptionJugadorIncorrecto
      */
-    public void sumaCante(String jugador) throws ExceptionJugadorIncorrecto{
+    public void sumaCante(String jugador) throws ExceptionJugadorIncorrecto,
+            ExceptionNoHayCantes{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         jugadorEncontrado.anyadirCante(triunfo);
     }

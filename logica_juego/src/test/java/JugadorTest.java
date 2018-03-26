@@ -119,7 +119,7 @@ public class JugadorTest {
     @Test
     public void pruebas3AnyadirAGanadas(){
 
-        System.out.println("\nProbando anyadirCartaGanadas");
+        System.out.println("\nProbando anyadirCante");
         try {
             Jugador j1 = new Jugador("a");
             Carta c = new Carta(7, "E");
@@ -134,6 +134,61 @@ public class JugadorTest {
             fail("Excepción incorrecta");
         }
 
+    }
+
+
+    /**
+     * Pruebas de caja negra para método anyadircante
+     */
+    @Test
+    public void pruebas4AnyadirCante(){
+
+        System.out.println("\nProbando anyadirCante");
+        try {
+            Jugador j1 = new Jugador("a");
+            Carta c = new Carta(7, "E");
+
+            Carta c1 = new Carta(11, "E");
+            Carta c2 = new Carta(12, "E");
+            Carta c3 = new Carta(11, "O");
+            Carta c4 = new Carta(12, "O");
+            Carta c5 = new Carta(7, "O");
+            Carta c6 = new Carta(2, "O");
+            j1.anyadirCartaEnMano(c1);
+            j1.anyadirCartaEnMano(c2);
+            j1.anyadirCartaEnMano(c3);
+            j1.anyadirCartaEnMano(c4);
+            j1.anyadirCartaEnMano(c5);
+            j1.anyadirCartaEnMano(c6);
+            j1.anyadirCante(c);
+
+        } catch (ExceptionNoHayCantes e){
+            System.out.println("Superado... no hay nada que cantar");
+        } catch (ExceptionCartaIncorrecta | ExceptionCartaYaExiste | ExceptionNumeroMaximoCartas e1) {
+            fail("Excepción incorrecta");
+        }
+        try {
+            Jugador j2 = new Jugador("b");
+            Carta c = new Carta(7, "E");
+            Carta c1 = new Carta(10, "E");
+            Carta c2 = new Carta(12, "E");
+            Carta c3 = new Carta(10, "O");
+            Carta c4 = new Carta(12, "O");
+            Carta c5 = new Carta(7, "O");
+            Carta c6 = new Carta(2, "O");
+            j2.anyadirCartaEnMano(c1);
+            j2.anyadirCartaEnMano(c2);
+            j2.anyadirCartaEnMano(c3);
+            j2.anyadirCartaEnMano(c4);
+            j2.anyadirCartaEnMano(c5);
+            j2.anyadirCartaEnMano(c6);
+            j2.anyadirCante(c);
+            assertEquals("Debería sumar 60 puntos",60,j2.getPuntos());
+            System.out.println("Superado... anyadirCante");
+        }
+            catch (ExceptionNoHayCantes | ExceptionCartaIncorrecta | ExceptionCartaYaExiste | ExceptionNumeroMaximoCartas e2) {
+                fail("Excepción incorrecta");
+        }
     }
 
     /**************************** FUNCIONES AUXILIARES ************************/
