@@ -464,3 +464,21 @@ function buscarCarta(numero, palo){
     console.log("EL indice es: " + indice);
     return indice;
 }
+
+
+
+/* ANIMACIONES */
+
+var arrastre;
+
+function animacionArrastre(){ /* TODO solo se puede mover con imagenes */
+    arrastre = game.add.text(ejeX - 500, ejeY - 300, '', { fill: '#ff000e' });
+    //arrastre.body.velocity.x=150;
+    arrastre.text = "VAMOS DE ARRASTRE :D";
+    game.time.events.add(Phaser.Timer.SECOND*4, borrarArrastre, this);
+
+}
+
+function borrarArrastre(){
+    arrastre.destroy();
+}
