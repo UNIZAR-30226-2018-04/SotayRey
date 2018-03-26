@@ -40,7 +40,7 @@ public class Carta {
      * Constructor que crea una carta con "valor" y "palo" siendo palo una
      * referencia a cada uno de los palos de la baraja española:
      * 1 --> bastos, 2 --> copas, 3 --> espadas, 4 --> oros
-     * 0 < Valor < 8, 9 < Valor <= 12
+     * 0 < Valor < 8; 9 < Valor <= 12
      * @param valor
      * @param palo
      * @throws ExceptionCartaIncorrecta
@@ -151,8 +151,6 @@ public class Carta {
     }
 
 
-
-
     /**
      * Devuelve un cadena con el valor y palo de la carta: "[ <valor>, <palo> ]"
      * @return
@@ -161,7 +159,11 @@ public class Carta {
         return "[" + valor + "," + palo + "]";
     }
 
-
+    /**
+     * Funcion que redefine la función de comparación utilizada para comparar objetos en java
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         // self check
@@ -180,7 +182,7 @@ public class Carta {
     }
 
     /**
-     * Devuelve true si y solo las cartas son del mismo palo
+     * Devuelve true si y solo si, las cartas son del mismo palo
      * @param otra
      * @return
      */
@@ -189,7 +191,7 @@ public class Carta {
     }
 
     /**
-     * Devuelve true si y solo la carta "otra" aporta más puntuación que la
+     * Devuelve true si y solo si, la carta "otra" aporta más puntuación que la
      * actual
      * @param otra
      * @return

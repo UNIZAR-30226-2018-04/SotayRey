@@ -9,6 +9,11 @@ package main.java;
 import java.util.ArrayList;
 //TODO: que pasa si un jugador tiene una carta ganada y también la tiene otro jugador o la tiene el en la mano
 
+/**
+ * Clase que representa abstractamente a un jugador. Este posee unas cartas en la mano, y unas cartas ganadas
+ * Además cada jugador debe ser identificable respecto al resto. La clase Jugador almacena adicionalmente los
+ * puntos ganados y los cantes realizados para calcular facilmente los puntos
+ */
 public class Jugador {
     private ArrayList<Carta> cartasEnMano;
     private ArrayList<Carta> cartasGanadas;
@@ -18,8 +23,7 @@ public class Jugador {
 
     /**
      * Constructor que genera un nuevo jugador con identificador "id". Sin
-     * cartas en la mano, con 0 puntos y sin cartas
-     * ganadas.
+     * cartas en la mano, con 0 puntos y sin cartas ganadas.
      * @param id
      */
     public Jugador(String id) {
@@ -60,7 +64,7 @@ public class Jugador {
 
 
     /**
-     * Constructor que genera una copia identica de "jugador"
+     * Constructor que genera una copia identica de "jugador" de forma segura (sin utilizar los mismos objetos).
      * @param jugador
      */
     public Jugador(Jugador jugador){
@@ -83,7 +87,7 @@ public class Jugador {
 
 
     /**
-     * Devuelve el id del jugador
+     * Devuelve el id del jugador, de forma segura.
      * @return
      */
     public String getId(){
@@ -127,7 +131,7 @@ public class Jugador {
 
 
     /**
-     * Quita la carta c de las cartasEnMano si y solo si está en las cartas
+     * Quita la carta c de las cartasEnMano si y solo si, está en las cartas
      * en mano del jugador
      * @param c
      * @throws ExceptionJugadorSinCarta
@@ -194,8 +198,7 @@ public class Jugador {
 
     /**
      * Función que consulta si se puede cantar con la sota y el rey de
-     * cualquier palo. Si no puede cantar lanza una
-     * excepcción.
+     * cualquier palo. Si no puede cantar lanza una excepcción.
      */
     public void anyadirCante(Carta triunfo) throws
                ExceptionNoHayCantes {
@@ -229,6 +232,7 @@ public class Jugador {
     }
 
     /**
+     * Función que redefine la comparación entre objetos jugdor.
      * @param o
      * @return
      */
@@ -254,8 +258,12 @@ public class Jugador {
 
     /*********************** FUNCIONES PRIVADAS *******************************/
 
+
     /**
      * Devuelve true si "i" corresponde al palo de triunfo.
+     * @param triunfo
+     * @param i
+     * @return
      */
     private boolean esPaloTriunfo(Carta triunfo, int i){
         String palo="B";
@@ -282,6 +290,11 @@ public class Jugador {
         }
     }
 
+    /**
+     * Dado un vector de booleanos marca la posicion correspondiente al palo de la carta iterador como true.
+     * @param vectorApariciones
+     * @param iterador
+     */
     private void marcaSotaORey(boolean[] vectorApariciones, Carta iterador) {
         switch (iterador.getPalo()){
             case "B":

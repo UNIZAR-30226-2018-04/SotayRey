@@ -14,13 +14,12 @@ import java.util.Random;
 import static java.lang.Math.abs;
 
 /**
- * Mazo:  almacena todas las cartas no utilizadas de la baraja española
+ * Mazo:  almacena todas las cartas no utilizadas en la partida de la baraja española
  * CartasEnTapete: las cartas que están en la mesa en un turno
  * Jugadores:  información de cada uno de los jugadores que están
  * participando, almacenada en el mismo orden en el que jugarán. Si se juega
  * por equipos se almacena [j1_equipo1, j2_equipo2, j3_equipo1, j4_equipo2]
- * Turno:  indíce del jugador que tiene que lanzar
- * lanzar la carta
+ * Turno:  indíce del jugador que tiene que lanzar lanzar la carta
  * Triunfo:  carta que indica el palo al que se juega
  */
 public class EstadoPartida {
@@ -29,7 +28,9 @@ public class EstadoPartida {
     private ArrayList<Jugador> jugadores;
     private int turno;
     private Carta triunfo;
+    private boolean triunfo_entregado;
     private Random random;
+
 
 
     /**
@@ -39,7 +40,7 @@ public class EstadoPartida {
      * identificador de "jugadores" añade un nuevo jugador a la partida con
      * ese identificador, sin cartas en la mano ni ganadas y con 0 puntos.
      * @param jugadores
-     * @throws ExceptionEquipoIncompleto si el número de jugadores es incorrecto
+     * @throws ExceptionEquipoIncompleto, si el número de jugadores es incorrecto
      */
     public EstadoPartida(ArrayList<String> jugadores) throws
             ExceptionEquipoIncompleto {
@@ -50,6 +51,7 @@ public class EstadoPartida {
         this.mazo = barajear();
         this.cartasEnTapete = new ArrayList<>();
         this.jugadores = new ArrayList<>();
+        this.triunfo_entregado = false;
         Jugador j;
         for (String id : jugadores) {
             j = new Jugador(id);
@@ -72,6 +74,7 @@ public class EstadoPartida {
         this.jugadores = new ArrayList<>();
         this.turno = - 1;
         this.triunfo = null;
+        this.triunfo_entregado = false;
     }
 
 
@@ -84,6 +87,7 @@ public class EstadoPartida {
         this.cartasEnTapete = p.getCartasEnTapete();
         this.jugadores = p.getJugadores();
         this.turno = p.getTurno();
+        this.triunfo_entregado = p.getTriunfoEntregado();
         try {
             this.triunfo = p.getTriunfo();
         } catch (NullPointerException e){
@@ -137,7 +141,7 @@ public class EstadoPartida {
      * Devuelve la lista de cartas de el jugador "jugador". Si "jugador" no
      * está en la partida lanza una excepcion
      * @param jugador
-     * @return
+     * @return ArrayList<Carta>
      * @throws ExceptionJugadorIncorrecto
      */
     public ArrayList<Carta> getCartasEnMano(String jugador) throws
@@ -151,19 +155,17 @@ public class EstadoPartida {
      * Devuelve la primera carta del mazo y la elimina. Si en el mazo no
      * quedan cartas devuelve el triunfo una vez. La siguiente
      * invocación lanza una excepcion.
-     * @return
+     * @return Carta
      * @throws ExceptionMazoVacio
      */
     public Carta getPrimeraCartaMazo() throws ExceptionMazoVacio {
         if(mazo.size() != 0){
             return new Carta(mazo.remove(0));
         }
-        int totalCartas = 0;
-        for (Jugador j: jugadores) {
-            totalCartas += j.getCartasEnMano().size();
-        }
+
         // Hay que entregar el triunfo
-        if (totalCartas%2 == 1){
+        if (this.triunfo_entregado == false){
+            this.triunfo_entregado = true;
             return getTriunfo();
         }
         throw new ExceptionMazoVacio();
@@ -174,7 +176,7 @@ public class EstadoPartida {
      * Devuelve los puntos del jugador si pertenece a la partida. En caso
      * contrario lanza una excepción.
      * @param jugador
-     * @return
+     * @return int
      * @throws ExceptionJugadorIncorrecto
      */
     public int getPuntosJugador(String jugador) throws
@@ -186,7 +188,7 @@ public class EstadoPartida {
 
     /**
      * Devuelve las cartas que están encima de la mesa.
-     * @return
+     * @return ArrayList<Carta>
      */
     public ArrayList<Carta> getCartasEnTapete(){
         return copiarCartas(this.cartasEnTapete);
@@ -197,7 +199,7 @@ public class EstadoPartida {
      * Devuelve las cartas ganadas por un jugador. Si el jugador no pertenece
      * a la partida lanza un excepción.
      * @param jugador
-     * @return
+     * @return ArrayList<Carta>
      * @throws ExceptionJugadorIncorrecto
      */
     public ArrayList<Carta> getCartasGanadas(String jugador) throws
@@ -208,7 +210,7 @@ public class EstadoPartida {
 
 
     /**
-     * Devuelve el triunfo de la partida.
+     * Devuelve una copia del triunfo de la partida.
      * @return
      */
     public Carta getTriunfo(){
@@ -218,7 +220,7 @@ public class EstadoPartida {
 
 
     /**
-     * Cambia el triunfo por nuevoTriunfo.
+     * Cambia el triunfo por nuevoTriunfo, de forma segura
      * @param nuevoTriunfo
      */
     public void setTriunfo(Carta nuevoTriunfo){
@@ -228,7 +230,8 @@ public class EstadoPartida {
 
 
     /**
-     * Devuelve las cartas de la baraja española en un orden aleatorio.
+     * Devuelve las cartas de la baraja española en un orden aleatorio. Para ello hace 40 permutaciones sobre
+     * la baraja ordenada.
      */
     public ArrayList<Carta> barajear(){
         ArrayList<Carta> cartas = crearBaraja();
@@ -245,9 +248,9 @@ public class EstadoPartida {
     }
 
     /**
-     * Añade una carta al jugador "jugador". Si "jugador" no está en la
-     * partida lanza una excepción. Si el jugador posee la carta u otras 6
-     * cartas lanza otras excepciones.
+     * Añade una carta al jugador "jugador". Si "jugador" no está en la partida lanza una excepción.
+     * Si el jugador ya posee la carta "carta" en la mano o, posee 6 o más cartas lanza las correspondientes
+     * excepciones.
      * @param jugador
      * @param carta
      * @throws ExceptionNumeroMaximoCartas
@@ -595,6 +598,10 @@ public class EstadoPartida {
         j.quitarCartaEnMano(carta);
         cartasEnTapete.add(carta);
         pasarTurno(j.getId());
+    }
+
+    private boolean getTriunfoEntregado(){
+        return this.triunfo_entregado;
     }
 
 }
