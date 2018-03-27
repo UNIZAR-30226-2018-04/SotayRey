@@ -9,10 +9,7 @@ package test.java;
 import main.java.*;
 
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runners.MethodSorters;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,8 +86,8 @@ public class LogicaPartidaTest {
         } catch (ExceptionNoPuedesCantar e){
             System.out.println("Superado... no hay nada que cantar");
         } catch (ExceptionCartaIncorrecta | ExceptionCartaYaExiste |
-                ExceptionNumeroMaximoCartas | ExceptionNoPuedesCantar
-                | ExceptionJugadorIncorrecto  | ExceptionRondaNoAcabada | ExceptionEquipoIncompleto e1) {
+                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto  |
+                ExceptionRondaNoAcabada | ExceptionEquipoIncompleto e1) {
             fail("Excepción incorrecta");
         }
         try {
