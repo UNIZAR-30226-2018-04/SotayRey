@@ -1,10 +1,3 @@
-/*
- * Autores: Guerrero Viu, Julia & Izquierdo Barranco, Sergio
- * Fecha: 20-03-2018
- * Fichero: InterfazDatos.java
- * Descripción: Interfaz de acceso a datos
- */
-
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
@@ -12,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.io.FileInputStream;
 
@@ -53,14 +47,14 @@ public class InterfazDatos {
         }
     }
 
-    /* 
+    /*
      * Crea un usuario nuevo en el sistema. U debe contener (not null) como mínimo: username, correo, nombre, apellidos y admin
      */
     public void crearUsuario(UsuarioVO u) {
         UsuarioDAO.crearUsuario(u, this.cpds);
     }
 
-    /* 
+    /*
      * Devuelve un usuario con todos sus datos (datos de perfil de usuario), a partir de su username
      */
     public UsuarioVO obtenerDatosUsuario(String username) {
@@ -71,7 +65,7 @@ public class InterfazDatos {
      * Elimina un usuario del sistema a partir de su username (no lo elimina por completo, solo le impide el acceso)
      */
     public void eliminarUsuario(String username){
-        UsuarioDAO.eliminarUsuario(username, this.cpds);    
+        UsuarioDAO.eliminarUsuario(username, this.cpds);
     }
 
     /*
@@ -80,7 +74,7 @@ public class InterfazDatos {
     public void modificarDatosUsuario(UsuarioVO u){
         UsuarioDAO.modificarDatosUsuario(u, this.cpds);
     }
-    
+
     /*
      * Devuelve true si el usuario identificado por username es un administrador, false en caso contrario
      */
@@ -104,5 +98,30 @@ public class InterfazDatos {
         return StatsUsuarioDAO.obtenerTodasStatsUsuario(username, this.cpds);    
     }
 
-    
+    /* Inserta una nueva partida empezada en la base de datos y modifica el objeto PartidaVO
+     * de forma que contiene el id de la partida.
+     */
+    public void crearNuevaPartida(PartidaVO p) { 
+        PartidaDAO.insertarNuevaPartida(p, this.cpds); 
+    }
+
+    /* Se modifican la partida p en la base de datos con los datos de finalización, p debe incluir
+     * el id que se modificó en la función crearNuevaPartida(p).
+     */
+    public void finalizarPartida(PartidaVO p) { 
+        PartidaDAO.finalizarPartida(p, this.cpds); 
+    }
+
+    /* Devuelve un array con todas las partidas jugadas por el usuario identificado por username
+     */
+    public ArrayList<PartidaVO> obtenerHistorialPartidas(String username) {     
+        return PartidaDAO.obtenerHistorialPartidas(username, this.cpds); 
+    }
+
+    /* Devuelve un array con todas las partidas públicas que todavía no han finalizado
+     */
+    public  ArrayList<PartidaVO> obtenerPartidasPublicasCurso() { 
+        return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds); 
+    }
+
 }
