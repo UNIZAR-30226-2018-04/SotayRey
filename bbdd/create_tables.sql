@@ -65,8 +65,10 @@ CREATE TABLE partida (
 CREATE TABLE liga (
     nombre VARCHAR(50) PRIMARY KEY,
     descripcion TEXT,
-    porcentaje_min TINYINT UNSIGNED NOT NULL,
-    porcentaje_max TINYINT UNSIGNED NOT NULL -- TODO solo valores entre 0 y 100 y max mayor que min y que no se crucen
+    porcentaje_min TINYINT UNSIGNED NOT NULL, -- La liga más alta contendrá los porcentajes más bajos (p.ej. 0%-10%)
+    porcentaje_max TINYINT UNSIGNED NOT NULL, -- TODO solo valores entre 0 y 100 y max mayor que min y que no se crucen
+    CONSTRAINT porcentajemin_unique UNIQUE(porcentaje_min),
+    CONSTRAINT porcentajemax_unique UNIQUE(porcentaje_max)
 );
 
 CREATE TABLE articulo (
@@ -101,7 +103,7 @@ CREATE TABLE pertenece_liga (
     FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
     FOREIGN KEY (liga) REFERENCES liga(nombre) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
     -- Realmente, no se van a borrar nunca usuarios ni ligas
-    CONSTRAINT pertenece_liga_pk PRIMARY KEY (usuario, liga)
+    CONSTRAINT pertenece_liga_pk PRIMARY KEY (usuario, liga, timeEntrada)
 );
 
 CREATE TABLE posee (

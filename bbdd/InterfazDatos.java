@@ -17,7 +17,7 @@ public class InterfazDatos {
     private InterfazDatos() throws IOException, SQLException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
-        dbProps.load(new FileInputStream("bbdd/db.properties"));
+        dbProps.load(new FileInputStream("db.properties"));
         cpds = new ComboPooledDataSource();
 
         cpds.setDriverClass(dbProps.getProperty("driver")); //loads the jdbc driver
@@ -33,6 +33,11 @@ public class InterfazDatos {
 
     }
 
+    /*
+     * Devuelve la instancia singleton de la clase InterfazDatos
+     * Es necesario llamar a esta función primero para poder llamar al resto de métodos de esta interfaz:
+     *      ejemplo: InterfazDatos.instancia().crearUsuario(u);
+     */
     public static InterfazDatos instancia() throws IOException, SQLException, PropertyVetoException {
         if (ifd == null) {
             ifd = new InterfazDatos();
@@ -50,12 +55,6 @@ public class InterfazDatos {
     }
 
     /*
-     * Devuelve true si y sólo si el usuario username tiene como contraseña plaintextPassword
-     */
-    public boolean autentificarUsuario(String  username, String plaintextPassword) {
-        return UsuarioDAO.autentificarUsuario(username,plaintextPassword,this.cpds);
-    }
-    /*
      * Devuelve un usuario con todos sus datos (datos de perfil de usuario), a partir de su username
      */
     public UsuarioVO obtenerDatosUsuario(String username) {
@@ -70,7 +69,7 @@ public class InterfazDatos {
     }
 
     /*
-     * Modifica los datos de perfil del usuario u
+     * Modifica los datos de perfil del usuario u (solamente los atributos que no son null)
      */
     public void modificarDatosUsuario(UsuarioVO u){
         UsuarioDAO.modificarDatosUsuario(u, this.cpds);
@@ -83,19 +82,41 @@ public class InterfazDatos {
         return UsuarioDAO.esAdministrador(username, this.cpds);
     }
 
-    /* La función inserta una nueva partida empezada en la base de datos y modifica el objeto PartidaVO
+    /*
+     * Devuelve las stats principales (puntuacion y divisa) del usuario username
+     */
+    public StatsUsuarioVO obtenerStatsUsuario(String username) throws ExceptionCampoInexistente, ExceptionCampoInvalido{
+        return StatsUsuarioDAO.obtenerStatsUsuario(username, this.cpds);
+    }
+
+    /*
+     * Devuelve TODAS las Stats del usuario username:
+     *      puntuacion, divisa, ligaActual, puesto, ligaMaxima, número de
+     *      partidas ganadas, perdidas, abandonadas y en las que fue abandonado
+     */
+    public StatsUsuarioVO obtenerTodasStatsUsuario(String username) throws ExceptionCampoInexistente, ExceptionCampoInvalido{
+        return StatsUsuarioDAO.obtenerTodasStatsUsuario(username, this.cpds);
+    }
+
+    /* Inserta una nueva partida empezada en la base de datos y modifica el objeto PartidaVO
      * de forma que contiene el id de la partida.
      */
-    public void crearNuevaPartida(PartidaVO p) { PartidaDAO.insertarNuevaPartida(p, this.cpds); }
+    public void crearNuevaPartida(PartidaVO p) {
+        PartidaDAO.insertarNuevaPartida(p, this.cpds);
+    }
 
     /* Se modifican la partida p en la base de datos con los datos de finalización, p debe incluir
      * el id que se modificó en la función crearNuevaPartida(p).
      */
-    public void finalizarPartida(PartidaVO p) { PartidaDAO.finalizarPartida(p, this.cpds); }
+    public void finalizarPartida(PartidaVO p) {
+        PartidaDAO.finalizarPartida(p, this.cpds);
+    }
 
-    /* Devuelve un array con todas las partidas jugadas por el usuario con username username
+    /* Devuelve un array con todas las partidas jugadas por el usuario identificado por username
      */
-    public ArrayList<PartidaVO> obtenerHistorialPartidas(String username) { return PartidaDAO.obtenerHistorialPartidas(username, this.cpds); }
+    public ArrayList<PartidaVO> obtenerHistorialPartidas(String username) {
+        return PartidaDAO.obtenerHistorialPartidas(username, this.cpds);
+    }
 
     /* Devuelve un array con todas las partidas públicas que todavía no han finalizado
      */
@@ -118,4 +139,12 @@ public class InterfazDatos {
      */
     public ArticuloVO obtenerArticulo(String art) { return ArticuloDAO.obtenerArticulo(art, this.cpds); }
 
+    public  ArrayList<PartidaVO> obtenerPartidasPublicasCurso() {
+        return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds);
+    }
+
+    // TODO: SOLO PARA PRUEBAS, BORRAR EN EL ENTREGABLE
+    public void modificarStatsUsuario(StatsUsuarioVO s){
+        StatsUsuarioDAO.modificarStatsUsuario(s,this.cpds);
+    }
 }
