@@ -22,17 +22,18 @@ var game = new Phaser.Game(ejeX, ejeY, Phaser.CANVAS, '', { preload: preload, cr
 function preload() {
     game.load.spritesheet("cartas", "assets/naipes.png", ejeXCarta, ejeYCarta);
     game.load.image('naipe', 'assets/naipe.png');
-    game.load.image('cuadroCarta', 'assets/cuadroCarta.png');
-
+    game.load.image('cuadroCarta', 'assets/dragHere.png');
 }
 
 /* VARIABLES GLOBALES */
 
-var tipoPartida = 1; // 0 = 1vs1, 1 = 2vs2
+var numJugadores = 4; // Define el tipo de partida en función del número de jugadores
 
 var misCartas;
 
 // Variables de los jugadores
+var miID = 0;
+
 
 var jRef;
 jRef = {};
@@ -42,7 +43,7 @@ jRef.YPosMedia = ejeY * 0.80;
 jRef.sumX = ejeXCarta;
 jRef.sumY = 0;
 jRef.XLanzar = jRef.XPosMedia;
-jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 2;
+jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 1.5;
 //jRef.YLanzar = 300;
 jRef.cartaLanzada;
 //jRef.numCartas;
@@ -77,33 +78,95 @@ jArriba.dorso;
 jArriba.rotacion = 0;
 
 var jDer;
+jDer = {};
+jDer.XPosMedia = ejeX * 0.85;
+jDer.YPosMedia = (ejeY / 2) * 1.2;
+jDer.sumX = 0;
+jDer.sumY = ejeXCarta;
+jDer.XLanzar = jDer.XPosMedia - ejeYCarta * 1.10;
+jDer.YLanzar = jDer.YPosMedia;
+jDer.cartaLanzada;
+//jArriba.numCartas;
+jDer.dorso;
+jDer.rotacion = 270;
 
-var arrayJugadoresDefecto = [jRef, jIzq, jArriba, jDer];
-var arrayJugadores;
+var triunfo;
+triunfo = {};
+triunfo.carta = {}
+triunfo.x = ejeX / 2;
+triunfo.y = (ejeY / 2) * 0.85;
+
+var arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
+var arrayJugadores = [];
+
+/* Mapeo en funcion  del tipo de partida y mi identificador */
+function mapearJugadores(){
+    for (i = 0; i < numJugadores; i++) {
+        arrayJugadores[i] = arrayJugadoresDefecto[(miID + i)%numJugadores];
+    }
+}
+
+function modificarTriunfo(numero, palo){
+    triunfo.carta = crearCarta(numero, palo);
+    triunfo.carta.x = triunfo.x;
+    triunfo.carta.y = triunfo.y;
+
+}
+
 
 function inicializarRef(){ // TODO esto al final creo que no debería estar
     for (i = 0; i < 6; i++){
         var carta = jRef.cartasEnMano.create(0, 0, 'cartas');
         carta.frame = i;
+        carta.numero = i+1;
+        carta.palo = "oros";
     }
     dibujarJugador(jRef);
-    dibujarCuadroCarta(jRef);
+    inicializarCuadroCarta(jRef);
+    //dibujarCuadroCarta(jRef);
 }
 
+/* Inicializa los jugadores dependiendo del numero que haya, excepto el de referencia */
 function inicializarJugadores(){
     crearCartas(jArriba);
-    dibujarCuadroCarta(jArriba);
-    if (tipoPartida == 1){
+    //dibujarCuadroCarta(jArriba);
+    inicializarCuadroCarta(jArriba);
+    if (numJugadores == 4){
         crearCartas(jIzq);
-        dibujarCuadroCarta(jIzq);
+        //dibujarCuadroCarta(jIzq);
+        inicializarCuadroCarta(jIzq);
+        crearCartas(jDer);
+        inicializarCuadroCarta(jDer);
    }
 }
 
+function inicializarCuadroCarta(jugador){
+    crearCuadroCarta(jugador);
+    dibujarCuadroCarta(jugador);
+}
+
+function crearCuadroCarta(jugador){
+    jugador.cartaLanzada = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
+}
+
+
 function dibujarCuadroCarta(jugador){
-    var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
-    cuadro.width = ejeXCarta;
-    cuadro.height = ejeYCarta;
-    cuadro.angle = jugador.rotacion;
+    //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
+    jugador.cartaLanzada.loadTexture('cuadroCarta');
+    jugador.cartaLanzada.width = ejeXCarta;
+    jugador.cartaLanzada.height = ejeYCarta;
+    jugador.cartaLanzada.angle = jugador.rotacion;
+    //cuadro.scale.setTo(escalaCarta, escalaCarta);
+}
+
+function dibujarCartaLanzada(jugador){
+    //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
+    console.log("dibujo la carta en el medio");
+    jugador.cartaLanzada.width = ejeXCarta;
+    jugador.cartaLanzada.height = ejeYCarta;
+    jugador.cartaLanzada.x = jugador.XLanzar;
+    jugador.cartaLanzada.y = jugador.YLanzar;
+    jugador.cartaLanzada.angle = jugador.rotacion;
     //cuadro.scale.setTo(escalaCarta, escalaCarta);
 }
 
@@ -111,6 +174,7 @@ function crearCartas(jugador){
     for (i = 0; i < 6; i++){
         jugador.cartasEnMano.create(0, 0, 'cartas');
     }
+
 }
 
 function dibujarJugador(identificador){
@@ -136,7 +200,24 @@ function dibujarJugador(identificador){
 
 }
 
+/* Dibuja las cartas del jugador de referencia */
+/*
+function dibujarJugadorRef(){
+    var jugador = jRef;
+    jugador.cartasEnMano.forEach(function(item) {
+        item.x = jugador.XPosMedia + i*jugador.sumX;
+        item.y = jugador.YPosMedia + i*jugador.sumY;
+        item.angle = jugador.rotacion;
+        //item.scale.setTo(escalaCarta, escalaCarta);
+        console.log("pongo carta en mesa");
+        console.log(item.x);
+        console.log(item.y);
+        i = i + 1;
+    }, this);
 
+}
+
+*/
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
@@ -162,13 +243,43 @@ function create() {
 
 
     // Pruebas
+
+    mapearJugadores();
+
     jArriba.cartasEnMano = game.add.group();
     jIzq.cartasEnMano = game.add.group();
     jRef.cartasEnMano = game.add.group();
+    jDer.cartasEnMano = game.add.group();
     inicializarJugadores();
     dibujarJugador(jArriba);
     dibujarJugador(jIzq);
+    dibujarJugador(jDer);
     inicializarRef();
+
+    modificarTriunfo(12, "copas");
+
+
+    // Simulacion partida
+
+
+    jugadorLanzaCarta(0, 3, "oros");
+
+    jugadorLanzaCarta(1, 3, "bastos");
+
+
+    jugadorLanzaCarta(2, 6, "espadas");
+
+    jugadorLanzaCarta(3, 11, "copas");
+
+}
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
+    }
 }
 
 function onDragStop(sprite) {
@@ -255,6 +366,119 @@ function enviarMensaje(mensaje){
     // TODO se envia el mensaje al backend
 }
 
-function recibirMensaje(){
+function recibirMensaje(msg){
+    // TODO hay que parsear el mensaje
+}
 
+
+function crearCarta(numero, palo){
+    var carta = game.add.sprite(0, 0, 'cartas');
+    carta.numero = numero;
+    carta.palo = palo;
+    console.log("BUSCO CARTA" + buscarCarta(numero, palo));
+    carta.frame = buscarCarta(numero, palo);
+    return carta;
+}
+
+function crearDorso(numero, palo){
+    var carta = game.add.sprite(0, 0, 'cartas');
+    carta.frame = 13;
+    return carta;
+}
+
+/* Elimina la carta del mazo (cualquiera si no es referencia) y la pone en el centro en la variable cartaLanzada */
+function jugadorLanzaCarta(idJugador, numero, palo){
+    // indexar jugador
+    // coger la primera carta de la mano y eliminarla
+    // cambiar el sprite al de la carta correspondiente en el cuadro de lanzar
+    var jugador = arrayJugadores[idJugador];
+    console.log("ELll parametros es: " + numero);
+    if (idJugador!= miID){
+        var cartita = jugador.cartasEnMano.getFirstAlive();
+        jugador.cartasEnMano.removeChild(cartita);
+        dibujarJugador(jugador);
+        jugador.cartaLanzada = crearCarta(numero, palo);
+        dibujarCartaLanzada(jugador);
+
+    }
+    else {
+        var salir = false;
+        jugador.cartasEnMano.forEach(function(item) {
+           // console.log("entro a buscar en el referencia" + item.numero + " " + item.palo);
+            if (salir == false && item.numero == numero && item.palo == palo){ // Porque se elimina la carta entonces la funcion no encuentra la carta, por eso el salir
+                console.log("EJECUTO ESTO");
+                jugador.cartasEnMano.removeChild(item);
+                dibujarJugador(jugador);
+                jugador.cartaLanzada = crearCarta(numero, palo);
+                dibujarCartaLanzada(jugador);
+                salir = true;
+            }
+        }, this);
+    }
+}
+
+/* Un jugador roba una carta, si no es el referencia da igual el numero y palo */
+function jugadorRobaCarta(idJugador, numero, palo){
+    var jugador = arrayJugadores[idJugador];
+    if (idJugador!= miID){
+        var carta = crearDorso(numero, palo);
+        jugador.cartasEnMano.add(carta);
+        dibujarJugador(jugador);
+        dibujarCartaLanzada(jugador);
+
+    }
+    else {
+        var carta = crearCarta(numero, palo);
+        jugador.cartasEnMano.add(carta);
+        dibujarJugador(jugador);
+        dibujarCartaLanzada(jugador);
+    }
+}
+
+function rondaAcabada(){
+    // cambiar todos los cuadros de lanzar por el sprite del cuadro de lanzar
+    for (i = 0; i < numJugadores; i++){
+        console.log(i);
+        var jugador = arrayJugadores[i];
+        dibujarCuadroCarta(jugador);
+    }
+}
+
+/* Devuelve el numero a indexar en el sprite de cartas */
+function buscarCarta(numero, palo){
+    var indice = numero - 1;
+    console.log("EL indice es: " + numero);
+    var numCartas = 13;
+    if (palo == "oros"){
+
+    }
+    else if (palo == "copas"){
+        indice = indice + numCartas;
+    }
+    else if (palo == "espadas"){
+        indice = indice + numCartas*2;
+    }
+    else { // palo == "bastos"
+        indice = indice + numCartas*3;
+    }
+    console.log("EL indice es: " + indice);
+    return indice;
+}
+
+
+
+/* ANIMACIONES */
+
+var arrastre;
+
+function animacionArrastre(){ /* TODO solo se puede mover con imagenes */
+    arrastre = game.add.text(ejeX - 500, ejeY - 300, '', { fill: '#ff000e' });
+    //arrastre.body.velocity.x=150;
+    arrastre.text = "VAMOS DE ARRASTRE :D";
+    game.time.events.add(Phaser.Timer.SECOND*4, borrarArrastre, this);
+
+}
+
+function borrarArrastre(){
+    arrastre.destroy();
 }

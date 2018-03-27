@@ -1,3 +1,6 @@
+package main.java;
+
+
 /**
  * @Autores: Crisan, Marius Sorin; Ignacio Bitrian; Victor Soria
  * @Fecha: 11-03-18
@@ -37,7 +40,7 @@ public class Carta {
      * Constructor que crea una carta con "valor" y "palo" siendo palo una
      * referencia a cada uno de los palos de la baraja española:
      * 1 --> bastos, 2 --> copas, 3 --> espadas, 4 --> oros
-     * 0 < Valor < 8, 9 < Valor <= 12
+     * 0 < Valor < 8; 9 < Valor <= 12
      * @param valor
      * @param palo
      * @throws ExceptionCartaIncorrecta
@@ -77,7 +80,8 @@ public class Carta {
             this.valor = valor;
         } else throw new ExceptionCartaIncorrecta("Valor incorrecto: " + valor);
 
-        if (palo == "C" || palo == "B" || palo == "O"|| palo == "E"){
+        if (palo.equals("C") || palo.equals("B") || palo.equals("O")|| palo
+                .equals("E")) {
             this.palo = palo;
         } else throw new ExceptionCartaIncorrecta("Palo incorrecto: " + palo);
     }
@@ -124,6 +128,28 @@ public class Carta {
         } else throw new ExceptionCartaIncorrecta("Palo incorrecto: " + palo);
     }
 
+    /**
+     * Pre: ---
+     * Post: Devuelve la puntuación de la carta
+     * @return
+     */
+    public int getPuntuación(){
+        switch (this.valor){
+            case 1:
+                return 11;
+            case 3:
+                return 10;
+            case 12:
+                return 4;
+            case 10:
+                return 3;
+            case 11:
+                return 2;
+            default:
+                return 0;
+        }
+    }
+
 
     /**
      * Devuelve un cadena con el valor y palo de la carta: "[ <valor>, <palo> ]"
@@ -133,7 +159,11 @@ public class Carta {
         return "[" + valor + "," + palo + "]";
     }
 
-
+    /**
+     * Funcion que redefine la función de comparación utilizada para comparar objetos en java
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         // self check
@@ -149,5 +179,24 @@ public class Carta {
         // field comparison
         return (valor == carta.valor)
                 && palo.equals(carta.palo);
+    }
+
+    /**
+     * Devuelve true si y solo si, las cartas son del mismo palo
+     * @param otra
+     * @return
+     */
+    public boolean esMismoPalo(Carta otra){
+        return otra.getPalo().equals(palo);
+    }
+
+    /**
+     * Devuelve true si y solo si, la carta "otra" aporta más puntuación que la
+     * actual
+     * @param otra
+     * @return
+     */
+    public boolean masPuntuacion(Carta otra){
+        return otra.getPuntuación() > getPuntuación();
     }
 }

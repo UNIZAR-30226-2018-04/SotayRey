@@ -1,3 +1,5 @@
+package main.java;
+
 /**
  * @Autores: Crisan, Marius Sorin; Ignacio Bitrian; Victor Soria
  * @Fecha: 11-03-18
@@ -7,23 +9,29 @@
 import java.util.ArrayList;
 //TODO: que pasa si un jugador tiene una carta ganada y también la tiene otro jugador o la tiene el en la mano
 
+/**
+ * Clase que representa abstractamente a un jugador. Este posee unas cartas en la mano, y unas cartas ganadas
+ * Además cada jugador debe ser identificable respecto al resto. La clase Jugador almacena adicionalmente los
+ * puntos ganados y los cantes realizados para calcular facilmente los puntos
+ */
 public class Jugador {
     private ArrayList<Carta> cartasEnMano;
     private ArrayList<Carta> cartasGanadas;
     private int puntos;
-    private int id;
+    private String id;
+    private boolean cantes[] = {false, false, false, false};
 
     /**
      * Constructor que genera un nuevo jugador con identificador "id". Sin
-     * cartas en la mano, con 0 puntos y sin cartas
-     * ganadas.
+     * cartas en la mano, con 0 puntos y sin cartas ganadas.
      * @param id
      */
-    public Jugador(int id) {
+    public Jugador(String id) {
         cartasEnMano = new ArrayList<>();
         cartasGanadas = new ArrayList<>();
         puntos = 0;
-        this.id = id;
+        String copia = new String(id);
+        this.id = copia;
     }
 
 
@@ -35,9 +43,10 @@ public class Jugador {
      * @param cartasGanadas
      * @param puntos
      */
-    public Jugador(int id, ArrayList<Carta> cartasEnMano,
+    public Jugador(String id, ArrayList<Carta> cartasEnMano,
                    ArrayList<Carta> cartasGanadas, int puntos) {
-        this.id = id;
+        String copia = new String(id);
+        this.id = copia;
         this.puntos = puntos;
 
         this.cartasEnMano = new ArrayList<>();
@@ -55,10 +64,11 @@ public class Jugador {
 
 
     /**
-     * Constructor que genera una copia identica de "jugador"
+     * Constructor que genera una copia identica de "jugador" de forma segura (sin utilizar los mismos objetos).
      * @param jugador
      */
     public Jugador(Jugador jugador){
+        String copia = new String(jugador.id);
         this.id = jugador.id;
         this.puntos = jugador.puntos;
         this.cartasEnMano = new ArrayList<>();
@@ -77,11 +87,12 @@ public class Jugador {
 
 
     /**
-     * Devuelve el id del jugador
+     * Devuelve el id del jugador, de forma segura.
      * @return
      */
-    public int getId(){
-        return id;
+    public String getId(){
+        String copia = new String(id);
+        return copia;
     }
 
 
@@ -120,7 +131,7 @@ public class Jugador {
 
 
     /**
-     * Quita la carta c de las cartasEnMano si y solo si está en las cartas
+     * Quita la carta c de las cartasEnMano si y solo si, está en las cartas
      * en mano del jugador
      * @param c
      * @throws ExceptionJugadorSinCarta
@@ -149,20 +160,18 @@ public class Jugador {
 
 
     /**
-     * Añade cada una de las cartas del conjunto de cartas a las
-     * cartasGanadas sin repeticiones de cartas
-     * @param cartas
+     * Añade la carta c a las cartasGanadas. Si la carta ya está en el
+     * conjunto se lanza una excepción.
+     * @param c
      * @throws ExceptionCartaYaExiste
      */
-    public void anyadirCartasGanadas(ArrayList<Carta> cartas) throws
+    public void anyadirCartaGanadas(Carta c) throws
             ExceptionCartaYaExiste {
-        for (Carta c: cartas) {
-            if(!this.cartasGanadas.contains(c)){
-                Carta copia = new Carta(c);
-                this.cartasGanadas.add(copia);
-            } else {
-                throw new ExceptionCartaYaExiste();
-            }
+        if(!this.cartasGanadas.contains(c)){
+            Carta copia = new Carta(c);
+            this.cartasGanadas.add(copia);
+        } else {
+            throw new ExceptionCartaYaExiste();
         }
     }
 
@@ -188,6 +197,42 @@ public class Jugador {
     }
 
     /**
+     * Función que consulta si se puede cantar con la sota y el rey de
+     * cualquier palo. Si no puede cantar lanza una excepcción.
+     */
+    public void anyadirCante(Carta triunfo) throws
+               ExceptionNoHayCantes {
+        boolean reyes[] = {false, false, false, false};
+        boolean sotas[] = {false, false, false, false};
+
+        for(Carta iterador : cartasEnMano){
+            if(iterador.getValor() == 10){
+                marcaSotaORey(sotas, iterador);
+            }
+            if(iterador.getValor() == 12){
+                marcaSotaORey(reyes, iterador);
+            }
+        }
+        int sumaTotal=0;
+        for(int i = 0; i < 4; i++){
+            if(reyes[i] && sotas[i] && !cantes[i]){
+                cantes[i] = true;
+                if(esPaloTriunfo(triunfo,i)) {
+                    sumaTotal += 40;
+                }
+                else{
+                    sumaTotal += 20;
+                }
+            }
+        }
+        puntos += sumaTotal;
+        if (sumaTotal == 0){
+            throw new ExceptionNoHayCantes();
+        }
+    }
+
+    /**
+     * Función que redefine la comparación entre objetos jugdor.
      * @param o
      * @return
      */
@@ -208,5 +253,62 @@ public class Jugador {
                 && (puntos == puntos)
                 && cartasEnMano.equals(jugador.cartasEnMano)
                 && cartasGanadas.equals(jugador.cartasGanadas);
+    }
+
+
+    /*********************** FUNCIONES PRIVADAS *******************************/
+
+
+    /**
+     * Devuelve true si "i" corresponde al palo de triunfo.
+     * @param triunfo
+     * @param i
+     * @return
+     */
+    private boolean esPaloTriunfo(Carta triunfo, int i){
+        String palo="B";
+        switch (i){
+            case 0:
+                palo="B";
+                break;
+            case 1:
+                palo="C";
+                break;
+            case 2:
+                palo="E";
+                break;
+            case 3:
+                palo="O";
+                break;
+        }
+
+        if (triunfo.getPalo().equals(palo)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    /**
+     * Dado un vector de booleanos marca la posicion correspondiente al palo de la carta iterador como true.
+     * @param vectorApariciones
+     * @param iterador
+     */
+    private void marcaSotaORey(boolean[] vectorApariciones, Carta iterador) {
+        switch (iterador.getPalo()){
+            case "B":
+                vectorApariciones[0] = true;
+                break;
+            case "C":
+                vectorApariciones[1] = true;
+                break;
+            case "E":
+                vectorApariciones[2] = true;
+                break;
+            case "O":
+                vectorApariciones[3] = true;
+                break;
+        }
     }
 }

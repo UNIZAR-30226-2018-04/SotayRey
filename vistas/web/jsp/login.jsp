@@ -35,7 +35,7 @@
             <div class="card col-md-6">
                 <h1 class="card-header text-center">Entra a tu cuenta</h1>
                 <div class="card-body">
-                    <form action="/LoginUsuario.do" method="post">
+                    <form action="/RegistroServlet.do" method="post">
                         <div class="form-group">
                             <label for="loginUser">Usuario</label>
                             <input type="text" class="form-control" name="loginUser" id="loginUser"
@@ -53,7 +53,7 @@
             <div class="card col-md-6">
                 <h1 class="card-header text-center">Date de alta</h1>
                 <div class="card-body">
-                    <form action="/InsertarUsuario.do" method="post">
+                    <form action="/RegistroServlet.do" method="post">
                         <div class="form-group">
                             <label for="nick">Usuario</label>
                             <input type="text" class="form-control" name="nick" id="nick" aria-describedby="emailHelp"
@@ -77,6 +77,11 @@
                         <div class="form-group">
                             <label for="passwd">Contraseña</label>
                             <input type="password" class="form-control" name="passwd" id="passwd"
+                                   placeholder="Contraseña">
+                        </div>
+                        <div class="form-group">
+                            <label for="passwdRep">Repite contraseña</label>
+                            <input type="password" class="form-control" name="passwdRep" id="passwdRep"
                                    placeholder="Contraseña">
                         </div>
                         <button type="submit" class="btn btn-primary">Registrarme</button>
