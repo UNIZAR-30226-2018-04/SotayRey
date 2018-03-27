@@ -17,7 +17,7 @@ CREATE TABLE usuario (
     username VARCHAR(15) PRIMARY KEY, -- IA es un usuario especial con username = IA y tratado de forma especial
     pw_hash CHAR(60),
     correo VARCHAR(320) NOT NULL, 
-    fb_token VARCHAR(100), -- TODO: aprender a usar tokens de Facebook
+    fb_auth BOOL, -- TODO: aprender a usar tokens de Facebook
     timeCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha de creación del usuario
     nombre VARCHAR(25) NOT NULL,
     apellidos VARCHAR(50) NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE articulo (
     nombre VARCHAR(50) PRIMARY KEY,
     precio INT UNSIGNED NOT NULL,   -- Es posible que sea 0
     descripcion TEXT,
-    ruta_Imagen VARCHAR(320) NOT NULL, 
+    rutaImagen VARCHAR(320) NOT NULL,
     tipo CHAR(1) NOT NULL, -- TODO: solo puede ser A:avatar, B:baraja, T:tapete
     requiere_liga VARCHAR(50),
     FOREIGN KEY (requiere_liga) REFERENCES liga(nombre) ON DELETE SET NULL ON UPDATE CASCADE -- cuidado! Cascades de foreign key no activan triggers
