@@ -5,9 +5,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main {
+public class PruebaBases {
 
-    public static void main(String[] args) throws ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException {
+    public static void main(String[] args) throws ExceptionCampoInexistente, ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException {
         //System.out.println(hashPassword("burroloco"));
         //System.out.println(hashPassword("burroloco"));
         //System.out.println(checkPassword("burrodloco",hashed));
@@ -24,6 +24,9 @@ public class Main {
         InterfazDatos.instancia().crearUsuario(sergio);
         InterfazDatos.instancia().crearUsuario(manolo);
         InterfazDatos.instancia().crearUsuario(julian);
+
+        InterfazDatos.instancia().eliminarUsuario("serizba");
+        InterfazDatos.instancia().eliminarUsuario("juliagviu");
 
         System.out.println(InterfazDatos.instancia().autentificarUsuario("juliagviu", "caca123"));
         System.out.println(InterfazDatos.instancia().autentificarUsuario("juliagviu", "1234"));

@@ -4,5 +4,5 @@ javac -cp lib/*:. *.java
 '''
 Ejecucion interfaz base de datos:
 '''
-java -cp lib/*:. Main
+java -cp lib/*:. PruebaBases
 '''

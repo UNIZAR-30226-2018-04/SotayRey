@@ -1,13 +1,33 @@
 //var ejeX = 800;
 //var ejeY = 600;
-var ejeX = window.innerWidth * window.devicePixelRatio;
+//var ejeX = window.innerWidth * window.devicePixelRatio;
 //var ejeY = window.innerHeigth * window.devicePixelRatio;
-var ejeY = window.innerHeight * window.devicePixelRatio;
+//var ejeY = window.innerHeight * window.devicePixelRatio;
+
+/* PORCENTAJES RESPONSIVE */
+var numBotones = 3;
+var zonaJugableY = 0.9; // Porcentaje
+var ejeXBotones = window.innerWidth;
+var ejeYBotones = window.innerHeight * zonaJugableY + ( window.innerHeight *(1-zonaJugableY)*0.20);
+
+/* VARIABLES PANTALLA */
+
+
+var ejeX = window.innerWidth;
+var ejeY = window.innerHeight * zonaJugableY;
+
+
+//var ejeX = window.innerWidth; // Zona jugable
+//var ejeY = window.innerHeight * zonaJugableY;
 var escalaCartas = 0.5;
 var scaleRatio = 0.5;
-var ejeXCarta = 80; // esto en una apartado de game options
-var ejeYCarta = 123;
+var ejeXCartaOriginal = 80; // esto en una apartado de game options
+var ejeYCartaOriginal = 123;
+var ejeXCarta = (ejeX * 0.8) / 6;
+var ejeYCarta = ejeXCarta*(ejeYCartaOriginal/ejeXCartaOriginal);
+
 var escalaCarta = 1;
+//var escalaCarta = ejeX / 5/ ejeXCarta;
 console.log(ejeX);
 console.log(window.innerHeight);
 console.log(window.devicePixelRatio);
@@ -16,11 +36,11 @@ console.log(ejeY);
 
 // para que sea responsive:  https://www.joshmorony.com/how-to-scale-a-game-for-all-device-sizes-in-phaser/
 // en vez de Phaser.AUTO -> Phaser.CANVAS
-var game = new Phaser.Game(ejeX, ejeY, Phaser.CANVAS, '', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(ejeX, ejeY / zonaJugableY, Phaser.CANVAS, '', { preload: preload, create: create, update: update, render: render });
 
 
 function preload() {
-    game.load.spritesheet("cartas", "assets/naipes.png", ejeXCarta, ejeYCarta);
+    game.load.spritesheet("cartas", "assets/naipes.png", ejeXCartaOriginal, ejeYCartaOriginal);
     game.load.image('naipe', 'assets/naipe.png');
     game.load.image('cuadroCarta', 'assets/dragHere.png');
 }
@@ -35,60 +55,12 @@ var misCartas;
 var miID = 0;
 
 
+/* se inicializan con la funcion inicializarDispositivo */
 var jRef;
-jRef = {};
-jRef.nombre = "ref";
-jRef.XPosMedia = ejeX / 2;
-jRef.YPosMedia = ejeY * 0.80;
-jRef.sumX = ejeXCarta;
-jRef.sumY = 0;
-jRef.XLanzar = jRef.XPosMedia;
-jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 1.5;
-//jRef.YLanzar = 300;
-jRef.cartaLanzada;
-//jRef.numCartas;
-jRef.dorso;
-jRef.rotacion = 0;
-
 var jIzq;
-jIzq = {};
-jIzq.XPosMedia = ejeX * 0.2;
-jIzq.YPosMedia = ejeY / 2;
-jIzq.sumX = 0;
-jIzq.sumY = ejeXCarta; // es ejeX porque esta tumbada
-jIzq.XLanzar = jIzq.XPosMedia + ejeYCarta * 1.10;
-jIzq.YLanzar = jIzq.YPosMedia;
-jIzq.cartaLanzada;
-//jIzq.numCartas;
-jIzq.dorso;
-jIzq.rotacion = 90;
-
-
 var jArriba;
-jArriba = {};
-jArriba.XPosMedia = ejeX / 2;
-jArriba.YPosMedia = ejeY * 0.02;
-jArriba.sumX = ejeXCarta;
-jArriba.sumY = 0;
-jArriba.XLanzar = jArriba.XPosMedia;
-jArriba.YLanzar = jArriba.YPosMedia + ejeYCarta * 1.10;
-jArriba.cartaLanzada;
-//jArriba.numCartas;
-jArriba.dorso;
-jArriba.rotacion = 0;
-
 var jDer;
-jDer = {};
-jDer.XPosMedia = ejeX * 0.85;
-jDer.YPosMedia = (ejeY / 2) * 1.2;
-jDer.sumX = 0;
-jDer.sumY = ejeXCarta;
-jDer.XLanzar = jDer.XPosMedia - ejeYCarta * 1.10;
-jDer.YLanzar = jDer.YPosMedia;
-jDer.cartaLanzada;
-//jArriba.numCartas;
-jDer.dorso;
-jDer.rotacion = 270;
+
 
 var triunfo;
 triunfo = {};
@@ -96,8 +68,81 @@ triunfo.carta = {}
 triunfo.x = ejeX / 2;
 triunfo.y = (ejeY / 2) * 0.85;
 
-var arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
+var arrayJugadoresDefecto = [];
 var arrayJugadores = [];
+
+/* Inicializa las variables que dependen de la resolucion del dispositivo */
+function inicializarDispositivo(){
+    if (ejeX > 800){
+        console.log("dispositivo grande");
+        console.log(ejeX);
+        ejeXCarta = ejeXCartaOriginal;
+        ejeYCarta = ejeYCartaOriginal;
+
+    }
+    else if (ejeX > 420){
+        console.log("dispositivo grande");
+        console.log(ejeX);
+        ejeXCarta = (ejeX * 0.65) / 6;
+        ejeYCarta = ejeXCarta*(ejeYCartaOriginal/ejeXCartaOriginal);
+
+    }
+    else{
+        // El valor que esta por defecto
+    }
+    jRef = {};
+    jRef.nombre = "ref";
+    jRef.XPosMedia = ejeX / 2;
+    jRef.YPosMedia = ejeY * 0.80;
+    jRef.sumX = ejeXCarta;
+    jRef.sumY = 0;
+    jRef.XLanzar = jRef.XPosMedia;
+    jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 1.5;
+//jRef.YLanzar = 300;
+    jRef.cartaLanzada;
+//jRef.numCartas;
+    jRef.dorso;
+    jRef.rotacion = 0;
+
+    jIzq = {};
+    jIzq.XPosMedia = ejeX * 0.15;
+    jIzq.YPosMedia = ejeY / 2;
+    jIzq.sumX = 0;
+    jIzq.sumY = ejeXCarta; // es ejeX porque esta tumbada
+    jIzq.XLanzar = jIzq.XPosMedia + ejeYCarta * 1.10;
+    jIzq.YLanzar = jIzq.YPosMedia;
+    jIzq.cartaLanzada;
+//jIzq.numCartas;
+    jIzq.dorso;
+    jIzq.rotacion = 90;
+
+    jArriba = {};
+    jArriba.XPosMedia = ejeX / 2;
+    jArriba.YPosMedia = ejeY * 0.02;
+    jArriba.sumX = ejeXCarta;
+    jArriba.sumY = 0;
+    jArriba.XLanzar = jArriba.XPosMedia;
+    jArriba.YLanzar = jArriba.YPosMedia + ejeYCarta * 1.10;
+    jArriba.cartaLanzada;
+//jArriba.numCartas;
+    jArriba.dorso;
+    jArriba.rotacion = 0;
+
+    jDer = {};
+    jDer.XPosMedia = ejeX * 0.85;
+    jDer.YPosMedia = (ejeY / 2) * 1.2;
+    jDer.sumX = 0;
+    jDer.sumY = ejeXCarta;
+    jDer.XLanzar = jDer.XPosMedia - ejeYCarta * 1.10;
+    jDer.YLanzar = jDer.YPosMedia;
+    jDer.cartaLanzada;
+//jArriba.numCartas;
+    jDer.dorso;
+    jDer.rotacion = 270;
+
+
+    arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
+}
 
 /* Mapeo en funcion  del tipo de partida y mi identificador */
 function mapearJugadores(){
@@ -191,8 +236,11 @@ function dibujarJugador(identificador){
             item.frame = 12; // TODO modificar esto para que sea el dorso
         }
         item.angle = jugador.rotacion;
+        item.height = ejeYCarta;
+        item.width = ejeXCarta;
         //item.scale.setTo(escalaCarta, escalaCarta);
         console.log("pongo carta en mesa");
+        console.log(item.height);
         console.log(item.x);
         console.log(item.y);
         i = i + 1;
@@ -228,14 +276,11 @@ function create() {
     //anyadirCarta(misCartas,1);
     //actualizarCartas(misCartas);
 
-    // Botones de acción
-    cantarVeinte = game.add.text(ejeX - 300, ejeY - 200, '', { fill: '#ffffff' });
-    cantarCuarenta = game.add.text(ejeX - 300, ejeY - 150, '', { fill: '#ffffff' });
-    cambiarTriunfo = game.add.text(ejeX - 300, ejeY - 100, '', { fill: '#ffffff' });
 
-    cantarVeinte.text = "CANTAR 20";
-    cantarCuarenta.text = "CANTAR 40";
-    cambiarTriunfo.text = "CAMBIAR TRIUNFO";
+    inicializarDispositivo();
+
+    // Botones de acción
+    dibujarBotones();
 
     // Los huecos para tirar las cartas de los jugadores
     //yo = game.add.sprite(game.world.centerX-50, game.world.centerY-50, 'cuadroCarta');
@@ -249,6 +294,8 @@ function create() {
     jArriba.cartasEnMano = game.add.group();
     jIzq.cartasEnMano = game.add.group();
     jRef.cartasEnMano = game.add.group();
+    jRef.cartasEnMano.inputEnabled = true;
+    //jRef.cartasEnMano.onInputDown.add(pulsarCarta, this);
     jDer.cartasEnMano = game.add.group();
     inicializarJugadores();
     dibujarJugador(jArriba);
@@ -258,18 +305,24 @@ function create() {
 
     modificarTriunfo(12, "copas");
 
+    var pruebaGrupo = game.add.group()
+    var prueba = pruebaGrupo.create(0, 0, 'cuadroCarta');
+
+    prueba.inputEnabled = true;
+    prueba.events.onInputDown.add(pulsaCarta, this);
+
 
     // Simulacion partida
 
 
-    jugadorLanzaCarta(0, 3, "oros");
+    //jugadorLanzaCarta(0, 3, "oros");
 
-    jugadorLanzaCarta(1, 3, "bastos");
+    //jugadorLanzaCarta(1, 3, "bastos");
 
 
-    jugadorLanzaCarta(2, 6, "espadas");
+    //jugadorLanzaCarta(2, 6, "espadas");
 
-    jugadorLanzaCarta(3, 11, "copas");
+    //jugadorLanzaCarta(3, 11, "copas");
 
 }
 
@@ -367,6 +420,7 @@ function enviarMensaje(mensaje){
 }
 
 function recibirMensaje(msg){
+    console.log(msg);
     // TODO hay que parsear el mensaje
 }
 
@@ -417,6 +471,10 @@ function jugadorLanzaCarta(idJugador, numero, palo){
     }
 }
 
+function pulsaCarta(){
+    console.log("HA PUSLADO CARTA");
+}
+
 /* Un jugador roba una carta, si no es el referencia da igual el numero y palo */
 function jugadorRobaCarta(idJugador, numero, palo){
     var jugador = arrayJugadores[idJugador];
@@ -429,6 +487,8 @@ function jugadorRobaCarta(idJugador, numero, palo){
     }
     else {
         var carta = crearCarta(numero, palo);
+        carta.inputEnabled = true;
+        carta.events.onInputDown.add(pulsaCarta, this);
         jugador.cartasEnMano.add(carta);
         dibujarJugador(jugador);
         dibujarCartaLanzada(jugador);
@@ -465,7 +525,22 @@ function buscarCarta(numero, palo){
     return indice;
 }
 
+/* HUD */
 
+function dibujarBotones(){
+    var espacioBoton = ejeX / numBotones;
+    //var style = {font: "20px", fill: "#000000", align:"center"};
+
+    var cantarVeinte = game.add.text(0, ejeYBotones, '', { fill: '#000000'});
+    //var cantarVeinte = game.add.text(0, ejeYBotones, '', style);
+    var cantarCuarenta = game.add.text(espacioBoton, ejeYBotones, '', { fill: '#000000' });
+    var cambiarTriunfo = game.add.text(espacioBoton*2, ejeYBotones, '', {fill: '#000000'});
+
+    cantarVeinte.text = "CANTAR 20";
+    cantarCuarenta.text = "CANTAR 40";
+    cambiarTriunfo.text = "CAMBIAR TRIUNFO";
+    cambiarTriunfo.text.fontSize = "20";
+}
 
 /* ANIMACIONES */
 
