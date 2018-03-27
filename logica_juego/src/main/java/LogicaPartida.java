@@ -142,10 +142,16 @@ public class LogicaPartida {
             ExceptionNumeroMaximoCartas, ExceptionRondaNoAcabada {
         Carta triunfo = estado.getTriunfo();
 
+        int n_cartas_mazo = estado.getMazo().size();
         //Ha terminado la ronda y ha sido el ganador
         if (estado.getJugadoresId().get(estado.getTurno()).equals(jugador)
                 && estado.getCartasEnTapete().size() == 0 &&
-                estado.getMazo().size() > 0){
+                n_cartas_mazo > 0
+        /**
+         * TODO: hace falta?? && n_cartas_mazo <= 40-(estado.getJugadoresId())
+         * .size()*6)
+         */
+        ) {
 
             //Cambia la carta si y solo si es un 7 del mismo palo y su
             // puntuación es mayor

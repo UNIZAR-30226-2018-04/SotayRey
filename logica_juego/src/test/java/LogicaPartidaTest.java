@@ -86,9 +86,10 @@ public class LogicaPartidaTest {
 
             logica.cantar("j1");
 
-        } catch (ExceptionNoHayCantes e){
+        } catch (ExceptionNoPuedesCantar e){
             System.out.println("Superado... no hay nada que cantar");
-        } catch (ExceptionCartaIncorrecta | ExceptionCartaYaExiste | ExceptionNumeroMaximoCartas | ExceptionNoPuedesCantar
+        } catch (ExceptionCartaIncorrecta | ExceptionCartaYaExiste |
+                ExceptionNumeroMaximoCartas | ExceptionNoPuedesCantar
                 | ExceptionJugadorIncorrecto  | ExceptionRondaNoAcabada | ExceptionEquipoIncompleto e1) {
             fail("Excepción incorrecta");
         }
