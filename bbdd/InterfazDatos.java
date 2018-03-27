@@ -17,7 +17,7 @@ public class InterfazDatos {
     private InterfazDatos() throws IOException, SQLException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
-        dbProps.load(new FileInputStream("db.properties"));
+        dbProps.load(new FileInputStream("bbdd/db.properties"));
         cpds = new ComboPooledDataSource();
 
         cpds.setDriverClass(dbProps.getProperty("driver")); //loads the jdbc driver
@@ -49,6 +49,12 @@ public class InterfazDatos {
         UsuarioDAO.crearUsuario(u, this.cpds);
     }
 
+    /*
+     * Devuelve true si y sólo si el usuario username tiene como contraseña plaintextPassword
+     */
+    public boolean autentificarUsuario(String  username, String plaintextPassword) {
+        return UsuarioDAO.autentificarUsuario(username,plaintextPassword,this.cpds);
+    }
     /*
      * Devuelve un usuario con todos sus datos (datos de perfil de usuario), a partir de su username
      */
@@ -94,4 +100,22 @@ public class InterfazDatos {
     /* Devuelve un array con todas las partidas públicas que todavía no han finalizado
      */
     public  ArrayList<PartidaVO> obtenerPartidasPublicasCurso() { return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds); }
+
+    /* Añade un nuevo artículo al sistema. El atributo requiere de a puede ser nulo si no se requiere ningun
+     * liga para desbloquear el artículo
+     */
+    public void crearArticulo(ArticuloVO a) { ArticuloDAO.crearArticulo(a, this.cpds); }
+
+    /* Elimina un artículo del sistema basándose en el nombre del artículo a
+     */
+    public void eliminarArticulo(ArticuloVO a) { ArticuloDAO.eliminarArticulo(a, this.cpds); }
+
+    /* Modifica el articulo del sistema con el nombre de a, deja todos sus atributos como los atributos de a
+     */
+    public void modificarArticulo(ArticuloVO a) { ArticuloDAO.modificarArticulo(a, this.cpds); }
+
+    /* Devuelve el articulo con el nombre art
+     */
+    public ArticuloVO obtenerArticulo(String art) { return ArticuloDAO.obtenerArticulo(art, this.cpds); }
+
 }

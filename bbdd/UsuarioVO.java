@@ -15,6 +15,7 @@ public class UsuarioVO {
     private String correo;
     //private String fb_token;
     private Timestamp timeCreacion;
+    private String plaintextPassword;
     private String nombre;
     private String apellidos;
     private Date fechaNac;
@@ -22,25 +23,35 @@ public class UsuarioVO {
 
     public UsuarioVO() { admin = false;}
 
-    public UsuarioVO(String username, String correo, String nombre, String apellidos, boolean admin) throws ExceptionCampoInvalido {
+    public UsuarioVO(String username, String plaintextPassword, String correo, String nombre, String apellidos, boolean admin) throws ExceptionCampoInvalido {
         // Comprobar que la longitud de los campos no sea mayor que los limites de la base de datos
         if (username.length()>15 || nombre.length()>25 || apellidos.length()>50){
-            // Lanzar excepción de campo no válido 
-            throw new ExceptionCampoInvalido("Campo invalido, longitud " + username.length() + " mayor que la máxima permitida");       
+            // Lanzar excepción de campo no válido
+            throw new ExceptionCampoInvalido("Campo invalido, longitud " + username.length() + " mayor que la máxima permitida");
         }
         this.username = username;
         this.correo = correo;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.admin = admin;
+        this.plaintextPassword = plaintextPassword;
     }
 
-    public UsuarioVO(String username, String correo, String nombre, String apellidos, boolean admin, Date fechaNac) throws ExceptionCampoInvalido {
+    public String getPlaintextPassword() {
+        return plaintextPassword;
+    }
+
+    public void setPlaintextPassword(String plaintextPassword) {
+        this.plaintextPassword = plaintextPassword;
+    }
+
+    public UsuarioVO(String username, String plaintextPassword, String correo, String nombre, String apellidos, boolean admin, Date fechaNac) throws ExceptionCampoInvalido {
         // Comprobar que la longitud de los campos no sea mayor que los limites de la base de datos
         if (username.length()>15 || nombre.length()>25 || apellidos.length()>50){
             // Lanzar excepción de campo no válido 
             throw new ExceptionCampoInvalido("Campo invalido, longitud " + username.length() + " mayor que la máxima permitida");       
         }
+        this.plaintextPassword = plaintextPassword;
         this.username = username;
         this.correo = correo;
         this.nombre = nombre;

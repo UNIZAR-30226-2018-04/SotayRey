@@ -17,12 +17,20 @@ import java.io.FileInputStream;
 
 public class UsuarioDAO {
 
+    private static String hashPassword(String password_plaintext) {
+        String salt = org.mindrot.jbcrypt.BCrypt.gensalt(15);
+        String hashed_password = org.mindrot.jbcrypt.BCrypt.hashpw(password_plaintext, salt);
+
+        return(hashed_password);
+    }
+
     public static void crearUsuario(UsuarioVO u, ComboPooledDataSource pool) {
         Connection connection = null;
         Statement statement = null;
         try {
             connection = pool.getConnection();
             statement = connection.createStatement();
+
             String prevalues = "INSERT INTO usuario (username, correo, nombre, apellidos, admin";
             String postvalues = " VALUES ('" + u.getUsername() + "', '" + u.getCorreo() + "', '" + u.getNombre() + "', '" + u.getApellidos() + "'";
             if (u.getAdmin()) postvalues = postvalues + ", TRUE";
@@ -31,7 +39,14 @@ public class UsuarioDAO {
                 prevalues = prevalues + ", fechaNac";
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 postvalues = postvalues + ", '" + sdf.format(u.getFechaNac()) + "'";
-            } 
+            }
+            prevalues = prevalues + ", fb_auth";
+            if (u.getPlaintextPassword() == null) {
+                postvalues = postvalues + ", 1";
+            } else {
+                prevalues = prevalues + ", pw_hash";
+                postvalues = postvalues + ", 0,'" + hashPassword(u.getPlaintextPassword()) + "'";
+            }
             prevalues = prevalues + ")";
             postvalues = postvalues + ")";
             statement.executeUpdate(prevalues+postvalues);
@@ -41,6 +56,31 @@ public class UsuarioDAO {
             if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
             if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
         }
+    }
+
+    public static boolean autentificarUsuario(String username, String plaintextPassword, ComboPooledDataSource pool) {
+        boolean password_verified = false;
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = pool.getConnection();
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT pw_hash FROM usuario WHERE username = '" + username + "'");
+            resultSet.next();
+            String stored_hash = resultSet.getString("pw_hash");
+            if(null == stored_hash)
+                throw new java.lang.IllegalArgumentException("El hash de " );
+
+            password_verified = org.mindrot.jbcrypt.BCrypt.checkpw(plaintextPassword, stored_hash);
+
+            return(password_verified);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+        }
+        return password_verified;
     }
 
     public static UsuarioVO obtenerDatosUsuario(String username, ComboPooledDataSource pool) {
@@ -82,7 +122,7 @@ public class UsuarioDAO {
         try {
             connection = pool.getConnection();
             statement = connection.createStatement();
-            String delete = "UPDATE usuario SET pw_hash = null, fb_token = null WHERE username = " + "'" + username + "'";
+            String delete = "UPDATE usuario SET pw_hash = null, fb_token = 0 WHERE username = " + "'" + username + "'";
             statement.executeUpdate(delete);
         } catch (SQLException e) {
             e.printStackTrace();
