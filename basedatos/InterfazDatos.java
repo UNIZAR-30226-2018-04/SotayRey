@@ -185,21 +185,29 @@ public class InterfazDatos {
         return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds); 
     }
 
-    /* Añade un nuevo artículo al sistema. El atributo requiere de a puede ser nulo si no se requiere ningun
+    /* Añade un nuevo artículo al sistema. El atributo requiere de a puede ser nulo si no se requiere ninguna
      * liga para desbloquear el artículo
      */
-    public void crearArticulo(ArticuloVO a) { ArticuloDAO.crearArticulo(a, this.cpds); }
+    public void crearArticulo(ArticuloVO a) { 
+        ArticuloDAO.crearArticulo(a, this.cpds); 
+    }
 
     /* Elimina un artículo del sistema basándose en el nombre del artículo a
      */
-    public void eliminarArticulo(ArticuloVO a) { ArticuloDAO.eliminarArticulo(a, this.cpds); }
+    public void eliminarArticulo(ArticuloVO a) { 
+        ArticuloDAO.eliminarArticulo(a, this.cpds); 
+    }
 
     /* Modifica el articulo del sistema con el nombre de a, deja todos sus atributos como los atributos de a
      */
-    public void modificarArticulo(ArticuloVO a) { ArticuloDAO.modificarArticulo(a, this.cpds); }
+    public void modificarArticulo(ArticuloVO a) { 
+        ArticuloDAO.modificarArticulo(a, this.cpds); 
+    }
 
     /* Devuelve el articulo con el nombre art
      */
-    public ArticuloVO obtenerArticulo(String art) { return ArticuloDAO.obtenerArticulo(art, this.cpds); }
+    public ArticuloVO obtenerArticulo(String art) { 
+        return ArticuloDAO.obtenerArticulo(art, this.cpds); 
+    }
 
 }
