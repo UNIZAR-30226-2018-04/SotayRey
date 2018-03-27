@@ -288,8 +288,8 @@ public class EstadoPartida {
 
 
     /**
-     * El jugador pone la carta en la mesa si cumple con las normas del
-     * guiñote. Si no se lanza un excepción.
+     * El jugador pone la carta en la mesa si cumple con las normas del guiñote especificadas en el fichero: TODO: crer README.txt
+     * Si no se lanza un excepción.
      * @param jugador
      * @param carta
      * @throws ExceptionJugadorIncorrecto
@@ -311,17 +311,17 @@ public class EstadoPartida {
                 //Ronda de arrastre
                 else {
 
-                    /** Obligación de jugar al Palo de arrastre **/
+                    // Obligación de jugar al Palo de arrastre
                     Carta inicial = cartasEnTapete.get(0);
 
                     //Solo ha lanzado uno
-                    if (cartasEnTapete.size() == 1) {
+                    if (n_cartas == 1) {
 
                         if (carta.esMismoPalo(inicial)) {
                             //Carta es del mismo palo
 
                             if (carta.masPuntuacion(inicial)) {
-                                //TODO: es más grande que todas las demás del mismo palo
+                                //Es más grande la carta de arrastre
                                 ponerCartaMesa(carta, jugadorEncontrado);
                             } else {
                                 //TODO: que pasa si hay un triunfo en la mesa...
@@ -422,7 +422,7 @@ public class EstadoPartida {
      * Función que encuentra un usuario e intenta cantar por el jugador
      * identificado por "jugador". Si no existe ningún jugador en la partida
      * con ese identificador lanza una excepcion. Si el jugador no puede cantar
-     *  lanza una excepción.
+     * lanza una excepción.
      * @param jugador
      * @throws ExceptionJugadorIncorrecto
      */
@@ -538,7 +538,7 @@ public class EstadoPartida {
     /**
      * Devuelve una copia de cartas
      * @param cartas
-     * @return
+     * @return ArrayList<Carta>
      */
     private ArrayList<Carta> copiarCartas(ArrayList<Carta> cartas) {
         ArrayList<Carta> res = new ArrayList<>();
