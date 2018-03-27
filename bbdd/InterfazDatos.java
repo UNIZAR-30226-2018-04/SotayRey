@@ -139,9 +139,6 @@ public class InterfazDatos {
      */
     public ArticuloVO obtenerArticulo(String art) { return ArticuloDAO.obtenerArticulo(art, this.cpds); }
 
-    public  ArrayList<PartidaVO> obtenerPartidasPublicasCurso() {
-        return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds);
-    }
 
     // TODO: SOLO PARA PRUEBAS, BORRAR EN EL ENTREGABLE
     public void modificarStatsUsuario(StatsUsuarioVO s){
