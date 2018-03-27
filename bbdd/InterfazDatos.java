@@ -17,7 +17,7 @@ public class InterfazDatos {
     private InterfazDatos() throws IOException, SQLException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
-        dbProps.load(new FileInputStream("db.properties"));
+        dbProps.load(new FileInputStream("bbdd/db.properties"));
         cpds = new ComboPooledDataSource();
 
         cpds.setDriverClass(dbProps.getProperty("driver")); //loads the jdbc driver
@@ -52,6 +52,14 @@ public class InterfazDatos {
      */
     public void crearUsuario(UsuarioVO u) {
         UsuarioDAO.crearUsuario(u, this.cpds);
+    }
+
+    /*
+     * Devuelve cierto si y sólo si el usuario username posee la contraseña plaintextPassword. Si el usuario no posee
+     * ninguna contraseña lanzará la excepción ExceptionCampoInexistente
+     */
+    public boolean autentificarUsuario(String username, String plaintextPassword) throws  ExceptionCampoInexistente {
+        return UsuarioDAO.autentificarUsuario(username,plaintextPassword,this.cpds);
     }
 
     /*

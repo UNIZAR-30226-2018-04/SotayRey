@@ -58,7 +58,7 @@ public class UsuarioDAO {
         }
     }
 
-    public static boolean autentificarUsuario(String username, String plaintextPassword, ComboPooledDataSource pool) {
+    public static boolean autentificarUsuario(String username, String plaintextPassword, ComboPooledDataSource pool) throws  ExceptionCampoInexistente {
         boolean password_verified = false;
         Connection connection = null;
         Statement statement = null;
@@ -68,9 +68,9 @@ public class UsuarioDAO {
             ResultSet resultSet = statement.executeQuery("SELECT pw_hash FROM usuario WHERE username = '" + username + "'");
             resultSet.next();
             String stored_hash = resultSet.getString("pw_hash");
-            if(null == stored_hash)
-                throw new java.lang.IllegalArgumentException("El hash de " );
-
+            if(null == stored_hash) {
+                throw new ExceptionCampoInexistente("El usuario " + username + " no tiene password");
+            }
             password_verified = org.mindrot.jbcrypt.BCrypt.checkpw(plaintextPassword, stored_hash);
 
             return(password_verified);
@@ -122,7 +122,7 @@ public class UsuarioDAO {
         try {
             connection = pool.getConnection();
             statement = connection.createStatement();
-            String delete = "UPDATE usuario SET pw_hash = null, fb_token = 0 WHERE username = " + "'" + username + "'";
+            String delete = "UPDATE usuario SET pw_hash = null, fb_auth = 0 WHERE username = " + "'" + username + "'";
             statement.executeUpdate(delete);
         } catch (SQLException e) {
             e.printStackTrace();

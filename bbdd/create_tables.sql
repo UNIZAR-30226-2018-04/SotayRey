@@ -25,9 +25,6 @@ CREATE TABLE usuario (
     admin BOOL NOT NULL, -- true si administrador, false si usuario normal
     puntuacion INT UNSIGNED NOT NULL DEFAULT 0, -- No se contemplan puntuaciones negativas
     divisa INT UNSIGNED NOT NULL DEFAULT 0, -- No se contempla perder dinero una vez tienes 0 (dinero negativo)
-    -- timeEspera DATETIME, Momento de inicio de la espera, si está esperando a encontrar participante, null en caso contrario
-    puesto INT UNSIGNED, -- TODO: no puede ser 0
-    -- conectado BOOL NOT NULL,
     CONSTRAINT correo_unique UNIQUE(correo) -- no se permite más de un usuario con el mismo correo electrónico
 );
 -- Usuario borrado: pw_hash = null && token = null (los datos de ese usuario no se borran)
