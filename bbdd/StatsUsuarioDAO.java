@@ -26,11 +26,10 @@ public class StatsUsuarioDAO {
         try {
             connection = pool.getConnection();
             statement = connection.createStatement();
-            String updatepre = "UPDATE usuario SET";
+            String updatepre = "UPDATE usuario SET username = '" + stats.getUsername() + "'";
             String updatepost = " WHERE username = " + "'" + stats.getUsername() + "'";
-            updatepre = updatepre + "username = '" + stats.getUsername() + "'";
-            if(stats.getPuntuacion()!=-1) updatepre = updatepre + ", puntuacion = '" + stats.getPuntuacion() + "'";
-            if(stats.getDivisa()!=-1) updatepre = updatepre + ", divisa = '" + u.getDivisa() + "'";
+            if(stats.getPuntuacion()!=-1) updatepre = updatepre + ", puntuacion = " + stats.getPuntuacion();
+            if(stats.getDivisa()!=-1) updatepre = updatepre + ", divisa = " + stats.getDivisa();
 
             statement.executeUpdate(updatepre+updatepost);
         } catch (SQLException e) {
@@ -44,35 +43,7 @@ public class StatsUsuarioDAO {
     /* 
      * Devuelve las stats principales (puntuacion y divisa) del usuario username
      */
-    public static StatsUsuarioVO obtenerStatsUsuario(String username, ComboPooledDataSource pool) {
-        Connection connection = null;
-        Statement statement = null;
-        try {
-            connection = pool.getConnection();
-            statement = connection.createStatement();
-            String query = "SELECT * FROM usuario WHERE username = '" + username + "'";
-            ResultSet resultSet = statement.executeQuery(query);
-            
-            // TODO: Si el resultSet está vacío, lanzar excepción
-
-            StatsUsuarioVO su = new StatsUsuarioVO(username); 
-            resultSet.next();
-            u.setPuntuacion(resultSet.getInt("puntuacion"));
-            u.setDivisa(resultSet.getInt("divisa"));
-            return u;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
-            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
-        }
-    }
-
-    /*
-     * Devuelve TODAS las Stats del usuario username
-     */
-    public static StatsUsuarioVO obtenerTodasStatsUsuario(String username, ComboPooledDataSource pool) throws ExceptionCampoInexistente {
+    public static StatsUsuarioVO obtenerStatsUsuario(String username, ComboPooledDataSource pool) throws ExceptionCampoInvalido, ExceptionCampoInexistente {
         Connection connection = null;
         Statement statement = null;
         try {
@@ -87,20 +58,50 @@ public class StatsUsuarioDAO {
 
             StatsUsuarioVO su = new StatsUsuarioVO(username); 
             resultSet.next();
-            u.setPuntuacion(resultSet.getInt("puntuacion"));
-            u.setDivisa(resultSet.getInt("divisa"));
-            u.setPuesto(resultSet.getInt("puesto"));
+            su.setPuntuacion(resultSet.getInt("puntuacion"));
+            su.setDivisa(resultSet.getInt("divisa"));
+            return su;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+        }
+    }
+
+    /*
+     * Devuelve TODAS las Stats del usuario username
+     */
+    public static StatsUsuarioVO obtenerTodasStatsUsuario(String username, ComboPooledDataSource pool) throws ExceptionCampoInvalido, ExceptionCampoInexistente {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = pool.getConnection();
+            statement = connection.createStatement();
+            String query = "SELECT * FROM usuario WHERE username = '" + username + "'";
+            ResultSet resultSet = statement.executeQuery(query);
+            
+            if(!resultSet.isBeforeFirst()){
+                throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario: " + username + "  inexistente");
+            }
+
+            StatsUsuarioVO su = new StatsUsuarioVO(username); 
+            resultSet.next();
+            su.setPuntuacion(resultSet.getInt("puntuacion"));
+            su.setDivisa(resultSet.getInt("divisa"));
+            su.setPuesto(resultSet.getInt("puesto"));
 
             // Obtener la liga actual, la última a la que ha entrado
-            query = "SELECT p1.liga ligaActual FROM pertenece_liga p1 WHERE usuario = '"+ username + "'" +
-                    " AND NOT EXISTS (SELECT * FROM pertenece_liga p2 WHERE usuario = '" + username "' AND p2.timeEntrada > p1.timeEntrada)";
+            query = "SELECT p1.liga ligaActual FROM pertenece_liga p1 WHERE usuario = '"+ username + "'" + 
+                    " AND NOT EXISTS (SELECT * FROM pertenece_liga p2 WHERE usuario = '" + username + "' AND p2.timeEntrada > p1.timeEntrada)";
             resultSet = statement.executeQuery(query);
 
             if(!resultSet.isBeforeFirst()){
                 throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario: " + username + "  no registrado en ninguna liga");
             }
             resultSet.next();
-            u.setLigaActual(resultSet.getString("ligaActual"));
+            su.setLigaActual(resultSet.getString("ligaActual"));
     
             // Obtener la liga máxima en la que ha estado (puede ser que salga más de una vez la misma)
             query = "SELECT l.nombre ligaMax FROM pertenece_liga p, liga l WHERE p.usuario = '" + username + "'" + 
@@ -111,17 +112,17 @@ public class StatsUsuarioDAO {
                 throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario: " + username + "  no registrado en ninguna liga");
             }
             resultSet.next();
-            u.setLigaMaxima(resultSet.getString("ligaMax"));
+            su.setLigaMaxima(resultSet.getString("ligaMax"));
         
             // Obtener partidas ganadas por el usuario username
             query = "SELECT COUNT(*) ganadas FROM juega j, partida p WHERE j.juega = '" + username + 
                     "' AND j.partida = p.id AND j.equipo = p.ganador";
             resultSet = statement.executeQuery(query);
             if(!resultSet.isBeforeFirst())
-                u.setGanadas = 0;
+                su.setGanadas(0);
             else{
                 resultSet.next();
-                u.setGanadas(resultSet.getInt("ganadas"));
+                su.setGanadas(resultSet.getInt("ganadas"));
             }
             
             // Obtener partidas perdidas por el usuario username            
@@ -129,10 +130,10 @@ public class StatsUsuarioDAO {
                     "' AND j.partida = p.id AND j.equipo != p.ganador AND p.ganador != 'A' AND p.ganador != null";
             resultSet = statement.executeQuery(query);
             if(!resultSet.isBeforeFirst())
-                u.setPerdidas = 0;
+                su.setPerdidas(0);
             else{
                 resultSet.next();
-                u.setPerdidas(resultSet.getInt("perdidas"));
+                su.setPerdidas(resultSet.getInt("perdidas"));
             }
 
             // Obtener partidas en las que abandonaron al usuario username            
@@ -140,10 +141,10 @@ public class StatsUsuarioDAO {
                     "' AND j.partida = p.id AND p.ganador = 'A' AND j.abandonador = FALSE";
             resultSet = statement.executeQuery(query);
             if(!resultSet.isBeforeFirst())
-                u.setTeAbandonaron = 0;
+                su.setTeAbandonaron(0);
             else{
                 resultSet.next();
-                u.setTeAbandonaron(resultSet.getInt("teAbandonaron"));
+                su.setTeAbandonaron(resultSet.getInt("teAbandonaron"));
             }
 
             // Obtener partidas abandonadas por el usuario username            
@@ -151,13 +152,13 @@ public class StatsUsuarioDAO {
                     "' AND j.abandonador = TRUE";
             resultSet = statement.executeQuery(query);
             if(!resultSet.isBeforeFirst())
-                u.setAbandonaste = 0;
+                su.setAbandonaste(0);
             else{
                 resultSet.next();
-                u.setAbandonaste(resultSet.getInt("abandonadas"));
+                su.setAbandonaste(resultSet.getInt("abandonadas"));
             }
             
-            return u;
+            return su;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

@@ -85,7 +85,7 @@ public class InterfazDatos {
     /* 
      * Devuelve las stats principales (puntuacion y divisa) del usuario username
      */
-    public StatsUsuarioVO obtenerStatsUsuario(String username){
+    public StatsUsuarioVO obtenerStatsUsuario(String username) throws ExceptionCampoInexistente, ExceptionCampoInvalido{
         return StatsUsuarioDAO.obtenerStatsUsuario(username, this.cpds);    
     }
 
@@ -94,7 +94,7 @@ public class InterfazDatos {
      *      puntuacion, divisa, ligaActual, puesto, ligaMaxima, número de 
      *      partidas ganadas, perdidas, abandonadas y en las que fue abandonado
      */
-    public StatsUsuarioVO obtenerTodasStatsUsuario(String username){
+    public StatsUsuarioVO obtenerTodasStatsUsuario(String username) throws ExceptionCampoInexistente, ExceptionCampoInvalido{
         return StatsUsuarioDAO.obtenerTodasStatsUsuario(username, this.cpds);    
     }
 
@@ -123,5 +123,9 @@ public class InterfazDatos {
     public  ArrayList<PartidaVO> obtenerPartidasPublicasCurso() { 
         return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds); 
     }
-
+    
+    // TODO: SOLO PARA PRUEBAS, BORRAR EN EL ENTREGABLE
+    public void modificarStatsUsuario(StatsUsuarioVO s){
+        StatsUsuarioDAO.modificarStatsUsuario(s,this.cpds);
+    }
 }
