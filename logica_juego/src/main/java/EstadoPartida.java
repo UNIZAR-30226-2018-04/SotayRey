@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import ExceptionCartaIncorrecta;
-import ExceptionCartaYaExiste;
-import ExceptionEquipoIncompleto;
-import ExceptionJugadorIncorrecto;
-import ExceptionJugadorSinCarta;
+import main.java.ExceptionCartaIncorrecta;
+import main.java.ExceptionCartaYaExiste;
+import main.java.ExceptionEquipoIncompleto;
+import main.java.ExceptionJugadorIncorrecto;
+import main.java.ExceptionJugadorSinCarta;
 
 import static java.lang.Math.abs;
 
@@ -427,9 +427,14 @@ public class EstadoPartida {
      * @throws ExceptionJugadorIncorrecto
      */
     public void sumaCante(String jugador) throws ExceptionJugadorIncorrecto,
-            ExceptionNoHayCantes{
+            ExceptionNoHayCantes, ExceptionNoPuedesCantar{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        jugadorEncontrado.anyadirCante(triunfo);
+        if( jugadores.get(turno).equals(encuentraJugador(jugador)) || jugadores.get(turno+2).equals(encuentraJugador(jugador))){
+            jugadorEncontrado.anyadirCante(triunfo);
+        }
+        else{
+            throw new ExceptionNoPuedesCantar();
+        }
     }
 
     //TODO: sistema de puntos en caso de empate

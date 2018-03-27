@@ -102,17 +102,12 @@ public class LogicaPartida {
      */
     public EstadoPartida cantar(String jugador) throws    ExceptionJugadorIncorrecto,
                                                             ExceptionRondaNoAcabada,
-                                                            ExceptionTurnoIncorrecto,
+                                                            ExceptionNoPuedesCantar,
                                                             ExceptionNoHayCantes {
         ArrayList<String> jugadores = estado.getJugadoresId();
         if(jugadores.contains(jugador)){
             if(estado.getCartasEnTapete().size() == 0){
-                if(jugador.equals(estado.getTurno())){
-                    estado.sumaCante(jugador);
-                }
-                else{
-                    throw new ExceptionTurnoIncorrecto();
-                }
+                estado.sumaCante(jugador);
             }
             else {
                 throw new ExceptionRondaNoAcabada();

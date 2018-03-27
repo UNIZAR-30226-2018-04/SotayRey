@@ -88,19 +88,34 @@ public class LogicaPartidaTest {
 
         } catch (ExceptionNoHayCantes e){
             System.out.println("Superado... no hay nada que cantar");
-        } catch (ExceptionCartaIncorrecta | ExceptionCartaYaExiste | ExceptionNumeroMaximoCartas e1) {
+        } catch (ExceptionCartaIncorrecta | ExceptionCartaYaExiste | ExceptionNumeroMaximoCartas | ExceptionNoPuedesCantar
+                | ExceptionJugadorIncorrecto  | ExceptionRondaNoAcabada | ExceptionEquipoIncompleto e1) {
             fail("Excepción incorrecta");
-        } catch (ExceptionTurnoIncorrecto exceptionTurnoIncorrecto) {
-            exceptionTurnoIncorrecto.printStackTrace();
-        } catch (ExceptionEquipoIncompleto exceptionEquipoIncompleto) {
-            exceptionEquipoIncompleto.printStackTrace();
-        } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
-            exceptionJugadorIncorrecto.printStackTrace();
-        } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
-            exceptionRondaNoAcabada.printStackTrace();
         }
         try {
-            ;
+            ArrayList<String> jugadores = new ArrayList<>(Arrays.asList("j1",
+                    "j2", "j3", "j4"));
+            LogicaPartida logica = new LogicaPartida(jugadores);
+            EstadoPartida estado = logica.getEstado();
+
+            Carta c = new Carta(7, "E");
+            estado.setTriunfo(c);
+
+            Carta c1 = new Carta(10, "E");
+            Carta c2 = new Carta(12, "E");
+            Carta c3 = new Carta(10, "O");
+            Carta c4 = new Carta(12, "O");
+            Carta c5 = new Carta(7, "O");
+            Carta c6 = new Carta(2, "O");
+
+            estado.anyadirCartaJugador("j1",c1);
+            estado.anyadirCartaJugador("j1",c2);
+            estado.anyadirCartaJugador("j1",c3);
+            estado.anyadirCartaJugador("j1",c4);
+            estado.anyadirCartaJugador("j1",c5);
+            estado.anyadirCartaJugador("j1",c6);
+
+            logica.cantar("j1");
         }
         catch (Exception e){
             ;
