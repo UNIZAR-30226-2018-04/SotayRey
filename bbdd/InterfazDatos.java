@@ -39,6 +39,11 @@ public class InterfazDatos {
 
     }
 
+    /* 
+     * Devuelve la instancia singleton de la clase InterfazDatos
+     * Es necesario llamar a esta función primero para poder llamar al resto de métodos de esta interfaz:
+     *      ejemplo: InterfazDatos.instancia().crearUsuario(u);
+     */
     public static InterfazDatos instancia() throws IOException, SQLException, PropertyVetoException {
         if (ifd == null) {
             ifd = new InterfazDatos();
@@ -70,7 +75,7 @@ public class InterfazDatos {
     }
 
     /*
-     * Modifica los datos de perfil del usuario u
+     * Modifica los datos de perfil del usuario u (solamente los atributos que no son null)
      */
     public void modificarDatosUsuario(UsuarioVO u){
         UsuarioDAO.modificarDatosUsuario(u, this.cpds);
@@ -81,6 +86,22 @@ public class InterfazDatos {
      */
     public boolean esAdministrador(String username){
         return UsuarioDAO.esAdministrador(username, this.cpds);
+    }
+
+    /* 
+     * Devuelve las stats principales (puntuacion y divisa) del usuario username
+     */
+    public StatsUsuarioVO obtenerStatsUsuario(String username){
+        return StatsUsuarioDAO.obtenerStatsUsuario(username, this.cpds);    
+    }
+
+    /*
+     * Devuelve TODAS las Stats del usuario username:
+     *      puntuacion, divisa, ligaActual, puesto, ligaMaxima, número de 
+     *      partidas ganadas, perdidas, abandonadas y en las que fue abandonado
+     */
+    public StatsUsuarioVO obtenerTodasStatsUsuario(String username){
+        return StatsUsuarioDAO.obtenerTodasStatsUsuario(username, this.cpds);    
     }
 
     

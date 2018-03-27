@@ -15,7 +15,8 @@ public class StatsUsuarioVO {
     private String ligaMaxima;
     private int ganadas;
     private int perdidas;
-    private int abandonadas;
+    private int teAbandonaron;
+    private int abandonaste;
 
     public StatsUsuarioVO(String username) throws ExceptionCampoInvalido { 
         if (username.length()>15){
@@ -28,10 +29,11 @@ public class StatsUsuarioVO {
         this.puesto = -1;
         this.ganadas = -1;
         this.perdidas = -1;
-        this.abandonadas = -1;
+        this.teAbandonaron = -1;
+        this.abandonaste = -1;
     }
 
-    public StatsUsuarioVO(String username, int puntuacion, int divisa, String ligaActual, int puesto, String ligaMaxima, int ganadas, int perdidas, int abandonadas) throws ExceptionCampoInvalido {
+    public StatsUsuarioVO(String username, int puntuacion, int divisa, String ligaActual, int puesto, String ligaMaxima, int ganadas, int perdidas, int teAbandonaron, int abandonaste) throws ExceptionCampoInvalido {
         // Comprobar que la longitud de los campos no sea mayor que los limites de la base de datos
         if (username.length()>15 || ligaActual.length()>50 || ligaMaxima.length()>50){
             // Lanzar excepción de campo no válido 
@@ -49,7 +51,8 @@ public class StatsUsuarioVO {
         this.ligaMaxima = ligaMaxima;
         this.ganadas = ganadas;
         this.perdidas = perdidas;
-        this.abandonadas = abandonadas;
+        this.teAbandonaron = teAbandonaron;
+        this.abandonaste = abandonaste;
     }
 
     public String getUsername(){
@@ -84,8 +87,12 @@ public class StatsUsuarioVO {
         return perdidas;    
     }
 
-    public int getAbandonadas(){
-        return abandonadas;    
+    public int getTeAbandonaron(){
+        return teAbandonaron;    
+    }
+    
+    public int getAbandonaste(){
+        return abandonaste;    
     }
 
     public void setUsername(String username){
@@ -120,7 +127,11 @@ public class StatsUsuarioVO {
         this.perdidas = perdidas;    
     }
 
-    public void setAbandonadas(int abandonadas){
-        this.abandonadas = abandonadas;    
+    public void setTeAbandonaron(int teAbandonaron){
+        this.teAbandonaron = teAbandonaron;    
+    }
+    
+    public void setAbandonaste(int abandonaste){
+        this.abandonaste = abandonaste;
     }
 }
