@@ -68,7 +68,7 @@ triunfo.carta = {}
 triunfo.x = ejeX / 2;
 triunfo.y = (ejeY / 2) * 0.85;
 
-var arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
+var arrayJugadoresDefecto = [];
 var arrayJugadores = [];
 
 /* Inicializa las variables que dependen de la resolucion del dispositivo */
@@ -139,6 +139,9 @@ function inicializarDispositivo(){
 //jArriba.numCartas;
     jDer.dorso;
     jDer.rotacion = 270;
+
+
+    arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
 }
 
 /* Mapeo en funcion  del tipo de partida y mi identificador */
@@ -291,6 +294,8 @@ function create() {
     jArriba.cartasEnMano = game.add.group();
     jIzq.cartasEnMano = game.add.group();
     jRef.cartasEnMano = game.add.group();
+    jRef.cartasEnMano.inputEnabled = true;
+    //jRef.cartasEnMano.onInputDown.add(pulsarCarta, this);
     jDer.cartasEnMano = game.add.group();
     inicializarJugadores();
     dibujarJugador(jArriba);
@@ -299,6 +304,12 @@ function create() {
     inicializarRef();
 
     modificarTriunfo(12, "copas");
+
+    var pruebaGrupo = game.add.group()
+    var prueba = pruebaGrupo.create(0, 0, 'cuadroCarta');
+
+    prueba.inputEnabled = true;
+    prueba.events.onInputDown.add(pulsaCarta, this);
 
 
     // Simulacion partida
@@ -409,6 +420,7 @@ function enviarMensaje(mensaje){
 }
 
 function recibirMensaje(msg){
+    console.log(msg);
     // TODO hay que parsear el mensaje
 }
 
@@ -459,6 +471,10 @@ function jugadorLanzaCarta(idJugador, numero, palo){
     }
 }
 
+function pulsaCarta(){
+    console.log("HA PUSLADO CARTA");
+}
+
 /* Un jugador roba una carta, si no es el referencia da igual el numero y palo */
 function jugadorRobaCarta(idJugador, numero, palo){
     var jugador = arrayJugadores[idJugador];
@@ -471,6 +487,8 @@ function jugadorRobaCarta(idJugador, numero, palo){
     }
     else {
         var carta = crearCarta(numero, palo);
+        carta.inputEnabled = true;
+        carta.events.onInputDown.add(pulsaCarta, this);
         jugador.cartasEnMano.add(carta);
         dibujarJugador(jugador);
         dibujarCartaLanzada(jugador);
