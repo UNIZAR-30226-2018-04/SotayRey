@@ -90,7 +90,6 @@ public class StatsUsuarioDAO {
             resultSet.next();
             su.setPuntuacion(resultSet.getInt("puntuacion"));
             su.setDivisa(resultSet.getInt("divisa"));
-            su.setPuesto(resultSet.getInt("puesto"));
 
             // Obtener la liga actual, la última a la que ha entrado
             query = "SELECT p1.liga ligaActual FROM pertenece_liga p1 WHERE usuario = '"+ username + "'" + 
@@ -102,6 +101,8 @@ public class StatsUsuarioDAO {
             }
             resultSet.next();
             su.setLigaActual(resultSet.getString("ligaActual"));
+
+            //TODO: Obtener el puesto
     
             // Obtener la liga máxima en la que ha estado (puede ser que salga más de una vez la misma)
             query = "SELECT l.nombre ligaMax FROM pertenece_liga p, liga l WHERE p.usuario = '" + username + "'" + 
