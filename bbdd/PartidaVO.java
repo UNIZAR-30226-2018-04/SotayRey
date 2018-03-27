@@ -13,13 +13,13 @@ public class PartidaVO {
     private Timestamp timeInicio;
     private Timestamp timeFin;
     private boolean publica;
-    private char ganador;
-    private List<UsuarioVO> usuarios;
+    private char ganador; // '1' si ganador equipo1, '2' si ganador equipo2, 'A' si abandonada
+    private List<UsuarioVO> usuarios; // miembros del equipo 1 en las posiciones pares del vector, miembros del equipo 2 en las impares
     private List<Integer> cuarentas;
     private List<Integer> veintes;
-    private int puntos1;
-    private int puntos2;
-    private int abandonador;
+    private int puntos1; // puntos obtenidos por el equipo1
+    private int puntos2; // puntos obtenidos por el equipo2
+    private int abandonador; // indice de la lista de usuarios del usuario abandonador, null si ganador != 'A'
 
     /* Constructor para crear una nueva partida en curso, los miembros del equipo
      * uno deben ir en las posiciones pares del vector, los miembros del equipo dos

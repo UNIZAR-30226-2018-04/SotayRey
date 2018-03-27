@@ -107,9 +107,61 @@ public class InterfazDatos {
 
     /* Se modifican la partida p en la base de datos con los datos de finalización, p debe incluir
      * el id que se modificó en la función crearNuevaPartida(p).
+     * Actualiza las puntuaciones y divisas de los usuarios implicados 
+     *      (Ganada:3puntos / 5monedas, Perdida:0puntos / 1moneda, Abandonada:-1puntos/ 0monedas, Teabandonan:0puntos / 1moneda)
      */
-    public void finalizarPartida(PartidaVO p) { 
-        PartidaDAO.finalizarPartida(p, this.cpds); 
+    public void finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido{ 
+        // Finalizar partida
+        PartidaDAO.finalizarPartida(p, this.cpds);
+
+        // Actualizar datos de los usuarios implicados
+        char gan = p.getGanador();
+        
+        List<UsuarioVO> lista = p.getUsuarios();
+        // Partida NO abandonada
+        if (gan=='1' or gan=='2'){
+            for(int i=0; i<lista.size(); i=i+2){
+                if(gan =='1'){
+                    //ganador
+                    StatsUsuarioVO su1 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i).getUsername(),this.cpds);
+                    su1.setPuntuacion(su1.getPuntuacion()+3);
+                    su1.setDivisa(su1.getDivisa()+5);
+                    StatsUsuarioDAO.modificarStatsUsuario(su1,this.cpds);
+                    //perdedor
+                    StatsUsuarioVO su2 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i+1).getUsername(),this.cpds); 
+                    su2.setDivisa(su2.getDivisa()+1); 
+                    StatsUsuarioDAO.modificarStatsUsuario(su2,this.cpds);         
+                }
+                else{
+                    //perdedor
+                    StatsUsuarioVO su1 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i).getUsername(),this.cpds);
+                    su1.setDivisa(su1.getDivisa()+1);
+                    StatsUsuarioDAO.modificarStatsUsuario(su1,this.cpds);
+                    //ganador
+                    StatsUsuarioVO su2 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i+1).getUsername(),this.cpds); 
+                    su2.setPuntuacion(su2.getPuntuacion()+3)
+                    su2.setDivisa(su2.getDivisa()+5); 
+                    StatsUsuarioDAO.modificarStatsUsuario(su2,this.cpds);  
+                    
+                }            
+            }
+        }
+        // Partida abandonada
+        else if (gan=='A'){
+            for(int i=0; i<lista.size(); i++){
+                StatsUsuarioVO su = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i).getUsername(),this.cpds);
+                if(p.getAbandonador()==i){
+                    su.setPuntuacion(su.getPuntuacion()-1);
+                }
+                else{
+                    su.setDivisa(su.getDivisa()+1);
+                } 
+                StatsUsuarioDAO.modificarStatsUsuario(su,this.cpds);           
+            }        
+        }
+        else{
+            throws ExceptionCampoInvalido("La partida debe estar finalizada (con ganador o abandonador)");        
+        } 
     }
 
     /* Devuelve un array con todas las partidas jugadas por el usuario identificado por username
@@ -124,7 +176,7 @@ public class InterfazDatos {
         return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds); 
     }
     
-    // TODO: SOLO PARA PRUEBAS, BORRAR EN EL ENTREGABLE
+    //TODO: SOLO PARA PRUEBAS, BORRAR EN EL ENTREGABLE
     public void modificarStatsUsuario(StatsUsuarioVO s){
         StatsUsuarioDAO.modificarStatsUsuario(s,this.cpds);
     }
