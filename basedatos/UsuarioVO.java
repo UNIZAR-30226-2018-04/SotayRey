@@ -111,5 +111,11 @@ public class UsuarioVO {
     public void setTimeCreacion(Timestamp timeCreacion){
         this.timeCreacion = timeCreacion;
     }
+  
+    // funcion solo de prueba: BORRAR EN VERSION ENTREGABLE
+    public void mostrar(){
+        System.out.println(username + " " + correo + " " + nombre + " "+ apellidos);
+    }
+
        
 }

@@ -170,7 +170,7 @@ public class EstadoPartida {
         }
 
         // Hay que entregar el triunfo
-        if (this.triunfo_entregado == false){
+        if (!this.triunfo_entregado){
             this.triunfo_entregado = true;
             return getTriunfo();
         }
@@ -286,15 +286,18 @@ public class EstadoPartida {
         j.quitarCartaEnMano(c);
     }
 
+    
 
     /**
-     * El jugador pone la carta en la mesa si cumple con las normas del guiñote especificadas en el fichero: TODO: crer README.txt
-     * Si no se lanza un excepción.
+     * El jugador pone la carta en la mesa si cumple con las normas del 
+     * guiñote especificadas en el fichero: //TODO crear README.txt
+     * si no se lanza un excepción.
      * @param jugador
      * @param carta
      * @throws ExceptionJugadorIncorrecto
      * @throws ExceptionJugadorSinCarta
      * @throws ExceptionTurnoIncorrecto
+     * @throws ExceptionCartaIncorrecta
      */
     public void lanzarCartaJugador(String jugador, Carta carta) throws
             ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
@@ -317,42 +320,46 @@ public class EstadoPartida {
                     //Solo ha lanzado uno
                     if (n_cartas == 1) {
 
+
                         if (carta.esMismoPalo(inicial)) {
                             //Carta es del mismo palo
 
-                            if (carta.masPuntuacion(inicial)) {
-                                //Es más grande la carta de arrastre
-                                ponerCartaMesa(carta, jugadorEncontrado);
-                            } else {
-                                //TODO: que pasa si hay un triunfo en la mesa...
-                                if (tieneOtraMejorDelPalo(jugadorEncontrado,
-                                        carta)) {
-                                    throw new ExceptionCartaIncorrecta
-                                            ("Tienes otra carta mejor del " +
-                                                    "mismo palo");
-                                } else {
-                                    ponerCartaMesa(carta, jugadorEncontrado);
-                                }
-                            }
+                            puedeLanzarDelPalo(carta, inicial,
+                                    jugadorEncontrado);
+
                         } else {
 
-                            /** Obligación de jugar al Triunfo **/
+                            /** Obligación de matar con el Triunfo **/
                             if (carta.esMismoPalo(triunfo)) {
                                 //Lanza un triunfo
                                 ponerCartaMesa(carta, jugadorEncontrado);
-                            } else { // Mira si no tiene un triunfo en la mano
-                                if (tieneTriunfoEnMano(jugadorEncontrado)) {
+                            } else {
+                                // Comprueba si tiene un triunfo en la mano
+                                if (tienePaloEnMano(jugadorEncontrado,
+                                        triunfo)) {
+                                    // Tiene un triunfo en la mano para matar
                                     throw new ExceptionCartaIncorrecta
-                                            ("Jugador tiene un triunfo en " +
-                                                    "mano para lanzar");
+                                            ("Tienes un triunfo en la mano");
                                 } else {
-                                    /** Cualquier carta **/
+
+                                    /** Lanza cualquier carta porque no 
+                                     * cumple ninguna obligación 
+                                     */
                                     ponerCartaMesa(carta, jugadorEncontrado);
                                 }
                             }
                         }
-                    } else {
-                        //TODO: hacer casos si es el 3º o 4º lanzador
+                    } else { // Han lanzado dos o más
+                        // Es del palo inicial
+                        if (carta.esMismoPalo(inicial)){
+                            // Comprueba si ha matado el compañero
+                            if (haMatadoCompanyero()){
+                                ponerCartaMesa(carta, jugadorEncontrado);
+                            } else { // compañero no ha matado
+                                puedeLanzarDelPalo(carta, inicial,
+                                        jugadorEncontrado);
+                            }
+                        }
                     }
                 }
             } else {
@@ -427,7 +434,7 @@ public class EstadoPartida {
      * @throws ExceptionJugadorIncorrecto
      */
     public void sumaCante(String jugador) throws ExceptionJugadorIncorrecto,
-            ExceptionNoHayCantes, ExceptionNoPuedesCantar{
+            ExceptionNoPuedesCantar{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         if( jugadores.get(turno).equals(encuentraJugador(jugador)) || jugadores.get(turno+2).equals(encuentraJugador(jugador))){
             jugadorEncontrado.anyadirCante(triunfo);
@@ -568,16 +575,16 @@ public class EstadoPartida {
 
     /**
      * Devuelve true si y solo el jugador tiene una carta en mano con el
-     * mismo palo que el triunfo.
+     * mismo palo que la "carta".
      * @param j
      * @return
      */
-    private boolean tieneTriunfoEnMano(Jugador j){
-        boolean tieneTriunfo = true;
+    private boolean tienePaloEnMano(Jugador j, Carta carta){
+        boolean tienePalo = true;
         for (Carta c: j.getCartasEnMano()) {
-            tieneTriunfo = tieneTriunfo && c.esMismoPalo(triunfo);
+            tienePalo = tienePalo && c.esMismoPalo(carta);
         }
-        return tieneTriunfo;
+        return tienePalo;
     }
 
     /**
@@ -611,8 +618,62 @@ public class EstadoPartida {
         pasarTurno(j.getId());
     }
 
+
+    
+    /**
+     * Devuelve true si y solo la carta del triunfo ha sido entregada a algún
+     * jugador.
+     * @return
+     */
     private boolean getTriunfoEntregado(){
         return this.triunfo_entregado;
+    }
+
+    /**
+     * Si la carta c tiene más puntuación que otra o no tiene otra del mismo
+     * palo que otra y más puntuación en la mano, lanza la carta c. En caso
+     * contrario, lanza un excepción.
+     * @param c
+     * @param otro
+     * @param j
+     * @throws ExceptionCartaIncorrecta
+     * @throws ExceptionJugadorSinCarta
+     */
+    private void puedeLanzarDelPalo(Carta c, Carta otro, Jugador j)
+        throws ExceptionCartaIncorrecta, ExceptionJugadorSinCarta{
+        if (c.masPuntuacion(otro)) {
+            //Es más grande la c de arrastre
+            ponerCartaMesa(c, j);
+        } else {
+            if (tieneOtraMejorDelPalo(j,
+                    c)) {
+                throw new ExceptionCartaIncorrecta ("Tienes otra c mejor del " +
+                                "mismo palo");
+            } else {
+                ponerCartaMesa(c, j);
+            }
+        }
+    }
+
+
+
+    private boolean haMatadoCompanyero(){
+        boolean res = false;
+        int n_cartas = cartasEnTapete.size();
+        Carta compi = cartasEnTapete.get(n_cartas-2);
+        Carta oponente;
+        if (n_cartas == 2){ // Eres el 3º en lanzar
+            oponente = cartasEnTapete.get(1);
+            return !oponente.mataCartaOtra(triunfo, compi);
+        }
+        if (n_cartas == 3){ // Eres el 4º en lanzar
+            oponente = cartasEnTapete.get(0);
+            res = compi.mataCartaOtra(triunfo, oponente);
+            oponente = cartasEnTapete.get(2);
+            res = res & !oponente.mataCartaOtra(triunfo, compi);
+        }
+        return res;
+
     }
 
 }

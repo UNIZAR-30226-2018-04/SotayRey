@@ -1,10 +1,12 @@
+
 /*
  * Autor: Sergio Izquierdo Barranco
  * Fecha: 22-03-18
  * Fichero: Objeto ArtículoUsuario
  */
 
-public class ArticuloUsuarioVO extends ArticuloVO{
+
+public class ArticuloUsuarioVO extends ArticuloVO {
     private boolean disponible;
     private boolean favorito;
     private boolean comprado;

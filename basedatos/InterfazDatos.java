@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.io.FileInputStream;
 import java.util.List;
@@ -18,7 +19,7 @@ public class InterfazDatos {
     private InterfazDatos() throws IOException, SQLException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
-        dbProps.load(new FileInputStream("bbdd/db.properties"));
+        dbProps.load(new FileInputStream("basedatos/db.properties"));
         cpds = new ComboPooledDataSource();
 
         cpds.setDriverClass(dbProps.getProperty("driver")); //loads the jdbc driver
@@ -119,7 +120,7 @@ public class InterfazDatos {
      * Actualiza las puntuaciones y divisas de los usuarios implicados 
      *      (Ganada:3puntos / 5monedas, Perdida:0puntos / 1moneda, Abandonada:-1puntos/ 0monedas, Teabandonan:0puntos / 1moneda)
      */
-    public void finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido{ 
+    public void finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido, ExceptionCampoInexistente{
         // Finalizar partida
         PartidaDAO.finalizarPartida(p, this.cpds);
 
@@ -185,21 +186,29 @@ public class InterfazDatos {
         return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds); 
     }
 
-    /* Añade un nuevo artículo al sistema. El atributo requiere de a puede ser nulo si no se requiere ningun
+    /* Añade un nuevo artículo al sistema. El atributo requiere de a puede ser nulo si no se requiere ninguna
      * liga para desbloquear el artículo
      */
-    public void crearArticulo(ArticuloVO a) { ArticuloDAO.crearArticulo(a, this.cpds); }
+    public void crearArticulo(ArticuloVO a) { 
+        ArticuloDAO.crearArticulo(a, this.cpds); 
+    }
 
     /* Elimina un artículo del sistema basándose en el nombre del artículo a
      */
-    public void eliminarArticulo(ArticuloVO a) { ArticuloDAO.eliminarArticulo(a, this.cpds); }
+    public void eliminarArticulo(ArticuloVO a) { 
+        ArticuloDAO.eliminarArticulo(a, this.cpds); 
+    }
 
     /* Modifica el articulo del sistema con el nombre de a, deja todos sus atributos como los atributos de a
      */
-    public void modificarArticulo(ArticuloVO a) { ArticuloDAO.modificarArticulo(a, this.cpds); }
+    public void modificarArticulo(ArticuloVO a) { 
+        ArticuloDAO.modificarArticulo(a, this.cpds); 
+    }
 
     /* Devuelve el articulo con el nombre art
      */
-    public ArticuloVO obtenerArticulo(String art) { return ArticuloDAO.obtenerArticulo(art, this.cpds); }
+    public ArticuloVO obtenerArticulo(String art) { 
+        return ArticuloDAO.obtenerArticulo(art, this.cpds); 
+    }
 
 }
