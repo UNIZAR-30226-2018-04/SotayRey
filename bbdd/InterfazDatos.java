@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.io.FileInputStream;
+import java.util.List;
 
 public class InterfazDatos {
 
@@ -127,7 +128,7 @@ public class InterfazDatos {
         
         List<UsuarioVO> lista = p.getUsuarios();
         // Partida NO abandonada
-        if (gan=='1' or gan=='2'){
+        if (gan=='1' || gan=='2'){
             for(int i=0; i<lista.size(); i=i+2){
                 if(gan =='1'){
                     //ganador
@@ -147,7 +148,7 @@ public class InterfazDatos {
                     StatsUsuarioDAO.modificarStatsUsuario(su1,this.cpds);
                     //ganador
                     StatsUsuarioVO su2 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i+1).getUsername(),this.cpds); 
-                    su2.setPuntuacion(su2.getPuntuacion()+3)
+                    su2.setPuntuacion(su2.getPuntuacion()+3);
                     su2.setDivisa(su2.getDivisa()+5); 
                     StatsUsuarioDAO.modificarStatsUsuario(su2,this.cpds);  
                     
@@ -168,7 +169,7 @@ public class InterfazDatos {
             }        
         }
         else{
-            throws ExceptionCampoInvalido("La partida debe estar finalizada (con ganador o abandonador)");        
+            throw new ExceptionCampoInvalido("La partida debe estar finalizada (con ganador o abandonador)");
         } 
     }
 
