@@ -1,7 +1,6 @@
 import java.io.*;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
 
@@ -72,25 +71,25 @@ public class RegistroServlet extends HttpServlet {
                 dispatcher.forward(request,response);
             }
             else{//Si todos los datos no son null
-                //UsuarioVO usuarioVo = null;
-                //InterfazDatos facade = null;
+                UsuarioVO usuarioVo = null;
+                InterfazDatos facade = null;
 
                 try {
                     //TODO: Falta añadir la contraseña
-                    //usuarioVo = new UsuarioVO(login, email, nombre, apellidos, false);
+                    usuarioVo = new UsuarioVO(login, password, email, nombre, apellidos, false);
                 }
                 catch(Exception e){
                     //TODO: Tratar error
                 }
 
                 try {
-                    //facade = new InterfazDatos();
+                    facade = new InterfazDatos.instancia();
                 }
                 catch(Exception e){
                     //TODO: Tratar error
                 }
 
-                //facade.crearUsuario(usuarioVo);
+                facade.crearUsuario(usuarioVo);
 
                 HttpSession sesion= request.getSession();
                 sesion.setAttribute("userId", login);
