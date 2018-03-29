@@ -19,11 +19,15 @@ public class PartidaDAO {
             connection = pool.getConnection();
             statement = connection.createStatement();
             connection.setAutoCommit(false);
-
-            //Comienza transacción
-            SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String insertPartida = "INSERT INTO partida (timeInicio, publica) VALUES ('" +
-                    sd.format(p.getTimeInicio()) + "'," + p.isPublica() + ")";
+            String insertPartida;
+            if(p.getTimeInicio()!=null){//Comienza transacción
+                SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                insertPartida = "INSERT INTO partida (timeInicio, publica) VALUES ('" +
+                        sd.format(p.getTimeInicio()) + "'," + p.isPublica() + ")";
+            }
+            else{
+                insertPartida = "INSERT INTO partida (publica) VALUES ('" + p.isPublica() + ")";
+            }
 
             statement.executeUpdate(insertPartida);
 

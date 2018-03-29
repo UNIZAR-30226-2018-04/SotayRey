@@ -21,6 +21,16 @@ public class PartidaVO {
     private int puntos2; // puntos obtenidos por el equipo2
     private int abandonador; // indice de la lista de usuarios del usuario abandonador, null si ganador != 'A'
 
+    /* Constructor para crear una nueva partida en curso sin especificar el time de Inicio, 
+     * (se actualizará automáticamente en la base de datos) los miembros del equipo
+     * uno deben ir en las posiciones pares del vector, los miembros del equipo dos
+     * en las impares.
+     */    
+    public PartidaVO(boolean publica, List<UsuarioVO> usuarios) {
+        this.publica = publica;
+        this.usuarios = usuarios;
+    }    
+
     /* Constructor para crear una nueva partida en curso, los miembros del equipo
      * uno deben ir en las posiciones pares del vector, los miembros del equipo dos
      * en las impares

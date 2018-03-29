@@ -79,6 +79,7 @@ public class StatsUsuarioDAO {
         try {
             connection = pool.getConnection();
             statement = connection.createStatement();
+            connection.setAutoCommit(false);
             String query = "SELECT * FROM usuario WHERE username = '" + username + "'";
             ResultSet resultSet = statement.executeQuery(query);
             
@@ -172,13 +173,15 @@ public class StatsUsuarioDAO {
                 su.setAbandonaste(resultSet.getInt("abandonadas"));
             }
             
+            connection.commit();
             return su;
+            
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         } finally {
             if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
-            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (connection != null) try { connection.setAutoCommit(true); connection.close(); } catch (SQLException e) {e.printStackTrace();}
         }
     }
         
