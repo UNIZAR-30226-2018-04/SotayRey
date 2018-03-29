@@ -88,8 +88,8 @@ CREATE TABLE juega (
     abandonador BOOL, -- true: este jugador ha abandonado la partida, false en caso contrario
     FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
     -- Si se borra un usuario, se borran todas sus relaciones 'juega' (se borra por tanto parte de la información de esa partida)
-    FOREIGN KEY (partida) REFERENCES partida(id) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
-    -- Realmente, no se van a borrar nunca usuarios ni partidas
+    FOREIGN KEY (partida) REFERENCES partida(id) ON DELETE RESTRICT ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
+    -- No se permite el borrado de partidas si hay jugadores registrados en ellas. Realmente, no se van a borrar nunca usuarios ni partidas
     CONSTRAINT juega_pk PRIMARY KEY (usuario, partida)
 );
 
@@ -98,8 +98,8 @@ CREATE TABLE pertenece_liga (
     liga VARCHAR(50),
     timeEntrada DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha de entrada del usuario en esa liga
     FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
-    FOREIGN KEY (liga) REFERENCES liga(nombre) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
-    -- Realmente, no se van a borrar nunca usuarios ni ligas
+    FOREIGN KEY (liga) REFERENCES liga(nombre) ON DELETE RESTRICT ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
+    -- No se permite el borrado de ligas si hay jugadores registrados en ellas. Realmente, no se van a borrar nunca usuarios ni ligas
     CONSTRAINT pertenece_liga_pk PRIMARY KEY (usuario, liga, timeEntrada)
 );
 
@@ -109,7 +109,7 @@ CREATE TABLE posee (
     preferido BOOL, -- true: es el articulo preferido del usuario, false en caso contrario. TODO: solo puede haber un preferido por usuario y tipo de articulo
     FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
     FOREIGN KEY (articulo) REFERENCES articulo(nombre) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
-    -- Si se borra un articulo, dejan de poseerlo todos los usuarios que lo tenían
+    -- Si se borra un articulo, dejan de poseerlo todos los usuarios que lo tenían. cuidado!! al borrar articulos que sean preferidos de algun usuario
     CONSTRAINT pertenece_liga_pk PRIMARY KEY (usuario, articulo)
 );
 

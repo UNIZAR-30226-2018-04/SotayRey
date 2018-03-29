@@ -37,7 +37,7 @@ public class InterfazDatos {
     /*
      * Devuelve la instancia singleton de la clase InterfazDatos
      * Es necesario llamar a esta función primero para poder llamar al resto de métodos de esta interfaz:
-     *      ejemplo: InterfazDatos.instancia().crearUsuario(u);
+     *      ejemplo de uso: InterfazDatos.instancia().crearUsuario(u);
      */
     public static InterfazDatos instancia() throws IOException, SQLException, PropertyVetoException {
         if (ifd == null) {
@@ -66,7 +66,7 @@ public class InterfazDatos {
     /*
      * Devuelve un usuario con todos sus datos (datos de perfil de usuario), a partir de su username
      */
-    public UsuarioVO obtenerDatosUsuario(String username) {
+    public UsuarioVO obtenerDatosUsuario(String username) throws ExceptionCampoInexistente{
         return UsuarioDAO.obtenerDatosUsuario(username, this.cpds);
     }
 
@@ -87,7 +87,7 @@ public class InterfazDatos {
     /*
      * Devuelve true si el usuario identificado por username es un administrador, false en caso contrario
      */
-    public boolean esAdministrador(String username){
+    public boolean esAdministrador(String username) throws ExceptionCampoInexistente{
         return UsuarioDAO.esAdministrador(username, this.cpds);
     }
 
@@ -183,6 +183,39 @@ public class InterfazDatos {
      */
     public  ArrayList<PartidaVO> obtenerPartidasPublicasCurso() { 
         return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds); 
+    }
+
+    /* Crea una nueva liga en el sistema. Necesita un nombre y los porcentajes min y max que la definen
+     */
+    public void crearLiga(LigaVO l){
+        LigaDAO.crearLiga(l, this.cpds);
+    }
+    
+    /* Devuelve los datos básicos de la liga denominada nombre
+     */
+    public LigaVO obtenerDatosLiga(String nombre) throws ExceptionCampoInexistente{
+        return LigaDAO.obtenerDatosLiga(nombre, this.cpds);
+    }
+
+    /* Elimina la liga denominada nombre del sistema. Cuidado! Está operación no se permitirá si hay usuarios
+     * que pertenezcan a esta liga
+     */   
+    public void eliminarLiga(String nombre){
+        LigaDAO.eliminarLiga(nombre, this.cpds);
+    }
+
+    /*
+     * Modifica los datos de la liga l (solamente los atributos que no son null)
+     */
+    public void modificarDatosLiga(LigaVO l){
+        LigaDAO.modificarDatosLiga(l,this.cpds);    
+    }
+    
+    /* Devuelve la clasificación actual completa de la liga denominada nombre, formada por los nombres de los 
+     * usuarios y sus puntuaciones (el resto de atributos de de los StatsUsuario tienen valor null)
+     */
+    public ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre){
+        return LigaDAO.obtenerClasificacionLiga(nombre, this.cpds);
     }
 
     /* Añade un nuevo artículo al sistema. El atributo requiere de a puede ser nulo si no se requiere ninguna

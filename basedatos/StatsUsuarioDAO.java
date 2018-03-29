@@ -102,7 +102,20 @@ public class StatsUsuarioDAO {
             resultSet.next();
             su.setLigaActual(resultSet.getString("ligaActual"));
 
-            //TODO: Obtener el puesto
+            // Obtener el puesto
+            query = "SELECT rank puesto FROM" +
+                    "(SELECT @rank:=@rank+1 AS rank, u1.username user, u1.puntuacion FROM (SELECT @rank:=0) r, pertenece_liga p1, usuario u1" +
+                    " WHERE liga = '"+ su.getLigaActual() + "' AND p1.usuario = u1.username" + 
+                    " AND NOT EXISTS (SELECT * FROM pertenece_liga p2 WHERE p2.usuario = p1.usuario AND p2.timeEntrada > p1.timeEntrada)" + 
+                    " ORDER BY puntuacion DESC) t" + 
+                    " WHERE user = '" + su.getUsername() + "'";
+            resultSet = statement.executeQuery(query);
+
+            if(!resultSet.isBeforeFirst()){
+                throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario: " + username + "  no registrado en ninguna liga");
+            }
+            resultSet.next();
+            su.setPuesto(resultSet.getInt("puesto"));
     
             // Obtener la liga máxima en la que ha estado (puede ser que salga más de una vez la misma)
             query = "SELECT l.nombre ligaMax FROM pertenece_liga p, liga l WHERE p.usuario = '" + username + "'" + 

@@ -11,9 +11,7 @@ import java.sql.Timestamp;
 public class UsuarioVO {
 
     private String username;
-    //private String password o pw_hash; ??
     private String correo;
-    //private String fb_token;
     private Timestamp timeCreacion;
     private String plaintextPassword;
     private String nombre;
@@ -112,10 +110,4 @@ public class UsuarioVO {
         this.timeCreacion = timeCreacion;
     }
   
-    // funcion solo de prueba: BORRAR EN VERSION ENTREGABLE
-    public void mostrar(){
-        System.out.println(username + " " + correo + " " + nombre + " "+ apellidos);
-    }
-
-       
 }

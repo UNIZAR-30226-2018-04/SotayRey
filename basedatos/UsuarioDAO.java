@@ -50,6 +50,20 @@ public class UsuarioDAO {
             prevalues = prevalues + ")";
             postvalues = postvalues + ")";
             statement.executeUpdate(prevalues+postvalues);
+            
+            //Buscar la liga más baja
+            String query = "SELECT nombre FROM liga WHERE porcentaje_max = 100";
+            resultSet = statement.executeQuery(query);
+
+            if(!resultSet.isBeforeFirst()){
+                throw new ExceptionCampoInexistente("Error de acceso a la base de datos: No existe ninguna liga para los nuevos usuarios");
+            }
+            resultSet.next();
+            String ligaMin = resultSet.getString("nombre");
+            // Insertar el nuevo usuario en la liga más baja
+            String insert_liga = "INSERT INTO pertenece_liga (usuario, liga) VALUES ('"+ u.getUsername() + "', '" + ligaMin + "')";
+            statement.executeUpdate(insert_liga);
+
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -83,7 +97,7 @@ public class UsuarioDAO {
         return password_verified;
     }
 
-    public static UsuarioVO obtenerDatosUsuario(String username, ComboPooledDataSource pool) {
+    public static UsuarioVO obtenerDatosUsuario(String username, ComboPooledDataSource pool) throws ExceptionCampoInexistente{
         Connection connection = null;
         Statement statement = null;
         try {
@@ -92,7 +106,9 @@ public class UsuarioDAO {
             String query = "SELECT * FROM usuario WHERE username = '" + username + "'";
             ResultSet resultSet = statement.executeQuery(query);
             
-            // TODO: Si el resultSet está vacío, lanzar excepción
+            if(!resultSet.isBeforeFirst()){
+                throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario: " + username + "  no existente");
+            }
 
             UsuarioVO u = new UsuarioVO(); 
             resultSet.next();
@@ -157,7 +173,7 @@ public class UsuarioDAO {
         }
     }
 
-    public static boolean esAdministrador(String username, ComboPooledDataSource pool){
+    public static boolean esAdministrador(String username, ComboPooledDataSource pool) throws ExceptionCampoInexistente{
         Connection connection = null;
         Statement statement = null;
         try {
@@ -166,7 +182,9 @@ public class UsuarioDAO {
             String query = "SELECT admin FROM usuario WHERE username = '" + username + "'";
             ResultSet resultSet = statement.executeQuery(query);
             
-            // TODO: Si el resultSet está vacío, lanzar excepción
+            if(!resultSet.isBeforeFirst()){
+                throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario: " + username + "  no existente");
+            }
 
             resultSet.next();
             return resultSet.getBoolean("admin");
