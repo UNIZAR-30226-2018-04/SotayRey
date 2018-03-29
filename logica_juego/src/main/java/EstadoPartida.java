@@ -462,7 +462,7 @@ public class EstadoPartida {
 
     /**
      * Devuelve la lista de cartas de la baraja española
-     * @return List<Carta>
+     * @return ArrayList<Carta>
      */
     private ArrayList<Carta> crearBaraja(){
         ArrayList<Carta> baraja = new ArrayList<>();
