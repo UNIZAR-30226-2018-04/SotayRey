@@ -14,15 +14,15 @@ public class LogicaPartida {
     private EstadoPartida estado;
 
     /**
-     * Constructor que define una lógica partida compuesta por jugadores que
-     * contiene cada uno con un identificador perteneciente a "jugadores".
+     * Constructor que crea un estado de la partida nuevo compuesto por jugadores identificados por los strings
+     * "jugadores"
      * @param jugadores
      * @throws ExceptionEquipoIncompleto si el número de jugadores es incorrecto
      */
     public LogicaPartida(ArrayList<String> jugadores) throws
            ExceptionEquipoIncompleto {
         estado = new EstadoPartida(jugadores);
-   }
+    }
 
 
     /**
@@ -72,7 +72,17 @@ public class LogicaPartida {
        return new EstadoPartida(estado);
    }
 
-
+    /**
+     * Lanza la carta "c" por el Jugador "jugador". Si no es su turno, no posee dicha carta o incumple alguna de las
+     * reglas del guiñote, lanza una excepción.
+     * @param jugador
+     * @param c
+     * @return
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionCartaIncorrecta
+     * @throws ExceptionTurnoIncorrecto
+     * @throws ExceptionJugadorSinCarta
+     */
    public EstadoPartida lanzarCarta(String jugador, Carta c)throws
            ExceptionJugadorIncorrecto, ExceptionCartaIncorrecta,
            ExceptionTurnoIncorrecto, ExceptionJugadorSinCarta {
@@ -94,7 +104,8 @@ public class LogicaPartida {
    }
 
     /**
-     *
+     * Intenta realizar un cante, ya sea de 20 o 40 por el jugador "jugador". Si no es su turno o no posee ningún cante
+     * lanza una excepcción.
      * @param jugador
      * @return
      * @throws ExceptionJugadorIncorrecto si el jugador no pertenece a la
@@ -142,10 +153,16 @@ public class LogicaPartida {
             ExceptionNumeroMaximoCartas, ExceptionRondaNoAcabada {
         Carta triunfo = estado.getTriunfo();
 
+        int n_cartas_mazo = estado.getMazo().size();
         //Ha terminado la ronda y ha sido el ganador
         if (estado.getJugadoresId().get(estado.getTurno()).equals(jugador)
                 && estado.getCartasEnTapete().size() == 0 &&
-                estado.getMazo().size() > 0){
+                n_cartas_mazo > 0
+        /**
+         * TODO: hace falta?? && n_cartas_mazo <= 40-(estado.getJugadoresId())
+         * .size()*6)
+         */
+        ) {
 
             //Cambia la carta si y solo si es un 7 del mismo palo y su
             // puntuación es mayor

@@ -199,4 +199,23 @@ public class Carta {
     public boolean masPuntuacion(Carta otra){
         return otra.getPuntuación() > getPuntuación();
     }
+
+
+    /**
+     * Devuelve true si y solo mata a la carta "otra" teniendo en cuenta el
+     * triunfo.
+     * @param triunfo
+     * @param otra
+     * @return
+     */
+    public boolean mataCartaOtra(Carta triunfo, Carta otra){
+        if (palo.equals(otra.getPalo())){ // es del mismo palo
+             return getPuntuación()>otra.getPuntuación();
+        }
+        if (palo.equals(triunfo.getPalo())) { // la mía es un triunfo y la
+            // del otro no
+            return true;
+        }
+        return false;
+    }
 }
