@@ -30,6 +30,7 @@ public class UsuarioDAO {
         try {
             connection = pool.getConnection();
             statement = connection.createStatement();
+            connection.setAutoCommit(false);
 
             String prevalues = "INSERT INTO usuario (username, correo, nombre, apellidos, admin";
             String postvalues = " VALUES ('" + u.getUsername() + "', '" + u.getCorreo() + "', '" + u.getNombre() + "', '" + u.getApellidos() + "'";
@@ -63,12 +64,14 @@ public class UsuarioDAO {
             // Insertar el nuevo usuario en la liga más baja
             String insert_liga = "INSERT INTO pertenece_liga (usuario, liga) VALUES ('"+ u.getUsername() + "', '" + ligaMin + "')";
             statement.executeUpdate(insert_liga);
+    
+            connection.commit();
 
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
-            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (connection != null) try {  connection.setAutoCommit(true); connection.close(); } catch (SQLException e) {e.printStackTrace();}
         }
     }
 
