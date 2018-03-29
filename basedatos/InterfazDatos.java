@@ -19,7 +19,7 @@ public class InterfazDatos {
     private InterfazDatos() throws IOException, SQLException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
-        dbProps.load(new FileInputStream("db.properties"));
+        dbProps.load(new FileInputStream("basedatos/db.properties"));
         cpds = new ComboPooledDataSource();
 
         cpds.setDriverClass(dbProps.getProperty("driver")); //loads the jdbc driver
