@@ -116,7 +116,7 @@ public class StatsUsuarioDAO {
             }
             resultSet.next();
             su.setPuesto(resultSet.getInt("puesto"));
-    
+               
             // Obtener la liga máxima en la que ha estado (puede ser que salga más de una vez la misma)
             query = "SELECT l.nombre ligaMax FROM pertenece_liga p, liga l WHERE p.usuario = '" + username + "'" + 
                     " AND p.liga = l.nombre AND NOT EXISTS (SELECT * FROM pertenece_liga p2, liga l2 WHERE " +
@@ -127,9 +127,9 @@ public class StatsUsuarioDAO {
             }
             resultSet.next();
             su.setLigaMaxima(resultSet.getString("ligaMax"));
-        
+            
             // Obtener partidas ganadas por el usuario username
-            query = "SELECT COUNT(*) ganadas FROM juega j, partida p WHERE j.juega = '" + username + 
+            query = "SELECT COUNT(*) ganadas FROM juega j, partida p WHERE j.usuario = '" + username + 
                     "' AND j.partida = p.id AND j.equipo = p.ganador";
             resultSet = statement.executeQuery(query);
             if(!resultSet.isBeforeFirst())
@@ -140,7 +140,7 @@ public class StatsUsuarioDAO {
             }
             
             // Obtener partidas perdidas por el usuario username            
-            query = "SELECT COUNT(*) perdidas FROM juega j, partida p WHERE j.juega = '" + username + 
+            query = "SELECT COUNT(*) perdidas FROM juega j, partida p WHERE j.usuario = '" + username + 
                     "' AND j.partida = p.id AND j.equipo != p.ganador AND p.ganador != 'A' AND p.ganador != null";
             resultSet = statement.executeQuery(query);
             if(!resultSet.isBeforeFirst())
@@ -151,7 +151,7 @@ public class StatsUsuarioDAO {
             }
 
             // Obtener partidas en las que abandonaron al usuario username            
-            query = "SELECT COUNT(*) teAbandonaron FROM juega j, partida p WHERE j.juega = '" + username + 
+            query = "SELECT COUNT(*) teAbandonaron FROM juega j, partida p WHERE j.usuario = '" + username + 
                     "' AND j.partida = p.id AND p.ganador = 'A' AND j.abandonador = FALSE";
             resultSet = statement.executeQuery(query);
             if(!resultSet.isBeforeFirst())
@@ -160,9 +160,9 @@ public class StatsUsuarioDAO {
                 resultSet.next();
                 su.setTeAbandonaron(resultSet.getInt("teAbandonaron"));
             }
-
+            
             // Obtener partidas abandonadas por el usuario username            
-            query = "SELECT COUNT(*) abandonadas FROM juega j WHERE j.juega = '" + username + 
+            query = "SELECT COUNT(*) abandonadas FROM juega j WHERE j.usuario = '" + username + 
                     "' AND j.abandonador = TRUE";
             resultSet = statement.executeQuery(query);
             if(!resultSet.isBeforeFirst())

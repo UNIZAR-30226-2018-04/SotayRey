@@ -97,8 +97,8 @@ public class LigaDAO {
             String updatepre = "UPDATE liga SET nombre = '" + l.getNombre() + "'";
             String updatepost = " WHERE nombre = " + "'" + l.getNombre() + "'";
             if(l.getDescripcion()!=null) updatepre = updatepre + ", descripcion = '" + l.getDescripcion() + "'";
-            if(l.getPorcentajeMin()!=null) updatepre = updatepre + ", porcentaje_min = '" + l.getPorcentajeMin() + "'";
-            if(l.getPorcentajeMax()!=null) updatepre = updatepre + ", porcentaje_max = '" + l.getPorcentajeMax() + "'";
+            if(l.getPorcentajeMin()!=-1) updatepre = updatepre + ", porcentaje_min = '" + l.getPorcentajeMin() + "'";
+            if(l.getPorcentajeMax()!=-1) updatepre = updatepre + ", porcentaje_max = '" + l.getPorcentajeMax() + "'";
             statement.executeUpdate(updatepre+updatepost);
 
         } catch (SQLException e) {
@@ -109,7 +109,7 @@ public class LigaDAO {
         }
     }
 
-    public static ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre, ComboPooledDataSource pool){
+    public static ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre, ComboPooledDataSource pool) throws ExceptionCampoInvalido{
         Connection connection = null;
         Statement statement = null;
         try {

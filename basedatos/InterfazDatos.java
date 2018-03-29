@@ -19,7 +19,7 @@ public class InterfazDatos {
     private InterfazDatos() throws IOException, SQLException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
-        dbProps.load(new FileInputStream("basedatos/db.properties"));
+        dbProps.load(new FileInputStream("db.properties"));
         cpds = new ComboPooledDataSource();
 
         cpds.setDriverClass(dbProps.getProperty("driver")); //loads the jdbc driver
@@ -52,7 +52,7 @@ public class InterfazDatos {
     /*
      * Crea un usuario nuevo en el sistema. U debe contener (not null) como mínimo: username, correo, nombre, apellidos y admin
      */
-    public void crearUsuario(UsuarioVO u) {
+    public void crearUsuario(UsuarioVO u) throws ExceptionCampoInexistente {
         UsuarioDAO.crearUsuario(u, this.cpds);
     }
 
@@ -215,7 +215,7 @@ public class InterfazDatos {
     /* Devuelve la clasificación actual completa de la liga denominada nombre, formada por los nombres de los 
      * usuarios y sus puntuaciones (el resto de atributos de de los StatsUsuario tienen valor null)
      */
-    public ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre){
+    public ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre) throws ExceptionCampoInvalido{
         return LigaDAO.obtenerClasificacionLiga(nombre, this.cpds);
     }
 

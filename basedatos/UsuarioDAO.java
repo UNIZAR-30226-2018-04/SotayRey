@@ -24,7 +24,7 @@ public class UsuarioDAO {
         return(hashed_password);
     }
 
-    public static void crearUsuario(UsuarioVO u, ComboPooledDataSource pool) {
+    public static void crearUsuario(UsuarioVO u, ComboPooledDataSource pool) throws ExceptionCampoInexistente {
         Connection connection = null;
         Statement statement = null;
         try {
@@ -53,7 +53,7 @@ public class UsuarioDAO {
             
             //Buscar la liga más baja
             String query = "SELECT nombre FROM liga WHERE porcentaje_max = 100";
-            resultSet = statement.executeQuery(query);
+            ResultSet resultSet = statement.executeQuery(query);
 
             if(!resultSet.isBeforeFirst()){
                 throw new ExceptionCampoInexistente("Error de acceso a la base de datos: No existe ninguna liga para los nuevos usuarios");

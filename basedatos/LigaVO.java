@@ -16,7 +16,7 @@ public class LigaVO {
     private int porcentajeMin;  // la mejor liga tiene porcentajeMin = 0
     private int porcentajeMax;  // la peor liga tiene porcentajeMax = 100
 
-    public LigaVO() {}
+    public LigaVO() { porcentajeMin = -1; porcentajeMax = -1;}
 
     public LigaVO(String nombre, int porcentajeMin, int porcentajeMax) throws ExceptionCampoInvalido {
         // Comprobar que la longitud de los campos no sea mayor que los limites de la base de datos
