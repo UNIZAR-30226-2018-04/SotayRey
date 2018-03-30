@@ -31,43 +31,43 @@ public class RegistroServlet extends HttpServlet {
             if(login=="" || login ==null){
                 error= "Introduce un nombre de usuario.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(apellidos=="" || apellidos ==null){
                 error= "Introduce tus apellidos.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(nombre=="" || nombre ==null){
                 error= "Introduce tu nombre.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(email=="" || email ==null){
                 error= "Introduce el email.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(password=="" || password ==null){
                 error= "Introduce la contraseña.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(passwordRep=="" || passwordRep ==null){
                 error= "Repite la contraseña.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(!password.equals(passwordRep)){
                 error= "La contraseña no coincide.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else{//Si todos los datos no son null
@@ -83,7 +83,7 @@ public class RegistroServlet extends HttpServlet {
                 }
 
                 try {
-                    facade = new InterfazDatos.instancia();
+                    facade = InterfazDatos.instancia();
                 }
                 catch(Exception e){
                     //TODO: Tratar error
