@@ -28,7 +28,7 @@ public class InterfazDatos {
     private InterfazDatos() throws IOException, SQLException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
-        URL resource = this.getClass().getResource("/db.properties");
+        URL resource = this.getClass().getResource("./db.properties");
         File file = null;
         try {
             file = new File(resource.toURI());
