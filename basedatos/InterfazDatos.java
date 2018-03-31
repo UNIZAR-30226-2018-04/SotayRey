@@ -1,6 +1,9 @@
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.ResultSet;
@@ -19,7 +22,15 @@ public class InterfazDatos {
     private InterfazDatos() throws IOException, SQLException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
-        dbProps.load(new FileInputStream("basedatos/db.properties"));
+        URL resource = this.getClass().getResource("/db.properties");
+        File file = null;
+        try {
+            file = new File(resource.toURI());
+        } catch(Exception e){
+            System.out.println(resource.toString());
+        }
+        FileInputStream input = new FileInputStream(file);
+        dbProps.load(input);
         cpds = new ComboPooledDataSource();
 
         cpds.setDriverClass(dbProps.getProperty("driver")); //loads the jdbc driver
