@@ -1,3 +1,5 @@
+package basedatos;
+
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.beans.PropertyVetoException;
 import java.io.IOException;

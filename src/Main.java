@@ -2,6 +2,10 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import basedatos.InterfazDatos;
+import basedatos.modelo.*;
+import basedatos.exceptions.*;
+
 public class Main {
     public static void main(String[] args) throws ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException, ExceptionCampoInexistente {
         UsuarioVO julia = new UsuarioVO("juliagviu", "caca123","prueba@unizar.es", "Julia", "Guerrero", true);
