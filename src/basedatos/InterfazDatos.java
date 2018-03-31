@@ -1,3 +1,5 @@
+package basedatos;
+
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.beans.PropertyVetoException;
 import java.io.File;
@@ -13,6 +15,10 @@ import java.util.List;
 import java.util.Properties;
 import java.io.FileInputStream;
 import java.util.List;
+
+import basedatos.exceptions.*;
+import basedatos.dao.*;
+import basedatos.modelo.*;
 
 public class InterfazDatos {
 

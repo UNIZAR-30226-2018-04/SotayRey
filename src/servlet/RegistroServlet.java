@@ -1,9 +1,12 @@
+package servlet;
+
 import java.io.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-
+import basedatos.modelo.UsuarioVO;
+import basedatos.InterfazDatos;
 
 /**
  * @author Víctor Soria
