@@ -19,11 +19,17 @@
             </button>
         </div>
         <%
-            }
-        %>
-        <% if (error != null && error.equals("existentUser")) { %>
+            } else if (error != null && error.equals("existentUser")) { %>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Usuario ya existente.</strong> Inténtalo con otro nombre de usuario.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <%
+            } else if (error != null) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong><%=error%></strong> Inténtalo con otro nombre de usuario.
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
