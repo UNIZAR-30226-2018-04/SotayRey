@@ -100,7 +100,8 @@ function inicializarDispositivo(){
     jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 1.5;
 //jRef.YLanzar = 300;
     jRef.cartaLanzada;
-//jRef.numCartas;
+    jRef.numCartas;
+    jRef.cartasEnMano = game.add.group();
     jRef.dorso;
     jRef.rotacion = 0;
 
@@ -112,7 +113,8 @@ function inicializarDispositivo(){
     jIzq.XLanzar = jIzq.XPosMedia + ejeYCarta * 1.10;
     jIzq.YLanzar = jIzq.YPosMedia;
     jIzq.cartaLanzada;
-//jIzq.numCartas;
+    jIzq.numCartas;
+    jIzq.cartasEnMano = game.add.group();
     jIzq.dorso;
     jIzq.rotacion = 90;
 
@@ -124,7 +126,8 @@ function inicializarDispositivo(){
     jArriba.XLanzar = jArriba.XPosMedia;
     jArriba.YLanzar = jArriba.YPosMedia + ejeYCarta * 1.10;
     jArriba.cartaLanzada;
-//jArriba.numCartas;
+    jArriba.numCartas;
+    jArriba.cartasEnMano = game.add.group();
     jArriba.dorso;
     jArriba.rotacion = 0;
 
@@ -136,12 +139,15 @@ function inicializarDispositivo(){
     jDer.XLanzar = jDer.XPosMedia - ejeYCarta * 1.10;
     jDer.YLanzar = jDer.YPosMedia;
     jDer.cartaLanzada;
-//jArriba.numCartas;
+    jDer.numCartas;
+    jDer.cartasEnMano = game.add.group();
     jDer.dorso;
     jDer.rotacion = 270;
 
 
     arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
+
+
 }
 
 /* Mapeo en funcion  del tipo de partida y mi identificador */
@@ -151,10 +157,17 @@ function mapearJugadores(){
     }
 }
 
+/**
+ * Cambia y dibuja el triunfo sobre la mesa
+ * @param numero Numero de la carta de triunfo
+ * @param palo Palo de la carta de triunfo
+ */
 function modificarTriunfo(numero, palo){
     triunfo.carta = crearCarta(numero, palo);
     triunfo.carta.x = triunfo.x;
     triunfo.carta.y = triunfo.y;
+    triunfo.carta.height = ejeYCarta;
+    triunfo.carta.width = ejeXCarta;
 
 }
 
@@ -216,7 +229,8 @@ function dibujarCartaLanzada(jugador){
 }
 
 function crearCartas(jugador){
-    for (i = 0; i < 6; i++){
+    for (i = 0; i < jugador.numCartas; i++){
+        console.log("CRANDO CARTAS PARA " + jugador.XPosMedia);
         jugador.cartasEnMano.create(0, 0, 'cartas');
     }
 
@@ -224,11 +238,12 @@ function crearCartas(jugador){
 
 function dibujarJugador(identificador){
     var jugador = identificador;
-
+    console.log("DIBUJANDO PARA " + jugador.XPosMedia);
     var i = - jugador.cartasEnMano.length/2; // Para que al final la posición sea centrada
 
 
     jugador.cartasEnMano.forEach(function(item) {
+        console.log("NUMERO:  " + item.numero + "  PALO: " + item.palo)
         item.x = jugador.XPosMedia + i*jugador.sumX;
         item.y = jugador.YPosMedia + i*jugador.sumY;
         //item.loadTexture(jugador.dorso, 0);
@@ -289,27 +304,101 @@ function create() {
 
     // Pruebas
 
-    mapearJugadores();
 
-    jArriba.cartasEnMano = game.add.group();
-    jIzq.cartasEnMano = game.add.group();
-    jRef.cartasEnMano = game.add.group();
-    jRef.cartasEnMano.inputEnabled = true;
+    // Estado inicial de prueba
+
+    var estado_inicial = {
+        "tipo_mensaje": "estado_inicial",
+        "remitente": {
+            "id_partida": 0,
+            "id_jugador": 0
+        },
+        "partida": {
+            "ronda": 0,
+            "tipo_ronda": "idas",
+            "restantes_mazo": 0
+        },
+        "jugadores": [
+            {
+                "id": 1,
+                "nombre": "hello",
+                "avatar": "ruta",
+                "tipo": "espectador",
+                "puntos": 0,
+                "num_cartas": 6,
+                "carta_mesa": {
+                    "numero": 0,
+                    "palo": 0,
+                }
+            },
+            {
+                "id": 2,
+                "nombre": "hello",
+                "avatar": "ruta",
+                "tipo": "espectador",
+                "puntos": 0,
+                "num_cartas": 6,
+                "carta_mesa": {
+                    "numero": 0,
+                    "palo": 0,
+                }
+            },
+            {
+                "id": 3,
+                "nombre": "hello",
+                "avatar": "ruta",
+                "tipo": "espectador",
+                "puntos": 0,
+                "num_cartas": 6,
+                "carta_mesa": {
+                    "numero": 0,
+                    "palo": 0,
+                }
+            }
+        ],
+        "triunfo": {
+            "numero": 7,
+            "palo": "espadas"
+        },
+        "mano": [
+            {
+                "numero": 2,
+                "palo": "espadas"
+            },
+            {
+                "numero": 4,
+                "palo": "bastos"
+            },
+            {
+                "numero": 6,
+                "palo": "oros"
+            },
+            {
+                "numero": 10,
+                "palo": "copas"
+            }
+        ]
+    }
+
+    console.log("HEEEEELL YEAH " +estado_inicial.remitente.id_partida);
+
+    representarEstado(estado_inicial);
+    //mapearJugadores();
+
+    //jRef.cartasEnMano.inputEnabled = true;
     //jRef.cartasEnMano.onInputDown.add(pulsarCarta, this);
-    jDer.cartasEnMano = game.add.group();
-    inicializarJugadores();
-    dibujarJugador(jArriba);
-    dibujarJugador(jIzq);
-    dibujarJugador(jDer);
-    inicializarRef();
 
-    modificarTriunfo(12, "copas");
+    //jArriba.numCartas = 6;
+    //jIzq.numCartas = 6;
+    //jDer.numCartas = 6;
 
-    var pruebaGrupo = game.add.group()
-    var prueba = pruebaGrupo.create(0, 0, 'cuadroCarta');
+    //inicializarJugadores();
+    //dibujarJugador(jArriba);
+    //dibujarJugador(jIzq);
+    //dibujarJugador(jDer);
+    //inicializarRef();
 
-    prueba.inputEnabled = true;
-    prueba.events.onInputDown.add(pulsaCarta, this);
+    //modificarTriunfo(12, "copas");
 
 
     // Simulacion partida
@@ -323,6 +412,8 @@ function create() {
     //jugadorLanzaCarta(2, 6, "espadas");
 
     //jugadorLanzaCarta(3, 11, "copas");
+
+    //listo_jugador(); // Confirma que el jugador ya esta listo para jugar
 
 }
 
@@ -415,22 +506,132 @@ function lanzarCarta (item) {
 
 /* PROXY */
 
+/* TODO el id partida se tiene que especificar */
+function listo_jugador(){
+    var obj = {
+        "tipo_mensaje" : "listo_jugador",
+        "remitente" : {
+            "id_partida" : "0",
+            "id_jugador" : miID
+        }
+    }
+
+    var myJSON = JSON.stringify(obj);
+    enviarMensaje(myJSON);
+}
+
+function accion(tipo, numero, palo, cantar){
+    var queAccion;
+    switch(tipo) {
+        case "lanzar_carta":
+            queAccion = "lanzar_carta";
+            break;
+        case  "robar_carta":
+            queAccion = "robar_carta";
+            break;
+        case "cantar":
+            queAccion = "cantar";
+            break;
+        case "cambiar_triunfo":
+            queAccion = "cambiar_triunfo";
+            break;
+    }
+
+    var obj = {
+        "tipo_mensaje": "accion",
+        "remitente": {
+            "id_partida": 0,
+            "id_jugador": miID
+        },
+        "tipo_accion": queAccion,
+        "carta": {
+            "numero": 0,
+            "palo": 0
+        },
+        "cantidad" : cantar
+    }
+}
+
+
 function enviarMensaje(mensaje){
     // TODO se envia el mensaje al backend
 }
 
+/**
+ * Inicializa las variables y dibuja el estado
+ * @param estado Estado que se desea representar
+ */
+function representarEstado(estado){
+    // Se dibuja el triunfo
+    modificarTriunfo(estado.triunfo.numero, estado.triunfo.palo);
+    // Se dibujan las cartas de los jugadores
+    // TODO hay que mapear antes
+    mapearJugadores();
+    estado.jugadores.forEach(function(item) {
+        var jugador = arrayJugadores[item.id];
+        console.log("JUGADORSITO " + jugador.XPosMedia +" "+ item.id);
+        jugador.numCartas = item.num_cartas;
+        crearCartas(jugador);
+        dibujarJugador(jugador);
+        jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
+        dibujarCartaLanzada(jugador);
+        arrayJugadores[item.id] = jugador;
+    }, this);
+
+    // Se pone la mano del jugador
+    var jugador = arrayJugadores[miID];
+    var carta = {};
+    estado.mano.forEach(function(item) {
+        carta = crearCarta(item.numero, item.palo);
+        console.log(carta.numero + carta.palo);
+        //carta.numero = item.numero;
+        carta.inputEnabled = true;
+        carta.atributo = "HELLOW DA";
+        carta.events.onInputDown.add(pulsaCarta, this);
+        jugador.cartasEnMano.add(carta);
+    }, this);
+    dibujarJugador(jugador);
+}
+
 function recibirMensaje(msg){
     console.log(msg);
-    // TODO hay que parsear el mensaje
+    var mensaje = JSON.parse(msg);
+    switch (mensaje.tipo_mensaje){
+        case "broadcast_accion":
+            switch (mensaje.tipo_accion){
+                case "lanzar_carta":
+                    jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                    break;
+                case "robar_carta":
+                    jugadorRobaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                    break;
+                case "cantar":
+                    break;
+            }
+            break;
+        case "gana_ronda":
+            rondaAcabada();
+            break;
+        case "estado_inicial" :
+
+            break;
+    }
 }
 
 
 function crearCarta(numero, palo){
-    var carta = game.add.sprite(0, 0, 'cartas');
-    carta.numero = numero;
-    carta.palo = palo;
+    var carta;
     console.log("BUSCO CARTA" + buscarCarta(numero, palo));
-    carta.frame = buscarCarta(numero, palo);
+    var indice = buscarCarta(numero, palo);
+    if (indice == 0){
+        carta = game.add.sprite(0, 0, 'cuadroCarta');
+    }
+    else{
+        carta = game.add.sprite(0, 0, 'cartas');
+        carta.frame = indice;
+    }
+    carta.numero = numero; // Si no se pone despues el game.add lo machaca
+    carta.palo = palo;
     return carta;
 }
 
@@ -471,8 +672,9 @@ function jugadorLanzaCarta(idJugador, numero, palo){
     }
 }
 
-function pulsaCarta(){
-    console.log("HA PUSLADO CARTA");
+function pulsaCarta(item){
+
+    console.log("HA PUSLADO CARTA" + "   " + item.numero + "  " + item.atributo + "  " + item.palo);
 }
 
 /* Un jugador roba una carta, si no es el referencia da igual el numero y palo */
@@ -509,7 +711,10 @@ function buscarCarta(numero, palo){
     var indice = numero - 1;
     console.log("EL indice es: " + numero);
     var numCartas = 13;
-    if (palo == "oros"){
+    if (numero == 0 && palo == 0){
+        indice = 0; // el marco
+    }
+    else if (palo == "oros"){
 
     }
     else if (palo == "copas"){
