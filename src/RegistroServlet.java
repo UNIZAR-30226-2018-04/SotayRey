@@ -18,50 +18,50 @@ public class RegistroServlet extends HttpServlet {
     private static final long serialVersionUID = 102831973239L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
-        String login = request.getParameter("user");
-        String apellidos = request.getParameter("apellidos");
-        String nombre = request.getParameter("nombre");
-        String email = request.getParameter("mail");
-        String password = request.getParameter("contra");
-        String passwordRep = request.getParameter("contraRep");
-        String fech = request.getParameter("fecha");
+        String login = request.getParameter("nick");
+        String apellidos = request.getParameter("lastName");
+        String nombre = request.getParameter("name");
+        String email = request.getParameter("email");
+        String password = request.getParameter("passwd");
+        String passwordRep = request.getParameter("passwdRep");
         String error ="";
         try{
             //Evitar campos NULL
             if(login=="" || login ==null){
                 error= "Introduce un nombre de usuario.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
+                // response.sendRedirect("index.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(apellidos=="" || apellidos ==null){
                 error= "Introduce tus apellidos.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(nombre=="" || nombre ==null){
                 error= "Introduce tu nombre.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(email=="" || email ==null){
                 error= "Introduce el email.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(password=="" || password ==null){
                 error= "Introduce la contraseña.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(passwordRep=="" || passwordRep ==null){
                 error= "Repite la contraseña.";
                 request.setAttribute("errors",error);
-                RequestDispatcher dispatcher=request.getRequestDispatcher("src/login.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(!password.equals(passwordRep)){
@@ -79,6 +79,7 @@ public class RegistroServlet extends HttpServlet {
                     usuarioVo = new UsuarioVO(login, password, email, nombre, apellidos, false);
                 }
                 catch(Exception e){
+                    System.out.println(e.toString());
                     //TODO: Tratar error
                 }
 
@@ -86,6 +87,7 @@ public class RegistroServlet extends HttpServlet {
                     facade = InterfazDatos.instancia();
                 }
                 catch(Exception e){
+                    System.out.println(e.toString());
                     //TODO: Tratar error
                 }
 
