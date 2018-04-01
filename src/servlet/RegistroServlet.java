@@ -29,6 +29,7 @@ public class RegistroServlet extends HttpServlet {
         String passwordRep = request.getParameter("passwdRep");
         String error ="";
         try{
+            //TODO: todos los == (equals) están mal
             //Evitar campos NULL
             if(login=="" || login ==null){
                 error= "Introduce un nombre de usuario.";

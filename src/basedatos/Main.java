@@ -1,3 +1,5 @@
+package basedatos;
+
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.SQLException;

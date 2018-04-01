@@ -45,7 +45,7 @@ public class InterfazDatos {
         cpds.setPassword(dbProps.getProperty("password"));
 
         // the settings below are optional -- c3p0 can work with defaults
-        cpds.setMinPoolSize(5);
+        cpds.setMinPoolSize(3);
         cpds.setAcquireIncrement(5);
         cpds.setMaxPoolSize(20);
         cpds.setMaxStatements(180);

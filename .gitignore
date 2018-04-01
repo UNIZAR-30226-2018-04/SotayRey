@@ -85,3 +85,23 @@ Sera borrado logica_juego/logica_juego.iml
 # Fichero db.properties con información de acceso a la BBDD
 
 db.properties
+
+.gitignore
+
+*.iml
+.directory
+
+lib
+Sera borrado .directory
+Sera borrado SotayRey.iml
+Sera borrado lib/javax.annotation.jar
+Sera borrado lib/javax.ejb.jar
+Sera borrado lib/javax.jms.jar
+Sera borrado lib/javax.persistence.jar
+Sera borrado lib/javax.resource.jar
+Sera borrado lib/javax.servlet.jar
+Sera borrado lib/javax.servlet.jsp.jar
+Sera borrado lib/javax.servlet.jsp.jstl.jar
+Sera borrado lib/javax.transaction.jar
+Sera borrado src/basedatos/.directory
+Sera borrado src/basedatos/basedatos.iml

@@ -8,11 +8,22 @@
 
     <servlet>
         <servlet-name>Registro</servlet-name>
-        <servlet-class>RegistroServlet</servlet-class>
+        <servlet-class>servlet.RegistroServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
         <servlet-name>Registro</servlet-name>
         <url-pattern>/RegistroServlet.do</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>Login</servlet-name>
+        <servlet-class>servlet.LoginServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/LoginServlet.do</url-pattern>
     </servlet-mapping>
 </web-app>

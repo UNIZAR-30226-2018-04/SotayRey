@@ -41,7 +41,7 @@
             <div class="card col-md-6">
                 <h1 class="card-header text-center">Entra a tu cuenta</h1>
                 <div class="card-body">
-                    <form action="/RegistroServlet.do" method="post">
+                    <form action="/LoginServlet.do" method="post">
                         <div class="form-group">
                             <label for="loginUser">Usuario</label>
                             <input type="text" class="form-control" name="loginUser" id="loginUser"
