@@ -162,7 +162,7 @@ public class JugadorTest {
             j1.anyadirCartaEnMano(c6);
             j1.anyadirCante(c);
 
-        } catch (ExceptionNoHayCantes e){
+        } catch (ExceptionNoPuedesCantar e){
             System.out.println("Superado... no hay nada que cantar");
         } catch (ExceptionCartaIncorrecta | ExceptionCartaYaExiste | ExceptionNumeroMaximoCartas e1) {
             fail("Excepción incorrecta");
@@ -186,7 +186,8 @@ public class JugadorTest {
             assertEquals("Debería sumar 60 puntos",60,j2.getPuntos());
             System.out.println("Superado... anyadirCante");
         }
-            catch (ExceptionNoHayCantes | ExceptionCartaIncorrecta | ExceptionCartaYaExiste | ExceptionNumeroMaximoCartas e2) {
+            catch (ExceptionNoPuedesCantar | ExceptionCartaIncorrecta |
+                    ExceptionCartaYaExiste | ExceptionNumeroMaximoCartas e2) {
                 fail("Excepción incorrecta");
         }
     }

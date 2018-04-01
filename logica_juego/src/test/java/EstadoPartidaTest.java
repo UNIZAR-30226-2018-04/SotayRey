@@ -28,7 +28,7 @@ public class EstadoPartidaTest {
     public ExpectedException exception = ExpectedException.none();
 
 
-    @Ignore
+    //@Ignore
     @Test
     public void prueba1Constructores(){
 
@@ -52,7 +52,7 @@ public class EstadoPartidaTest {
     /**
      * Pruebas de caja negra
      */
-    @Ignore
+    //@Ignore
     @Test
     public void prueba2GetPrimeraCartaMazo(){
 
@@ -80,8 +80,9 @@ public class EstadoPartidaTest {
             }
 
             System.out.println("Mazo sin cartas: devuelve triunfo ?");
+            assertTrue("Triunfo no es el mismo que en el estado", triunfo
+                    .equals(estado.getTriunfo()));
             comprobarPrimeraCarta(estado, triunfo);
-            comprobarPrimeraCarta(estado, estado.getTriunfo());
             estado.anyadirCartaJugador(jugadores.get(1), triunfo);
             try {
                 estado.getPrimeraCartaMazo();
@@ -101,7 +102,7 @@ public class EstadoPartidaTest {
      * Prueba que al barajear varias veces un conjunto de cartas se obtienen
      * resultados diferentes
      */
-    @Ignore
+    //@Ignore
     @Test
     public void prueba3BarajearVariasVeces(){
 
