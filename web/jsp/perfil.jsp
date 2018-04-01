@@ -1,12 +1,13 @@
-<%@ page import="basedatos.modelo.UsuarioVO" %><%--
+<%@ page import="basedatos.modelo.UsuarioVO" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%--
   Created by IntelliJ IDEA.
-  User: cmarius9
-  Date: 18/10/17
+  Creado por Marius y Víctor
+  Date: 30/3/18
   Time: 11:04
-  To change this template use File | Settings | File Templates.
 --%>
 
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -15,20 +16,16 @@
     <!-- Bootstrap -->
     <%@ include file="../html/imports.html"%>
 </head>
-<% String nick = null;
-    String nombre = null;
-    String aps = null;
-    String email = null;
-    if (session.getAttribute("usuario") == null) {
-        response.sendRedirect("../jsp/login.jsp");
+
+<%  String nick = null;
+    if (session.getAttribute("userId") == null) {
+        response.sendRedirect("/jsp/login.jsp");
     } else {
-        UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("usuario");
+        UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
         nick = usuarioVO.getUsername();
-        nombre = usuarioVO.getNombre();
-        aps = usuarioVO.getApellidos();
-        email = usuarioVO.getCorreo();
         //TODO: resto de cosas
     }%>
+
 <body>
     <div class="container">
         <div class="row">
@@ -36,8 +33,7 @@
                 <img class="img-thumbnail" style="width: 400px" src="#" alt="imagen usuario">
             </div>
             <div class="col-md-6 mt-4">
-                <h1>usuario1
-                </h1>
+                <h1> <%= nick%> </h1>
                 <h3>Liga bronce (220º)
                 </h3>
                 <h3>50020 ptos. / 2020 monedas</h3>

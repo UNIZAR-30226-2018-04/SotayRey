@@ -15,6 +15,15 @@
 <body>
     <%@include file="./navbar.jsp" %>
     <div class="container">
+        <h1>Matchmaking</h1>
+        <div class="row mb-4">
+            <div class="card col-md-6">
+                <h2>Modo de juego</h2>
+            </div>
+            <div class="card col-md-6">
+                <h2>Jugadores encontrados</h2>
+            </div>
+        </div>
         <%-- TODO: Crear página de presentación del juego --%>
     </div>
 </body>

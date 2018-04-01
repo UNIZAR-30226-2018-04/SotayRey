@@ -102,7 +102,7 @@ public class RegistroServlet extends HttpServlet {
             }
 
             HttpSession sesion= request.getSession();
-            sesion.setAttribute("userId", login);
+            sesion.setAttribute("userId", usuarioVo);
             sesion.setMaxInactiveInterval(24*60*60);
 
 
