@@ -11,32 +11,37 @@
                 <img src="../img/logo.png" style="max-width: 60px" class="mr-3"/>SotaYRey</h1>
         </div>
         <% String error = (String) request.getAttribute("error"); %>
-        <% if (error != null && error.equals("userNotFound")) { %>
+        <%
+            if (error != null) { // Hay un error %>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
+
+        <%
+                switch (error){
+                    case "userNotFound": %>
             <strong>Usuario no encontrado o contraseña incorrecta.</strong> Inténtalo de nuevo.
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <%
-            } else if (error != null && error.equals("existentUser")) { %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%
+                        break;
+                    case "emptyUser":%>
+            <strong>Introduzca un usuario</strong>
+            <%
+                        break;
+                    case "emptyPass":%>
+            <strong>Introduzca la contraseña</strong>
+            <%
+                    break;
+                case "existentUser":%>
             <strong>Usuario ya existente.</strong> Inténtalo con otro nombre de usuario.
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <%
-            } else if (error != null) { %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%
+                    break;
+                default:%>
             <strong><%=error%></strong> Inténtalo con otro nombre de usuario.
+            <%
+                }%>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        <%
-            }
-        %>
+        <% } %>
         <div class="row mb-4">
             <div class="card col-md-6">
                 <h1 class="card-header text-center">Entra a tu cuenta</h1>

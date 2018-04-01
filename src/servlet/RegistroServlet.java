@@ -33,44 +33,44 @@ public class RegistroServlet extends HttpServlet {
             //Evitar campos NULL
             if(login=="" || login ==null){
                 error= "Introduce un nombre de usuario.";
-                request.setAttribute("errors",error);
+                request.setAttribute("error",error);
                 // response.sendRedirect("index.jsp");
                 RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(apellidos=="" || apellidos ==null){
                 error= "Introduce tus apellidos.";
-                request.setAttribute("errors",error);
+                request.setAttribute("error",error);
                 RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(nombre=="" || nombre ==null){
                 error= "Introduce tu nombre.";
-                request.setAttribute("errors",error);
+                request.setAttribute("error",error);
                 RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(email=="" || email ==null){
                 error= "Introduce el email.";
-                request.setAttribute("errors",error);
+                request.setAttribute("error",error);
                 RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(password=="" || password ==null){
                 error= "Introduce la contraseña.";
-                request.setAttribute("errors",error);
+                request.setAttribute("error",error);
                 RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(passwordRep=="" || passwordRep ==null){
                 error= "Repite la contraseña.";
-                request.setAttribute("errors",error);
+                request.setAttribute("error",error);
                 RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }
             else if(!password.equals(passwordRep)){
                 error= "La contraseña no coincide.";
-                request.setAttribute("errors",error);
+                request.setAttribute("error",error);
                 RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request,response);
             }

@@ -1,4 +1,4 @@
-<%--
+<%@ page import="basedatos.modelo.UsuarioVO" %><%--
   Created by IntelliJ IDEA.
   User: cmarius9
   Date: 18/10/17
@@ -15,19 +15,20 @@
     <!-- Bootstrap -->
     <%@ include file="../html/imports.html"%>
 </head>
-<% /*String nick = null;
+<% String nick = null;
     String nombre = null;
+    String aps = null;
     String email = null;
     if (session.getAttribute("usuario") == null) {
         response.sendRedirect("../jsp/login.jsp");
     } else {
         UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("usuario");
-        nick = usuarioVO.getNick();
+        nick = usuarioVO.getUsername();
         nombre = usuarioVO.getNombre();
         aps = usuarioVO.getApellidos();
-        email = usuarioVO.getEmail();
-        foto = usuarioVO.getImagen();
-    }*/%>
+        email = usuarioVO.getCorreo();
+        //TODO: resto de cosas
+    }%>
 <body>
     <div class="container">
         <div class="row">

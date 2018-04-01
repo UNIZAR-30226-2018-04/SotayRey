@@ -201,7 +201,7 @@ public class Jugador {
      * cualquier palo. Si no puede cantar lanza una excepcción.
      */
     public void anyadirCante(Carta triunfo) throws
-               ExceptionNoHayCantes {
+               ExceptionNoPuedesCantar {
         boolean reyes[] = {false, false, false, false};
         boolean sotas[] = {false, false, false, false};
 
@@ -227,7 +227,7 @@ public class Jugador {
         }
         puntos += sumaTotal;
         if (sumaTotal == 0){
-            throw new ExceptionNoHayCantes();
+            throw new ExceptionNoPuedesCantar();
         }
     }
 

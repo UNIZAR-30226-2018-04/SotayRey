@@ -86,8 +86,6 @@ Sera borrado logica_juego/logica_juego.iml
 
 db.properties
 
-.gitignore
-
 *.iml
 .directory
 

@@ -114,7 +114,7 @@ public class LogicaPartida {
     public EstadoPartida cantar(String jugador) throws    ExceptionJugadorIncorrecto,
                                                             ExceptionRondaNoAcabada,
                                                             ExceptionNoPuedesCantar,
-                                                            ExceptionNoHayCantes {
+                                                            ExceptionNoPuedesCantar {
         ArrayList<String> jugadores = estado.getJugadoresId();
         if(jugadores.contains(jugador)){
             if(estado.getCartasEnTapete().size() == 0){
