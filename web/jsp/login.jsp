@@ -28,11 +28,31 @@
                     case "emptyPass":%>
             <strong>Introduzca la contraseña</strong>
             <%
-                    break;
-                case "existentUser":%>
+                        break;
+                    case "emptyLastName":%>
+            <strong>Introduzca sus apellidos</strong>
+            <%
+                        break;
+                    case "emptyName":%>
+            <strong>Introduce tu nombre</strong>
+            <%
+                        break;
+                    case "emptyEmail":%>
+            <strong>Introduce tu correo electrónico</strong>
+            <%
+                        break;
+                    case "emptyRePass":%>
+            <strong>Debes repetir la contraseña</strong>
+            <%
+                        break;
+                    case "wrongRePass":%>
+            <strong>La contraseña no coincide</strong>
+            <%
+                        break;
+                    case "existentUser":%>
             <strong>Usuario ya existente.</strong> Inténtalo con otro nombre de usuario.
             <%
-                    break;
+                        break;
                 default:%>
             <strong><%=error%></strong> Inténtalo con otro nombre de usuario.
             <%
