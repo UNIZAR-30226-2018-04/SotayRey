@@ -44,9 +44,9 @@ public class LoginServlet extends HttpServlet {
             } else {
                 System.out.println("probar a registrar");
                 //InterfazDatos facade = InterfazDatos.instancia();
-                InterfazDatos.instancia().autentificarUsuario(nick, pass);
-                /*
-                if (existe){
+                boolean existUser = InterfazDatos.instancia()
+                        .autentificarUsuario(nick, pass);
+                if (existUser){
                     HttpSession sesion= request.getSession();
                     sesion.setAttribute("userId", nick);
                     sesion.setMaxInactiveInterval(24*60*60);
@@ -58,7 +58,6 @@ public class LoginServlet extends HttpServlet {
                     RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/login.jsp");
                     dispatcher.forward(request,response);
                 }
-                */
             }
         } catch (ExceptionCampoInexistente e){
             System.err.println("ERROR: usuario mal registrado.");

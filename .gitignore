@@ -89,7 +89,6 @@ db.properties
 *.iml
 .directory
 
-lib
 Sera borrado .directory
 Sera borrado SotayRey.iml
 Sera borrado lib/javax.annotation.jar
