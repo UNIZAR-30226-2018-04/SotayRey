@@ -321,13 +321,16 @@ public class EstadoPartida {
                     if (n_cartas == 1) {
 
 
-                        if (carta.esMismoPalo(inicial)) {
+                        if (carta.esMismoPalo(inicial)) { //TODO: si la carta es del mismo palo se lanza sin más
                             //Carta es del mismo palo
 
                             puedeLanzarDelPalo(carta, inicial,
                                     jugadorEncontrado);
 
                         } else {
+
+                            //TODO: si la carta no es del palo inicial, primero se comprueba si el jugador tiene cartas en la mano
+                            //      del palo iniicial. Si no se mira si la carta es triunfo.
 
                             /** Obligación de matar con el Triunfo **/
                             if (carta.esMismoPalo(triunfo)) {
@@ -359,7 +362,7 @@ public class EstadoPartida {
                                 puedeLanzarDelPalo(carta, inicial,
                                         jugadorEncontrado);
                             }
-                        }
+                        }//TODO: el else??
                     }
                 }
             } else {
@@ -390,6 +393,11 @@ public class EstadoPartida {
 
             //Busqueda del ganador
             for (int i = 0; i < n_jug; i++) {
+                //TODO: ERROR si la primera jugada no es triunfo, pongamos que bastos. La segunda jugada es triunfo.
+                    // Y si el último jugador tira bastos y de mayor valor que la primera jugada. Asignará al último jug.
+                    // la victoria de la ronda. A pesar de que el triunfo importa más.
+
+
                 aux = cartasEnTapete.get(i);
                 if (aux.esMismoPalo(triunfo)) { // Si hay triunfo gana el mejor
                     if (mejor_triunfo == null ||

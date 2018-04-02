@@ -24,7 +24,6 @@
                 <h2>Jugadores encontrados</h2>
             </div>
         </div>
-        <%-- TODO: Crear página de presentación del juego --%>
     </div>
 </body>
 </html>
