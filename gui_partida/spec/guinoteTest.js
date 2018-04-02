@@ -50,24 +50,32 @@ describe("PROBANDO UNAS RONDAS DE 4 JUGADORES", function() {
             }
         ],
         "triunfo": {
-            "numero": 7,
+            "numero": 1,
             "palo": "espadas"
         },
         "mano": [
             {
-                "numero": 2,
+                "numero": 10,
                 "palo": "espadas"
             },
             {
-                "numero": 4,
-                "palo": "bastos"
+                "numero": 12,
+                "palo": "espadas"
             },
             {
                 "numero": 6,
                 "palo": "oros"
             },
             {
-                "numero": 10,
+                "numero": 7,
+                "palo": "espadas"
+            },
+            {
+                "numero": 11,
+                "palo": "copas"
+            },
+            {
+                "numero": 12,
                 "palo": "copas"
             }
         ]
