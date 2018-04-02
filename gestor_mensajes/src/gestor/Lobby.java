@@ -10,9 +10,13 @@ import java.util.HashMap;
  */
 public class Lobby {
     private static HashMap<String, JugadorGestor> jugadores = new HashMap<>();
+    private int ronda = 0;
 
-    public Lobby() {}
+    public Lobby() {
+        ronda = 0;
+    }
     public Lobby(JugadorGestor jug) {
+        ronda = 0;
         anyadir(jug);
     }
 
@@ -20,6 +24,14 @@ public class Lobby {
         if (!jugadores.containsKey(jug.getNombre())) {
             jugadores.put(jug.getNombre(), jug);
         }
+    }
+
+    public int getRonda() {
+        return ronda;
+    }
+
+    public void incRonda() {
+        ronda += 1;
     }
 
     public JugadorGestor buscarId(int id) {

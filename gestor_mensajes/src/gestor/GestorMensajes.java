@@ -74,26 +74,24 @@ public class GestorMensajes {
         JugadorGestor jugador = new JugadorGestor(idJugador, nombre, session);
 
         int totalJugadores = (int) (long) msg.get("total_jugadores");
-        String tipo = (String) msg.get("tipo");
         Lobby lobby = new Lobby();
         if (!lobbies.containsKey(idPartida)) {
             // Si la partida aún no existe, la crea
-            lobby = new Lobby();
             lobby.anyadir(jugador);
-            lobbies.put(idPartida, lobby);
         } else {
-            lobbies.get(idPartida);
+            lobby = lobbies.get(idPartida);
             lobby.anyadir(jugador);
-            lobbies.put(idPartida, lobby);
         }
+        lobbies.put(idPartida, lobby);
 
         if (lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida)) {
             try {
                 LogicaPartida partida = new LogicaPartida(lobby.getTodosNombres());
                 partida.crearPartida();
-                EstadoPartida estado = partida.getEstado();
                 listaPartidas.put(idPartida, partida);
-                broadcastEstado(idPartida, estado);
+                broadcastEstado(idPartida);
+                lobby.incRonda();
+                broadcastTurno(idPartida);
             } catch (ExceptionEquipoIncompleto exceptionEquipoIncompleto) {
                 exceptionEquipoIncompleto.printStackTrace();
             } catch (ExceptionNumeroMaximoCartas exceptionNumeroMaximoCartas) {
@@ -109,7 +107,31 @@ public class GestorMensajes {
         }
     }
 
-    private void broadcastEstado(int idPartida, EstadoPartida estado) {
+    private void broadcastTurno(int idPartida) {
+        // Obtiene el estado de la partida
+        LogicaPartida partida = listaPartidas.get(idPartida);
+        EstadoPartida estado = partida.getEstado();
+        Lobby lobby = lobbies.get(idPartida);
+        JSONObject objTurno = new JSONObject();
+        objTurno.put("tipo_mensaje", "broadcast_accion");
+        objTurno.put("tipo_accion", "turno");
+        objTurno.put("id_jugador", estado.getTurno());
+        objTurno.put("ronda", lobby.getRonda());
+        broadcastMensaje(lobby, objTurno);
+    }
+
+    private void broadcastMensaje(Lobby lobby, JSONObject obj) {
+        for (RemoteEndpoint.Basic remoto : lobby.getTodosRemotos()) {
+            try {
+                remoto.sendText(obj.toJSONString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void broadcastEstado(int idPartida) {
+        EstadoPartida estado = listaPartidas.get(idPartida).getEstado();
         // Obtiene el lobby de la partida actual
         Lobby lobby = lobbies.get(idPartida);
         // Construye el estado en formato JSON
