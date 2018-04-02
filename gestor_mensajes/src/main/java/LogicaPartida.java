@@ -184,7 +184,6 @@ public class LogicaPartida {
         }
 
         return new EstadoPartida(estado);
-
     }
 
 
