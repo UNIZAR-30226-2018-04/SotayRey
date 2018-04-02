@@ -13,12 +13,12 @@
         var socket = new WebSocket("ws://localhost:8080/endpoint");
         var string = JSON.stringify({
             "tipo_mensaje": "listo_jugador",
-            "nombre_participante": "jugador0",
+            "nombre_participante": "jugador1",
             "total_jugadores": 2,
             "tipo_participante": "jugador",
             "remitente": {
                 "id_partida": 0,
-                "id_jugador": 0
+                "id_jugador": 1
             }
         });
         socket.onmessage = function (msg) {
@@ -30,6 +30,6 @@
     </script>
   </head>
   <body>
-  <button onclick="send()">Hola0</button>
+  <button onclick="send()">Hola1</button>
   </body>
 </html>
