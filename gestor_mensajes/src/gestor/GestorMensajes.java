@@ -19,7 +19,7 @@ import java.util.HashMap;
 @ServerEndpoint("/endpoint")
 public class GestorMensajes {
     private static HashMap<Integer, LogicaPartida> listaPartidas = new HashMap<>();
-    private static HashMap<Integer, Lobby> lobbies = new HashMap<>();
+    private static HashMap<Integer, Lobby> lobbies = new HashMap<>(); // TODO: En 4 jugadores, orden (eq1, eq2, eq1, eq2)
 
     @OnOpen
     public void onOpen(Session session) {
@@ -57,7 +57,7 @@ public class GestorMensajes {
                 recibirAccion(session, msg);
                 break;
             default:
-                System.out.println("Mierda");
+                System.out.println("Tipo de mensaje no reconocido");
         }
     }
 
@@ -99,10 +99,39 @@ public class GestorMensajes {
                     } catch (ExceptionJugadorSinCarta exceptionJugadorSinCarta) {
                         exceptionJugadorSinCarta.printStackTrace();
                     }
+                    try {
+                        // LÓGICA DE FINALIZACIÓN DE RONDA
+                        partida.siguienteRonda();
+                        broadcastGanaRonda(idPartida, false);
+                        // Se intenta que todos los jugadores vuelvan a tener 6 cartas
+                        broadcastRobarCarta(idPartida);
+                        // Asigna el turno al jugador correspondiente
+                        broadcastTurno(idPartida);
+                    } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
+                        System.out.println("La ronda aún no ha acabado, ESTA EXCEPCION ES NORMAL, PUEDE SER IGNORADA");
+                    } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
+                        exceptionCartaYaExiste.printStackTrace();
+                    } catch (ExceptionNumeroMaximoCartas exceptionNumeroMaximoCartas) {
+                        exceptionNumeroMaximoCartas.printStackTrace();
+                    } catch (ExceptionMazoVacio exceptionMazoVacio) {
+                        exceptionMazoVacio.printStackTrace();
+                    } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                        exceptionJugadorIncorrecto.printStackTrace();
+                    } catch (ExceptionPartidaFinalizada exceptionPartidaFinalizada) {
+                        broadcastGanaRonda(idPartida, true);
+                    }
                     break;
                 case "cantar":
-                    int cantidad = (int) (long) msg.get("cantidad");
-                    // TODO: Gestionar cantidad a cantar
+                    try {
+                        partida.cantar(partida.getEstado().getTurnoId());
+                        broadcastCantar(idPartida);
+                    } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                        exceptionJugadorIncorrecto.printStackTrace();
+                    } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
+                        exceptionRondaNoAcabada.printStackTrace();
+                    } catch (ExceptionNoPuedesCantar exceptionNoPuedesCantar) {
+                        exceptionNoPuedesCantar.printStackTrace();
+                    }
                     break;
                 case "cambiar_triunfo":
                     // Lectura del mensaje
@@ -138,23 +167,20 @@ public class GestorMensajes {
                     System.out.println("Accion no reconocida");
                     break;
             }
-            try {
-                // LÓGICA DE FINALIZACIÓN DE RONDA
-                partida.siguienteRonda();
-                broadcastGanaRonda(idPartida);
-                // Se intenta que todos los jugadores vuelvan a tener 6 cartas
-                broadcastRobarCarta(idPartida);
-                // Asigna el turno al jugador correspondiente
-                broadcastTurno(idPartida);
-            } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
-                System.out.println("La ronda aún no ha acabado, ESTA EXCEPCION ES NORMAL, PUEDE SER IGNORADA");
-            } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
-                exceptionCartaYaExiste.printStackTrace();
-            }
         } else {
             // El jugador ha enviado una accion sin recibir su turno
             System.out.println(idJugador + " quiere accion pero no tiene turno");
         }
+    }
+
+    private void broadcastCantar(int idPartida) {
+        Lobby lobby = lobbies.get(idPartida);
+        LogicaPartida partida = listaPartidas.get(idPartida);
+        JSONObject objC = new JSONObject();
+        objC.put("tipo_mensaje", "broadcast_accion");
+        objC.put("tipo_accion", "cantar");
+        objC.put("id_jugador", partida.getEstado().getTurno());
+        broadcastMensaje(lobby, objC);
     }
 
     private void broadcastCambiarTriunfo(int idPartida, Carta nuevoTriunfo) {
@@ -230,7 +256,7 @@ public class GestorMensajes {
     }
 
 
-    private void broadcastGanaRonda(int idPartida) {
+    private void broadcastGanaRonda(int idPartida, boolean finPartida) {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
         EstadoPartida estado = partida.getEstado();
@@ -240,10 +266,13 @@ public class GestorMensajes {
         JSONObject objNR = new JSONObject();
         objNR.put("tipo_mensaje", "gana_ronda");
         objNR.put("nueva_ronda", lobby.getRonda());
-        // TODO: No siempre es de idas
-        objNR.put("tipo_nueva_ronda", "idas");
-        // TODO: El ganador no es siempre el del turno
-        objNR.put("id_jugador", estado.getTurnoId());
+        // TODO: No siempre es de idas (preguntar reglas juego)
+        if (finPartida) {
+            objNR.put("tipo_nueva_ronda", "fin");
+        } else {
+            objNR.put("tipo_nueva_ronda", "idas");
+        }
+        objNR.put("id_jugador", partida.getEstado().getGanadorUltimaRonda());
         // Obtener puntuaciones de cada jugador
         JSONArray punts = new JSONArray();
         int i = 0;
@@ -254,6 +283,8 @@ public class GestorMensajes {
                 jug.put("puntuacion", partida.consultarPuntos(nombre));
             } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
                 exceptionJugadorIncorrecto.printStackTrace();
+            } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
+                exceptionRondaNoAcabada.printStackTrace();
             }
             punts.add(jug);
             i++;
