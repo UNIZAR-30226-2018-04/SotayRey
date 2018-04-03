@@ -617,8 +617,6 @@ public class EstadoPartida {
         cartasEnTapete.add(carta);
         pasarTurno(j.getId());
     }
-
-
     
     /**
      * Devuelve true si y solo la carta del triunfo ha sido entregada a algún
@@ -654,8 +652,6 @@ public class EstadoPartida {
             }
         }
     }
-
-
 
     private boolean haMatadoCompanyero(){
         boolean res = false;

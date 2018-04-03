@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import sun.rmi.runtime.Log;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
@@ -51,6 +52,10 @@ public class GestorMensajes {
                 System.out.println(tipo + " recibido");
                 recibirListo(session, msg);
                 break;
+            case "accion":
+                System.out.println(tipo + " recibida");
+                recibirAccion(session, msg);
+                break;
             default:
                 System.out.println("Mierda");
         }
@@ -65,10 +70,191 @@ public class GestorMensajes {
         // TODO: Informar tipo de ronda
     }
 
+    private void recibirAccion(Session session, JSONObject msg) {
+        // Obtener datos del remitente
+        int idPartida = getIdPartidaMsg(msg);
+        int idJugador = getIdJugadorMsg(msg);
+        String tipoAccion = getTipoAccionMsg(msg);
+        Lobby lobby = lobbies.get(idPartida);
+        LogicaPartida partida = listaPartidas.get(idPartida);
+        EstadoPartida estado = partida.getEstado();
+
+        if (idJugador == estado.getTurno()) {
+            // El jugador tiene turno, se elige qué acción se realiza
+            switch (tipoAccion) {
+                case "lanzar_carta":
+                    // Lectura del mensaje
+                    JSONObject objCarta = (JSONObject) msg.get("carta");
+                    int numero = (int) (long) objCarta.get("numero");
+                    String palo = (String) objCarta.get("palo");
+                    Carta carta = null;
+                    try {
+                        carta = new Carta(numero, palo);
+                    } catch (ExceptionCartaIncorrecta exceptionCartaIncorrecta) {
+                        exceptionCartaIncorrecta.printStackTrace();
+                    }
+                    // Ejecución de la acción
+                    try {
+                        partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
+                        broadcastLanzarCarta(idPartida, idJugador, carta);
+                        System.out.println("El jugador " + idJugador + " lanza la carta " + carta.getValor() + carta.getPalo());
+                    } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                        exceptionJugadorIncorrecto.printStackTrace();
+                    } catch (ExceptionCartaIncorrecta exceptionCartaIncorrecta) {
+                        exceptionCartaIncorrecta.printStackTrace();
+                    } catch (ExceptionTurnoIncorrecto exceptionTurnoIncorrecto) {
+                        exceptionTurnoIncorrecto.printStackTrace();
+                    } catch (ExceptionJugadorSinCarta exceptionJugadorSinCarta) {
+                        exceptionJugadorSinCarta.printStackTrace();
+                    }
+                    break;
+                case "cantar":
+                    break;
+                case "cambiar_triunfo":
+                    break;
+                default:
+                    System.out.println("Accion no reconocida");
+                    break;
+            }
+            try {
+                partida.siguienteRonda();
+                broadcastGanaRonda(idPartida);
+                // Se intenta que todos los jugadores vuelvan a tener 6 cartas
+                broadcastRobarCarta(idPartida);
+            } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
+                System.out.println("La ronda aún no ha acabado, ESTA EXCEPCION ES NORMAL, PUEDE SER IGNORADA");
+            } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
+                exceptionCartaYaExiste.printStackTrace();
+            }
+        } else {
+            // El jugador ha enviado una accion sin recibir su turno
+            System.out.println(idJugador + " quiere accion pero no tiene turno");
+        }
+    }
+
+    private void broadcastRobarCarta(int idPartida) {
+        Lobby lobby = lobbies.get(idPartida);
+        LogicaPartida partida = listaPartidas.get(idPartida);
+        ArrayList<String> todosNombres = lobby.getTodosNombres();
+        for (String jugador : todosNombres) {
+            // Si consigue robar carta para ese jugador, hacer broadcast a todos y sólo a él de esa carta
+            Carta cartaRobada = robarCarta(partida, jugador);
+            if (cartaRobada == null) {
+                continue;
+            }
+            JSONObject objRob = new JSONObject();
+            objRob.put("tipo_mensaje", "broadcast_accion");
+            objRob.put("tipo_accion", "robar_carta");
+            objRob.put("id_jugador", partida.getEstado().getJugadoresId().indexOf(jugador));
+            for (String nombreReceptor : todosNombres) {
+                if (nombreReceptor.equals(jugador)) {
+                    // Debe de recibir la carta robada
+                    JSONObject objCarta = new JSONObject();
+                    objCarta.put("numero", cartaRobada.getValor());
+                    objCarta.put("palo", cartaRobada.getPalo());
+                    objRob.put("carta", objCarta);
+                    mandarMensaje(lobby.getRemotoJug(nombreReceptor), objRob);
+                } else {
+                    // NO debe de recibir la carta robada
+                    if (objRob.containsKey("carta")) {
+                        objRob.remove("carta");
+                    }
+                    mandarMensaje(lobby.getRemotoJug(nombreReceptor), objRob);
+                }
+            }
+        }
+    }
+
+    private Carta robarCarta(LogicaPartida partida, String jugador) {
+        Carta carta = null;
+        try {
+            ArrayList<Carta> estAntes = partida.getEstado().getCartasEnMano(jugador);
+            partida.repartirCarta(jugador);
+            // Busca cuál es la nueva carta
+            ArrayList<Carta> estDespues = partida.getEstado().getCartasEnMano(jugador);
+            for (Carta nueva : estDespues) {
+                if (!estAntes.contains(nueva)) {
+                    carta = nueva;
+                    break;
+                }
+            }
+        } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+            exceptionJugadorIncorrecto.printStackTrace();
+        } catch (ExceptionNumeroMaximoCartas exceptionNumeroMaximoCartas) {
+            System.out.println("El jugador ya tiene todas las cartas");
+        } catch (ExceptionMazoVacio exceptionMazoVacio) {
+            System.out.println("El mazo esta vacio");
+        } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
+            exceptionCartaYaExiste.printStackTrace();
+        }
+        return carta;
+    }
+
+
+    private void broadcastGanaRonda(int idPartida) {
+        Lobby lobby = lobbies.get(idPartida);
+        LogicaPartida partida = listaPartidas.get(idPartida);
+        EstadoPartida estado = partida.getEstado();
+        // Incrementa la ronda
+        lobby.incRonda();
+        // Crea el mensaje de nueva ronda
+        JSONObject objNR = new JSONObject();
+        objNR.put("tipo_mensaje", "gana_ronda");
+        objNR.put("nueva_ronda", lobby.getRonda());
+        // TODO: No siempre es de idas
+        objNR.put("tipo_nueva_ronda", "idas");
+        // TODO: El ganador no es siempre el del turno
+        objNR.put("id_jugador", estado.getTurnoId());
+        // Obtener puntuaciones de cada jugador
+        JSONArray punts = new JSONArray();
+        int i = 0;
+        for (String nombre : lobby.getTodosNombres()) {
+            JSONObject jug = new JSONObject();
+            jug.put("id_jugador", i);
+            try {
+                jug.put("puntuacion", partida.consultarPuntos(nombre));
+            } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                exceptionJugadorIncorrecto.printStackTrace();
+            }
+            punts.add(jug);
+            i++;
+        }
+        objNR.put("puntuaciones", punts);
+        broadcastMensaje(lobby, objNR);
+    }
+
+    private void broadcastLanzarCarta(int idPartida, int idJugador, Carta carta) {
+        Lobby lobby = lobbies.get(idPartida);
+        LogicaPartida partida = listaPartidas.get(idPartida);
+        EstadoPartida estado = partida.getEstado();
+        // TIPO DE MENSAJE
+        JSONObject objLC = new JSONObject();
+        objLC.put("tipo_mensaje", "broadcast_accion");
+        objLC.put("id_jugador", idJugador);
+        objLC.put("tipo_accion", "lanzar_carta");
+        JSONObject objCarta = new JSONObject();
+        objCarta.put("numero", carta.getValor());
+        objCarta.put("palo", carta.getPalo());
+        objLC.put("carta", objCarta);
+        broadcastMensaje(lobby, objLC);
+    }
+
+    private int getIdPartidaMsg(JSONObject msg) {
+        return (int) (long) ( (JSONObject) msg.get("remitente") ).get("id_partida");
+    }
+
+    private int getIdJugadorMsg(JSONObject msg) {
+        return (int) (long) ( (JSONObject) msg.get("remitente") ).get("id_jugador");
+    }
+
+    private String getTipoAccionMsg(JSONObject msg) {
+        return (String) msg.get("tipo_accion");
+    }
+
     private void recibirListo(Session session, JSONObject msg) {
         // Obtener datos del remitente
-        int idPartida = (int) (long) ( (JSONObject) msg.get("remitente") ).get("id_partida");
-        int idJugador = (int) (long) ( (JSONObject) msg.get("remitente") ).get("id_jugador");
+        int idPartida = getIdPartidaMsg(msg);
+        int idJugador = getIdJugadorMsg(msg);
         String nombre = (String) msg.get("nombre_participante");
 
         JugadorGestor jugador = new JugadorGestor(idJugador, nombre, session);
@@ -89,9 +275,13 @@ public class GestorMensajes {
                 LogicaPartida partida = new LogicaPartida(lobby.getTodosNombres());
                 partida.crearPartida();
                 listaPartidas.put(idPartida, partida);
+                // Manda el estado a todos los clientes
                 broadcastEstado(idPartida);
+                // Incrementa el numero de ronda a 1
                 lobby.incRonda();
+                // Manda el turno a todos los clientes
                 broadcastTurno(idPartida);
+                System.out.println("Nueva partida añadida con identificador: " + idPartida);
             } catch (ExceptionEquipoIncompleto exceptionEquipoIncompleto) {
                 exceptionEquipoIncompleto.printStackTrace();
             } catch (ExceptionNumeroMaximoCartas exceptionNumeroMaximoCartas) {
@@ -103,7 +293,6 @@ public class GestorMensajes {
             } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
                 exceptionCartaYaExiste.printStackTrace();
             }
-            System.out.println("Nueva partida añadida");
         }
     }
 
@@ -127,6 +316,14 @@ public class GestorMensajes {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void mandarMensaje(RemoteEndpoint.Basic remoto, JSONObject obj) {
+        try {
+            remoto.sendText(obj.toJSONString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
