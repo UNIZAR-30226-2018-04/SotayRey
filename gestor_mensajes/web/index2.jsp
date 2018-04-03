@@ -10,22 +10,29 @@
   <head>
     <title>$Title$</title>
     <script>
+        var id_partida = 0;
+        var id_jugador = 1;
+        var nombre_jugador = "jugador1";
+        var total_parts = 2;
         var socket = new WebSocket("ws://localhost:8080/endpoint");
-        var string = JSON.stringify({
+        var listo = JSON.stringify({
             "tipo_mensaje": "listo_jugador",
-            "nombre_participante": "jugador1",
-            "total_jugadores": 2,
+            "nombre_participante": nombre_jugador,
+            "total_jugadores": total_parts,
             "tipo_participante": "jugador",
             "remitente": {
-                "id_partida": 0,
-                "id_jugador": 1
+                "id_partida": id_partida,
+                "id_jugador": id_jugador
             }
         });
+        socket.onopen = function() {
+            socket.send(listo);
+        };
         socket.onmessage = function (msg) {
             console.log(msg.data);
         };
         function send() {
-          socket.send(string);
+            socket.send(string);
         }
     </script>
   </head>

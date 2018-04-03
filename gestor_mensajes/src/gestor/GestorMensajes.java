@@ -59,15 +59,6 @@ public class GestorMensajes {
             default:
                 System.out.println("Mierda");
         }
-        // TODO: Recibir ready
-        // TODO: Mandar estado inicial
-        // TODO: Broadcast de turno
-        // TODO: Recibir tirar carta
-        // TODO: Recibir cambio triunfo
-        // TODO: Broadcast de jugador tira carta
-        // TODO: Broadcast de nuevoTurno
-        // TODO: Informar quien gana ronda
-        // TODO: Informar tipo de ronda
     }
 
     private void recibirAccion(Session session, JSONObject msg) {
@@ -97,7 +88,8 @@ public class GestorMensajes {
                     try {
                         partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
                         broadcastLanzarCarta(idPartida, idJugador, carta);
-                        System.out.println("El jugador " + idJugador + " lanza la carta " + carta.getValor() + carta.getPalo());
+                        System.out.println("El jugador " + idJugador + " lanza la carta "
+                                + carta.getValor() + carta.getPalo());
                     } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionCartaIncorrecta exceptionCartaIncorrecta) {
@@ -109,18 +101,51 @@ public class GestorMensajes {
                     }
                     break;
                 case "cantar":
+                    int cantidad = (int) (long) msg.get("cantidad");
+                    // TODO: Gestionar cantidad a cantar
                     break;
                 case "cambiar_triunfo":
+                    // Lectura del mensaje
+                    JSONObject objTriunfo = (JSONObject) msg.get("nuevo_triunfo");
+                    int numeroTriunfo = (int) (long) objTriunfo.get("numero");
+                    String paloTriunfo = (String) objTriunfo.get("palo");
+                    Carta cartaTriunfo = null;
+                    try {
+                        cartaTriunfo = new Carta(numeroTriunfo, paloTriunfo);
+                    } catch (ExceptionCartaIncorrecta exceptionCartaIncorrecta) {
+                        exceptionCartaIncorrecta.printStackTrace();
+                    }
+                    // Ejecución de la acción
+                    try {
+                        partida.cambiarCartaPorTriunfo(partida.getEstado().getTurnoId(), cartaTriunfo);
+                        // Si se ejecuta correctamente la acción
+                        broadcastCambiarTriunfo(idPartida, cartaTriunfo);
+                    } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                        exceptionJugadorIncorrecto.printStackTrace();
+                    } catch (ExceptionJugadorSinCarta exceptionJugadorSinCarta) {
+                        exceptionJugadorSinCarta.printStackTrace();
+                    } catch (ExceptionCartaIncorrecta exceptionCartaIncorrecta) {
+                        exceptionCartaIncorrecta.printStackTrace();
+                    } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
+                        exceptionCartaYaExiste.printStackTrace();
+                    } catch (ExceptionNumeroMaximoCartas exceptionNumeroMaximoCartas) {
+                        exceptionNumeroMaximoCartas.printStackTrace();
+                    } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
+                        exceptionRondaNoAcabada.printStackTrace();
+                    }
                     break;
                 default:
                     System.out.println("Accion no reconocida");
                     break;
             }
             try {
+                // LÓGICA DE FINALIZACIÓN DE RONDA
                 partida.siguienteRonda();
                 broadcastGanaRonda(idPartida);
                 // Se intenta que todos los jugadores vuelvan a tener 6 cartas
                 broadcastRobarCarta(idPartida);
+                // Asigna el turno al jugador correspondiente
+                broadcastTurno(idPartida);
             } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
                 System.out.println("La ronda aún no ha acabado, ESTA EXCEPCION ES NORMAL, PUEDE SER IGNORADA");
             } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
@@ -130,6 +155,20 @@ public class GestorMensajes {
             // El jugador ha enviado una accion sin recibir su turno
             System.out.println(idJugador + " quiere accion pero no tiene turno");
         }
+    }
+
+    private void broadcastCambiarTriunfo(int idPartida, Carta nuevoTriunfo) {
+        Lobby lobby = lobbies.get(idPartida);
+        LogicaPartida partida = listaPartidas.get(idPartida);
+        JSONObject objCT = new JSONObject();
+        objCT.put("tipo_mensaje", "broadcast_accion");
+        objCT.put("tipo_accion", "cambiar_triunfo");
+        objCT.put("id_jugador", partida.getEstado().getTurno());
+        JSONObject objNT = new JSONObject();
+        objNT.put("numero", nuevoTriunfo.getValor());
+        objNT.put("palo", nuevoTriunfo.getPalo());
+        objCT.put("nuevo_triunfo", objNT);
+        broadcastMensaje(lobby, objCT);
     }
 
     private void broadcastRobarCarta(int idPartida) {
