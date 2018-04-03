@@ -42,16 +42,18 @@ function preload() {
     game.load.spritesheet("cartas", "assets/naipes.png", ejeXCartaOriginal, ejeYCartaOriginal);
     game.load.image('naipe', 'assets/naipe.png');
     game.load.image('cuadroCarta', 'assets/dragHere.png');
+    game.load.image('turno', 'assets/turno.png');
 }
 
 /* VARIABLES GLOBALES */
 
-var numJugadores = 4; // Define el tipo de partida en función del número de jugadores
+//var numJugadores = 4; // Define el tipo de partida en función del número de jugadores
 
 var misCartas;
 
 // Variables de los jugadores
-var miID = 0;
+//var miID = 0;
+//var idPartida = 0;
 
 
 /* se inicializan con la funcion inicializarDispositivo */
@@ -60,6 +62,7 @@ var jIzq;
 var jArriba;
 var jDer;
 
+var turno; // punto rojo que indica el turno
 
 var triunfo;
 triunfo = {};
@@ -142,6 +145,10 @@ function inicializarDispositivo(){
     jDer.cartasEnMano = game.add.group();
     jDer.dorso;
     jDer.rotacion = 270;
+
+    turno = game.add.sprite(0, 0, 'turno');
+    turno.height = ejeYCarta * 0.30;
+    turno.width = ejeXCarta * 0.30;
 
 
     arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
@@ -414,7 +421,7 @@ function create() {
 
     //jugadorLanzaCarta(3, 11, "copas");
 
-    //listo_jugador(); // Confirma que el jugador ya esta listo para jugar
+    listo_jugador(); // Confirma que el jugador ya esta listo para jugar
 
 }
 
@@ -511,14 +518,17 @@ function lanzarCarta (item) {
 function listo_jugador(){
     var obj = {
         "tipo_mensaje" : "listo_jugador",
+        "nombre_participante": nombre,
+        "total_jugadores": 2,
+        "tipo_participante": "jugador",
         "remitente" : {
-            "id_partida" : "0",
+            "id_partida" : idPartida,
             "id_jugador" : miID
         }
     }
 
-    var myJSON = JSON.stringify(obj);
-    enviarMensaje(myJSON);
+    //var myJSON = JSON.stringify(obj);
+    enviarMensaje(obj);
 }
 
 function accion(tipo, numero, palo, cantar){
@@ -558,6 +568,7 @@ function enviarMensaje(obj){
     // TODO se envia el mensaje al backend
     var msg = JSON.stringify(obj);
     console.log(msg);
+    socket.send(msg);
 }
 
 /**
@@ -571,14 +582,16 @@ function representarEstado(estado){
     // TODO hay que mapear antes
     mapearJugadores();
     estado.jugadores.forEach(function(item) {
-        var jugador = arrayJugadores[item.id];
-        console.log("JUGADORSITO " + jugador.XPosMedia +" "+ item.id);
-        jugador.numCartas = item.num_cartas;
-        crearCartas(jugador);
-        dibujarJugador(jugador);
-        jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
-        dibujarCartaLanzada(jugador);
-        arrayJugadores[item.id] = jugador;
+        if ([item.id] != miID){
+            var jugador = arrayJugadores[item.id];
+            console.log("JUGADORSITO " + jugador.XPosMedia + " " + item.id);
+            jugador.numCartas = item.num_cartas;
+            crearCartas(jugador);
+            dibujarJugador(jugador);
+            jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
+            dibujarCartaLanzada(jugador);
+            arrayJugadores[item.id] = jugador;
+        }
     }, this);
 
     // Se pone la mano del jugador
@@ -607,17 +620,27 @@ function recibirMensaje(msg){
                     jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
                     break;
                 case "robar_carta":
-                    jugadorRobaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                    if (mensaje.id_jugador != miID){
+                        jugadorRobaCarta(mensaje.id_jugador, "nada", "nada");
+                    }
+                    else {
+                        jugadorRobaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                    }
                     break;
                 case "cantar":
                     break;
                 case "cambiar_triunfo":
                     jugadorCambiaTriunfo(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
                     break;
+                case "turno" :
+                    dibujarTurno(mensaje.id_jugador);
+                    break;
             }
             break;
         case "gana_ronda":
-            rondaAcabada();
+            //sleep(60000);
+            //rondaAcabada();
+            setTimeout(function(){ rondaAcabada(); actualizarHUD(mensaje);}, 3000);
             break;
         case "estado_inicial" :
             representarEstado(mensaje);
@@ -673,6 +696,7 @@ function jugadorLanzaCarta(idJugador, numero, palo){
                 jugador.cartasEnMano.removeChild(item);
                 dibujarJugador(jugador);
                 jugador.cartaLanzada = crearCarta(numero, palo);
+                console.log("DIBUJO MI CARTA DE REFEREEENCIA");
                 dibujarCartaLanzada(jugador);
                 salir = true;
             }
@@ -768,13 +792,13 @@ function buscarCarta(numero, palo){
     if (numero == 0 && palo == 0){
         indice = 0; // el marco
     }
-    else if (palo == "oros"){
+    else if (palo == "O"){
 
     }
-    else if (palo == "copas"){
+    else if (palo == "C"){
         indice = indice + numCartas;
     }
-    else if (palo == "espadas"){
+    else if (palo == "E"){
         indice = indice + numCartas*2;
     }
     else { // palo == "bastos"
@@ -845,7 +869,58 @@ function pulsaBoton(item){
     enviarMensaje(obj);
 }
 
+function dibujarTurno(id_jugador){
+    var jugador = arrayJugadores[id_jugador];
+    turno.x = jugador.XLanzar;
+    turno.y = jugador.YLanzar;
+
+}
+
 /* ANIMACIONES */
+
+var HUDInicializado = false;
+var puntuacionMia = 0;
+var puntuacionRival = 0;
+var numRonda = 0;
+var tipo_ronda = "IDAS";
+var color = "#000000";
+var fuente =  "15pt impact";
+
+function actualizarHUD(datos){
+    console.log("ACTUALIZO EL HUD");
+    tipo_ronda.tipo = datos.tipo_nueva_ronda;
+    numRonda.numero = datos.nueva_ronda;
+    puntuacionMia.puntuacion = datos.puntuaciones[miID].puntuacion; // TODO, siempre ids en orden?
+    puntuacionRival.puntuacion = datos.puntuaciones[(miID+1)%numJugadores].puntuacion;
+
+
+    if (HUDInicializado == false){
+        console.log("NO ESTABA ININICIALIZADO");
+        tipo_ronda = game.add.text(0, 0, '', { font: fuente, fill: color});
+        tipo_ronda.tipo = "IDAS";
+        tipo_ronda.text = "TIPO RONDA : " + tipo_ronda.tipo;
+
+        numRonda = game.add.text(0, 20, '', { font: fuente, fill: color});
+        numRonda.numero = 0;
+        numRonda.text = "NUMERO RONDA : " + numRonda.numero;
+
+        puntuacionRival = game.add.text(0, 40, '', { font: fuente, fill: color});
+        puntuacionRival.puntuacion = 0;
+        puntuacionRival.text = "PUNTUACION RIVAL: " + puntuacionRival.puntuacion;
+
+        puntuacionMia = game.add.text(0, 60, '', { font: fuente, fill: color});
+        puntuacionMia.puntuacion = 0;
+        puntuacionMia.text = "MI PUNTAUCION : " + puntuacionMia.puntuacion;
+        HUDInicializado = true;
+    }
+    else{
+        console.log("ESTABA INICIALIZADO");
+        tipo_ronda.text = "TIPO RONDA : " + tipo_ronda.tipo;
+        numRonda.text = "NUMERO RONDA : " + numRonda.numero;
+        puntuacionRival.text = "PUNTUACION RIVAL: " + puntuacionRival.puntuacion;
+        puntuacionMia.text = "MI PUNTAUCION : " + puntuacionMia.puntuacion;
+    }
+}
 
 var arrastre;
 
@@ -859,4 +934,13 @@ function animacionArrastre(){ /* TODO solo se puede mover con imagenes */
 
 function borrarArrastre(){
     arrastre.destroy();
+}
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
+    }
 }
