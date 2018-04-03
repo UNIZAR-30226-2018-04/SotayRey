@@ -43,6 +43,8 @@ function preload() {
     game.load.image('naipe', 'assets/naipe.png');
     game.load.image('cuadroCarta', 'assets/dragHere.png');
     game.load.image('turno', 'assets/turno.png');
+    game.load.image('tapete', 'assets/tapete.png');
+    game.load.audio('musica', ['assets/musica.mp3'])
 }
 
 /* VARIABLES GLOBALES */
@@ -99,7 +101,7 @@ function inicializarDispositivo(){
     jRef.sumX = ejeXCarta;
     jRef.sumY = 0;
     jRef.XLanzar = jRef.XPosMedia;
-    jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 1.5;
+    jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 1.20;
 //jRef.YLanzar = 300;
     jRef.cartaLanzada;
     jRef.numCartas;
@@ -293,7 +295,10 @@ function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    game.stage.backgroundColor = "#009933";
+    //game.stage.sprite(0,0, "tapete");
+
+    game.add.tileSprite(0, 0, ejeX, ejeY, 'tapete');
+    //game.stage.backgroundColor = "#009933";
     //misCartas = game.add.group();
     //anyadirCarta(misCartas,0);
     //anyadirCarta(misCartas,1);
@@ -421,6 +426,7 @@ function create() {
 
     //jugadorLanzaCarta(3, 11, "copas");
 
+    controlMusica();
     listo_jugador(); // Confirma que el jugador ya esta listo para jugar
 
 }
@@ -653,7 +659,7 @@ function crearCarta(numero, palo){
     console.log("ME PIDEN CARTA CON NUMERO: " +numero+" PALO: "+palo);
     var carta;
     var indice = buscarCarta(numero, palo);
-    if (indice == 0){
+    if (palo == 0){
         carta = game.add.sprite(0, 0, 'cuadroCarta');
     }
     else{
@@ -789,7 +795,7 @@ function buscarCarta(numero, palo){
     var indice = numero - 1;
     console.log("EL indice es: " + numero);
     var numCartas = 13;
-    if (numero == 0 && palo == 0){
+    if (palo == 0){
         indice = 0; // el marco
     }
     else if (palo == "O"){
@@ -817,10 +823,10 @@ function dibujarBotones(){
     var espacioBoton = ejeX / numBotones;
     //var style = {font: "20px", fill: "#000000", align:"center"};
 
-    var cantarVeinte = game.add.text(0, ejeYBotones, '', { fill: '#000000'});
+    var cantarVeinte = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
     //var cantarVeinte = game.add.text(0, ejeYBotones, '', style);
-    var cantarCuarenta = game.add.text(espacioBoton, ejeYBotones, '', { fill: '#000000' });
-    var cambiarTriunfo = game.add.text(espacioBoton*2, ejeYBotones, '', {fill: '#000000'});
+    var cantarCuarenta = game.add.text(espacioBoton, ejeYBotones, '', { fill: '#ffffff' });
+    var cambiarTriunfo = game.add.text(espacioBoton*2, ejeYBotones, '', {fill: '#ffffff'});
 
     cantarVeinte.text = "CANTAR 20";
     cantarCuarenta.text = "CANTAR 40";
@@ -873,6 +879,10 @@ function dibujarTurno(id_jugador){
     var jugador = arrayJugadores[id_jugador];
     turno.x = jugador.XLanzar;
     turno.y = jugador.YLanzar;
+    turno.width = ejeXCarta;
+    turno.height = ejeYCarta;
+    turno.angle = jugador.rotacion;
+    turno.alfa = 0.5;
 
 }
 
@@ -883,7 +893,7 @@ var puntuacionMia = 0;
 var puntuacionRival = 0;
 var numRonda = 0;
 var tipo_ronda = "IDAS";
-var color = "#000000";
+var color = "#fffff5";
 var fuente =  "15pt impact";
 
 function actualizarHUD(datos){
@@ -942,5 +952,32 @@ function sleep(milliseconds) {
         if ((new Date().getTime() - start) > milliseconds){
             break;
         }
+    }
+}
+
+
+
+var music;
+var playPause;
+function controlMusica(){
+    music = game.add.audio('musica');
+    playPause = game.add.text(0, ejeY/2, '', { fill: '#ffffff'});
+    playPause.text = "MUSIKOTE";
+    playPause.inputEnabled = true;
+    playPause.events.onInputDown.add(botonMusica, this);
+    music.play();
+    playPause.estado = "pause";
+}
+
+function botonMusica(item){
+    console.log("SE PULSA EL BOTON " + item.estado);
+    if (item.estado == "playing"){
+        console.log("LA PAUSO");
+        music.pause();
+        playPause.estado = "pause";
+    }
+    else{
+        playPause.estado = "playing";
+        music.resume();
     }
 }
