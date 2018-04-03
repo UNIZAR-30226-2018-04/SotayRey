@@ -56,5 +56,8 @@ public class CrearPartida {
             }
             return true;
         }
+        else{
+            return false;
+        }
     }
 }
