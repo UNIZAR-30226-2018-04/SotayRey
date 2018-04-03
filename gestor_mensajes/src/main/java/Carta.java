@@ -133,7 +133,7 @@ public class Carta {
      * Post: Devuelve la puntuación de la carta
      * @return
      */
-    public int getPuntuación(){
+    public int getPuntuacion(){
         switch (this.valor){
             case 1:
                 return 11;
@@ -197,7 +197,7 @@ public class Carta {
      * @return
      */
     public boolean masPuntuacion(Carta otra){
-        return otra.getPuntuación() > getPuntuación();
+        return otra.getPuntuacion() > getPuntuacion();
     }
 
 
@@ -210,7 +210,7 @@ public class Carta {
      */
     public boolean mataCartaOtra(Carta triunfo, Carta otra){
         if (palo.equals(otra.getPalo())){ // es del mismo palo
-             return getPuntuación()>otra.getPuntuación();
+             return getPuntuacion()>otra.getPuntuacion();
         }
         if (palo.equals(triunfo.getPalo())) { // la mía es un triunfo y la
             // del otro no

@@ -7,7 +7,6 @@ package main.java;
  */
 
 import java.util.ArrayList;
-//TODO: que pasa si un jugador tiene una carta ganada y también la tiene otro jugador o la tiene el en la mano
 
 /**
  * Clase que representa abstractamente a un jugador. Este posee unas cartas en la mano, y unas cartas ganadas

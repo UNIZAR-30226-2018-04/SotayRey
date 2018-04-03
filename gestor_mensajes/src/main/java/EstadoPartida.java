@@ -36,6 +36,8 @@ public class EstadoPartida {
     private Carta triunfo;
     private boolean triunfo_entregado;
     private Random random;
+    private boolean finVuelta;
+    private int ganadorUltimaRonda;
 
 
 
@@ -65,6 +67,8 @@ public class EstadoPartida {
         }
         this.turno = 0;
         this.triunfo = null;
+        this.finVuelta = false;
+        this.ganadorUltimaRonda = -1;
     }
 
 
@@ -81,6 +85,8 @@ public class EstadoPartida {
         this.turno = - 1;
         this.triunfo = null;
         this.triunfo_entregado = false;
+        this.finVuelta = false;
+        this.ganadorUltimaRonda = -1;
     }
 
 
@@ -99,8 +105,16 @@ public class EstadoPartida {
         } catch (NullPointerException e){
             this.triunfo = null;
         }
+        this.finVuelta = p.isFinVuelta();
+        this.ganadorUltimaRonda = p.getGanadorUltimaRonda();
+
+
     }
 
+
+    public boolean isFinVuelta() {
+        return finVuelta;
+    }
 
     /**
      * Devuelve una copia de las cartas del mazo.
@@ -118,6 +132,15 @@ public class EstadoPartida {
     public String getTurnoId() {
         String copia = new String(this.jugadores.get(turno).getId());
         return copia;
+    }
+
+    /**
+     * Devuelve el ganador de la última ronda. Si no hay un ganador aún,
+     * devuelve -1.
+     * @return
+     */
+    public int getGanadorUltimaRonda() {
+        return ganadorUltimaRonda;
     }
 
 
@@ -165,7 +188,7 @@ public class EstadoPartida {
      * @throws ExceptionMazoVacio
      */
     public Carta getPrimeraCartaMazo() throws ExceptionMazoVacio {
-        if(mazo.size() != 0){
+        if(mazo.size() > 0){
             return new Carta(mazo.remove(0));
         }
 
@@ -322,34 +345,48 @@ public class EstadoPartida {
 
 
                         if (carta.esMismoPalo(inicial)) {
-                            //Carta es del mismo palo
 
+                            //Carta es del mismo palo
                             puedeLanzarDelPalo(carta, inicial,
                                     jugadorEncontrado);
 
                         } else {
 
-                            /** Obligación de matar con el Triunfo **/
-                            if (carta.esMismoPalo(triunfo)) {
-                                //Lanza un triunfo
-                                ponerCartaMesa(carta, jugadorEncontrado);
+                            // Comprueba si tiene del palo inicial en la mano
+                            if (tienePaloEnMano(jugadorEncontrado,
+                                    inicial)) {
+                                throw new ExceptionCartaIncorrecta
+                                        ("Tienes una carta del palo de " +
+                                                "salida en la mano");
                             } else {
-                                // Comprueba si tiene un triunfo en la mano
-                                if (tienePaloEnMano(jugadorEncontrado,
-                                        triunfo)) {
-                                    // Tiene un triunfo en la mano para matar
-                                    throw new ExceptionCartaIncorrecta
-                                            ("Tienes un triunfo en la mano");
+
+                                /** Obligación de matar con el Triunfo **/
+                                if (carta.esMismoPalo(triunfo)) {
+
+                                    //Lanza un triunfo porque el anterior no
+                                    // ha lanzado un triunfo
+                                    ponerCartaMesa(carta, jugadorEncontrado);
+
                                 } else {
 
-                                    /** Lanza cualquier carta porque no 
-                                     * cumple ninguna obligación 
-                                     */
-                                    ponerCartaMesa(carta, jugadorEncontrado);
+                                    // Comprueba si tiene un triunfo en la mano
+                                    if (tienePaloEnMano(jugadorEncontrado,
+                                            triunfo)) {
+                                        throw new ExceptionCartaIncorrecta
+                                                ("Tiene un triunfo salida en " +
+                                                        "la mano");
+                                    } else {
+                                        /** Lanza cualquier carta porque no
+                                         * cumple ninguna obligación
+                                         */
+                                        ponerCartaMesa(carta, jugadorEncontrado);
+                                    }
                                 }
                             }
+
                         }
                     } else { // Han lanzado dos o más
+
                         // Es del palo inicial
                         if (carta.esMismoPalo(inicial)){
                             // Comprueba si ha matado el compañero
@@ -358,6 +395,39 @@ public class EstadoPartida {
                             } else { // compañero no ha matado
                                 puedeLanzarDelPalo(carta, inicial,
                                         jugadorEncontrado);
+                            }
+                        } else {
+                            // Comprueba si tiene del palo inicial en la mano
+                            if (tienePaloEnMano(jugadorEncontrado,
+                                    inicial)) {
+                                throw new ExceptionCartaIncorrecta
+                                        ("Tienes una carta del palo de " +
+                                                "salida en la mano");
+                            } else {
+                                if (haMatadoCompanyero()){
+                                    ponerCartaMesa(carta, jugadorEncontrado);
+                                } else {
+                                    if (carta.esMismoPalo(triunfo)){
+                                        if (mataTriunfoCartaEnTapete(carta)){
+                                            // Lanza un triunfo que mata
+                                            ponerCartaMesa(carta, jugadorEncontrado);
+                                        } else {
+                                            if (tieneTriunfoQueMata
+                                                    (jugadorEncontrado.getCartasEnMano())){
+                                                //mirar si tiene un triunfo en
+                                                // mano y ademas mata
+                                                throw new
+                                                        ExceptionCartaIncorrecta("Tienes un triunfo en la mano que mata");
+                                            } else{
+                                                /** Lanza cualquier carta
+                                                 * porque no cumple ninguna
+                                                 * obligación
+                                                 */
+                                                ponerCartaMesa(carta, jugadorEncontrado);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -370,6 +440,13 @@ public class EstadoPartida {
         }
     }
 
+
+    /**
+     * Asigna a ganadorUltimaRonda -1 porque no hay ningún ganador.
+     */
+    public void resetGanadorUltimaRonda() {
+        this.ganadorUltimaRonda = -1;
+    }
 
     /**
      * Si la ronda ha terminado asigna al jugador ganador el turno de la
@@ -390,6 +467,7 @@ public class EstadoPartida {
 
             //Busqueda del ganador
             for (int i = 0; i < n_jug; i++) {
+
                 aux = cartasEnTapete.get(i);
                 if (aux.esMismoPalo(triunfo)) { // Si hay triunfo gana el mejor
                     if (mejor_triunfo == null ||
@@ -399,9 +477,10 @@ public class EstadoPartida {
                         ganador = i;
                     }
                 } else if (aux.esMismoPalo(mejor_otro)){
-                    if (mejor_otro == null ||
-                            aux.masPuntuacion(mejor_otro)) {
-                        // Pirmer triunfo o encontrado un triunfo mejor
+                    if (mejor_triunfo != null && (mejor_otro == null ||
+                            aux.masPuntuacion(mejor_otro)) ) {
+                        // No hay ningun triunfo y es la mejor carta 
+                        // inicial encontrada
                         mejor_otro = aux;
                         ganador = i;
                     }
@@ -410,14 +489,20 @@ public class EstadoPartida {
 
             // Asigna turno a jugador ganador
             turno = ganador;
+            ganadorUltimaRonda = ganador;
 
             // Suma puntos y cartas a ganador
             asignaCartasJugador(jugadores.get(turno));
 
             // Suma 10 puntos al ganador de la última ronda
             if (jugadores.get(0).getCartasEnMano().size() == 0){
-                // Se ha primera vuelta
+                // Se ha terminado la primera vuelta
                 jugadores.get(turno).sumarPuntos(10);
+                finVuelta = true;
+
+                //el turno en la siguiente vuelta es del siguiente al último 
+                // ganador
+                turno = (++turno%jugadores.size());
             }
         } else {
             throw new ExceptionRondaNoAcabada();
@@ -436,16 +521,13 @@ public class EstadoPartida {
     public void sumaCante(String jugador) throws ExceptionJugadorIncorrecto,
             ExceptionNoPuedesCantar{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        if( jugadores.get(turno).equals(encuentraJugador(jugador)) || jugadores.get(turno+2).equals(encuentraJugador(jugador))){
+        if( jugadores.get(ganadorUltimaRonda).equals(encuentraJugador(jugador)) || jugadores.get(ganadorUltimaRonda+2).equals(encuentraJugador(jugador))){
             jugadorEncontrado.anyadirCante(triunfo);
         }
         else{
             throw new ExceptionNoPuedesCantar();
         }
     }
-
-    //TODO: sistema de puntos en caso de empate
-
 
     //TODO: funcion para pruebas por terminal, eliminar al final
     /**
@@ -564,7 +646,7 @@ public class EstadoPartida {
             ExceptionCartaYaExiste {
         int res = 0;
         for (Carta c: cartasEnTapete){
-            res += c.getPuntuación();
+            res += c.getPuntuacion();
             j.anyadirCartaGanadas(c);
         }
 
@@ -672,4 +754,42 @@ public class EstadoPartida {
 
     }
 
+    /**
+     * Devuelve true si y solo si carta es triunfo y mata a cualquier otro 
+     * triunfo de la cartas en tapete.
+     * @param carta
+     * @return
+     */
+    private boolean mataTriunfoCartaEnTapete(Carta carta){
+        boolean res = false;
+        if (carta.esMismoPalo(triunfo)){
+            res = true;
+            int punt = carta.getPuntuacion();
+            for (Carta c: cartasEnTapete) {
+                if (c.esMismoPalo(carta)){
+                    if (c.getPuntuacion() > punt) // hay un triunfo mejor
+                        return false;
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Devuelve true si y solo si alguna carta perteneciente a cartasJug es
+     * triunfo y mata a las cartas en tapete.
+     * @param cartasJug
+     * @return
+     */
+    private boolean tieneTriunfoQueMata(ArrayList<Carta> cartasJug){
+        for (Carta c: cartasJug) {
+            if (c.esMismoPalo(triunfo) && mataTriunfoCartaEnTapete(c)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
+
+
+
