@@ -13,7 +13,7 @@ public class ArticuloVO {
     private String descripcion;
     private String rutaImagen;
     private char tipo;
-    //private Liga requiere;
+    private LigaVO requiere;
 
     public ArticuloVO(String nombre, int precio, String descripcion, String rutaImagen, char tipo) {
         this.nombre = nombre;
@@ -23,21 +23,21 @@ public class ArticuloVO {
         this.tipo = tipo;
     }
 
-//    public ArticuloVO(String nombre, int precio, String descripcion, String rutaImagen, char tipo, Liga requiere) {
-//        this.nombre = nombre;
-//        this.precio = precio;
-//        this.descripcion = descripcion;
-//        this.rutaImagen = rutaImagen;
-//        this.tipo = tipo;
-//        this.requiere = requiere;
-//    }
+    public ArticuloVO(String nombre, int precio, String descripcion, String rutaImagen, char tipo, LigaVO requiere) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.descripcion = descripcion;
+        this.rutaImagen = rutaImagen;
+        this.tipo = tipo;
+        this.requiere = requiere;
+    }
 
     public String getNombre() {
         return nombre;
     }
 
-    public void setNmbre(String nmbre) {
-        this.nombre = nmbre;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public int getPrecio() {
@@ -72,11 +72,11 @@ public class ArticuloVO {
         this.tipo = tipo;
     }
 
-//    public Liga getRequiere() {
-//        return requiere;
-//    }
-//
-//    public void setRequiere(Liga requiere) {
-//        this.requiere = requiere;
-//    }
+    public LigaVO getRequiere() {
+        return requiere;
+    }
+
+    public void setRequiere(LigaVO requiere) {
+        this.requiere = requiere;
+    }
 }
