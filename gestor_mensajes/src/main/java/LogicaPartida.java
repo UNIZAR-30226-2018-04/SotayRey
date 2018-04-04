@@ -12,6 +12,8 @@ import java.util.List;
 public class LogicaPartida {
 
     private EstadoPartida estado;
+    private boolean deVueltas;
+    private int ganador;
 
     /**
      * Constructor que crea un estado de la partida nuevo compuesto por jugadores identificados por los strings
@@ -22,6 +24,9 @@ public class LogicaPartida {
     public LogicaPartida(ArrayList<String> jugadores) throws
            ExceptionEquipoIncompleto {
         estado = new EstadoPartida(jugadores);
+        deVueltas = false;
+        ganador = -1;
+
     }
 
 
@@ -96,12 +101,73 @@ public class LogicaPartida {
      * @return
      * @throws ExceptionRondaNoAcabada
      * @throws ExceptionCartaYaExiste
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionMazoVacio
+     * @throws ExceptionNumeroMaximoCartas
+     * @throws ExceptionPartidaFinalizada si ha terminado la partida
      */
    public EstadoPartida siguienteRonda() throws ExceptionRondaNoAcabada,
-           ExceptionCartaYaExiste {
+           ExceptionCartaYaExiste, ExceptionJugadorIncorrecto,
+           ExceptionMazoVacio, ExceptionNumeroMaximoCartas,
+           ExceptionPartidaFinalizada {
+
+
        estado.terminarRonda();
+
+       if (ganador != -1){
+           throw new ExceptionPartidaFinalizada();
+       }
+
+       if (deVueltas){
+           if (consultarPuntos(estado.getJugadoresId().get(0)) > 100) {
+                ganador=0;
+                throw new ExceptionPartidaFinalizada();
+           }
+           else if (consultarPuntos(estado.getJugadoresId().get(1)) > 100) {
+               ganador = 1;
+               throw new ExceptionPartidaFinalizada();
+           }
+       } else { // Primera vuelta
+           if (estado.isFinVuelta()){ // Empieza segunda ronda
+
+               if (consultarPuntos(estado.getJugadoresId().get(0)) > 100){
+                   if (consultarPuntos(estado.getJugadoresId().get(1)) > 100){
+                       ganador = estado.getGanadorUltimaRonda() % 2;
+                   } else {
+                       ganador = 0;
+                   }
+                   throw new ExceptionPartidaFinalizada();
+               } else if ( consultarPuntos(estado.getJugadoresId().get(1)) >
+                       100){
+                   ganador = 1;
+                   throw new ExceptionPartidaFinalizada();
+               }
+               deVueltas = true;
+               estado.resetGanadorUltimaRonda();
+               estado.barajear();
+               // Reparte 6 cartas a cada jugador
+               for (int i = 0; i < 6; i++) {
+                   for (String j: estado.getJugadoresId()) {
+                       repartirCarta(j);
+                   }
+               }
+           }
+       }
        return new EstadoPartida(estado);
    }
+
+
+    /**
+     * Devuelve el índice del jugador que lanza la primera carta.
+     * @return
+     * @throws ExceptionRondaNoAcabada
+     */
+   public int getPrimerLanzador() throws ExceptionRondaNoAcabada {
+        if (estado.getCartasEnTapete().size() == 0){
+            return estado.getTurno();
+        }
+        throw new ExceptionRondaNoAcabada();
+    }
 
     /**
      * Intenta realizar un cante, ya sea de 20 o 40 por el jugador "jugador". Si no es su turno o no posee ningún cante
@@ -154,22 +220,17 @@ public class LogicaPartida {
         Carta triunfo = estado.getTriunfo();
 
         int n_cartas_mazo = estado.getMazo().size();
-        //Ha terminado la ronda y ha sido el ganador
-        if (estado.getJugadoresId().get(estado.getTurno()).equals(jugador)
-                && estado.getCartasEnTapete().size() == 0 &&
-                n_cartas_mazo > 0
-        /**
-         * TODO: hace falta?? && n_cartas_mazo <= 40-(estado.getJugadoresId())
-         * .size()*6)
-         */
-        ) {
+        int indice_jug = estado.getJugadoresId().indexOf(jugador);
+        // Ha terminado la ronda y el ganador de la última ronda ha sido él o
+        // su compañero
+        if (estado.getGanadorUltimaRonda() == indice_jug || estado
+                .getGanadorUltimaRonda() == (indice_jug + 2) % 4 && estado
+                .getCartasEnTapete().size() == 0 && n_cartas_mazo > 0){
 
             //Cambia la carta si y solo si es un 7 del mismo palo y su
             // puntuación es mayor
             if (triunfo.getPalo().equals(c.getPalo
-                    ()) && triunfo
-                    .getValor()
-                    == 7 && (triunfo.getPuntuación() > 0)){
+                    ()) && triunfo.getValor() == 7 && (triunfo.getPuntuacion()> 0)){
                 estado.setTriunfo(c);
                 estado.quitarCartaJugador(jugador, c);
                 estado.anyadirCartaJugador(jugador, triunfo);
@@ -184,22 +245,61 @@ public class LogicaPartida {
         }
 
         return new EstadoPartida(estado);
+
     }
 
 
     /**
-     * Devuelve los acumulados por el jugador.
+     * Devuelve los puntos acumulados por el equipo del jugador.
      * @param jugador
      * @return
      * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionRondaNoAcabada si la ronda no ha acabado
      */
     public int consultarPuntos(String jugador) throws
-            ExceptionJugadorIncorrecto{
-        return estado.getPuntosJugador(jugador);
+            ExceptionJugadorIncorrecto, ExceptionRondaNoAcabada {
+        ArrayList<String> jugadores = estado.getJugadoresId();
+        int pos = jugador.indexOf(jugador);
+        if (estado.getCartasEnTapete().size() == 0){
+            if (jugadores.size() == 2){
+                return estado.getPuntosJugador(jugador);
+            } else if (jugadores.size() == 4){
+                return estado.getPuntosJugador(jugador) +
+                        estado.getPuntosJugador(jugadores.get((pos+2)%4));
+            }
+        } else {
+            throw new ExceptionRondaNoAcabada();
+        }
+        return -1;
     }
 
+    /**
+     * Devuelve una copia del estado partida
+     * @return
+     */
     public EstadoPartida getEstado(){
         return new EstadoPartida(estado);
+    }
+
+   /**
+    * Devuelve el/los identificadores de los ganadores de la partida
+    * @return
+    * @throws ExceptionPartidaSinAcabar
+    */
+    public ArrayList<String> getGanadoresPartida() throws
+            ExceptionPartidaSinAcabar {
+        ArrayList <String> ganadores = new ArrayList<>();
+        if (ganador == -1){
+            throw new ExceptionPartidaSinAcabar();
+        }
+        int n_jug = estado.getJugadoresId().size();
+        String jug = new String(estado.getJugadoresId().get(ganador));
+        ganadores.add(jug);
+        if (n_jug == 4){
+            jug = new String(estado.getJugadoresId().get((ganador+2)% n_jug));
+            ganadores.add(jug);
+        }
+        return ganadores;
     }
 
 }

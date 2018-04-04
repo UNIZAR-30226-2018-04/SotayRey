@@ -74,7 +74,7 @@ public class CartaTest {
 
         try {
             Carta a = new Carta (2, "E");
-            assertTrue("Puntuación incorrecta de: " + a, a.getPuntuación()
+            assertTrue("Puntuación incorrecta de: " + a, a.getPuntuacion()
                     == 0);
             System.out.println("Superado... " + a);
         } catch (ExceptionCartaIncorrecta e){
@@ -143,7 +143,7 @@ public class CartaTest {
         try {
             a = new Carta(value, "B");
             assertTrue("Puntuación incorrecta de: " + a + " --> " + a
-                    .getPuntuación(), a.getPuntuación() == punt);
+                    .getPuntuacion(), a.getPuntuacion() == punt);
             System.out.println("Superado... " + a);
         } catch (ExceptionCartaIncorrecta e){
             fail("No debe generar interrupción una carta correcta: [" + value

@@ -38,11 +38,16 @@ console.log(ejeY);
 // en vez de Phaser.AUTO -> Phaser.CANVAS
 var game = new Phaser.Game(ejeX, ejeY / zonaJugableY, Phaser.CANVAS, '', { preload: preload, create: create, update: update, render: render });
 
+/**
+ * Precarga las imagenes y sonidos que se utilizaran en el juego
+ */
 function preload() {
     game.load.spritesheet("cartas", "assets/naipes.png", ejeXCartaOriginal, ejeYCartaOriginal);
     game.load.image('naipe', 'assets/naipe.png');
     game.load.image('cuadroCarta', 'assets/dragHere.png');
     game.load.image('turno', 'assets/turno.png');
+    game.load.image('tapete', 'assets/tapete.png');
+    game.load.audio('musica', ['assets/musica.mp3'])
 }
 
 /* VARIABLES GLOBALES */
@@ -73,7 +78,9 @@ triunfo.y = (ejeY / 2) * 0.85;
 var arrayJugadoresDefecto = [];
 var arrayJugadores = [];
 
-/* Inicializa las variables que dependen de la resolucion del dispositivo */
+/**
+ *  Inicializa las variables que dependen de la resolucion del dispositivo
+ */
 function inicializarDispositivo(){
     if (ejeX > 800){
         console.log("dispositivo grande");
@@ -99,7 +106,7 @@ function inicializarDispositivo(){
     jRef.sumX = ejeXCarta;
     jRef.sumY = 0;
     jRef.XLanzar = jRef.XPosMedia;
-    jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 1.5;
+    jRef.YLanzar = jRef.YPosMedia - ejeYCarta * 1.20;
 //jRef.YLanzar = 300;
     jRef.cartaLanzada;
     jRef.numCartas;
@@ -156,7 +163,10 @@ function inicializarDispositivo(){
 
 }
 
-/* Mapeo en funcion  del tipo de partida y mi identificador */
+/**
+ *  Mapeo de los jugadores para saber la posicion que ocupan
+ *  en funcion  del tipo de partida y mi identificador
+ */
 function mapearJugadores(){
     for (i = 0; i < numJugadores; i++) {
         arrayJugadores[i] = arrayJugadoresDefecto[(miID + i)%numJugadores];
@@ -204,16 +214,27 @@ function inicializarJugadores(){
    }
 }
 
+/**
+ * Dibuja el cuadro para lanzar la carta
+ * @param jugador Jugador a dibujar el cuadro
+ */
 function inicializarCuadroCarta(jugador){
     crearCuadroCarta(jugador);
     dibujarCuadroCarta(jugador);
 }
 
+/**
+ * Crea el cuadro punteado donde el jugador tiene que lanzar la carta
+ * @param jugador Jugador a dibujar el cuadro
+ */
 function crearCuadroCarta(jugador){
     jugador.cartaLanzada = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
 }
 
-
+/**
+ * Dibuja el cuadro punteado en la posición donde el jugador lanza la carta
+ * @param jugador Jugador a dibujar el cuadro
+ */
 function dibujarCuadroCarta(jugador){
     //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
     jugador.cartaLanzada.loadTexture('cuadroCarta');
@@ -225,6 +246,10 @@ function dibujarCuadroCarta(jugador){
     //cuadro.scale.setTo(escalaCarta, escalaCarta);
 }
 
+/**
+ * Dibuja la carta lanzada
+ * @param jugador Jugador a dibujar la carta lanzada
+ */
 function dibujarCartaLanzada(jugador){
     //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
     console.log("dibujo la carta en el medio");
@@ -236,6 +261,12 @@ function dibujarCartaLanzada(jugador){
     //cuadro.scale.setTo(escalaCarta, escalaCarta);
 }
 
+/**
+ * Crea las cartas para un jugador. Se utiliza para los jugadores
+ * que no son el de referencia ya que no se puede saber qué cartas son,
+ * por lo que se dibuja el dorso correspondiente
+ * @param jugador Jugador a crear las cartas
+ */
 function crearCartas(jugador){
     for (i = 0; i < jugador.numCartas; i++){
         console.log("CRANDO CARTAS PARA " + jugador.XPosMedia);
@@ -244,6 +275,10 @@ function crearCartas(jugador){
 
 }
 
+/**
+ * Dibuja las cartas que tiene en la mano un jugador
+ * @param identificador identificador del jugador a dibujar las cartas
+ */
 function dibujarJugador(identificador){
     var jugador = identificador;
     console.log("DIBUJANDO PARA " + jugador.XPosMedia);
@@ -289,11 +324,17 @@ function dibujarJugadorRef(){
 }
 
 */
+/**
+ * Inicializa el juego
+ */
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    game.stage.backgroundColor = "#009933";
+    //game.stage.sprite(0,0, "tapete");
+
+    game.add.tileSprite(0, 0, ejeX, ejeY, 'tapete');
+    //game.stage.backgroundColor = "#009933";
     //misCartas = game.add.group();
     //anyadirCarta(misCartas,0);
     //anyadirCarta(misCartas,1);
@@ -421,10 +462,15 @@ function create() {
 
     //jugadorLanzaCarta(3, 11, "copas");
 
+    controlMusica();
     listo_jugador(); // Confirma que el jugador ya esta listo para jugar
 
 }
 
+/**
+ * No se utiliza
+ * @param milliseconds
+ */
 function sleep(milliseconds) {
     var start = new Date().getTime();
     for (var i = 0; i < 1e7; i++) {
@@ -447,7 +493,9 @@ function listener (item) {
     console.log(item.nombre);
 }
 
-
+/**
+ * Para depurar el juego
+ */
 function render() {
 
     // Input debug info
@@ -653,7 +701,7 @@ function crearCarta(numero, palo){
     console.log("ME PIDEN CARTA CON NUMERO: " +numero+" PALO: "+palo);
     var carta;
     var indice = buscarCarta(numero, palo);
-    if (indice == 0){
+    if (palo == 0){
         carta = game.add.sprite(0, 0, 'cuadroCarta');
     }
     else{
@@ -789,7 +837,7 @@ function buscarCarta(numero, palo){
     var indice = numero - 1;
     console.log("EL indice es: " + numero);
     var numCartas = 13;
-    if (numero == 0 && palo == 0){
+    if (palo == 0){
         indice = 0; // el marco
     }
     else if (palo == "O"){
@@ -817,10 +865,10 @@ function dibujarBotones(){
     var espacioBoton = ejeX / numBotones;
     //var style = {font: "20px", fill: "#000000", align:"center"};
 
-    var cantarVeinte = game.add.text(0, ejeYBotones, '', { fill: '#000000'});
+    var cantarVeinte = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
     //var cantarVeinte = game.add.text(0, ejeYBotones, '', style);
-    var cantarCuarenta = game.add.text(espacioBoton, ejeYBotones, '', { fill: '#000000' });
-    var cambiarTriunfo = game.add.text(espacioBoton*2, ejeYBotones, '', {fill: '#000000'});
+    var cantarCuarenta = game.add.text(espacioBoton, ejeYBotones, '', { fill: '#ffffff' });
+    var cambiarTriunfo = game.add.text(espacioBoton*2, ejeYBotones, '', {fill: '#ffffff'});
 
     cantarVeinte.text = "CANTAR 20";
     cantarCuarenta.text = "CANTAR 40";
@@ -873,6 +921,10 @@ function dibujarTurno(id_jugador){
     var jugador = arrayJugadores[id_jugador];
     turno.x = jugador.XLanzar;
     turno.y = jugador.YLanzar;
+    turno.width = ejeXCarta;
+    turno.height = ejeYCarta;
+    turno.angle = jugador.rotacion;
+    turno.alfa = 0.5;
 
 }
 
@@ -883,7 +935,7 @@ var puntuacionMia = 0;
 var puntuacionRival = 0;
 var numRonda = 0;
 var tipo_ronda = "IDAS";
-var color = "#000000";
+var color = "#fffff5";
 var fuente =  "15pt impact";
 
 function actualizarHUD(datos){
@@ -942,5 +994,32 @@ function sleep(milliseconds) {
         if ((new Date().getTime() - start) > milliseconds){
             break;
         }
+    }
+}
+
+
+
+var music;
+var playPause;
+function controlMusica(){
+    music = game.add.audio('musica');
+    playPause = game.add.text(0, ejeY/2, '', { fill: '#ffffff'});
+    playPause.text = "MUSIKOTE";
+    playPause.inputEnabled = true;
+    playPause.events.onInputDown.add(botonMusica, this);
+    music.play();
+    playPause.estado = "pause";
+}
+
+function botonMusica(item){
+    console.log("SE PULSA EL BOTON " + item.estado);
+    if (item.estado == "playing"){
+        console.log("LA PAUSO");
+        music.pause();
+        playPause.estado = "pause";
+    }
+    else{
+        playPause.estado = "playing";
+        music.resume();
     }
 }
