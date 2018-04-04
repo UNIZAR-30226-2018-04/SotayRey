@@ -38,6 +38,9 @@ console.log(ejeY);
 // en vez de Phaser.AUTO -> Phaser.CANVAS
 var game = new Phaser.Game(ejeX, ejeY / zonaJugableY, Phaser.CANVAS, '', { preload: preload, create: create, update: update, render: render });
 
+/**
+ * Precarga las imagenes y sonidos que se utilizaran en el juego
+ */
 function preload() {
     game.load.spritesheet("cartas", "assets/naipes.png", ejeXCartaOriginal, ejeYCartaOriginal);
     game.load.image('naipe', 'assets/naipe.png');
@@ -75,7 +78,9 @@ triunfo.y = (ejeY / 2) * 0.85;
 var arrayJugadoresDefecto = [];
 var arrayJugadores = [];
 
-/* Inicializa las variables que dependen de la resolucion del dispositivo */
+/**
+ *  Inicializa las variables que dependen de la resolucion del dispositivo
+ */
 function inicializarDispositivo(){
     if (ejeX > 800){
         console.log("dispositivo grande");
@@ -158,7 +163,10 @@ function inicializarDispositivo(){
 
 }
 
-/* Mapeo en funcion  del tipo de partida y mi identificador */
+/**
+ *  Mapeo de los jugadores para saber la posicion que ocupan
+ *  en funcion  del tipo de partida y mi identificador
+ */
 function mapearJugadores(){
     for (i = 0; i < numJugadores; i++) {
         arrayJugadores[i] = arrayJugadoresDefecto[(miID + i)%numJugadores];
@@ -206,16 +214,27 @@ function inicializarJugadores(){
    }
 }
 
+/**
+ * Dibuja el cuadro para lanzar la carta
+ * @param jugador Jugador a dibujar el cuadro
+ */
 function inicializarCuadroCarta(jugador){
     crearCuadroCarta(jugador);
     dibujarCuadroCarta(jugador);
 }
 
+/**
+ * Crea el cuadro punteado donde el jugador tiene que lanzar la carta
+ * @param jugador Jugador a dibujar el cuadro
+ */
 function crearCuadroCarta(jugador){
     jugador.cartaLanzada = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
 }
 
-
+/**
+ * Dibuja el cuadro punteado en la posición donde el jugador lanza la carta
+ * @param jugador Jugador a dibujar el cuadro
+ */
 function dibujarCuadroCarta(jugador){
     //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
     jugador.cartaLanzada.loadTexture('cuadroCarta');
@@ -227,6 +246,10 @@ function dibujarCuadroCarta(jugador){
     //cuadro.scale.setTo(escalaCarta, escalaCarta);
 }
 
+/**
+ * Dibuja la carta lanzada
+ * @param jugador Jugador a dibujar la carta lanzada
+ */
 function dibujarCartaLanzada(jugador){
     //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
     console.log("dibujo la carta en el medio");
@@ -238,6 +261,12 @@ function dibujarCartaLanzada(jugador){
     //cuadro.scale.setTo(escalaCarta, escalaCarta);
 }
 
+/**
+ * Crea las cartas para un jugador. Se utiliza para los jugadores
+ * que no son el de referencia ya que no se puede saber qué cartas son,
+ * por lo que se dibuja el dorso correspondiente
+ * @param jugador Jugador a crear las cartas
+ */
 function crearCartas(jugador){
     for (i = 0; i < jugador.numCartas; i++){
         console.log("CRANDO CARTAS PARA " + jugador.XPosMedia);
@@ -246,6 +275,10 @@ function crearCartas(jugador){
 
 }
 
+/**
+ * Dibuja las cartas que tiene en la mano un jugador
+ * @param identificador identificador del jugador a dibujar las cartas
+ */
 function dibujarJugador(identificador){
     var jugador = identificador;
     console.log("DIBUJANDO PARA " + jugador.XPosMedia);
@@ -291,6 +324,9 @@ function dibujarJugadorRef(){
 }
 
 */
+/**
+ * Inicializa el juego
+ */
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
@@ -431,6 +467,10 @@ function create() {
 
 }
 
+/**
+ * No se utiliza
+ * @param milliseconds
+ */
 function sleep(milliseconds) {
     var start = new Date().getTime();
     for (var i = 0; i < 1e7; i++) {
@@ -453,7 +493,9 @@ function listener (item) {
     console.log(item.nombre);
 }
 
-
+/**
+ * Para depurar el juego
+ */
 function render() {
 
     // Input debug info
