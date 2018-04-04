@@ -161,6 +161,7 @@ public class JugadorTest {
             j1.anyadirCartaEnMano(c5);
             j1.anyadirCartaEnMano(c6);
             j1.anyadirCante(c);
+            exception.expect(ExceptionNoPuedesCantar.class);
 
         } catch (ExceptionNoPuedesCantar e){
             System.out.println("Superado... no hay nada que cantar");

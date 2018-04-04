@@ -9,7 +9,9 @@ package test.java;
 import main.java.*;
 
 import org.junit.FixMethodOrder;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runners.MethodSorters;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +20,9 @@ import static org.junit.Assert.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LogicaPartidaTest {
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     /**
      * Prueba que asigna primera 6 cartas a cada jugador y que el triunfo es
@@ -62,39 +67,9 @@ public class LogicaPartidaTest {
             ArrayList<String> jugadores = new ArrayList<>(Arrays.asList("j1",
                     "j2", "j3", "j4"));
             LogicaPartida logica = new LogicaPartida(jugadores);
-            EstadoPartida estado = logica.getEstado();
+            EstadoPartida estado = logica.getPunteroAEstado();
 
-            Carta c = new Carta(7, "E");
-            estado.setTriunfo(c);
 
-            Carta c1 = new Carta(11, "E");
-            Carta c2 = new Carta(12, "E");
-            Carta c3 = new Carta(11, "O");
-            Carta c4 = new Carta(12, "O");
-            Carta c5 = new Carta(7, "O");
-            Carta c6 = new Carta(2, "O");
-
-            estado.anyadirCartaJugador("j1",c1);
-            estado.anyadirCartaJugador("j1",c2);
-            estado.anyadirCartaJugador("j1",c3);
-            estado.anyadirCartaJugador("j1",c4);
-            estado.anyadirCartaJugador("j1",c5);
-            estado.anyadirCartaJugador("j1",c6);
-
-            logica.cantar("j1");
-
-        } catch (ExceptionNoPuedesCantar e){
-            System.out.println("Superado... no hay nada que cantar");
-        } catch (ExceptionCartaIncorrecta | ExceptionCartaYaExiste |
-                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto  |
-                ExceptionRondaNoAcabada | ExceptionEquipoIncompleto e1) {
-            fail("Excepción incorrecta");
-        }
-        try {
-            ArrayList<String> jugadores = new ArrayList<>(Arrays.asList("j1",
-                    "j2", "j3", "j4"));
-            LogicaPartida logica = new LogicaPartida(jugadores);
-            EstadoPartida estado = logica.getEstado();
 
             Carta c = new Carta(7, "E");
             estado.setTriunfo(c);
@@ -114,9 +89,88 @@ public class LogicaPartidaTest {
             estado.anyadirCartaJugador("j1",c6);
 
             logica.cantar("j1");
+            exception.expect(ExceptionNoPuedesCantar.class);
+
+        } catch (ExceptionNoPuedesCantar e){
+            System.out.println("Superado... no suma al no haber matado");
+        } catch (ExceptionCartaIncorrecta | ExceptionCartaYaExiste |
+                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto  |
+                ExceptionRondaNoAcabada | ExceptionEquipoIncompleto e1) {
+            fail("Excepción incorrecta");
         }
-        catch (Exception e){
-            ;
+
+        try {
+            ArrayList<String> jugadores = new ArrayList<>(Arrays.asList("j1",
+                    "j2", "j3", "j4"));
+            LogicaPartida logica = new LogicaPartida(jugadores);
+            EstadoPartida estado = logica.getPunteroAEstado();
+
+            Carta c = new Carta(7, "E");
+            estado.setTriunfo(c);
+
+            Carta c1 = new Carta(11, "E");
+            Carta c2 = new Carta(12, "E");
+            Carta c3 = new Carta(11, "O");
+            Carta c4 = new Carta(12, "O");
+            Carta c5 = new Carta(7, "O");
+            Carta c6 = new Carta(2, "O");
+
+            estado.anyadirCartaJugador("j1",c1);
+            estado.anyadirCartaJugador("j1",c2);
+            estado.anyadirCartaJugador("j1",c3);
+            estado.anyadirCartaJugador("j1",c4);
+            estado.anyadirCartaJugador("j1",c5);
+            estado.anyadirCartaJugador("j1",c6);
+
+            estado.setGanadorUltimaRonda(1);
+            logica.cantar("j1");
+            exception.expect(ExceptionNoPuedesCantar.class);
+
+        }
+        catch (ExceptionNoPuedesCantar e){
+            System.out.println("Superado... no hay nada que cantar");
+        } catch (ExceptionCartaIncorrecta | ExceptionCartaYaExiste |
+                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto  |
+                ExceptionRondaNoAcabada | ExceptionEquipoIncompleto e1) {
+            fail("Excepción incorrecta");
+        }
+        try {
+            ArrayList<String> jugadores = new ArrayList<>(Arrays.asList("j1",
+                    "j2", "j3", "j4"));
+            LogicaPartida logica = new LogicaPartida(jugadores);
+            EstadoPartida estado = logica.getPunteroAEstado();
+
+            Carta c = new Carta(7, "E");
+            estado.setTriunfo(c);
+
+            Carta c1 = new Carta(10, "E");
+            Carta c2 = new Carta(12, "E");
+            Carta c3 = new Carta(10, "O");
+            Carta c4 = new Carta(12, "O");
+            Carta c5 = new Carta(7, "O");
+            Carta c6 = new Carta(2, "O");
+
+            estado.anyadirCartaJugador("j1",c1);
+            estado.anyadirCartaJugador("j1",c2);
+            estado.anyadirCartaJugador("j1",c3);
+            estado.anyadirCartaJugador("j1",c4);
+            estado.anyadirCartaJugador("j1",c5);
+            estado.anyadirCartaJugador("j1",c6);
+
+            estado.setGanadorUltimaRonda(0);
+
+            logica.cantar("j1");
+
+            assertEquals("Debería sumar 60 puntos",60,logica.consultarPuntos("j1"));
+            System.out.println("Superado... el jugador tiene 60 puntos");
+        }
+        catch ( ExceptionNoPuedesCantar | ExceptionCartaIncorrecta | ExceptionCartaYaExiste |
+                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto  |
+                ExceptionRondaNoAcabada | ExceptionEquipoIncompleto e1) {
+            fail("Excepción incorrecta");
         }
     }
+
+    
+
 }

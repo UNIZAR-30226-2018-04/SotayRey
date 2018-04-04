@@ -179,7 +179,6 @@ public class LogicaPartida {
      */
     public EstadoPartida cantar(String jugador) throws    ExceptionJugadorIncorrecto,
                                                             ExceptionRondaNoAcabada,
-                                                            ExceptionNoPuedesCantar,
                                                             ExceptionNoPuedesCantar {
         ArrayList<String> jugadores = estado.getJugadoresId();
         if(jugadores.contains(jugador)){
@@ -300,6 +299,15 @@ public class LogicaPartida {
             ganadores.add(jug);
         }
         return ganadores;
+    }
+
+    //TODO: funcion para pruebas por terminal, eliminar al final
+    /**
+     * Devuelve una copia del estado partida
+     * @return
+     */
+    public EstadoPartida getPunteroAEstado(){
+        return estado;
     }
 
 }

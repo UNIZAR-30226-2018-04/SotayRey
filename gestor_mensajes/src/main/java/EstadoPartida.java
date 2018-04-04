@@ -521,7 +521,10 @@ public class EstadoPartida {
     public void sumaCante(String jugador) throws ExceptionJugadorIncorrecto,
             ExceptionNoPuedesCantar{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        if( jugadores.get(ganadorUltimaRonda).equals(encuentraJugador(jugador)) || jugadores.get(ganadorUltimaRonda+2).equals(encuentraJugador(jugador))){
+        if (ganadorUltimaRonda < 0 || ganadorUltimaRonda > 3){
+            throw new ExceptionNoPuedesCantar();
+        }
+        else if(jugadores.get(ganadorUltimaRonda).equals(encuentraJugador(jugador)) || jugadores.get(ganadorUltimaRonda+2).equals(encuentraJugador(jugador))){
             jugadorEncontrado.anyadirCante(triunfo);
         }
         else{
@@ -539,6 +542,18 @@ public class EstadoPartida {
             this.mazo = copiarCartas(baraja);
         }
     }
+
+    //TODO: funcion para pruebas por terminal, eliminar al final
+
+    /**
+     * Modificar valor de ganadorUltimaRonda
+     * @param i
+     */
+    public void setGanadorUltimaRonda(int i){
+        ganadorUltimaRonda=i;
+    }
+
+
 
     /***************************** FUNCIONES AUXILIARES ***********************/
 
