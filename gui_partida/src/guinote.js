@@ -559,10 +559,9 @@ function lanzarCarta (item) {
     lanzarCartaConfirmar(item.frame);
 }
 
-
-/* PROXY */
-
-/* TODO el id partida se tiene que especificar */
+/**
+ * Envía el mensaje de confirmación de que el jugador está listo para comenzar la partida
+ */
 function listo_jugador(){
     var obj = {
         "tipo_mensaje" : "listo_jugador",
@@ -720,7 +719,12 @@ function crearDorso(numero, palo){
     return carta;
 }
 
-/* Elimina la carta del mazo (cualquiera si no es referencia) y la pone en el centro en la variable cartaLanzada */
+/**
+ * Elimina la carta del mazo (cualquiera si no es referencia) y la pone en el centro en la variable cartaLanzada
+ * @param idJugador Id del jugador que lanza la carta
+ * @param numero Numero de la carta que lanza
+ * @param palo Palo de la carta que lanza
+ */
 function jugadorLanzaCarta(idJugador, numero, palo){
     // indexar jugador
     // coger la primera carta de la mano y eliminarla
@@ -803,7 +807,12 @@ function pulsaCarta(item){
     enviarMensaje(obj);
 }
 
-/* Un jugador roba una carta, si no es el referencia da igual el numero y palo */
+/**
+ * Un jugador roba una carta, si no es el referencia da igual el numero y palo
+ * @param idJugador Id del jugador que roba
+ * @param numero
+ * @param palo
+ */
 function jugadorRobaCarta(idJugador, numero, palo){
     var jugador = arrayJugadores[idJugador];
     if (idJugador!= miID){
@@ -823,6 +832,9 @@ function jugadorRobaCarta(idJugador, numero, palo){
     }
 }
 
+/**
+ * Limpia la mesa de las cartas que han lanzado los jugadores
+ */
 function rondaAcabada(){
     // cambiar todos los cuadros de lanzar por el sprite del cuadro de lanzar
     for (i = 0; i < numJugadores; i++){
@@ -832,7 +844,12 @@ function rondaAcabada(){
     }
 }
 
-/* Devuelve el numero a indexar en el sprite de cartas */
+/**
+ * Devuelve el numero a indexar en el sprite de cartas
+ * @param numero Numero de la carta
+ * @param palo Palo de la carta
+ * @returns {number}
+ */
 function buscarCarta(numero, palo){
     var indice = numero - 1;
     console.log("EL indice es: " + numero);
@@ -917,6 +934,10 @@ function pulsaBoton(item){
     enviarMensaje(obj);
 }
 
+/**
+ * Dibuja el punto rojo que indica el turno del jugador
+ * @param id_jugador Id del jugador al que hay que poner el turno
+ */
 function dibujarTurno(id_jugador){
     var jugador = arrayJugadores[id_jugador];
     turno.x = jugador.XLanzar;
@@ -938,6 +959,10 @@ var tipo_ronda = "IDAS";
 var color = "#fffff5";
 var fuente =  "15pt impact";
 
+/**
+ * Actualiza el HUD del jugador
+ * @param datos Datos nuevos a actualizar
+ */
 function actualizarHUD(datos){
     console.log("ACTUALIZO EL HUD");
     tipo_ronda.tipo = datos.tipo_nueva_ronda;
@@ -997,7 +1022,7 @@ function sleep(milliseconds) {
     }
 }
 
-
+/* MÚSICA */
 
 var music;
 var playPause;
