@@ -5,7 +5,7 @@
 //var ejeY = window.innerHeight * window.devicePixelRatio;
 
 /* PORCENTAJES RESPONSIVE */
-var numBotones = 3;
+var numBotones = 2;
 var zonaJugableY = 0.9; // Porcentaje
 var ejeXBotones = window.innerWidth;
 var ejeYBotones = window.innerHeight * zonaJugableY + ( window.innerHeight *(1-zonaJugableY)*0.20);
@@ -159,8 +159,6 @@ function inicializarDispositivo(){
 
 
     arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
-
-
 }
 
 /**
@@ -356,80 +354,6 @@ function create() {
 
     // Estado inicial de prueba
 
-    var estado_inicial = {
-        "tipo_mensaje": "estado_inicial",
-        "remitente": {
-            "id_partida": 0,
-            "id_jugador": 0
-        },
-        "partida": {
-            "ronda": 0,
-            "tipo_ronda": "idas",
-            "restantes_mazo": 0
-        },
-        "jugadores": [
-            {
-                "id": 1,
-                "nombre": "hello",
-                "avatar": "ruta",
-                "tipo": "espectador",
-                "puntos": 0,
-                "num_cartas": 6,
-                "carta_mesa": {
-                    "numero": 0,
-                    "palo": 0,
-                }
-            },
-            {
-                "id": 2,
-                "nombre": "hello",
-                "avatar": "ruta",
-                "tipo": "espectador",
-                "puntos": 0,
-                "num_cartas": 6,
-                "carta_mesa": {
-                    "numero": 0,
-                    "palo": 0,
-                }
-            },
-            {
-                "id": 3,
-                "nombre": "hello",
-                "avatar": "ruta",
-                "tipo": "espectador",
-                "puntos": 0,
-                "num_cartas": 6,
-                "carta_mesa": {
-                    "numero": 0,
-                    "palo": 0,
-                }
-            }
-        ],
-        "triunfo": {
-            "numero": 7,
-            "palo": "espadas"
-        },
-        "mano": [
-            {
-                "numero": 2,
-                "palo": "espadas"
-            },
-            {
-                "numero": 4,
-                "palo": "bastos"
-            },
-            {
-                "numero": 6,
-                "palo": "oros"
-            },
-            {
-                "numero": 10,
-                "palo": "copas"
-            }
-        ]
-    }
-
-    console.log("HEEEEELL YEAH " +estado_inicial.remitente.id_partida);
     //representarEstado(estado_inicial);
 
     //mapearJugadores();
@@ -464,6 +388,7 @@ function create() {
 
     controlMusica();
     listo_jugador(); // Confirma que el jugador ya esta listo para jugar
+    dibujarCuadroCarta(jRef);
 
 }
 
@@ -578,7 +503,7 @@ function listo_jugador(){
     enviarMensaje(obj);
 }
 
-function accion(tipo, numero, palo, cantar){
+function accion(tipo, numero, palo){
     var queAccion;
     switch(tipo) {
         case "lanzar_carta":
@@ -605,8 +530,7 @@ function accion(tipo, numero, palo, cantar){
         "carta": {
             "numero": 0,
             "palo": 0
-        },
-        "cantidad" : cantar
+        }
     }
 }
 
@@ -654,6 +578,13 @@ function representarEstado(estado){
         jugador.cartasEnMano.add(carta);
     }, this);
     dibujarJugador(jugador);
+
+    // Se dibujan las cartas en la mesa
+    estado.jugadores.forEach(function(item) {
+        var jugador = arrayJugadores[item.id];
+        crearCuadroCarta(jugador);
+        dibujarCuadroCarta(jugador);
+    }, this);
 }
 
 function recibirMensaje(msg){
@@ -882,20 +813,15 @@ function dibujarBotones(){
     var espacioBoton = ejeX / numBotones;
     //var style = {font: "20px", fill: "#000000", align:"center"};
 
-    var cantarVeinte = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
-    //var cantarVeinte = game.add.text(0, ejeYBotones, '', style);
-    var cantarCuarenta = game.add.text(espacioBoton, ejeYBotones, '', { fill: '#ffffff' });
-    var cambiarTriunfo = game.add.text(espacioBoton*2, ejeYBotones, '', {fill: '#ffffff'});
+    var cantar = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
+    var cambiarTriunfo = game.add.text(espacioBoton, ejeYBotones, '', {fill: '#ffffff'});
 
-    cantarVeinte.text = "CANTAR 20";
-    cantarCuarenta.text = "CANTAR 40";
+    cantar.text = "CANTAR";
     cambiarTriunfo.text = "CAMBIAR TRIUNFO";
     cambiarTriunfo.text.fontSize = "20";
 
-    cantarVeinte.inputEnabled = true;
-    cantarVeinte.events.onInputDown.add(pulsaBoton, this);
-    cantarCuarenta.inputEnabled = true;
-    cantarCuarenta.events.onInputDown.add(pulsaBoton, this);
+    cantar.inputEnabled = true;
+    cantar.events.onInputDown.add(pulsaBoton, this);
     cambiarTriunfo.inputEnabled = true;
     cambiarTriunfo.events.onInputDown.add(pulsaBoton, this);
 }
@@ -907,15 +833,9 @@ function dibujarBotones(){
  */
 function pulsaBoton(item){
     var accion = "";
-    var cantidad = 0;
     switch (item.text){
-        case "CANTAR 40":
+        case "CANTAR":
             accion = "cantar";
-            cantidad = 40;
-            break;
-        case "CANTAR 20":
-            accion = "cantar";
-            cantidad = 20;
             break;
         case "CAMBIAR TRIUNFO":
             accion = "cambiar_triunfo";
@@ -928,8 +848,7 @@ function pulsaBoton(item){
             "id_partida": 0,
             "id_jugador": miID
         },
-        "tipo_accion": accion,
-        "cantidad": cantidad
+        "tipo_accion": accion
     }
     enviarMensaje(obj);
 }
@@ -1032,7 +951,7 @@ function controlMusica(){
     playPause.text = "MUSIKOTE";
     playPause.inputEnabled = true;
     playPause.events.onInputDown.add(botonMusica, this);
-    music.play();
+    //music.play();
     playPause.estado = "pause";
 }
 
