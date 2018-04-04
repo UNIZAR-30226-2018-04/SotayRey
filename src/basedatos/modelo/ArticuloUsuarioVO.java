@@ -13,6 +13,14 @@ public class ArticuloUsuarioVO extends ArticuloVO {
     private boolean comprado;
     private String username;
 
+    public ArticuloUsuarioVO(String nombre, char tipo, boolean favorito,  String username) {
+        super(nombre,0, "", "", tipo);
+        this.disponible = true;
+        this.comprado = true;
+        this.username = username;
+        this.favorito  = favorito;
+    }
+
     public ArticuloUsuarioVO(String nombre, int precio, String descripcion, String rutaImagen, char tipo, boolean disponible, boolean favorito, boolean comprado, String username) {
         super(nombre, precio, descripcion, rutaImagen, tipo);
         this.disponible = disponible;
@@ -23,13 +31,13 @@ public class ArticuloUsuarioVO extends ArticuloVO {
 
 
 
-//    public ArticuloUsuarioVO(String nombre, int precio, String descripcion, String rutaImagen, char tipo, Liga requiere, boolean disponible, boolean favorito, boolean comprado, String username) {
-//        super(nombre, precio, descripcion, rutaImagen, tipo, requiere);
-//        this.disponible = disponible;
-//        this.comprado = comprado;
-//        this.username = username;
-//        this.favorito = favorito;
-//    }
+    public ArticuloUsuarioVO(String nombre, int precio, String descripcion, String rutaImagen, char tipo, LigaVO requiere, boolean disponible, boolean favorito, boolean comprado, String username) {
+        super(nombre, precio, descripcion, rutaImagen, tipo, requiere);
+        this.disponible = disponible;
+        this.comprado = comprado;
+        this.username = username;
+        this.favorito = favorito;
+    }
 
 
     public boolean isFavorito() {

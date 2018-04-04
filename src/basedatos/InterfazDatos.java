@@ -28,7 +28,7 @@ public class InterfazDatos {
     private InterfazDatos() throws IOException, SQLException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
-        URL resource = this.getClass().getResource("/db.properties");
+        URL resource = this.getClass().getResource("./db.properties");
         File file = null;
         try {
             file = new File(resource.toURI());
@@ -69,8 +69,11 @@ public class InterfazDatos {
     /*
      * Crea un usuario nuevo en el sistema. U debe contener (not null) como mínimo: username, correo, nombre, apellidos y admin
      */
-    public void crearUsuario(UsuarioVO u) throws ExceptionCampoInexistente {
+    public void crearUsuario(UsuarioVO u) throws ExceptionCampoInexistente, SQLException {
         UsuarioDAO.crearUsuario(u, this.cpds);
+        ArticuloUsuarioDAO.crearArticuloUsuario(new ArticuloUsuarioVO("Tapete Verde",'T',true, u.getUsername()), this.cpds);
+        ArticuloUsuarioDAO.crearArticuloUsuario(new ArticuloUsuarioVO("Una cara",'A',true, u.getUsername()), this.cpds);
+        ArticuloUsuarioDAO.crearArticuloUsuario(new ArticuloUsuarioVO("Heracleto Furnier",'B', true, u.getUsername()), this.cpds);
     }
 
     /*
@@ -232,33 +235,69 @@ public class InterfazDatos {
     /* Devuelve la clasificación actual completa de la liga denominada nombre, formada por los nombres de los 
      * usuarios y sus puntuaciones (el resto de atributos de de los StatsUsuario tienen valor null)
      */
-    public ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre) throws ExceptionCampoInvalido{
+    public ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre) throws ExceptionCampoInvalido {
         return LigaDAO.obtenerClasificacionLiga(nombre, this.cpds);
     }
 
     /* Añade un nuevo artículo al sistema. El atributo requiere de a puede ser nulo si no se requiere ninguna
      * liga para desbloquear el artículo
      */
-    public void crearArticulo(ArticuloVO a) { 
+    public void crearArticulo(ArticuloVO a) throws SQLException, ExceptionCampoInvalido {
         ArticuloDAO.crearArticulo(a, this.cpds); 
     }
 
     /* Elimina un artículo del sistema basándose en el nombre del artículo a
      */
-    public void eliminarArticulo(ArticuloVO a) { 
+    public void eliminarArticulo(ArticuloVO a) throws SQLException {
         ArticuloDAO.eliminarArticulo(a, this.cpds); 
     }
 
     /* Modifica el articulo del sistema con el nombre de a, deja todos sus atributos como los atributos de a
      */
-    public void modificarArticulo(ArticuloVO a) { 
+    public void modificarArticulo(ArticuloVO a) throws SQLException, ExceptionCampoInexistente{
         ArticuloDAO.modificarArticulo(a, this.cpds); 
     }
 
     /* Devuelve el articulo con el nombre art
      */
-    public ArticuloVO obtenerArticulo(String art) { 
+    public ArticuloVO obtenerArticulo(String art) throws SQLException, ExceptionCampoInexistente {
         return ArticuloDAO.obtenerArticulo(art, this.cpds); 
+    }
+
+    /* Devuelve todos los articulos comprados por el usuario username
+     */
+    public ArrayList<ArticuloUsuarioVO> obtenerArticulosUsuario(String username) throws SQLException {
+        return ArticuloUsuarioDAO.obtenerArticulosUsuario(username, this.cpds);
+    }
+
+    /* Marca el articulo de a como comprado para el usuario especificado en a.
+     * a debe contener el tipo, favorito, nombre de usuario y nombre de artículo
+     */
+    public void comprarArticuloUsuario(ArticuloUsuarioVO a) throws SQLException, ExceptionCampoInvalido, ExceptionCampoInexistente {
+        StatsUsuarioVO stats = StatsUsuarioDAO.obtenerStatsUsuario(a.getUsername(), this.cpds);
+        System.out.println("Dinero: " + stats.getDivisa());
+        boolean encontrado = false;
+        for (ArticuloUsuarioVO art: ArticuloUsuarioDAO.obtenerArticulosTienda(a.getUsername(),this.cpds)) {
+            if (art.getNombre().equals(a.getNombre())) {
+                encontrado = true;
+                System.out.println("Cuesta: " + art.getPrecio());
+                if (art.isComprado()) { throw new ExceptionCampoInvalido("El usuario ("+a.getUsername()+") ya tiene el artículo ("+a.getNombre()+")");}
+                else if (!art.isDisponible()) { throw new ExceptionCampoInvalido("El usuario ("+a.getUsername()+") no tiene la liga necesaria para el artículo ("+a.getNombre()+")");}
+                else if (stats.getDivisa()<art.getPrecio()) { throw new ExceptionCampoInvalido("El usuario ("+a.getUsername()+") no tiene el dinero necesario para el artículo ("+a.getNombre()+")");}
+                else {
+                    stats.setDivisa(stats.getDivisa()-art.getPrecio());
+                    StatsUsuarioDAO.modificarStatsUsuario(stats, this.cpds);
+                    ArticuloUsuarioDAO.crearArticuloUsuario(a, this.cpds);
+                }
+            }
+        }
+        if (!encontrado) { throw new ExceptionCampoInexistente("El articulo ("+a.getNombre()+") no existe");}
+    }
+
+    /* Devuelve todos los artículos de la tienda para un usuario
+     */
+    public ArrayList<ArticuloUsuarioVO> obtenerArticulosTienda(String username) throws SQLException, ExceptionCampoInexistente {
+        return ArticuloUsuarioDAO.obtenerArticulosTienda(username, this.cpds);
     }
 
 }
