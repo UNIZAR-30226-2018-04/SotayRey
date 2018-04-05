@@ -10,6 +10,7 @@ public class ExceptionDeVueltas extends Exception{
     private EstadoPartida estado;
 
     public ExceptionDeVueltas(EstadoPartida estado) {
+        super();
         this.estado = estado;
     }
 
@@ -17,7 +18,17 @@ public class ExceptionDeVueltas extends Exception{
         return estado;
     }
 
-    public ExceptionDeVueltas(String message) { super(message); }
-    public ExceptionDeVueltas(String message, Throwable cause) { super(message, cause); }
-    public ExceptionDeVueltas(Throwable cause) { super(cause); }
+    public ExceptionDeVueltas(EstadoPartida estado, String message) {
+        super (message);
+        this.estado = estado;
+    }
+    public ExceptionDeVueltas(EstadoPartida estado, String message, Throwable
+            cause) {
+        super(message, cause);
+        this.estado = estado;
+    }
+    public ExceptionDeVueltas(EstadoPartida estado, Throwable cause) {
+        super(cause);
+        this.estado = estado;
+    }
 }
