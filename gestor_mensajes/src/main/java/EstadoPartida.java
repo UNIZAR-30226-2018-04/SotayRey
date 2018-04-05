@@ -553,6 +553,16 @@ public class EstadoPartida {
         ganadorUltimaRonda=i;
     }
 
+    //TODO: funcion para pruebas por terminal, eliminar al final
+
+    /**
+     * Modifica mazo para que tenga tamaño 0
+     */
+    public void eliminaMazo(){
+        mazo = new ArrayList<>();
+    }
+
+
 
 
     /***************************** FUNCIONES AUXILIARES ***********************/
@@ -677,9 +687,9 @@ public class EstadoPartida {
      * @return
      */
     private boolean tienePaloEnMano(Jugador j, Carta carta){
-        boolean tienePalo = true;
+        boolean tienePalo = false;
         for (Carta c: j.getCartasEnMano()) {
-            tienePalo = tienePalo && c.esMismoPalo(carta);
+            tienePalo = tienePalo || c.esMismoPalo(carta);
         }
         return tienePalo;
     }
@@ -692,10 +702,10 @@ public class EstadoPartida {
      * @return
      */
     private boolean tieneOtraMejorDelPalo(Jugador j, Carta carta){
-        boolean tieneMejor = true;
+        boolean tieneMejor = false;
         for (Carta c: j.getCartasEnMano()) {
-            if (!c.equals(carta)){
-                tieneMejor = tieneMejor && c.masPuntuacion(carta);
+            if (!c.equals(carta) && carta.esMismoPalo(c)){
+                tieneMejor = tieneMejor || carta.masPuntuacion(c);
             }
         }
         return tieneMejor;
@@ -736,7 +746,7 @@ public class EstadoPartida {
      */
     private void puedeLanzarDelPalo(Carta c, Carta otro, Jugador j)
         throws ExceptionCartaIncorrecta, ExceptionJugadorSinCarta{
-        if (c.masPuntuacion(otro)) {
+        if (otro.masPuntuacion(c)) {
             //Es más grande la c de arrastre
             ponerCartaMesa(c, j);
         } else {
