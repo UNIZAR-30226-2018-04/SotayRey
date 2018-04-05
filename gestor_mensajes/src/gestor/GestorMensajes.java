@@ -119,6 +119,11 @@ public class GestorMensajes {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionPartidaFinalizada exceptionPartidaFinalizada) {
                         broadcastGanaRonda(idPartida, true);
+                    } catch (ExceptionDeVueltas exceptionDeVueltas) {
+                        broadcastEstado(idPartida, true);
+                        broadcastGanaRonda(idPartida, false);
+                        broadcastRobarCarta(idPartida);
+                        // TODO: Habria que hacer broadcast de turno aqui?
                     }
                     break;
                 case "cantar":
@@ -340,7 +345,7 @@ public class GestorMensajes {
                 partida.crearPartida();
                 listaPartidas.put(idPartida, partida);
                 // Manda el estado a todos los clientes
-                broadcastEstado(idPartida);
+                broadcastEstado(idPartida, false); // TODO: Detectar cuando se vaya de vueltas
                 // Incrementa el numero de ronda a 1
                 lobby.incRonda();
                 // Manda el turno a todos los clientes
@@ -391,7 +396,7 @@ public class GestorMensajes {
         }
     }
 
-    private void broadcastEstado(int idPartida) {
+    private void broadcastEstado(int idPartida, boolean vueltas) {
         EstadoPartida estado = listaPartidas.get(idPartida).getEstado();
         // Obtiene el lobby de la partida actual
         Lobby lobby = lobbies.get(idPartida);
@@ -401,7 +406,19 @@ public class GestorMensajes {
         // Objeto "partida"
         JSONObject partida = new JSONObject();
         partida.put("ronda", 0);
-        partida.put("tipo_ronda", "idas");
+        if (vueltas) {
+            if (estado.getMazo().size() == 0) {
+                partida.put("tipo_ronda", "arrastre_vueltas");
+            } else {
+                partida.put("tipo_ronda", "vueltas");
+            }
+        } else {
+            if (estado.getMazo().size() == 0) {
+                partida.put("tipo_ronda", "arrastre");
+            } else {
+                partida.put("tipo_ronda", "idas");
+            }
+        }
         partida.put("restantes_mazo", estado.getMazo().size());
         objEstado.put("partida", partida);
         // Array jugadores
