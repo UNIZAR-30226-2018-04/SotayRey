@@ -7,7 +7,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import sun.rmi.runtime.Log;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
