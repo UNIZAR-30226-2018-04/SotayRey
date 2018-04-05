@@ -90,6 +90,7 @@ public class GestorMensajes {
                         broadcastLanzarCarta(idPartida, idJugador, carta);
                         System.out.println("El jugador " + idJugador + " lanza la carta "
                                 + carta.getValor() + carta.getPalo());
+                        broadcastTurno(idPartida);
                     } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionCartaIncorrecta exceptionCartaIncorrecta) {
@@ -106,7 +107,7 @@ public class GestorMensajes {
                         // Se intenta que todos los jugadores vuelvan a tener 6 cartas
                         broadcastRobarCarta(idPartida);
                         // Asigna el turno al jugador correspondiente
-                        broadcastTurno(idPartida);
+                        //broadcastTurno(idPartida);
                     } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
                         System.out.println("La ronda aún no ha acabado, ESTA EXCEPCION ES NORMAL, PUEDE SER IGNORADA");
                     } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
