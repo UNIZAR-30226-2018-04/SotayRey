@@ -109,7 +109,7 @@ public class LogicaPartida {
    public EstadoPartida siguienteRonda() throws ExceptionRondaNoAcabada,
            ExceptionCartaYaExiste, ExceptionJugadorIncorrecto,
            ExceptionMazoVacio, ExceptionNumeroMaximoCartas,
-           ExceptionPartidaFinalizada {
+           ExceptionPartidaFinalizada, ExceptionDeVueltas {
 
 
        estado.terminarRonda();
@@ -151,6 +151,7 @@ public class LogicaPartida {
                        repartirCarta(j);
                    }
                }
+               throw new ExceptionDeVueltas(new EstadoPartida(estado));
            }
        }
        return new EstadoPartida(estado);
