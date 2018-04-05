@@ -182,6 +182,7 @@ function modificarTriunfo(numero, palo){
     triunfo.carta.y = triunfo.y;
     triunfo.carta.height = ejeYCarta;
     triunfo.carta.width = ejeXCarta;
+    triunfo.carta.alpha = 1;
 
 }
 
@@ -387,6 +388,8 @@ function create() {
     //jugadorLanzaCarta(3, 11, "copas");
 
     controlMusica();
+    actualizarHUD("");
+
     listo_jugador(); // Confirma que el jugador ya esta listo para jugar
     dibujarCuadroCarta(jRef);
 
@@ -864,7 +867,7 @@ function dibujarTurno(id_jugador){
     turno.width = ejeXCarta;
     turno.height = ejeYCarta;
     turno.angle = jugador.rotacion;
-    turno.alfa = 0.5;
+    turno.alpha = 0.5;
 
 }
 
@@ -874,6 +877,7 @@ var HUDInicializado = false;
 var puntuacionMia = 0;
 var puntuacionRival = 0;
 var numRonda = 0;
+var restantes_mazo = 999999;
 var tipo_ronda = "IDAS";
 var color = "#fffff5";
 var fuente =  "15pt impact";
@@ -884,10 +888,8 @@ var fuente =  "15pt impact";
  */
 function actualizarHUD(datos){
     console.log("ACTUALIZO EL HUD");
-    tipo_ronda.tipo = datos.tipo_nueva_ronda;
-    numRonda.numero = datos.nueva_ronda;
-    puntuacionMia.puntuacion = datos.puntuaciones[miID].puntuacion; // TODO, siempre ids en orden?
-    puntuacionRival.puntuacion = datos.puntuaciones[(miID+1)%numJugadores].puntuacion;
+
+
 
 
     if (HUDInicializado == false){
@@ -907,14 +909,29 @@ function actualizarHUD(datos){
         puntuacionMia = game.add.text(0, 60, '', { font: fuente, fill: color});
         puntuacionMia.puntuacion = 0;
         puntuacionMia.text = "MI PUNTAUCION : " + puntuacionMia.puntuacion;
+
+        restantes_mazo = game.add.text(0, 80, '', { font: fuente, fill: color});
+        restantes_mazo.restantes = 99999999;
+        restantes_mazo.text = "CARTAS RESTANTES : " + restantes_mazo.restantes;
+
         HUDInicializado = true;
     }
     else{
-        console.log("ESTABA INICIALIZADO");
+        tipo_ronda.tipo = datos.tipo_nueva_ronda;
+        numRonda.numero = datos.nueva_ronda;
+        puntuacionMia.puntuacion = datos.puntuaciones[miID].puntuacion; // TODO, siempre ids en orden?
+        puntuacionRival.puntuacion = datos.puntuaciones[(miID+1)%numJugadores].puntuacion;
+        restantes_mazo.restantes = datos.restantes_mazo;
+
         tipo_ronda.text = "TIPO RONDA : " + tipo_ronda.tipo;
         numRonda.text = "NUMERO RONDA : " + numRonda.numero;
         puntuacionRival.text = "PUNTUACION RIVAL: " + puntuacionRival.puntuacion;
         puntuacionMia.text = "MI PUNTAUCION : " + puntuacionMia.puntuacion;
+        restantes_mazo.text = "CARTAS RESTANTES : " + restantes_mazo.restantes;
+    }
+
+    if(restantes_mazo.restantes <= 0){
+        triunfo.carta.alpha = 0.5;
     }
 }
 
