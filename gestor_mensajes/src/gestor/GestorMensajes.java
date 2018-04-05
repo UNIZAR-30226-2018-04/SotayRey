@@ -259,19 +259,13 @@ public class GestorMensajes {
     private void broadcastGanaRonda(int idPartida, boolean finPartida) {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
-        EstadoPartida estado = partida.getEstado();
         // Incrementa la ronda
         lobby.incRonda();
         // Crea el mensaje de nueva ronda
         JSONObject objNR = new JSONObject();
         objNR.put("tipo_mensaje", "gana_ronda");
         objNR.put("nueva_ronda", lobby.getRonda());
-        // TODO: No siempre es de idas (preguntar reglas juego)
-        if (finPartida) {
-            objNR.put("tipo_nueva_ronda", "fin");
-        } else {
-            objNR.put("tipo_nueva_ronda", "idas");
-        }
+        objNR.put("restantes_mazo", partida.getEstado().getMazo().size());
         objNR.put("id_jugador", partida.getEstado().getGanadorUltimaRonda());
         // Obtener puntuaciones de cada jugador
         JSONArray punts = new JSONArray();
