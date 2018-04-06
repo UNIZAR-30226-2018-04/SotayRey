@@ -1,6 +1,8 @@
 package gestor;
 
-
+import basedatos.InterfazDatos;
+import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.modelo.UsuarioVO;
 import main.java.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -11,7 +13,9 @@ import org.json.simple.parser.ParseException;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,9 +23,19 @@ import java.util.HashMap;
 public class GestorMensajes {
     private static HashMap<Integer, LogicaPartida> listaPartidas = new HashMap<>();
     private static HashMap<Integer, Lobby> lobbies = new HashMap<>(); // TODO: En 4 jugadores, orden (eq1, eq2, eq1, eq2)
+    private static InterfazDatos bd = null;
 
     @OnOpen
     public void onOpen(Session session) {
+        if (bd == null) {
+            try {
+                bd = InterfazDatos.instancia();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (PropertyVetoException e) {
+                e.printStackTrace();
+            }
+        }
         System.out.println("Conexion abierta");
     }
 
@@ -169,6 +183,8 @@ public class GestorMensajes {
                         exceptionNumeroMaximoCartas.printStackTrace();
                     } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
                         exceptionRondaNoAcabada.printStackTrace();
+                    } catch(NullPointerException ex) {
+                        System.out.println("Carta no aportada");
                     }
                     break;
                 default:
@@ -430,10 +446,18 @@ public class GestorMensajes {
         int i = 0;
         for (String nombre : lobby.getTodosNombres()) {
             JugadorGestor jugGes = lobby.buscarNombre(nombre);
+            UsuarioVO jugadorVO = null;
+            try {
+                jugadorVO = bd.obtenerDatosUsuario(nombre);
+            } catch (ExceptionCampoInexistente exceptionCampoInexistente) {
+                exceptionCampoInexistente.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             JSONObject jugador = new JSONObject();
             jugador.put("id", jugGes.getId());
-            jugador.put("nombre", nombre);
-            jugador.put("avatar", "ruta_avatar");
+            jugador.put("nombre", jugadorVO.getUsername());
+            jugador.put("avatar", jugadorVO.getUsername()); // TODO: obtener avatar y gestionar usuario no existente.
             jugador.put("tipo", "jugador");
             try {
                 jugador.put("puntos", estado.getPuntosJugador(nombre));
