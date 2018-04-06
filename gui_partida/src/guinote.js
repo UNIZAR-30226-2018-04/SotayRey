@@ -26,6 +26,9 @@ var ejeYCartaOriginal = 123;
 var ejeXCarta = (ejeX * 0.8) / 6;
 var ejeYCarta = ejeXCarta*(ejeYCartaOriginal/ejeXCartaOriginal);
 
+var avatarEjeX = 60;
+var avatarEjeY = 60;
+
 var escalaCarta = 1;
 //var escalaCarta = ejeX / 5/ ejeXCarta;
 console.log(ejeX);
@@ -47,7 +50,8 @@ function preload() {
     game.load.image('cuadroCarta', 'assets/dragHere.png');
     game.load.image('turno', 'assets/turno.png');
     game.load.image('tapete', 'assets/tapete.png');
-    game.load.audio('musica', ['assets/musica.mp3'])
+    game.load.image('avatar', 'assets/avatar.jpg');
+    game.load.audio('musica', ['assets/musica.mp3']);
 }
 
 /* VARIABLES GLOBALES */
@@ -99,6 +103,11 @@ function inicializarDispositivo(){
     else{
         // El valor que esta por defecto
     }
+
+    // Para los nombres de los usuarios
+    var color = "#000000";
+    var fuente =  "15pt impact";
+
     jRef = {};
     jRef.nombre = "ref";
     jRef.XPosMedia = ejeX / 2;
@@ -113,6 +122,12 @@ function inicializarDispositivo(){
     jRef.cartasEnMano = game.add.group();
     jRef.dorso;
     jRef.rotacion = 0;
+    jRef.nombreUsuario = game.add.text(jRef.XLanzar + ejeXCarta + 10, jRef.YLanzar + ejeYCarta/2, 'usuarioRef', {font: fuente, fill: color});
+    jRef.avatar = game.add.sprite(jRef.XLanzar + ejeXCarta + 30, jRef.YLanzar, 'avatar');
+    //game.physics.arcade.enable([jRef.avatar]);
+    //jRef.avatar.body.setCircle(45);
+    jRef.avatar.height = avatarEjeY;
+    jRef.avatar.width = avatarEjeX;
 
     jIzq = {};
     jIzq.XPosMedia = ejeX * 0.15;
@@ -126,6 +141,7 @@ function inicializarDispositivo(){
     jIzq.cartasEnMano = game.add.group();
     jIzq.dorso;
     jIzq.rotacion = 90;
+    jIzq.nombreUsuario = game.add.text(0, 0, '', {font: fuente, fill: color});
 
     jArriba = {};
     jArriba.XPosMedia = ejeX / 2;
@@ -139,6 +155,13 @@ function inicializarDispositivo(){
     jArriba.cartasEnMano = game.add.group();
     jArriba.dorso;
     jArriba.rotacion = 0;
+    jArriba.nombreUsuario = game.add.text(jArriba.XLanzar + ejeXCarta + 10, jArriba.YLanzar + ejeYCarta/2, 'usuarioArriba', {font: fuente, fill: color});
+    jArriba.avatar = game.add.sprite(jArriba.XLanzar + ejeXCarta + 30, jArriba.YLanzar, 'avatar');
+    //game.physics.arcade.enable([jRef.avatar]);
+    //jRef.avatar.body.setCircle(45);
+    jArriba.avatar.height = avatarEjeY;
+    jArriba.avatar.width = avatarEjeX;
+
 
     jDer = {};
     jDer.XPosMedia = ejeX * 0.85;
@@ -152,6 +175,7 @@ function inicializarDispositivo(){
     jDer.cartasEnMano = game.add.group();
     jDer.dorso;
     jDer.rotacion = 270;
+    jDer.nombreUsuario = game.add.text(0, 0, '', {font: fuente, fill: color});
 
     turno = game.add.sprite(0, 0, 'turno');
     turno.height = ejeYCarta * 0.30;
@@ -556,15 +580,19 @@ function representarEstado(estado){
     // TODO hay que mapear antes
     mapearJugadores();
     estado.jugadores.forEach(function(item) {
+        var jugador = arrayJugadores[item.id];
         if ([item.id] != miID){
-            var jugador = arrayJugadores[item.id];
             console.log("JUGADORSITO " + jugador.XPosMedia + " " + item.id);
             jugador.numCartas = item.num_cartas;
+            jugador.nombreUsuario.text = item.nombre;
             crearCartas(jugador);
             dibujarJugador(jugador);
             jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
             dibujarCartaLanzada(jugador);
             arrayJugadores[item.id] = jugador;
+        }
+        else{
+            jugador.nombreUsuario.text = item.nombre;
         }
     }, this);
 
@@ -611,7 +639,7 @@ function recibirMensaje(msg){
                 case "cantar":
                     break;
                 case "cambiar_triunfo":
-                    jugadorCambiaTriunfo(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                    jugadorCambiaTriunfo(mensaje.id_jugador, mensaje.nuevo_triunfo.numero, mensaje.nuevo_triunfo.palo);
                     break;
                 case "turno" :
                     dibujarTurno(mensaje.id_jugador);
@@ -851,7 +879,11 @@ function pulsaBoton(item){
             "id_partida": idPartida,
             "id_jugador": miID
         },
-        "tipo_accion": accion
+        "tipo_accion": accion,
+        "nuevo_triunfo" : {
+            "numero" : 7,
+            "palo" : triunfo.carta.palo
+        }
     }
     enviarMensaje(obj);
 }
@@ -896,11 +928,11 @@ function actualizarHUD(datos){
         console.log("NO ESTABA ININICIALIZADO");
         tipo_ronda = game.add.text(0, 0, '', { font: fuente, fill: color});
         tipo_ronda.tipo = "IDAS";
-        tipo_ronda.text = "TIPO RONDA : " + tipo_ronda.tipo;
+        tipo_ronda.text = "TIPO RONDA: " + tipo_ronda.tipo;
 
         numRonda = game.add.text(0, 20, '', { font: fuente, fill: color});
         numRonda.numero = 0;
-        numRonda.text = "NUMERO RONDA : " + numRonda.numero;
+        numRonda.text = "NUMERO RONDA: " + numRonda.numero;
 
         puntuacionRival = game.add.text(0, 40, '', { font: fuente, fill: color});
         puntuacionRival.puntuacion = 0;
@@ -923,15 +955,15 @@ function actualizarHUD(datos){
         puntuacionRival.puntuacion = datos.puntuaciones[(miID+1)%numJugadores].puntuacion;
         restantes_mazo.restantes = datos.restantes_mazo;
 
-        tipo_ronda.text = "TIPO RONDA : " + tipo_ronda.tipo;
-        numRonda.text = "NUMERO RONDA : " + numRonda.numero;
+        numRonda.text = "NUMERO RONDA: " + numRonda.numero;
         puntuacionRival.text = "PUNTUACION RIVAL: " + puntuacionRival.puntuacion;
-        puntuacionMia.text = "MI PUNTAUCION : " + puntuacionMia.puntuacion;
+        puntuacionMia.text = "MI PUNTAUCION: " + puntuacionMia.puntuacion;
         restantes_mazo.text = "CARTAS RESTANTES : " + restantes_mazo.restantes;
     }
 
     if(restantes_mazo.restantes <= 1){
         triunfo.carta.alpha = 0.5;
+        tipo_ronda.text = "TIPO RONDA: ARRASTRE";
     }
 }
 
