@@ -25,7 +25,6 @@ public class CrearPartida {
             jugadores.add(jugador);
             numJugadores++;
         }
-
     }
 
     public void addJugador(ArrayList<UsuarioVO> jugadores){
