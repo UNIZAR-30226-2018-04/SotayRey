@@ -526,7 +526,7 @@ function accion(tipo, numero, palo){
     var obj = {
         "tipo_mensaje": "accion",
         "remitente": {
-            "id_partida": 0,
+            "id_partida": idPartida,
             "id_jugador": miID
         },
         "tipo_accion": queAccion,
@@ -621,7 +621,7 @@ function recibirMensaje(msg){
         case "gana_ronda":
             //sleep(60000);
             //rondaAcabada();
-            setTimeout(function(){ rondaAcabada(); actualizarHUD(mensaje);}, 3000);
+            setTimeout(function(){ rondaAcabada(); actualizarHUD(mensaje);}, 1500);
             break;
         case "estado_inicial" :
             representarEstado(mensaje);
@@ -729,7 +729,7 @@ function pulsaCarta(item){
     var obj = {
         "tipo_mensaje": "accion",
         "remitente": {
-            "id_partida": 0,
+            "id_partida": idPartida,
             "id_jugador": miID
         },
         "tipo_accion": "lanzar_carta",
@@ -848,7 +848,7 @@ function pulsaBoton(item){
     var obj = {
         "tipo_mensaje": "accion",
         "remitente": {
-            "id_partida": 0,
+            "id_partida": idPartida,
             "id_jugador": miID
         },
         "tipo_accion": accion
@@ -930,7 +930,7 @@ function actualizarHUD(datos){
         restantes_mazo.text = "CARTAS RESTANTES : " + restantes_mazo.restantes;
     }
 
-    if(restantes_mazo.restantes <= 0){
+    if(restantes_mazo.restantes <= 1){
         triunfo.carta.alpha = 0.5;
     }
 }
