@@ -229,9 +229,9 @@ public class LogicaPartida {
                 .getCartasEnTapete().size() == 0 && n_cartas_mazo > 0){
 
             //Cambia la carta si y solo si es un 7 del mismo palo y su
-            // puntuación es mayor
+            // puntuación es mayor que 0
             if (triunfo.getPalo().equals(c.getPalo
-                    ()) && triunfo.getValor() == 7 && (triunfo.getPuntuacion()> 0)){
+                    ()) && c.getValor() == 7 && (triunfo.getPuntuacion()> 0)){
                 estado.setTriunfo(c);
                 estado.quitarCartaJugador(jugador, c);
                 estado.anyadirCartaJugador(jugador, triunfo);
