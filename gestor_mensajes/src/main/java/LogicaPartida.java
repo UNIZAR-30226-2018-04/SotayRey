@@ -144,13 +144,14 @@ public class LogicaPartida {
                }
                deVueltas = true;
                estado.resetGanadorUltimaRonda();
-               estado.barajear();
+               estado.setMazo(estado.barajear());
                // Reparte 6 cartas a cada jugador
                for (int i = 0; i < 6; i++) {
                    for (String j: estado.getJugadoresId()) {
                        repartirCarta(j);
                    }
                }
+               estado.setTriunfo(estado.getPrimeraCartaMazo());
                throw new ExceptionDeVueltas(new EstadoPartida(estado));
            }
        }
