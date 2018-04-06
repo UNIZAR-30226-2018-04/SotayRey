@@ -2,6 +2,7 @@ package servlet;
 
 import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.modelo.UsuarioVO;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -43,15 +44,33 @@ public class LoginServlet extends HttpServlet {
                 dispatcher.forward(request, response);
             } else {
                 System.out.println("probar a registrar");
-                //InterfazDatos facade = InterfazDatos.instancia();
-                boolean existUser = InterfazDatos.instancia()
-                        .autentificarUsuario(nick, pass);
+
+                InterfazDatos facade = null;
+                try{
+                    facade = InterfazDatos.instancia();
+                }catch (Exception e){
+                    //TODO:Tratar excepcion
+                }
+
+                boolean existUser = false;
+                try{
+                    existUser = facade.autentificarUsuario(nick, pass);
+                }catch(Exception e){
+                    //TODO:Tratar excepcion
+                }
+
                 if (existUser){
+                    UsuarioVO user = null;
+                    try{
+                        user = facade.obtenerDatosUsuario(nick);
+                    } catch (Exception e){
+                        //TODO: Tratar excepcion
+                    }
                     HttpSession sesion= request.getSession();
-                    sesion.setAttribute("userId", nick);
+                    sesion.setAttribute("userId", user);
                     sesion.setMaxInactiveInterval(24*60*60);
 
-                    response.sendRedirect("home.jsp");
+                    response.sendRedirect("jsp/home.jsp");
                 } else { // Usuario no existe
                     error= "userNotFound";
                     request.setAttribute("error",error);
@@ -59,9 +78,6 @@ public class LoginServlet extends HttpServlet {
                     dispatcher.forward(request,response);
                 }
             }
-        } catch (ExceptionCampoInexistente e){
-            System.err.println("ERROR: usuario mal registrado.");
-            e.printStackTrace();
         } catch (NullPointerException e){
             System.err.println("ERROR: NUll Pointer a Facade");
             e.printStackTrace();
