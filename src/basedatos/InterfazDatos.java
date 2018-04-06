@@ -25,7 +25,7 @@ public class InterfazDatos {
     private static InterfazDatos ifd;
     private ComboPooledDataSource cpds;
 
-    private InterfazDatos() throws IOException, SQLException, PropertyVetoException {
+    private InterfazDatos() throws IOException, PropertyVetoException {
         //Fichero properties
         Properties dbProps = new Properties();
         URL resource = this.getClass().getResource("./db.properties");
@@ -57,7 +57,7 @@ public class InterfazDatos {
      * Es necesario llamar a esta función primero para poder llamar al resto de métodos de esta interfaz:
      *      ejemplo de uso: InterfazDatos.instancia().crearUsuario(u);
      */
-    public static InterfazDatos instancia() throws IOException, SQLException, PropertyVetoException {
+    public static InterfazDatos instancia() throws IOException, PropertyVetoException {
         if (ifd == null) {
             ifd = new InterfazDatos();
             return ifd;
@@ -80,42 +80,42 @@ public class InterfazDatos {
      * Devuelve cierto si y sólo si el usuario username posee la contraseña plaintextPassword. Si el usuario no posee
      * ninguna contraseña lanzará la excepción ExceptionCampoInexistente
      */
-    public boolean autentificarUsuario(String username, String plaintextPassword) throws  ExceptionCampoInexistente {
+    public boolean autentificarUsuario(String username, String plaintextPassword) throws  SQLException, ExceptionCampoInexistente {
         return UsuarioDAO.autentificarUsuario(username,plaintextPassword,this.cpds);
     }
 
     /*
      * Devuelve un usuario con todos sus datos (datos de perfil de usuario), a partir de su username
      */
-    public UsuarioVO obtenerDatosUsuario(String username) throws ExceptionCampoInexistente{
+    public UsuarioVO obtenerDatosUsuario(String username) throws SQLException, ExceptionCampoInexistente{
         return UsuarioDAO.obtenerDatosUsuario(username, this.cpds);
     }
 
     /*
      * Elimina un usuario del sistema a partir de su username (no lo elimina por completo, solo le impide el acceso)
      */
-    public void eliminarUsuario(String username){
+    public void eliminarUsuario(String username) throws SQLException, ExceptionCampoInexistente {
         UsuarioDAO.eliminarUsuario(username, this.cpds);
     }
 
     /*
      * Modifica los datos de perfil del usuario u (solamente los atributos que no son null)
      */
-    public void modificarDatosUsuario(UsuarioVO u){
+    public void modificarDatosUsuario(UsuarioVO u) throws ExceptionCampoInexistente, SQLException{
         UsuarioDAO.modificarDatosUsuario(u, this.cpds);
     }
 
     /*
      * Devuelve true si el usuario identificado por username es un administrador, false en caso contrario
      */
-    public boolean esAdministrador(String username) throws ExceptionCampoInexistente{
+    public boolean esAdministrador(String username) throws ExceptionCampoInexistente, SQLException {
         return UsuarioDAO.esAdministrador(username, this.cpds);
     }
 
     /*
      * Devuelve las stats principales (puntuacion y divisa) del usuario username
      */
-    public StatsUsuarioVO obtenerStatsUsuario(String username) throws ExceptionCampoInexistente, ExceptionCampoInvalido{
+    public StatsUsuarioVO obtenerStatsUsuario(String username) throws ExceptionCampoInexistente, ExceptionCampoInvalido, SQLException {
         return StatsUsuarioDAO.obtenerStatsUsuario(username, this.cpds);
     }
 
@@ -124,14 +124,14 @@ public class InterfazDatos {
      *      puntuacion, divisa, ligaActual, puesto, ligaMaxima, número de
      *      partidas ganadas, perdidas, abandonadas y en las que fue abandonado
      */
-    public StatsUsuarioVO obtenerTodasStatsUsuario(String username) throws ExceptionCampoInexistente, ExceptionCampoInvalido{
+    public StatsUsuarioVO obtenerTodasStatsUsuario(String username) throws ExceptionCampoInexistente, ExceptionCampoInvalido, SQLException {
         return StatsUsuarioDAO.obtenerTodasStatsUsuario(username, this.cpds);
     }
 
     /* Inserta una nueva partida empezada en la base de datos y modifica el objeto PartidaVO
      * de forma que contiene el id de la partida.
      */
-    public void crearNuevaPartida(PartidaVO p) {
+    public void crearNuevaPartida(PartidaVO p) throws SQLException {
         PartidaDAO.insertarNuevaPartida(p, this.cpds);
     }
 
@@ -140,7 +140,7 @@ public class InterfazDatos {
      * Actualiza las puntuaciones y divisas de los usuarios implicados 
      *      (Ganada:3puntos / 5monedas, Perdida:0puntos / 1moneda, Abandonada:-1puntos/ 0monedas, Teabandonan:0puntos / 1moneda)
      */
-    public void finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido, ExceptionCampoInexistente{
+    public void finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido, ExceptionCampoInexistente, SQLException {
         // Finalizar partida
         PartidaDAO.finalizarPartida(p, this.cpds);
 
@@ -196,46 +196,46 @@ public class InterfazDatos {
 
     /* Devuelve un array con todas las partidas jugadas por el usuario identificado por username
      */
-    public ArrayList<PartidaVO> obtenerHistorialPartidas(String username) {
+    public ArrayList<PartidaVO> obtenerHistorialPartidas(String username) throws SQLException {
         return PartidaDAO.obtenerHistorialPartidas(username, this.cpds);
     }
 
     /* Devuelve un array con todas las partidas públicas que todavía no han finalizado
      */
-    public  ArrayList<PartidaVO> obtenerPartidasPublicasCurso() { 
+    public  ArrayList<PartidaVO> obtenerPartidasPublicasCurso() throws SQLException {
         return PartidaDAO.obtenerPartidasPublicasCurso(this.cpds); 
     }
 
     /* Crea una nueva liga en el sistema. Necesita un nombre y los porcentajes min y max que la definen
      */
-    public void crearLiga(LigaVO l){
+    public void crearLiga(LigaVO l) throws SQLException, ExceptionCampoInvalido {
         LigaDAO.crearLiga(l, this.cpds);
     }
     
     /* Devuelve los datos básicos de la liga denominada nombre
      */
-    public LigaVO obtenerDatosLiga(String nombre) throws ExceptionCampoInexistente{
+    public LigaVO obtenerDatosLiga(String nombre) throws SQLException, ExceptionCampoInexistente {
         return LigaDAO.obtenerDatosLiga(nombre, this.cpds);
     }
 
     /* Elimina la liga denominada nombre del sistema. Cuidado! Está operación no se permitirá si hay usuarios
      * que pertenezcan a esta liga
      */   
-    public void eliminarLiga(String nombre){
+    public void eliminarLiga(String nombre) throws SQLException {
         LigaDAO.eliminarLiga(nombre, this.cpds);
     }
 
     /*
      * Modifica los datos de la liga l (solamente los atributos que no son null)
      */
-    public void modificarDatosLiga(LigaVO l){
+    public void modificarDatosLiga(LigaVO l) throws SQLException, ExceptionCampoInexistente {
         LigaDAO.modificarDatosLiga(l,this.cpds);    
     }
     
     /* Devuelve la clasificación actual completa de la liga denominada nombre, formada por los nombres de los 
      * usuarios y sus puntuaciones (el resto de atributos de de los StatsUsuario tienen valor null)
      */
-    public ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre) throws ExceptionCampoInvalido {
+    public ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre) throws SQLException, ExceptionCampoInvalido {
         return LigaDAO.obtenerClasificacionLiga(nombre, this.cpds);
     }
 
@@ -281,9 +281,9 @@ public class InterfazDatos {
             if (art.getNombre().equals(a.getNombre())) {
                 encontrado = true;
                 System.out.println("Cuesta: " + art.getPrecio());
-                if (art.isComprado()) { throw new ExceptionCampoInvalido("El usuario ("+a.getUsername()+") ya tiene el artículo ("+a.getNombre()+")");}
-                else if (!art.isDisponible()) { throw new ExceptionCampoInvalido("El usuario ("+a.getUsername()+") no tiene la liga necesaria para el artículo ("+a.getNombre()+")");}
-                else if (stats.getDivisa()<art.getPrecio()) { throw new ExceptionCampoInvalido("El usuario ("+a.getUsername()+") no tiene el dinero necesario para el artículo ("+a.getNombre()+")");}
+                if (art.isComprado()) { throw new ExceptionCampoInvalido("El Usuario :"+a.getUsername()+" ya tiene el Articulo: "+a.getNombre());}
+                else if (!art.isDisponible()) { throw new ExceptionCampoInvalido("El Usuario: "+a.getUsername()+" no tiene la liga necesaria para el Articulo:"+a.getNombre());}
+                else if (stats.getDivisa()<art.getPrecio()) { throw new ExceptionCampoInvalido("El Usuario: "+a.getUsername()+" no tiene el dinero necesario para el Articulo: "+a.getNombre());}
                 else {
                     stats.setDivisa(stats.getDivisa()-art.getPrecio());
                     StatsUsuarioDAO.modificarStatsUsuario(stats, this.cpds);
@@ -291,7 +291,7 @@ public class InterfazDatos {
                 }
             }
         }
-        if (!encontrado) { throw new ExceptionCampoInexistente("El articulo ("+a.getNombre()+") no existe");}
+        if (!encontrado) { throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Articulo: " + a.getNombre() + " no existente");}
     }
 
     /* Devuelve todos los artículos de la tienda para un usuario

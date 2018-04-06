@@ -21,7 +21,7 @@ public class PartidaVO {
     private List<Integer> veintes;
     private int puntos1; // puntos obtenidos por el equipo1
     private int puntos2; // puntos obtenidos por el equipo2
-    private int abandonador; // indice de la lista de usuarios del usuario abandonador, null si ganador != 'A'
+    private int abandonador; // Jugador que abandono la partida (1,2,3 o 4), si nadie abandona 0
 
     /* Constructor para crear una nueva partida en curso sin especificar el time de Inicio, 
      * (se actualizará automáticamente en la base de datos) los miembros del equipo

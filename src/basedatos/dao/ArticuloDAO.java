@@ -37,7 +37,7 @@ public class ArticuloDAO {
             //Comienza transacción
             statement.executeUpdate(insertArticulo);
         } catch (MySQLIntegrityConstraintViolationException e) {
-            throw new ExceptionCampoInvalido("Ya existe el articulo(" + a.getNombre() + ")");
+            throw new ExceptionCampoInvalido("Error de acceso a la base de datos: Articulo: " + a.getNombre() + " no existente");
         }
 
         if (statement != null) statement.close();
@@ -73,7 +73,7 @@ public class ArticuloDAO {
 
             //Comienza transacción
             if (statement.executeUpdate(modificaArticulo) == 0) {
-                throw new ExceptionCampoInexistente("El articulo(" + a.getNombre() + ") no existe");
+                throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Liga: " + a.getNombre() + " no existente");
             }
 
             if (statement != null) statement.close();
@@ -101,7 +101,7 @@ public class ArticuloDAO {
                 a.setRequiere(l);
             }
         } else {
-            throw new ExceptionCampoInexistente("El artículo (" + artic + ") no existe");
+            throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Liga: " + artic + " no existente");
         }
         if (statement != null) statement.close();
         if (connection != null) connection.close();
