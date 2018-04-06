@@ -67,14 +67,14 @@ public class GestorMensajes {
                 break;
             case "accion":
                 System.out.println(tipo + " recibida");
-                recibirAccion(session, msg);
+                recibirAccion(msg);
                 break;
             default:
                 System.out.println("Tipo de mensaje no reconocido");
         }
     }
 
-    private void recibirAccion(Session session, JSONObject msg) {
+    private void recibirAccion(JSONObject msg) {
         // Obtener datos del remitente
         int idPartida = getIdPartidaMsg(msg);
         int idJugador = getIdJugadorMsg(msg);
