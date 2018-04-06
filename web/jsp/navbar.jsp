@@ -38,7 +38,7 @@
                             <i class="fa fa-user-circle-o mr-2"></i>Perfil</a>
                         <a class="dropdown-item" href="#">
                             <i class="fa fa-gear mr-2"></i>Opciones</a>
-                        <a class="dropdown-item" href="#">
+                        <a class="dropdown-item" href="/LogoutServlet.do">
                             <i class="fa fa-power-off mr-2"></i>Cerrar sesi&oacuten</a>
                     </div>
                 </li>

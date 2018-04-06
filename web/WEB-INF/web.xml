@@ -36,4 +36,15 @@
         <servlet-name>ConsultaStats</servlet-name>
         <url-pattern>/PerfilServlet.do</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Logout</servlet-name>
+        <servlet-class>servlet.LogoutServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Logout</servlet-name>
+        <url-pattern>/LogoutServlet.do</url-pattern>
+    </servlet-mapping>
+
 </web-app>

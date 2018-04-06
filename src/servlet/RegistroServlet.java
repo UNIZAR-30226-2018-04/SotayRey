@@ -90,6 +90,7 @@ public class RegistroServlet extends HttpServlet {
             catch(Exception e){
                 System.out.println(e.toString());
                 //TODO: Tratar error
+
             }
 
             try {
