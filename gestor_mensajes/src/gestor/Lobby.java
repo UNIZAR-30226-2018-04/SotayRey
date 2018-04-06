@@ -9,8 +9,8 @@ import java.util.HashMap;
  * Fecha: 01/04/2018
  */
 public class Lobby {
-    private static HashMap<String, JugadorGestor> jugadores = new HashMap<>();
-    private static int ronda = 0;
+    private HashMap<String, JugadorGestor> jugadores = new HashMap<>();
+    private int ronda = 0;
 
     public Lobby() {
         ronda = 0;

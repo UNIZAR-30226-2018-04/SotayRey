@@ -93,7 +93,7 @@ public class GestorMensajes {
                     } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionCartaIncorrecta exceptionCartaIncorrecta) {
-                        exceptionCartaIncorrecta.printStackTrace();
+                        System.out.println("Carta incorrecta");
                     } catch (ExceptionTurnoIncorrecto exceptionTurnoIncorrecto) {
                         exceptionTurnoIncorrecto.printStackTrace();
                     } catch (ExceptionJugadorSinCarta exceptionJugadorSinCarta) {
@@ -106,7 +106,7 @@ public class GestorMensajes {
                         // Se intenta que todos los jugadores vuelvan a tener 6 cartas
                         broadcastRobarCarta(idPartida);
                         // Asigna el turno al jugador correspondiente
-                        //broadcastTurno(idPartida);
+                        broadcastTurno(idPartida);
                     } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
                         System.out.println("La ronda aún no ha acabado, ESTA EXCEPCION ES NORMAL, PUEDE SER IGNORADA");
                     } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
@@ -118,12 +118,15 @@ public class GestorMensajes {
                     } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionPartidaFinalizada exceptionPartidaFinalizada) {
+                        System.out.println("Partida finalizada: " + idPartida);
                         broadcastGanaRonda(idPartida, true);
                     } catch (ExceptionDeVueltas exceptionDeVueltas) {
+                        System.out.println("De vueltas: " + idPartida);
                         broadcastEstado(idPartida, true);
                         broadcastGanaRonda(idPartida, false);
                         broadcastRobarCarta(idPartida);
-                        // TODO: Habria que hacer broadcast de turno aqui?
+                        // Manda el turno a todos los clientes
+                        broadcastTurno(idPartida);
                     }
                     break;
                 case "cantar":
