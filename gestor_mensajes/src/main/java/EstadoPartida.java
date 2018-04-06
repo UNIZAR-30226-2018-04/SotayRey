@@ -427,6 +427,15 @@ public class EstadoPartida {
                                             }
                                         }
                                     }
+                                    else{
+                                        if(tienePaloEnMano(jugadorEncontrado,triunfo)) {
+                                            throw new
+                                                    ExceptionCartaIncorrecta("Tienes un triunfo en la mano que mata");
+                                        }
+                                        else{
+                                            ponerCartaMesa(carta, jugadorEncontrado);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -746,7 +755,7 @@ public class EstadoPartida {
      */
     private void puedeLanzarDelPalo(Carta c, Carta otro, Jugador j)
         throws ExceptionCartaIncorrecta, ExceptionJugadorSinCarta{
-        if (otro.masPuntuacion(c)) {
+        if (c.mataCartaOtra(triunfo,otro)) {
             //Es más grande la c de arrastre
             ponerCartaMesa(c, j);
         } else {

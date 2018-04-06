@@ -163,7 +163,7 @@ public class LogicaPartidaTest {
      * Prueba que hace lanzar carta al jugador cuando juegan 2
      */
     @Test
-    public void prueba2lanzarCarta2Jugadores() {
+    public void prueba3lanzarCarta2Jugadores() {
         ArrayList<String> jugadores = new ArrayList<>(Arrays.asList("j1", "j2"));
         LogicaPartida logica;
         try {
@@ -287,10 +287,148 @@ public class LogicaPartidaTest {
         }
     }
 
-    
+    /**
+     * Prueba que hace lanzar carta al jugador cuando juegan 4
+     */
+    @Test
+    public void prueba4lanzarCarta4Jugadores() {
+        ArrayList<String> jugadores = new ArrayList<>(Arrays.asList("j1", "j2", "j3", "j4"));
+        LogicaPartida logica;
+        try {
+            logica = new LogicaPartida(jugadores);
+            prepararArrastre2(logica,0);
+            //triunfo es oros
+            Carta c = new Carta(10,"E");
+            logica.lanzarCarta("j1",c);
+            c = new Carta(3,"E");
+            logica.lanzarCarta("j2",c);
+            c = new Carta(7,"B");
+            logica.lanzarCarta("j3",c);
+
+            exception.expect(ExceptionCartaIncorrecta.class);
+
+        }catch (ExceptionCartaIncorrecta e) {
+            System.out.println("Superado... no se puede lanzar otra carta teniendo del mismo palo");
+        } catch (ExceptionTurnoIncorrecto | ExceptionCartaYaExiste |
+                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto
+                | ExceptionEquipoIncompleto | ExceptionJugadorSinCarta e1) {
+            fail("Excepción incorrecta");
+        }
+        try {
+            logica = new LogicaPartida(jugadores);
+            prepararArrastre2(logica,0);
+            //triunfo es oros
+            Carta c = new Carta(10,"E");
+            logica.lanzarCarta("j1",c);
+            c = new Carta(3,"E");
+            logica.lanzarCarta("j2",c);
+            c = new Carta(7,"E");
+            logica.lanzarCarta("j3",c);
+
+            exception.expect(ExceptionCartaIncorrecta.class);
+
+        }catch (ExceptionCartaIncorrecta e) {
+            System.out.println("Superado... no se puede lanzar otra carta si hay obligacion de matar" +
+                    " y el jugador puede");
+        } catch (ExceptionTurnoIncorrecto | ExceptionCartaYaExiste |
+                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto
+                | ExceptionEquipoIncompleto | ExceptionJugadorSinCarta e1) {
+            fail("Excepción incorrecta");
+        }
+
+        try {
+            logica = new LogicaPartida(jugadores);
+            prepararArrastre2(logica,1);
+            //triunfo es oros
+            Carta c = new Carta(10,"E");
+            logica.lanzarCarta("j1",c);
+            c = new Carta(3,"E");
+            logica.lanzarCarta("j2",c);
+            c = new Carta(10,"B");
+            logica.lanzarCarta("j3",c);
+
+            exception.expect(ExceptionCartaIncorrecta.class);
+
+        }catch (ExceptionCartaIncorrecta e) {
+            System.out.println("Superado... no se puede lanzar otra carta si hay obligacion de matar" +
+                    " y se tiene triunfo");
+        } catch (ExceptionTurnoIncorrecto | ExceptionCartaYaExiste |
+                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto
+                | ExceptionEquipoIncompleto | ExceptionJugadorSinCarta e1) {
+            fail("Excepción incorrecta");
+        }
+        try {
+            logica = new LogicaPartida(jugadores);
+            prepararArrastre2(logica,2);
+            //triunfo es oros
+            Carta c = new Carta(5,"E");
+            logica.lanzarCarta("j1",c);
+            c = new Carta(6,"E");
+            logica.lanzarCarta("j2",c);
+            c = new Carta(7,"E");
+            logica.lanzarCarta("j3",c);
+            System.out.println("Superado... se lanza la carta del mismo palo para matar");
+
+
+        } catch (ExceptionTurnoIncorrecto | ExceptionCartaYaExiste |
+                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto
+                | ExceptionEquipoIncompleto | ExceptionJugadorSinCarta
+                | ExceptionCartaIncorrecta e1) {
+            fail("Excepción incorrecta");
+        }
+        try {
+            logica = new LogicaPartida(jugadores);
+            prepararArrastre2(logica,1);
+            //triunfo es oros
+            Carta c = new Carta(5,"E");
+            logica.lanzarCarta("j1",c);
+            c = new Carta(3,"E");
+            logica.lanzarCarta("j2",c);
+            c = new Carta(4,"O");
+            logica.lanzarCarta("j3",c);
+            System.out.println("Superado... se lanza el triunfo porque no tiene del palo inicial");
+
+
+        } catch (ExceptionTurnoIncorrecto | ExceptionCartaYaExiste |
+                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto
+                | ExceptionEquipoIncompleto | ExceptionJugadorSinCarta
+                | ExceptionCartaIncorrecta e1) {
+            fail("Excepción incorrecta");
+        }
+        try {
+            logica = new LogicaPartida(jugadores);
+            prepararArrastre2(logica,3);
+            //triunfo es oros
+            Carta c = new Carta(10,"E");
+            logica.lanzarCarta("j1",c);
+            c = new Carta(6,"E");
+            logica.lanzarCarta("j2",c);
+            c = new Carta(10,"B");
+            logica.lanzarCarta("j3",c);
+            System.out.println("Superado... puede lanzar cualquiera porque mata su compañero" +
+                    " y no tiene del palo incial");
+
+
+        } catch (ExceptionTurnoIncorrecto | ExceptionCartaYaExiste |
+                ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto
+                | ExceptionEquipoIncompleto | ExceptionJugadorSinCarta
+                | ExceptionCartaIncorrecta e1) {
+            fail("Excepción incorrecta");
+        }
+
+    }
 
     /**************************** FUNCIONES AUXILIARES ************************/
 
+    /**
+     * Reparte las cartas "cartas" al jugador j
+     * @param estado
+     * @param j
+     * @param cartas
+     * @throws ExceptionCartaYaExiste
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionNumeroMaximoCartas
+     */
     private void darCartas(EstadoPartida estado, String j, ArrayList<Carta> cartas) throws ExceptionCartaYaExiste,
             ExceptionJugadorIncorrecto, ExceptionNumeroMaximoCartas {
         for(int i=0; i<cartas.size();i++){
@@ -298,6 +436,15 @@ public class LogicaPartidaTest {
         }
     }
 
+    /**
+     * Prepara un estado concreto durante el arrastre para dos jugadores
+     * @param logica
+     * @param i
+     * @throws ExceptionCartaYaExiste
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionNumeroMaximoCartas
+     * @throws ExceptionCartaIncorrecta
+     */
     private void prepararArrastre(LogicaPartida logica, int i) throws ExceptionCartaYaExiste,
             ExceptionJugadorIncorrecto, ExceptionNumeroMaximoCartas, ExceptionCartaIncorrecta {
 
@@ -345,7 +492,16 @@ public class LogicaPartidaTest {
         estado.eliminaMazo();
     }
 
-    private void prepararArrastre2(LogicaPartida logica) throws ExceptionCartaYaExiste,
+    /**
+     * Prepara un estado concreto durante el arrastre para cuatro jugadores
+     * @param logica
+     * @param i
+     * @throws ExceptionCartaYaExiste
+     * @throws ExceptionJugadorIncorrecto
+     * @throws ExceptionNumeroMaximoCartas
+     * @throws ExceptionCartaIncorrecta
+     */
+    private void prepararArrastre2(LogicaPartida logica,int i) throws ExceptionCartaYaExiste,
             ExceptionJugadorIncorrecto, ExceptionNumeroMaximoCartas, ExceptionCartaIncorrecta {
 
         EstadoPartida estado = logica.getPunteroAEstado();
@@ -355,7 +511,7 @@ public class LogicaPartidaTest {
 
         ArrayList<Carta> cartas = new ArrayList<>();
         cartas.add(new Carta(10, "E"));
-        cartas.add(new Carta(12, "E"));
+        cartas.add(new Carta(5, "E"));
         cartas.add(new Carta(10, "O"));
         cartas.add(new Carta(12, "O"));
         cartas.add(new Carta(7, "O"));
@@ -364,8 +520,13 @@ public class LogicaPartidaTest {
         darCartas(estado,"j1",cartas);
 
         cartas = new ArrayList<>();
-        cartas.add(new Carta(1, "E"));
-        cartas.add(new Carta(3, "E"));
+        if(i==0 | i==1) {
+            cartas.add(new Carta(3, "E"));
+        }
+        else if(i==2 || i==3){
+            cartas.add(new Carta(6, "E"));
+        }
+        cartas.add(new Carta(2, "E"));
         cartas.add(new Carta(1, "O"));
         cartas.add(new Carta(3, "O"));
         cartas.add(new Carta(7, "O"));
@@ -374,22 +535,32 @@ public class LogicaPartidaTest {
         darCartas(estado,"j2",cartas);
 
         cartas = new ArrayList<>();
-        cartas.add(new Carta(10, "E"));
-        cartas.add(new Carta(12, "E"));
-        cartas.add(new Carta(10, "O"));
-        cartas.add(new Carta(12, "O"));
-        cartas.add(new Carta(7, "O"));
-        cartas.add(new Carta(2, "O"));
+        if(i==0 || i==2) {
+            cartas.add(new Carta(7, "E"));
+            cartas.add(new Carta(1, "E"));
+        }
+        else if(i==1){
+            cartas.add(new Carta(4, "O"));
+            cartas.add(new Carta(5, "O"));
+        }
+        else if(i==3){
+            cartas.add(new Carta(4, "O"));
+            cartas.add(new Carta(5, "O"));
+        }
+        cartas.add(new Carta(10, "B"));
+        cartas.add(new Carta(12, "B"));
+        cartas.add(new Carta(7, "B"));
+        cartas.add(new Carta(2, "B"));
 
         darCartas(estado,"j3",cartas);
 
         cartas = new ArrayList<>();
         cartas.add(new Carta(4, "E"));
-        cartas.add(new Carta(2, "E"));
-        cartas.add(new Carta(6, "O"));
-        cartas.add(new Carta(5, "O"));
-        cartas.add(new Carta(4, "O"));
-        cartas.add(new Carta(2, "O"));
+        cartas.add(new Carta(3, "C"));
+        cartas.add(new Carta(6, "C"));
+        cartas.add(new Carta(5, "C"));
+        cartas.add(new Carta(4, "C"));
+        cartas.add(new Carta(2, "C"));
 
         darCartas(estado,"j4",cartas);
         estado.eliminaMazo();
