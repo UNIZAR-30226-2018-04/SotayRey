@@ -57,7 +57,7 @@ public class ArticuloUsuarioDAO {
                 statement.executeUpdate("UPDATE posee p, articulo a SET p.preferido = 0 WHERE p.articulo = a.nombre AND a.nombre != '" + a.getNombre() + "' AND p.usuario = '" + a.getUsername() + "' AND a.tipo = '" + a.getTipo() + "'");
             }
         } catch (MySQLIntegrityConstraintViolationException e) {
-            throw new ExceptionCampoInexistente("El usuario (" + a.getUsername() + ") o el articulo (" + a.getNombre() + ") no existe");
+            throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Articulo:" + a.getNombre() + " o Usuario: " + a.getUsername() + " no existente");
         } finally {
             if (statement != null) statement.close();
             if (connection != null) connection.close();
@@ -87,7 +87,7 @@ public class ArticuloUsuarioDAO {
                 result.add(a);
             }
         } catch (MySQLIntegrityConstraintViolationException e) {
-            throw new ExceptionCampoInexistente("El usuario (" + username + ") no existe");
+            throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario: " + username + " no existente");
 
         } finally {
             if (statement != null) statement.close();
