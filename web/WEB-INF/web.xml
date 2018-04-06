@@ -26,4 +26,14 @@
         <servlet-name>Login</servlet-name>
         <url-pattern>/LoginServlet.do</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ConsultaStats</servlet-name>
+        <servlet-class>servlet.ConsultaPerfilServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ConsultaStats</servlet-name>
+        <url-pattern>/PerfilServlet.do</url-pattern>
+    </servlet-mapping>
 </web-app>

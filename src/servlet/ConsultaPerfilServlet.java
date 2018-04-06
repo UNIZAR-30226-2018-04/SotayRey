@@ -2,6 +2,7 @@ package servlet;
 import javax.servlet.http.HttpSession;
 
 import basedatos.InterfazDatos;
+import basedatos.modelo.StatsUsuarioVO;
 import basedatos.modelo.UsuarioVO;
 
 @javax.servlet.annotation.WebServlet(name = "ConsultaPerfilServlet")
@@ -14,6 +15,7 @@ public class ConsultaPerfilServlet extends javax.servlet.http.HttpServlet {
             //TODO:Tratar error, redirigir a login
         }else{
             UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
+            StatsUsuarioVO statsVO = null;
             String username = usuarioVO.getUsername();
             InterfazDatos facade =  null;
             try{
@@ -23,11 +25,12 @@ public class ConsultaPerfilServlet extends javax.servlet.http.HttpServlet {
             }
 
             try{
-                facade.obtenerStatsUsuario(username);
+                statsVO = facade.obtenerTodasStatsUsuario(username);
             }catch(Exception e ){
-
             }
+            session.setAttribute("userStats",statsVO);
 
+            response.sendRedirect("jsp/perfil.jsp");
         }
     }
 

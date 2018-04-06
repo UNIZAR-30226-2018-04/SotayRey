@@ -34,7 +34,7 @@
                         <i class="fa fa-user mr-2"><%=nick%></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="Preview">
-                        <a class="dropdown-item" href="/jsp/perfil.jsp">
+                        <a class="dropdown-item" href="/PerfilServlet.do">
                             <i class="fa fa-user-circle-o mr-2"></i>Perfil</a>
                         <a class="dropdown-item" href="#">
                             <i class="fa fa-gear mr-2"></i>Opciones</a>
