@@ -116,7 +116,7 @@ public class GestorMensajes {
                     try {
                         // LÓGICA DE FINALIZACIÓN DE RONDA
                         partida.siguienteRonda();
-                        broadcastGanaRonda(idPartida, false);
+                        broadcastGanaRonda(idPartida);
                         // Se intenta que todos los jugadores vuelvan a tener 6 cartas
                         broadcastRobarCarta(idPartida);
                         // Asigna el turno al jugador correspondiente
@@ -133,11 +133,13 @@ public class GestorMensajes {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionPartidaFinalizada exceptionPartidaFinalizada) {
                         System.out.println("Partida finalizada: " + idPartida);
-                        broadcastGanaRonda(idPartida, true);
+                        broadcastGanaRonda(idPartida);
+                        // Elimina la partida de la lista de partidas activas
+                        listaPartidas.remove(idPartida);
                     } catch (ExceptionDeVueltas exceptionDeVueltas) {
                         System.out.println("De vueltas: " + idPartida);
                         broadcastEstado(idPartida, true);
-                        broadcastGanaRonda(idPartida, false);
+                        broadcastGanaRonda(idPartida);
                         broadcastRobarCarta(idPartida);
                         // Manda el turno a todos los clientes
                         broadcastTurno(idPartida);
@@ -280,7 +282,7 @@ public class GestorMensajes {
     }
 
 
-    private void broadcastGanaRonda(int idPartida, boolean finPartida) {
+    private void broadcastGanaRonda(int idPartida) {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
         // Incrementa la ronda

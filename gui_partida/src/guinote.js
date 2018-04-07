@@ -51,6 +51,8 @@ function preload() {
     game.load.image('turno', 'assets/turno.png');
     game.load.image('tapete', 'assets/tapete.png');
     game.load.image('avatar', 'assets/avatar.png');
+    game.load.image('victoria', 'assets/victoria.png');
+    game.load.image('derrota', 'assets/derrota.png');
     game.load.audio('musica', ['assets/musica.mp3']);
 }
 
@@ -415,7 +417,9 @@ function create() {
     actualizarHUD("");
 
     listo_jugador(); // Confirma que el jugador ya esta listo para jugar
-    dibujarCuadroCarta(jRef);
+
+    dibujarCuadroCarta(jRef); // TODO va un poco mal
+
 
 }
 
@@ -965,6 +969,31 @@ function actualizarHUD(datos){
         triunfo.carta.alpha = 0.5;
         tipo_ronda.text = "TIPO RONDA: ARRASTRE";
     }
+
+    if(puntuacionMia.puntuacion > 100 || puntuacionRival.puntuacion > 100){
+        finPartida();
+    }
+}
+
+function finPartida(){
+    console.log("ACABA LA PARTIDA");
+    var logo;
+    var tipo;
+
+    if (puntuacionMia.puntuacion >= 0){
+        tipo = 'victoria';
+    }
+    else{
+        tipo = 'derrota';
+    }
+    logo = game.add.sprite(game.world.centerX, ejeY * 0.1, tipo);
+    logo.alpha = 0;
+    logo.x = logo.x - logo.width/2;
+
+    game.add.tween(logo).to( { alpha: 1 }, 1500, 'Linear', true, 0);
+
+//    puntuacionMia.x = logo.x + logo.width/2 - 80;
+ //   puntuacionMia.y = logo.y + logo.height * 1.2;
 }
 
 var arrastre;
