@@ -480,14 +480,13 @@ public class EstadoPartida {
                 aux = cartasEnTapete.get(i);
                 if (aux.esMismoPalo(triunfo)) { // Si hay triunfo gana el mejor
                     if (mejor_triunfo == null ||
-                            aux.masPuntuacion(mejor_triunfo)) {
+                            aux.mataCartaOtra(triunfo,mejor_triunfo)) {
                         // Pirmer triunfo o encontrado un triunfo mejor
                         mejor_triunfo = aux;
                         ganador = i;
                     }
                 } else if (aux.esMismoPalo(mejor_otro)){
-                    if (mejor_triunfo != null && (mejor_otro == null ||
-                            aux.masPuntuacion(mejor_otro)) ) {
+                    if (mejor_triunfo == null && aux.mataCartaOtra(triunfo,mejor_otro)) {
                         // No hay ningun triunfo y es la mejor carta 
                         // inicial encontrada
                         mejor_otro = aux;

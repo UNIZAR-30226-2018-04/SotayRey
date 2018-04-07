@@ -260,7 +260,7 @@ public class LogicaPartida {
     public int consultarPuntos(String jugador) throws
             ExceptionJugadorIncorrecto, ExceptionRondaNoAcabada {
         ArrayList<String> jugadores = estado.getJugadoresId();
-        int pos = jugador.indexOf(jugador);
+        int pos = jugadores.indexOf(jugador);
         if (estado.getCartasEnTapete().size() == 0){
             if (jugadores.size() == 2){
                 return estado.getPuntosJugador(jugador);
@@ -305,11 +305,20 @@ public class LogicaPartida {
 
     //TODO: funcion para pruebas por terminal, eliminar al final
     /**
-     * Devuelve una copia del estado partida
+     * Devuelve un puntero del estado partida
      * @return
      */
     public EstadoPartida getPunteroAEstado(){
         return estado;
+    }
+
+    //TODO: funcion para pruebas por terminal, eliminar al final
+    /**
+     * Devuelve true si la partida va de vueltas
+     * @return
+     */
+    public boolean getDeVueltas(){
+        return deVueltas;
     }
 
 }
