@@ -50,7 +50,7 @@ function preload() {
     game.load.image('cuadroCarta', 'assets/dragHere.png');
     game.load.image('turno', 'assets/turno.png');
     game.load.image('tapete', 'assets/tapete.png');
-    game.load.image('avatar', 'assets/avatar.jpg');
+    game.load.image('avatar', 'assets/avatar.png');
     game.load.audio('musica', ['assets/musica.mp3']);
 }
 
