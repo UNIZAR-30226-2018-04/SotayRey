@@ -134,6 +134,8 @@ public class GestorMensajes {
                     } catch (ExceptionPartidaFinalizada exceptionPartidaFinalizada) {
                         System.out.println("Partida finalizada: " + idPartida);
                         broadcastGanaRonda(idPartida, true);
+                        // Elimina la partida de la lista de partidas activas
+                        listaPartidas.remove(idPartida);
                     } catch (ExceptionDeVueltas exceptionDeVueltas) {
                         System.out.println("De vueltas: " + idPartida);
                         broadcastEstado(idPartida, true);
