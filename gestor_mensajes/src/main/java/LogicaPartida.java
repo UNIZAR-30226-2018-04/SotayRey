@@ -224,14 +224,14 @@ public class LogicaPartida {
         int indice_jug = estado.getJugadoresId().indexOf(jugador);
         // Ha terminado la ronda y el ganador de la última ronda ha sido él o
         // su compañero
-        if (estado.getGanadorUltimaRonda() == indice_jug || estado
-                .getGanadorUltimaRonda() == (indice_jug + 2) % 4 && estado
-                .getCartasEnTapete().size() == 0 && n_cartas_mazo > 0){
+        if (estado.getGanadorUltimaRonda() !=-1 &&
+                ((estado.getGanadorUltimaRonda() == indice_jug || estado
+                .getGanadorUltimaRonda() == (indice_jug + 2) % 4) && estado
+                .getCartasEnTapete().size() == 0 && n_cartas_mazo > 0)){
 
             //Cambia la carta si y solo si es un 7 del mismo palo y su
             // puntuación es mayor que 0
-            if (triunfo.getPalo().equals(c.getPalo
-                    ()) && c.getValor() == 7 && (triunfo.getPuntuacion()> 0)){
+            if (triunfo.esMismoPalo(c) && c.getValor() == 7 && (triunfo.getPuntuacion()> 0)){
                 estado.setTriunfo(c);
                 estado.quitarCartaJugador(jugador, c);
                 estado.anyadirCartaJugador(jugador, triunfo);
