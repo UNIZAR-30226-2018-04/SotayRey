@@ -230,7 +230,7 @@ public class Jugador {
         }
     }
 
-    public void resetJugadores(){
+    public void resetCartas(){
         this.cartasGanadas = new ArrayList<Carta>();
     }
 
