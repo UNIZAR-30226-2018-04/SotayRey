@@ -231,7 +231,7 @@ public class Jugador {
     }
 
     public void resetJugadores(){
-        this.cartasGanadas = new ArrayList<Cartas>();
+        this.cartasGanadas = new ArrayList<Carta>();
     }
 
     /**
