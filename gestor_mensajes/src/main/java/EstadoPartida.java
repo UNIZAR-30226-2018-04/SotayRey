@@ -498,7 +498,7 @@ public class EstadoPartida {
             }
 
             // Asigna turno a jugador ganador
-            turno = ganador;
+            turno = (turno + ganador)%n_jug;
             ganadorUltimaRonda = ganador;
 
             // Suma puntos y cartas a ganador

@@ -210,7 +210,7 @@ public class Carta {
      */
     public boolean mataCartaOtra(Carta triunfo, Carta otra){
         if (palo.equals(otra.getPalo())){ // es del mismo palo
-            if (getPuntuacion()>otra.getPuntuacion()){
+            if (getPuntuacion() > otra.getPuntuacion()){
                 return true;
             }
              else if(getPuntuacion()==otra.getPuntuacion()){
