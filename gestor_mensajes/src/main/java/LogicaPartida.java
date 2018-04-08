@@ -145,6 +145,7 @@ public class LogicaPartida {
                deVueltas = true;
                estado.resetGanadorUltimaRonda();
                estado.setMazo(estado.barajear());
+               estado.resetJugadores();
                // Reparte 6 cartas a cada jugador
                for (int i = 0; i < 6; i++) {
                    for (String j: estado.getJugadoresId()) {

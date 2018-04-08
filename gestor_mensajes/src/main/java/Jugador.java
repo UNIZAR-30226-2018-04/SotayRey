@@ -230,6 +230,10 @@ public class Jugador {
         }
     }
 
+    public void resetJugadores(){
+        this.cartasGanadas = new ArrayList<Cartas>();
+    }
+
     /**
      * Función que redefine la comparación entre objetos jugdor.
      * @param o

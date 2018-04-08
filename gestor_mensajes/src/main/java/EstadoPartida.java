@@ -573,7 +573,14 @@ public class EstadoPartida {
         mazo = new ArrayList<>();
     }
 
-
+    /**
+     * Vacia las cartas ganadas por cada jugador para empezar una nueva ronda.
+     */
+    public void resetJugadores(){
+        for(Jugador iterador : jugadores){
+            iterador.resetCartas();
+        }
+    }
 
 
     /***************************** FUNCIONES AUXILIARES ***********************/
