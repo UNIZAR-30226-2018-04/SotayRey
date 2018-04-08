@@ -980,7 +980,7 @@ function finPartida(){
     var logo;
     var tipo;
 
-    if (puntuacionMia.puntuacion >= 0){
+    if (puntuacionMia.puntuacion >= 100){
         tipo = 'victoria';
     }
     else{
