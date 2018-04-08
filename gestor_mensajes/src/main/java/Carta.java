@@ -45,7 +45,7 @@ public class Carta {
      * @param palo
      * @throws ExceptionCartaIncorrecta
      */
-    public Carta(int valor, int palo) throws ExceptionCartaIncorrecta{
+    public Carta(int valor, int palo) throws ExceptionCartaIncorrecta {
         if ((valor>0 && valor<8) || (valor >= 10 && valor <= 12)){
             this.valor = valor;
         } else throw new ExceptionCartaIncorrecta("Valor incorrecto: " + valor);

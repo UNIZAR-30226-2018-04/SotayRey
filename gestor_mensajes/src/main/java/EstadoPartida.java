@@ -473,6 +473,7 @@ public class EstadoPartida {
             Carta aux, mejor_triunfo = null,
                     mejor_otro = cartasEnTapete.get(0);
             int ganador = 0;
+            Carta inicial = cartasEnTapete.get(0);
 
             //Busqueda del ganador
             for (int i = 0; i < n_jug; i++) {
@@ -486,7 +487,8 @@ public class EstadoPartida {
                         ganador = i;
                     }
                 } else if (aux.esMismoPalo(mejor_otro)){
-                    if (mejor_triunfo == null && aux.mataCartaOtra(triunfo,mejor_otro)) {
+                    if (mejor_triunfo == null && aux.mataCartaOtra(inicial,
+                            mejor_otro)) {
                         // No hay ningun triunfo y es la mejor carta 
                         // inicial encontrada
                         mejor_otro = aux;
