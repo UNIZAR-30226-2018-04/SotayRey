@@ -550,6 +550,7 @@ public class EstadoPartida {
     public void setMazo(ArrayList<Carta> baraja){
         if (baraja.size() == 40){
             this.mazo = copiarCartas(baraja);
+            this.triunfo_entregado = false;
         }
     }
 
