@@ -121,7 +121,11 @@ public class EstadoPartida {
      * @return
      */
     public ArrayList<Carta> getMazo(){
-        return copiarCartas(this.mazo);
+        ArrayList<Carta> res = copiarCartas(this.mazo);
+        if (res.size()>0){
+            res.add(new Carta(this.triunfo));
+        }
+        return res;
     }
 
 
