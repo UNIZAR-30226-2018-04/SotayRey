@@ -122,7 +122,7 @@ public class EstadoPartida {
      */
     public ArrayList<Carta> getMazo(){
         ArrayList<Carta> res = copiarCartas(this.mazo);
-        if (res.size()>0){
+        if (res.size()>0 && this.triunfo != null){
             res.add(new Carta(this.triunfo));
         }
         return res;
