@@ -39,7 +39,8 @@ console.log(ejeY);
 
 // para que sea responsive:  https://www.joshmorony.com/how-to-scale-a-game-for-all-device-sizes-in-phaser/
 // en vez de Phaser.AUTO -> Phaser.CANVAS
-var game = new Phaser.Game(ejeX, ejeY / zonaJugableY, Phaser.CANVAS, '', { preload: preload, create: create, update: update, render: render });
+//var game = new Phaser.Game(ejeX, ejeY / zonaJugableY, Phaser.CANVAS, '', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(ejeX, ejeY / zonaJugableY, Phaser.CANVAS, '', { preload: preload, create: create, update: update});
 
 /**
  * Precarga las imagenes y sonidos que se utilizaran en el juego
@@ -413,7 +414,7 @@ function create() {
 
     //jugadorLanzaCarta(3, 11, "copas");
 
-    controlMusica();
+    //controlMusica();
     actualizarHUD("");
 
     listo_jugador(); // Confirma que el jugador ya esta listo para jugar
