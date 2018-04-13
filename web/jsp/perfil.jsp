@@ -20,6 +20,9 @@
 
 <%  String nick = null;
     String liga = null;
+    String email = null;
+    String nombre = null;
+    String apellidos = null;
     int puesto = 0;
     int puntos = 0;
     int monedas = 0;
@@ -33,6 +36,10 @@
     } else {
         UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
         nick = usuarioVO.getUsername();
+        email = usuarioVO.getCorreo();
+        nombre = usuarioVO.getNombre();
+        apellidos = usuarioVO.getApellidos();
+
         StatsUsuarioVO statsVO = (StatsUsuarioVO) session.getAttribute("userStats");
         liga = statsVO.getLigaActual();
         puesto = statsVO.getPuesto();
@@ -45,7 +52,6 @@
             ratio = ganadas/perdidas;
         }
 
-        //TODO: resto de cosas
     }%>
 
 <body>
@@ -62,9 +68,61 @@
                 <h3><%= jugadas %> partidas jugadas
                 </h3>
                 <h3><%= ganadas %> ganadas / <%= perdidas %> perdidas (ratio G/P <%= ratio %>)</h3>
-                <a class="btn btn-primary mt-2" href="../jsp/modificar_datos.jsp" role="button">
+                <button class="btn btn-primary mt-2" role="button"
+                    data-toggle="modal" data-target="#myModal">
                     <i class="fa fa-pencil mr-2" aria-hidden="true"></i>Editar perfil
-                </a>
+                </button>
+
+                <!-- Modal modificar usuario -->
+                <div id="myModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <div class="modal-header text-center">
+                                <h4 class="modal-title w-100 font-weight-bold">Editar perfil</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <form action="/LoginServlet.do" method="post" > <!-- TODO: Asegurar que funciona el form -->
+                                            <div class="form-group">
+                                                <label for="modEmail">E-Mail</label>
+                                                <input type="email" class="form-control" id="modEmail" placeholder="<%= email %>">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="modNombre">Nombre</label>
+                                                <input type="text" class="form-control" id="modNombre" placeholder="<%= nombre %>">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="modApellidos">Apellidos</label>
+                                                <input type="text" class="form-control" id="modApellidos" placeholder="<%= apellidos %>">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="modPass">Nueva contraseña</label>
+                                                <input type="password" class="form-control" id="modPass" >
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="modOldPass">Contraseña actual</label>
+                                                <input type="password" class="form-control" id="modOldPass"
+                                                       placeholder="Introduce tu contraseña actual" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-save mr-2" aria-hidden="true"></i>Guardar</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-sm">
+                                        <a>Columna</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <a action="/BorrarUsuario.do" method="post" class="btn btn-danger mt-2" href="/BorrarUsuario.do" role="button">
                     <i class="fa fa-trash mr-2" aria-hidden="true"></i>Borrar cuenta
                 </a>
