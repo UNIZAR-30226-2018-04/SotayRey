@@ -225,6 +225,7 @@ public class LogicaPartida {
         int indice_jug = estado.getJugadoresId().indexOf(jugador);
         // Ha terminado la ronda y el ganador de la última ronda ha sido él o
         // su compañero
+        //TODO: podría fallar
         if (estado.getGanadorUltimaRonda() !=-1 &&
                 ((estado.getGanadorUltimaRonda() == indice_jug || estado
                 .getGanadorUltimaRonda() == (indice_jug + 2) % 4) && estado

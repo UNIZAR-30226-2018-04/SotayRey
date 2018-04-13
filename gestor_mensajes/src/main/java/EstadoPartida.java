@@ -122,7 +122,7 @@ public class EstadoPartida {
      */
     public ArrayList<Carta> getMazo(){
         ArrayList<Carta> res = copiarCartas(this.mazo);
-        if (res.size()>0 && this.triunfo != null){
+        if (res.size()>0 && this.triunfo != null && !res.contains(triunfo)){
             res.add(new Carta(this.triunfo));
         }
         return res;
@@ -503,7 +503,7 @@ public class EstadoPartida {
 
             // Asigna turno a jugador ganador
             turno = (turno + ganador)%n_jug;
-            ganadorUltimaRonda = ganador;
+            ganadorUltimaRonda = turno;
 
             // Suma puntos y cartas a ganador
             asignaCartasJugador(jugadores.get(turno));
@@ -535,10 +535,12 @@ public class EstadoPartida {
     public void sumaCante(String jugador) throws ExceptionJugadorIncorrecto,
             ExceptionNoPuedesCantar{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
+        int n_jug = getJugadores().size();
         if (ganadorUltimaRonda < 0 || ganadorUltimaRonda > 3){
             throw new ExceptionNoPuedesCantar();
         }
-        else if(jugadores.get(ganadorUltimaRonda).equals(encuentraJugador(jugador)) || jugadores.get(ganadorUltimaRonda+2).equals(encuentraJugador(jugador))){
+        else if(jugadores.get((ganadorUltimaRonda + 2)%n_jug).equals
+                (encuentraJugador(jugador))){
             jugadorEncontrado.anyadirCante(triunfo);
         }
         else{
