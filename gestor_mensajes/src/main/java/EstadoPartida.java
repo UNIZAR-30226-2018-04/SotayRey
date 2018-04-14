@@ -351,8 +351,10 @@ public class EstadoPartida {
                         if (carta.esMismoPalo(inicial)) {
 
                             //Carta es del mismo palo
-                            puedeLanzarDelPalo(carta, inicial,
-                                    jugadorEncontrado);
+                            ponerCartaMesa(carta, jugadorEncontrado);
+                            //TODO: esta bien asi
+                            //puedeLanzarDelPalo(carta, inicial,
+                            //        jugadorEncontrado);
 
                         } else {
 
@@ -393,6 +395,10 @@ public class EstadoPartida {
 
                         // Es del palo inicial
                         if (carta.esMismoPalo(inicial)){
+                            ponerCartaMesa(carta, jugadorEncontrado);
+                            //TODO: esta bien asi obligación de cumplir solo
+                            // palo, y no de matar
+                            /*
                             // Comprueba si ha matado el compañero
                             if (haMatadoCompanyero()){
                                 ponerCartaMesa(carta, jugadorEncontrado);
@@ -400,6 +406,7 @@ public class EstadoPartida {
                                 puedeLanzarDelPalo(carta, inicial,
                                         jugadorEncontrado);
                             }
+                            */
                         } else {
                             // Comprueba si tiene del palo inicial en la mano
                             if (tienePaloEnMano(jugadorEncontrado,

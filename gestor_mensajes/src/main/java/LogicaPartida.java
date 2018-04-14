@@ -127,34 +127,35 @@ public class LogicaPartida {
                ganador = 1;
                throw new ExceptionPartidaFinalizada();
            }
-       } else { // Primera vuelta
-           if (estado.isFinVuelta()){ // Empieza segunda ronda
+       } else if (estado.isFinVuelta()) { // Empieza segunda ronda
 
-               if (consultarPuntos(estado.getJugadoresId().get(0)) > 100){
-                   if (consultarPuntos(estado.getJugadoresId().get(1)) > 100){
-                       ganador = estado.getGanadorUltimaRonda() % 2;
-                   } else {
-                       ganador = 0;
-                   }
-                   throw new ExceptionPartidaFinalizada();
-               } else if ( consultarPuntos(estado.getJugadoresId().get(1)) >
-                       100){
-                   ganador = 1;
-                   throw new ExceptionPartidaFinalizada();
+           if (consultarPuntos(estado.getJugadoresId().get(0)) > 100) {
+               if (consultarPuntos(estado.getJugadoresId().get(1)) > 100) {
+                   //Ambos equipos han superado los 100 pts, vence el
+                   // ganador de la última ronda
+                   ganador = estado.getGanadorUltimaRonda() % 2;
+               } else {
+                   // Si solo los ha superado el primero, es el que gana
+                   ganador = 0;
                }
-               deVueltas = true;
-               estado.resetGanadorUltimaRonda();
-               estado.setMazo(estado.barajear());
-               estado.resetJugadores();
-               // Reparte 6 cartas a cada jugador
-               for (int i = 0; i < 6; i++) {
-                   for (String j: estado.getJugadoresId()) {
-                       repartirCarta(j);
-                   }
-               }
-               estado.setTriunfo(estado.getPrimeraCartaMazo());
-               throw new ExceptionDeVueltas(new EstadoPartida(estado));
+               throw new ExceptionPartidaFinalizada();
+           } else if (consultarPuntos(estado.getJugadoresId().get(1)) >
+                   100) {
+               ganador = 1;
+               throw new ExceptionPartidaFinalizada();
            }
+           deVueltas = true;
+           estado.resetGanadorUltimaRonda();
+           estado.setMazo(estado.barajear());
+           estado.resetJugadores();
+           // Reparte 6 cartas a cada jugador
+           for (int i = 0; i < 6; i++) {
+               for (String j : estado.getJugadoresId()) {
+                   repartirCarta(j);
+               }
+           }
+           estado.setTriunfo(estado.getPrimeraCartaMazo());
+           throw new ExceptionDeVueltas(new EstadoPartida(estado));
        }
        return new EstadoPartida(estado);
    }
@@ -225,7 +226,6 @@ public class LogicaPartida {
         int indice_jug = estado.getJugadoresId().indexOf(jugador);
         // Ha terminado la ronda y el ganador de la última ronda ha sido él o
         // su compañero
-        //TODO: podría fallar
         if (estado.getGanadorUltimaRonda() !=-1 &&
                 ((estado.getGanadorUltimaRonda() == indice_jug || estado
                 .getGanadorUltimaRonda() == (indice_jug + 2) % 4) && estado
