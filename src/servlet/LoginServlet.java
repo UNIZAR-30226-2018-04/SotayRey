@@ -37,14 +37,12 @@ public class LoginServlet extends HttpServlet {
             if (nick== null || nick.equals("")) {
                 error = "emptyUser";
                 request.setAttribute("error", error);
-                RequestDispatcher dispatcher = request.getRequestDispatcher
-                        ("jsp/login.jsp");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request, response);
             } else if (pass == null || pass.equals("")) {
                 error = "emptyPass";
                 request.setAttribute("error", error);
-                RequestDispatcher dispatcher = request.getRequestDispatcher
-                        ("jsp/login.jsp");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request, response);
             } else {
 
@@ -52,7 +50,8 @@ public class LoginServlet extends HttpServlet {
                 try{
                     facade = InterfazDatos.instancia();
                 }catch (Exception e){
-                    //TODO:Tratar excepcion
+                    e.printStackTrace();
+                    throw new ServletException();
                 }
 
                 boolean existUser = false;
@@ -75,8 +74,7 @@ public class LoginServlet extends HttpServlet {
                     sesion.setMaxInactiveInterval(24*60*60);
                     StatsUsuarioVO stats = null;
                     try {
-                        stats = (StatsUsuarioVO) facade
-                                .obtenerStatsUsuario(nick);
+                        stats = (StatsUsuarioVO) facade.obtenerStatsUsuario(nick);
                     } catch (Exception e){
                         System.err.println("ERROR: obteniendo stats usuario");
                         e.printStackTrace();
