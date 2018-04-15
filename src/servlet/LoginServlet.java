@@ -59,7 +59,8 @@ public class LoginServlet extends HttpServlet {
                     existUser = facade.autentificarUsuario(nick, pass);
                     System.out.println("Usuario autentificado");
                 }catch(Exception e){
-                    //TODO:Tratar excepcion
+                    e.printStackTrace();
+                    throw new ServletException();
                 }
 
                 if (existUser){
@@ -67,7 +68,8 @@ public class LoginServlet extends HttpServlet {
                     try{
                         user = facade.obtenerDatosUsuario(nick);
                     } catch (Exception e){
-                        //TODO: Tratar excepcion
+                        e.printStackTrace();
+                        throw new ServletException();
                     }
                     HttpSession sesion= request.getSession();
                     sesion.setAttribute("userId", user);
