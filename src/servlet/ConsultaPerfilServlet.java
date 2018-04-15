@@ -25,6 +25,8 @@ public class ConsultaPerfilServlet extends javax.servlet.http.HttpServlet {
             }
 
             try{
+                //TODO: los estats están en la sesion porque los meto al
+                // loguears ya que se necesitan en la tienda tb "userStats"
                 statsVO = facade.obtenerTodasStatsUsuario(username);
             }catch(Exception e ){
             }

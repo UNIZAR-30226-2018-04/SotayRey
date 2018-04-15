@@ -1,28 +1,51 @@
+<%@ page import="basedatos.modelo.UsuarioVO" %>
 <%@ page import="basedatos.modelo.StatsUsuarioVO" %>
-<!DOCTYPE html>
-<html lang="es">
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="basedatos.modelo.ArticuloUsuarioVO" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<html lang="en" >
 <head>
     <title>Tienda</title>
-    <meta charset="iso-8859-1">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%@ include file="../html/imports.html"%>
+    <%--
+    //TODO: todo esto hay que meterlo en el war
+    <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <%@ include file="navbar.jsp" %>
-    <!-- Bootstrap -->
-    <%@ include file="../html/imports.html"%>
+    --%>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
-<body>
 
-<%
+<%  String nick = null;
     int monedas = 0;
-
-    if (session.getAttribute("userId") == null) {
+    UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userID");
+    ArrayList<ArticuloUsuarioVO> articulos = new ArrayList<>();
+    if (usuarioVO == null) {
         response.sendRedirect("/jsp/login.jsp");
     } else {
+        nick = usuarioVO.getUsername();
         StatsUsuarioVO statsVO = (StatsUsuarioVO) session.getAttribute("userStats");
-        monedas = statsVO.getDivisa();
-    }%>
+        if (statsVO == null){
+            response.sendRedirect("/jsp/login.jsp");
+        }
+        try {
+            monedas = statsVO.getDivisa();
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+        articulos = (ArrayList<ArticuloUsuarioVO>) session.getAttribute("articulos");
+        if (articulos == null){
+            //TODO: no hay articulos
+        }
+    }
+%>
+
+<body>
 
     <style type="text/css">
         .jumbotron{
@@ -32,42 +55,30 @@
         }
     </style>
 
-    <div class="jumbotron">
+    <div class="jumbotron" >
         <div class="container text-center">
             <h1>Tienda</h1>
-            <p>Aqui podrás encontrar todo tipo de cosas para ser el mas chulo en el guiñote. ¡No seas rata y compra
+            <p>Aquí podrás encontrar todo tipo de cosas para ser el más chulo en el guiñote. ¡No seas rata y compra
             algo para marcar estilo!</p>
-            <p> Mis monedas: <%=monedas%> </p>
+            <p> Mis monedas: <%= monedas %></p>
         </div>
     </div>
 
     <div class="container-fluid bg-3 text-center">
         <h3>Barajas</h3><br>
         <div class="row equal">
+            <% for (ArticuloUsuarioVO art: articulos) {
+                if (art.getTipo() == 'B'){%>
             <div class="col-sm-4">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">BARAJA DE ORO</div>
-                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
-                    <div class="panel-footer">Se desbloquea al alcanzar la liga oro</div>
-                    <button class="btn btn-primary">Comprar: 100 monedas</button>
+                    <div class="panel-heading"> <%= art.getNombre() %></div>
+                    <div class="panel-body"><img src= "<%=art.getRutaImagen()%>" class="img-responsive" style="width:100%" alt="Imagen baraja <%= art.getNombre()%>"></div>
+                    <div class="panel-footer">Se desbloquea al alcanzar la liga <%= art.getRequiere()%></div>
+                    <button class="btn btn-primary">Comprar: <%= art.getPrecio()%> monedas</button>
                 </div>
             </div>
-            <div class="col-sm-4">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">BARAJA DE BRONCE</div>
-                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
-                    <div class="panel-footer">Se desbloquea al alcanzar la liga bronce</div>
-                    <button class="btn btn-success">Ya adquirido</button>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">BARAJA DE DIAMANETE</div>
-                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
-                    <div class="panel-footer">Se desbloquea al alcanzar la liga diamante</div>
-                    <button class="btn btn-danger">Artículo bloqueado</button>
-                </div>
-            </div>
+            <% }
+            } %>
         </div>
     </div><br>
 
@@ -84,7 +95,6 @@
             <div class="col-sm-4">
                 <p>Some text..</p>
                 <img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image">
-            </div>
         </div>
     </div><br><br>
 
@@ -94,7 +104,7 @@
         <div class="row">
             <div class="col-sm-3">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">DORSO LEGENDARIO</div>
+                    <div class="panel-heading">BARAJA DE ORO</div>
                     <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
                     <div class="panel-footer">Se desbloquea al alcanzar la liga oro</div>
                     <button class="btn btn-primary">Comprar: 100 monedas</button>
@@ -120,7 +130,7 @@
         <div class="row">
             <div class="col-sm-3">
                 <div class="panel panel-primary">
-                    <div class="panel-heading">AVATAR LEGENDARIO</div>
+                    <div class="panel-heading">BARAJA DE ORO</div>
                     <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
                     <div class="panel-footer">Se desbloquea al alcanzar la liga oro</div>
                     <button class="btn btn-primary">Comprar: 100 monedas</button>
