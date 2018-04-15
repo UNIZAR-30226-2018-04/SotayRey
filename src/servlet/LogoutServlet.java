@@ -1,3 +1,12 @@
+/**
+ * @author Marius Sorin Crisan
+ *
+ * @version 1.0
+ * @since 	1.0
+ *
+ * Servlet implementation class LogoutUsuarioServlet
+ */
+
 package servlet;
 
 import basedatos.modelo.UsuarioVO;

@@ -1,7 +1,17 @@
+/**
+ * @author Marius Sorin Crisan
+ *
+ * @version 1.0
+ * @since 	1.0
+ *
+ * Servlet implementation class LoginUsuarioServlet
+ */
+
 package servlet;
 
 import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.modelo.StatsUsuarioVO;
 import basedatos.modelo.UsuarioVO;
 
 import javax.servlet.RequestDispatcher;
@@ -12,17 +22,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.rmi.StubNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * @author Marius Sorin Crisan
- *
- * @version 1.0
- * @since 	1.0
- *
- * Servlet implementation class LoginUsuarioServlet
- */
+
 @WebServlet(name = "LoginServlet")
 public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -30,20 +34,19 @@ public class LoginServlet extends HttpServlet {
         String pass = request.getParameter("loginPass");
         String error = "";
         try {
-            if (nick.equals("")) {
+            if (nick== null || nick.equals("")) {
                 error = "emptyUser";
                 request.setAttribute("error", error);
                 RequestDispatcher dispatcher = request.getRequestDispatcher
                         ("jsp/login.jsp");
                 dispatcher.forward(request, response);
-            } else if (pass.equals("")) {
+            } else if (pass == null || pass.equals("")) {
                 error = "emptyPass";
                 request.setAttribute("error", error);
                 RequestDispatcher dispatcher = request.getRequestDispatcher
                         ("jsp/login.jsp");
                 dispatcher.forward(request, response);
             } else {
-                System.out.println("probar a registrar");
 
                 InterfazDatos facade = null;
                 try{
@@ -55,6 +58,7 @@ public class LoginServlet extends HttpServlet {
                 boolean existUser = false;
                 try{
                     existUser = facade.autentificarUsuario(nick, pass);
+                    System.out.println("Usuario autentificado");
                 }catch(Exception e){
                     //TODO:Tratar excepcion
                 }
@@ -69,7 +73,15 @@ public class LoginServlet extends HttpServlet {
                     HttpSession sesion= request.getSession();
                     sesion.setAttribute("userId", user);
                     sesion.setMaxInactiveInterval(24*60*60);
-
+                    StatsUsuarioVO stats = null;
+                    try {
+                        stats = (StatsUsuarioVO) facade
+                                .obtenerStatsUsuario(nick);
+                    } catch (Exception e){
+                        System.err.println("ERROR: obteniendo stats usuario");
+                        e.printStackTrace();
+                    }
+                    sesion.setAttribute("userStats", stats);
                     response.sendRedirect("jsp/home.jsp");
                 } else { // Usuario no existe
                     error= "userNotFound";

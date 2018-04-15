@@ -47,4 +47,15 @@
         <url-pattern>/LogoutServlet.do</url-pattern>
     </servlet-mapping>
 
+
+    <servlet>
+        <servlet-name>MostrarObjetosTienda</servlet-name>
+        <servlet-class>servlet.MostrarObjetosTiendaServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>MostrarObjetosTienda</servlet-name>
+        <url-pattern>/MostrarObjetosTienda.do</url-pattern>
+    </servlet-mapping>
+
 </web-app>
