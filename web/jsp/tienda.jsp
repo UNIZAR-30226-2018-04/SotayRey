@@ -35,7 +35,7 @@
     <div class="jumbotron">
         <div class="container text-center">
             <h1>Tienda</h1>
-            <p>Aquí podrás encontrar todo tipo de cosas para ser el más chulo en el guiñote. ¡No seas rata y compra
+            <p>Aqu&iacute podr&aacutes encontrar todo tipo de cosas para ser el m&aacutes chulo en el gui&ntildeote. ¡No seas rata y compra
             algo para marcar estilo!</p>
             <p> Mis monedas: <%= monedas%> </p>
         </div>
