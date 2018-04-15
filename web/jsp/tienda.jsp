@@ -1,3 +1,4 @@
+<%@ page import="basedatos.modelo.StatsUsuarioVO" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,6 +14,16 @@
 </head>
 <body>
 
+<%
+    int monedas = 0;
+
+    if (session.getAttribute("userId") == null) {
+        response.sendRedirect("/jsp/login.jsp");
+    } else {
+        StatsUsuarioVO statsVO = (StatsUsuarioVO) session.getAttribute("userStats");
+        monedas = statsVO.getDivisa();
+    }%>
+
     <style type="text/css">
         .jumbotron{
             background-image: url('../img/fondoCabeceraTienda.jpg');
@@ -26,7 +37,7 @@
             <h1>Tienda</h1>
             <p>Aquí podrás encontrar todo tipo de cosas para ser el más chulo en el guiñote. ¡No seas rata y compra
             algo para marcar estilo!</p>
-            <p> Mis monedas: 3250 </p>
+            <p> Mis monedas: <%= monedas%> </p>
         </div>
     </div>
 
