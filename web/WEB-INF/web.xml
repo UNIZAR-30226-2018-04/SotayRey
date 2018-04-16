@@ -65,7 +65,7 @@
 
     <servlet-mapping>
         <servlet-name>ComprarObjetoServlet</servlet-name>
-        <url-pattern>/ComprarObjetoServlet.do</url-pattern>
+        <url-pattern>/ComprarObjeto.do</url-pattern>
     </servlet-mapping>
 
 </web-app>

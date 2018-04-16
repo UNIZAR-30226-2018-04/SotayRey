@@ -82,31 +82,34 @@
         <div class="row equal">
 
             <%  char t = tipo.charAt(0);
+                int i = 0;
                 for (ArticuloUsuarioVO art: articulos) {
-                if (art.getTipo() == t){
-                LigaVO liga = art.getRequiere(); %>
-                <div class="col-sm-4">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading"> <%= art.getNombre() %></div>
-                        <div class="panel-body"><img src= "<%=art.getRutaImagen()%>" class="img-responsive" style="width:100%" alt="Imagen baraja <%= art.getNombre()%>"></div>
-                        <% if (liga != null){ %>
-                            <div class="panel-footer">Se desbloquea al alcanzar la liga <%=liga.getNombre()%></div>
-                        <% } else { %>
-                            <div class="panel-footer">Desbloqueado desde el inicio </div>
-                        <% } if (art.isComprado()) { %>
-                            <button class="btn btn-success">Ya adquirido</button>
-                        <% } else if (art.isDisponible()) { %>
-                        <!--
-                        <a action="/BorrarUsuario.do" method="post" class="btn btn-danger mt-2" href="/ComprarObjetoServlet.do" role="button">
-                            <i class="fa fa-trash mr-2" aria-hidden="true"></i>Borrar cuenta
-                        -->
-                            <button class="btn btn-primary">Comprar: <%= art.getPrecio()%> monedas</button>
-                        <% } else { %>
-                            <button class="btn btn-danger">Artículo bloqueado</button>
-                        <% } %>
+                    if (art.getTipo() == t){
+                    LigaVO liga = art.getRequiere(); %>
+                    <div class="col-sm-4">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading"> <%= art.getNombre() %></div>
+                            <div class="panel-body"><img src= "<%=art.getRutaImagen()%>" class="img-responsive" style="width:100%" alt="Imagen baraja <%= art.getNombre()%>"></div>
+                            <% if (liga != null){ %>
+                                <div class="panel-footer">Se desbloquea al alcanzar la liga <%=liga.getNombre()%></div>
+                            <% } else { %>
+                                <div class="panel-footer">Desbloqueado desde el inicio </div>
+                            <% } if (art.isComprado()) { %>
+                                <button  type="button" class="btn btn-success">Ya adquirido</button>
+                            <% } else if (art.isDisponible()) { %>
+
+                                <!-- Comprar objeto -->
+                                <form action="/ComprarObjetoServlet.do" method="post">
+                                    <input type="hidden" value="<%=i%>" name="id_objeto"/>
+                                    <input type="submit" class="btn btn-primary" value="Comprar: <%= art.getPrecio()%> monedas"/>
+                                </form>
+                            <% } else { %>
+                                <button  type="button"  class="btn btn-blue-grey">Artículo bloqueado</button>
+                            <% } %>
+                        </div>
                     </div>
-                </div>
             <%  }
+                ++i;
             } %>
         </div>
         <% } %>
