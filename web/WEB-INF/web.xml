@@ -58,4 +58,14 @@
         <url-pattern>/MostrarObjetosTienda.do</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ComprarObjetoServlet</servlet-name>
+        <servlet-class>servlet.ComprarObjetoServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ComprarObjetoServlet</servlet-name>
+        <url-pattern>/ComprarObjetoServlet.do</url-pattern>
+    </servlet-mapping>
+
 </web-app>

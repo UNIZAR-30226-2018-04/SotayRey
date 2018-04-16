@@ -13,6 +13,7 @@ import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInexistente;
 import basedatos.modelo.ArticuloUsuarioVO;
 import basedatos.modelo.ArticuloVO;
+import basedatos.modelo.StatsUsuarioVO;
 import basedatos.modelo.UsuarioVO;
 
 import javax.servlet.RequestDispatcher;
@@ -40,9 +41,22 @@ public class MostrarObjetosTiendaServlet extends HttpServlet {
         try {
             ArrayList<ArticuloUsuarioVO> articulos = facade
                     .obtenerArticulosTienda(user.getUsername());
-            System.out.println("Articulos usuario obtenidos");
             session.setAttribute("articulos", articulos);
+            System.out.println("Articulos usuario obtenidos");
+
+            StatsUsuarioVO stats = null;
+            try {
+                stats = (StatsUsuarioVO) facade
+                        .obtenerStatsUsuario(user.getUsername());
+                System.out.println("Stats usuario añadidos");
+            } catch (Exception e){
+                System.err.println("ERROR: obteniendo stats usuario");
+                e.printStackTrace();
+            }
+
+            session.setAttribute("userMainStats", stats);
             response.sendRedirect("jsp/tienda.jsp");
+
         } catch (ExceptionCampoInexistente exceptionCampoInexistente){
             error = "userNotFound";
             request.setAttribute("error", error);

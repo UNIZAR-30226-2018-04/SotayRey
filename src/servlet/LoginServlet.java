@@ -73,15 +73,6 @@ public class LoginServlet extends HttpServlet {
                     HttpSession sesion= request.getSession();
                     sesion.setAttribute("userId", user);
                     sesion.setMaxInactiveInterval(24*60*60);
-                    StatsUsuarioVO stats = null;
-                    try {
-                        stats = (StatsUsuarioVO) facade
-                                .obtenerStatsUsuario(nick);
-                    } catch (Exception e){
-                        System.err.println("ERROR: obteniendo stats usuario");
-                        e.printStackTrace();
-                    }
-                    sesion.setAttribute("userStats", stats);
                     response.sendRedirect("jsp/home.jsp");
                 } else { // Usuario no existe
                     error= "userNotFound";
