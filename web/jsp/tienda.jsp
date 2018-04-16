@@ -11,6 +11,7 @@
     <%@ include file="../html/imports.html"%>
     <%--
     //TODO: todo esto hay que meterlo en el war
+    --%>
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <meta charset="iso-8859-1">
