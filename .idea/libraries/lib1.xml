@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="lib1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/gestor_mensajes/web/WEB-INF/lib/mchange-commons-java-0.2.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gestor_mensajes/web/WEB-INF/lib/c3p0-0.9.5.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gestor_mensajes/web/WEB-INF/lib/json-simple-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gestor_mensajes/web/WEB-INF/lib/mysql-connector-java-5.1.46-bin.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

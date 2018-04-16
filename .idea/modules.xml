@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/SotayRey.iml" filepath="$PROJECT_DIR$/SotayRey.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gestor_mensajes/gestor_mensajes.iml" filepath="$PROJECT_DIR$/gestor_mensajes/gestor_mensajes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/logica_juego/logica_juego.iml" filepath="$PROJECT_DIR$/logica_juego/logica_juego.iml" />
+    </modules>
+  </component>
+</project>

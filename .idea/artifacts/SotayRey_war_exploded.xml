@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="SotayRey:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/SotayRey_war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="SotayRey" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="SotayRey/web/Web" />
+      <element id="javaee-facet-resources" facet="SotayRey/javaeeApplication/javaEEApplication" />
+    </root>
+  </artifact>
+</component>

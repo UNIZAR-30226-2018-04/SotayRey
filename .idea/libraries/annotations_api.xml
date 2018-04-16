@@ -1,0 +1,30 @@
+<component name="libraryTable">
+  <library name="annotations-api">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/annotations-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/catalina-ant.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/catalina-ha.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/catalina-storeconfig.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/catalina-tribes.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/catalina.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/ecj-4.6.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/el-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/jasper-el.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/jasper.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/jaspic-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/jsp-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/servlet-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/tomcat-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/tomcat-coyote.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/tomcat-dbcp.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/tomcat-jdbc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/tomcat-jni.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/tomcat-util-scan.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/tomcat-util.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/tomcat-websocket.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../Datos/Program Files/apache-tomcat-9.0.6/lib/websocket-api.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
