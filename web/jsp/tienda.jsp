@@ -13,12 +13,9 @@
     //TODO: todo esto hay que meterlo en el war
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="iso-8859-1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    --%>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
@@ -51,12 +48,12 @@
         }
     </style>
 
-    <div class="jumbotron" >
+    <div class="jumbotron">
         <div class="container text-center">
             <h1>Tienda</h1>
-            <p>Aquí podrás encontrar todo tipo de cosas para ser el más chulo en el guiñote. ¡No seas rata y compra
-                algo para marcar estilo!</p>
-            <p> Mis monedas: <%= monedas %></p>
+            <p>Aqu&iacute podr&aacutes encontrar todo tipo de cosas para ser el m&aacutes chulo en el gui&ntildeote. ¡No seas rata y compra
+            algo para marcar estilo!</p>
+            <p> Mis monedas: <%= monedas%> </p>
         </div>
     </div>
 

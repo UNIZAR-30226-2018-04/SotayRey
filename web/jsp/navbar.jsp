@@ -22,7 +22,7 @@
                         <i class="fa fa-play mr-2"></i>Jugar</a>
                 </li>
                 <li class="nav-item">
-                    <a class="btn btn-outline" href="#" role="button">
+                    <a class="btn btn-outline" href="../jsp/liga.jsp" role="button">
                         <i class="fa fa-trophy mr-2"></i>Ligas</a>
                 </li>
                 <li class="nav-item">

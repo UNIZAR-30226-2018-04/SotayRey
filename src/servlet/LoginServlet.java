@@ -37,14 +37,12 @@ public class LoginServlet extends HttpServlet {
             if (nick== null || nick.equals("")) {
                 error = "emptyUser";
                 request.setAttribute("error", error);
-                RequestDispatcher dispatcher = request.getRequestDispatcher
-                        ("jsp/login.jsp");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request, response);
             } else if (pass == null || pass.equals("")) {
                 error = "emptyPass";
                 request.setAttribute("error", error);
-                RequestDispatcher dispatcher = request.getRequestDispatcher
-                        ("jsp/login.jsp");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request, response);
             } else {
 
@@ -52,7 +50,8 @@ public class LoginServlet extends HttpServlet {
                 try{
                     facade = InterfazDatos.instancia();
                 }catch (Exception e){
-                    //TODO:Tratar excepcion
+                    e.printStackTrace();
+                    throw new ServletException();
                 }
 
                 boolean existUser = false;
@@ -60,7 +59,8 @@ public class LoginServlet extends HttpServlet {
                     existUser = facade.autentificarUsuario(nick, pass);
                     System.out.println("Usuario autentificado");
                 }catch(Exception e){
-                    //TODO:Tratar excepcion
+                    e.printStackTrace();
+                    throw new ServletException();
                 }
 
                 if (existUser){
@@ -68,7 +68,8 @@ public class LoginServlet extends HttpServlet {
                     try{
                         user = facade.obtenerDatosUsuario(nick);
                     } catch (Exception e){
-                        //TODO: Tratar excepcion
+                        e.printStackTrace();
+                        throw new ServletException();
                     }
                     HttpSession sesion= request.getSession();
                     sesion.setAttribute("userId", user);
