@@ -281,7 +281,7 @@ public class InterfazDatos {
             if (art.getNombre().equals(a.getNombre())) {
                 encontrado = true;
                 System.out.println("Cuesta: " + art.getPrecio());
-                if (art.isComprado()) { throw new ExceptionCampoInvalido("El Usuario :"+a.getUsername()+" ya tiene el Articulo: "+a.getNombre());}
+                if (art.isComprado()) { ArticuloUsuarioDAO.crearArticuloUsuario(a,this.cpds);}
                 else if (!art.isDisponible()) { throw new ExceptionCampoInvalido("El Usuario: "+a.getUsername()+" no tiene la liga necesaria para el Articulo:"+a.getNombre());}
                 else if (stats.getDivisa()<art.getPrecio()) { throw new ExceptionCampoInvalido("El Usuario: "+a.getUsername()+" no tiene el dinero necesario para el Articulo: "+a.getNombre());}
                 else {
