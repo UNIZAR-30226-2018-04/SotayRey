@@ -171,6 +171,7 @@ public class UsuarioDAO {
     public static boolean esAdministrador(String username, ComboPooledDataSource pool) throws SQLException, ExceptionCampoInexistente{
         Connection connection = null;
         Statement statement = null;
+        boolean admin = false;
         connection = pool.getConnection();
         statement = connection.createStatement();
         String query = "SELECT admin FROM usuario WHERE username = '" + username + "'";
@@ -179,12 +180,14 @@ public class UsuarioDAO {
         if(!resultSet.isBeforeFirst()){
             throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario: " + username + " no existente");
         }
-
-        resultSet.next();
+        else{
+            resultSet.next();
+            admin = resultSet.getBoolean("admin");
+        }
+        
         if (statement != null) statement.close();
         if (connection != null) connection.close();
-
-        return resultSet.getBoolean("admin");
+        return admin;
     }
         
 }

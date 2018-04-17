@@ -123,9 +123,15 @@
                     </div>
                 </div>
 
-                <a action="/BorrarUsuario.do" method="post" class="btn btn-danger mt-2" href="/BorrarUsuario.do" role="button">
+                <a class="btn btn-danger mt-2" href="/BorrarUsuario.do" role="button">
                     <i class="fa fa-trash mr-2" aria-hidden="true"></i>Borrar cuenta
                 </a>
+                <% if(session.getAttribute("isAdmin") != null){ %>
+                <a class="btn btn-danger mt-2" href="/MostrarObjetosTienda.do" role="button">
+                    <i class="fa fa-shopping-cart mr-2" aria-hidden="true"></i>Gestionar Tienda
+                </a>
+                <!-- TODO: añadir aqui resto de botones del admin -->
+                <% } %>
             </div>
         </div>
     </div>
