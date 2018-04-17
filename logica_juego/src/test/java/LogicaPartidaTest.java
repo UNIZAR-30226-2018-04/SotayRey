@@ -302,18 +302,18 @@ public class LogicaPartidaTest {
         LogicaPartida logica;
         try {
             logica = new LogicaPartida(jugadores);
-            prepararArrastre2(logica,0);
+            prepararArrastre2(logica, 0);
             //triunfo es oros
-            Carta c = new Carta(10,"E");
-            logica.lanzarCarta("j1",c);
-            c = new Carta(3,"E");
-            logica.lanzarCarta("j2",c);
-            c = new Carta(7,"B");
-            logica.lanzarCarta("j3",c);
+            Carta c = new Carta(10, "E");
+            logica.lanzarCarta("j1", c);
+            c = new Carta(3, "E");
+            logica.lanzarCarta("j2", c);
+            c = new Carta(7, "B");
+            logica.lanzarCarta("j3", c);
 
             exception.expect(ExceptionCartaIncorrecta.class);
 
-        }catch (ExceptionCartaIncorrecta e) {
+        } catch (ExceptionCartaIncorrecta e) {
             System.out.println("Superado... no se puede lanzar otra carta teniendo del mismo palo");
         } catch (ExceptionTurnoIncorrecto | ExceptionCartaYaExiste |
                 ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto
@@ -322,18 +322,18 @@ public class LogicaPartidaTest {
         }
         try {
             logica = new LogicaPartida(jugadores);
-            prepararArrastre2(logica,0);
+            prepararArrastre2(logica, 0);
             //triunfo es oros
-            Carta c = new Carta(10,"E");
-            logica.lanzarCarta("j1",c);
-            c = new Carta(3,"E");
-            logica.lanzarCarta("j2",c);
-            c = new Carta(7,"E");
-            logica.lanzarCarta("j3",c);
+            Carta c = new Carta(10, "E");
+            logica.lanzarCarta("j1", c);
+            c = new Carta(3, "E");
+            logica.lanzarCarta("j2", c);
+            c = new Carta(7, "E");
+            logica.lanzarCarta("j3", c);
 
             exception.expect(ExceptionCartaIncorrecta.class);
 
-        }catch (ExceptionCartaIncorrecta e) {
+        } catch (ExceptionCartaIncorrecta e) {
             System.out.println("Superado... no se puede lanzar otra carta si hay obligacion de matar" +
                     " y el jugador puede");
         } catch (ExceptionTurnoIncorrecto | ExceptionCartaYaExiste |
@@ -344,18 +344,18 @@ public class LogicaPartidaTest {
 
         try {
             logica = new LogicaPartida(jugadores);
-            prepararArrastre2(logica,1);
+            prepararArrastre2(logica, 1);
             //triunfo es oros
-            Carta c = new Carta(10,"E");
-            logica.lanzarCarta("j1",c);
-            c = new Carta(3,"E");
-            logica.lanzarCarta("j2",c);
-            c = new Carta(10,"B");
-            logica.lanzarCarta("j3",c);
+            Carta c = new Carta(10, "E");
+            logica.lanzarCarta("j1", c);
+            c = new Carta(3, "E");
+            logica.lanzarCarta("j2", c);
+            c = new Carta(10, "B");
+            logica.lanzarCarta("j3", c);
 
             exception.expect(ExceptionCartaIncorrecta.class);
 
-        }catch (ExceptionCartaIncorrecta e) {
+        } catch (ExceptionCartaIncorrecta e) {
             System.out.println("Superado... no se puede lanzar otra carta si hay obligacion de matar" +
                     " y se tiene triunfo");
         } catch (ExceptionTurnoIncorrecto | ExceptionCartaYaExiste |
@@ -365,14 +365,14 @@ public class LogicaPartidaTest {
         }
         try {
             logica = new LogicaPartida(jugadores);
-            prepararArrastre2(logica,2);
+            prepararArrastre2(logica, 2);
             //triunfo es oros
-            Carta c = new Carta(5,"E");
-            logica.lanzarCarta("j1",c);
-            c = new Carta(6,"E");
-            logica.lanzarCarta("j2",c);
-            c = new Carta(7,"E");
-            logica.lanzarCarta("j3",c);
+            Carta c = new Carta(5, "E");
+            logica.lanzarCarta("j1", c);
+            c = new Carta(6, "E");
+            logica.lanzarCarta("j2", c);
+            c = new Carta(7, "E");
+            logica.lanzarCarta("j3", c);
             System.out.println("Superado... se lanza la carta del mismo palo para matar");
 
 
@@ -384,14 +384,14 @@ public class LogicaPartidaTest {
         }
         try {
             logica = new LogicaPartida(jugadores);
-            prepararArrastre2(logica,1);
+            prepararArrastre2(logica, 1);
             //triunfo es oros
-            Carta c = new Carta(5,"E");
-            logica.lanzarCarta("j1",c);
-            c = new Carta(3,"E");
-            logica.lanzarCarta("j2",c);
-            c = new Carta(4,"O");
-            logica.lanzarCarta("j3",c);
+            Carta c = new Carta(5, "E");
+            logica.lanzarCarta("j1", c);
+            c = new Carta(3, "E");
+            logica.lanzarCarta("j2", c);
+            c = new Carta(4, "O");
+            logica.lanzarCarta("j3", c);
             System.out.println("Superado... se lanza el triunfo porque no tiene del palo inicial");
 
 
@@ -403,17 +403,16 @@ public class LogicaPartidaTest {
         }
         try {
             logica = new LogicaPartida(jugadores);
-            prepararArrastre2(logica,3);
+            prepararArrastre2(logica, 3);
             //triunfo es oros
-            Carta c = new Carta(10,"E");
-            logica.lanzarCarta("j1",c);
-            c = new Carta(6,"E");
-            logica.lanzarCarta("j2",c);
-            c = new Carta(10,"B");
-            logica.lanzarCarta("j3",c);
+            Carta c = new Carta(10, "E");
+            logica.lanzarCarta("j1", c);
+            c = new Carta(6, "E");
+            logica.lanzarCarta("j2", c);
+            c = new Carta(10, "B");
+            logica.lanzarCarta("j3", c);
             System.out.println("Superado... puede lanzar cualquiera porque mata su compañero" +
                     " y no tiene del palo incial");
-
 
         } catch (ExceptionTurnoIncorrecto | ExceptionCartaYaExiste |
                 ExceptionNumeroMaximoCartas | ExceptionJugadorIncorrecto

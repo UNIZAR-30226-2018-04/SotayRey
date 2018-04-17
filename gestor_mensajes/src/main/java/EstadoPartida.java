@@ -122,9 +122,9 @@ public class EstadoPartida {
      */
     public ArrayList<Carta> getMazo(){
         ArrayList<Carta> res = copiarCartas(this.mazo);
-        if (res.size()>0 && this.triunfo != null && !res.contains(triunfo)){
-            res.add(new Carta(this.triunfo));
-        }
+        //if (res.size()>0){
+        //    res.add(new Carta(this.triunfo));
+        //}
         return res;
     }
 
@@ -351,10 +351,8 @@ public class EstadoPartida {
                         if (carta.esMismoPalo(inicial)) {
 
                             //Carta es del mismo palo
-                            ponerCartaMesa(carta, jugadorEncontrado);
-                            //TODO: esta bien asi
-                            //puedeLanzarDelPalo(carta, inicial,
-                            //        jugadorEncontrado);
+                            puedeLanzarDelPalo(carta, inicial,
+                                    jugadorEncontrado);
 
                         } else {
 
@@ -395,10 +393,6 @@ public class EstadoPartida {
 
                         // Es del palo inicial
                         if (carta.esMismoPalo(inicial)){
-                            ponerCartaMesa(carta, jugadorEncontrado);
-                            //TODO: esta bien asi obligación de cumplir solo
-                            // palo, y no de matar
-                            /*
                             // Comprueba si ha matado el compañero
                             if (haMatadoCompanyero()){
                                 ponerCartaMesa(carta, jugadorEncontrado);
@@ -406,7 +400,6 @@ public class EstadoPartida {
                                 puedeLanzarDelPalo(carta, inicial,
                                         jugadorEncontrado);
                             }
-                            */
                         } else {
                             // Comprueba si tiene del palo inicial en la mano
                             if (tienePaloEnMano(jugadorEncontrado,
@@ -510,7 +503,7 @@ public class EstadoPartida {
 
             // Asigna turno a jugador ganador
             turno = (turno + ganador)%n_jug;
-            ganadorUltimaRonda = turno;
+            ganadorUltimaRonda = ganador;
 
             // Suma puntos y cartas a ganador
             asignaCartasJugador(jugadores.get(turno));
@@ -542,12 +535,10 @@ public class EstadoPartida {
     public void sumaCante(String jugador) throws ExceptionJugadorIncorrecto,
             ExceptionNoPuedesCantar{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
-        int n_jug = getJugadores().size();
         if (ganadorUltimaRonda < 0 || ganadorUltimaRonda > 3){
             throw new ExceptionNoPuedesCantar();
         }
-        else if(jugadores.get((ganadorUltimaRonda + 2)%n_jug).equals
-                (encuentraJugador(jugador))){
+        else if(jugadores.get(ganadorUltimaRonda).equals(encuentraJugador(jugador)) || jugadores.get(ganadorUltimaRonda+2).equals(encuentraJugador(jugador))){
             jugadorEncontrado.anyadirCante(triunfo);
         }
         else{
