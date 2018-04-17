@@ -12,7 +12,6 @@ package servlet;
 import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInexistente;
 import basedatos.modelo.ArticuloUsuarioVO;
-import basedatos.modelo.ArticuloVO;
 import basedatos.modelo.StatsUsuarioVO;
 import basedatos.modelo.UsuarioVO;
 
@@ -31,7 +30,7 @@ public class MostrarObjetosTiendaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         UsuarioVO user = (UsuarioVO) session.getAttribute("userId");
-        String error = "";
+        String error;
         InterfazDatos facade = null;
         try {
             facade = InterfazDatos.instancia();

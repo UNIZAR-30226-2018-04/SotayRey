@@ -55,6 +55,7 @@ public class ComprarObjetoServlet extends HttpServlet {
                 }
             } catch (Exception e){
                 error = "objectNotExist";
+                //TODO: se conserva error
                 request.setAttribute("error",error);
                 RequestDispatcher dispatcher=request.getRequestDispatcher
                         ("/MostrarObjetosTienda.do");
@@ -64,7 +65,7 @@ public class ComprarObjetoServlet extends HttpServlet {
             error = "sessionNotExist";
             request.setAttribute("error", error);
             RequestDispatcher dispatcher = request.getRequestDispatcher
-                    ("index.jsp");
+                    ("/jsp/login.jsp");
             dispatcher.forward(request, response);
         }
 

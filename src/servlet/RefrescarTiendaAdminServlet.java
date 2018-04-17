@@ -33,7 +33,7 @@ public class RefrescarTiendaAdminServlet extends HttpServlet {
                 } else if (accion != null && accion.equals("delete")) {
                     session.setAttribute("accionAdmin", "eliminar");
                 }
-                response.sendRedirect("jsp/tienda.jsp");
+                response.sendRedirect("/jsp/tienda.jsp");
             }
         } catch (ExceptionCampoInexistente exceptionCampoInexistente){
             error = "adminNotFound";
