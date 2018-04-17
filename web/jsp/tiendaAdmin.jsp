@@ -77,7 +77,7 @@
                             <% } else if (art.isDisponible()) { %>
 
                                 <!-- Comprar objeto -->
-                                <form action="/ComprarObjetoServlet.do" method="post">
+                                <form action="/ComprarObjeto.do" method="post">
                                     <input type="hidden" value="<%=i%>" name="id_objeto"/>
                                     <input type="submit" class="btn btn-primary" value="Comprar: <%= art.getPrecio()%> monedas"/>
                                 </form>

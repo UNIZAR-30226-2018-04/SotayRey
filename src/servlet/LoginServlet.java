@@ -72,11 +72,6 @@ public class LoginServlet extends HttpServlet {
                         throw new ServletException();
                     }
                     HttpSession sesion= request.getSession();
-                    boolean
-                    if (user.getAdmin()){
-                        sesion.setAttribute("isAdmin", true);
-                        System.out.println("Administrador auntentificado");
-                    }
                     sesion.setAttribute("userId", user);
                     sesion.setMaxInactiveInterval(24*60*60);
                     response.sendRedirect("jsp/home.jsp");

@@ -18,7 +18,9 @@
     <%@ include file="../html/imports.html"%>
 </head>
 
-<%  String nick = null;
+<%  UsuarioVO usuarioVO = null;
+    StatsUsuarioVO statsVO = null;
+    String nick = null;
     String liga = null;
     String email = null;
     String nombre = null;
@@ -34,13 +36,13 @@
     if (session.getAttribute("userId") == null) {
         response.sendRedirect("/jsp/login.jsp");
     } else {
-        UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
+        usuarioVO = (UsuarioVO) session.getAttribute("userId");
         nick = usuarioVO.getUsername();
         email = usuarioVO.getCorreo();
         nombre = usuarioVO.getNombre();
         apellidos = usuarioVO.getApellidos();
 
-        StatsUsuarioVO statsVO = (StatsUsuarioVO) session.getAttribute("userStats");
+        statsVO = (StatsUsuarioVO) session.getAttribute("userStats");
         liga = statsVO.getLigaActual();
         puesto = statsVO.getPuesto();
         puntos = statsVO.getPuntuacion();
@@ -126,8 +128,8 @@
                 <a class="btn btn-danger mt-2" href="/BorrarUsuario.do" role="button">
                     <i class="fa fa-trash mr-2" aria-hidden="true"></i>Borrar cuenta
                 </a>
-                <% if(session.getAttribute("isAdmin") != null){ %>
-                <a class="btn btn-danger mt-2" href="/MostrarObjetosTienda.do" role="button">
+                <% if(usuarioVO != null && usuarioVO.getAdmin()){ %>
+                <a class="btn btn-warning mt-2" href="/MostrarObjetosTienda.do" role="button">
                     <i class="fa fa-shopping-cart mr-2" aria-hidden="true"></i>Gestionar Tienda
                 </a>
                 <!-- TODO: añadir aqui resto de botones del admin -->

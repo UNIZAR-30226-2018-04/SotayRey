@@ -20,6 +20,10 @@
                     case "userNotFound": %>
             <strong>Usuario no encontrado o contraseña incorrecta.</strong> Inténtalo de nuevo.
             <%
+                    break;
+                case "adminNotFound":%>
+            <strong>No eres administrador del sistema</strong>
+            <%
                         break;
                     case "emptyUser":%>
             <strong>Introduzca un usuario</strong>
