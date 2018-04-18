@@ -99,66 +99,6 @@
         </div>
 
 
-    <!-- Añadir articulo -->
-    <div id="anyadirArticulo" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content -->
-            <div class="modal-content">
-                <div class="modal-header text-center">
-                    <h4 class="modal-title w-100 font-weight-bold">Añadir artículo</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body container">
-                    <div class="row">
-                        <div class="col-sm">
-                            <form action="/......" method="post">
-                                <div class="form-group">
-                                    <label for="tipoArticulo">Tipo item</label>
-                                    <select name="tipo" class="form-control">
-                                        <option value="avatar">Avatar</option>
-                                        <option value="baraja">Baraja</option>
-                                        <option value="dorso">Dorso</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="descripcion">Descripción</label>
-                                    <input type="text" class="form-control" name="descripcion" id="descripcion"
-                                           placeholder="Descripción del item">
-                                </div>
-                                <div class="form-group">
-                                    <label for="precio">Precio</label>
-                                    <input type="text" class="form-control" name="precio" id="precio"
-                                           placeholder="Introduce el precio del ítem">
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Restriccion</label>
-                                    <select name="tipo" class="form-control">
-                                        <option value="no_restriccion">Sin restriccion</option>
-                                        <option value="bronce">Bronce</option>
-                                        <option value="oro">Oro</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="passwd">RUTAS IMAGEN VISTA Y USABLE</label>
-                                    <input type="password" class="form-control" name="passwd" id="passwd"
-                                           placeholder="Contraseña">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Crear</button>
-                            </form>
-                        </div>
-                        <div class="col-sm">
-                            <a>Columna</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
     <% }
         if (articulos == null || articulos.size() == 0){ %>
             <div class="container-fluid bg-3 text-center">
@@ -171,72 +111,93 @@
             </div><br>
         <% } else { %>
 
+                <!-- hay articulos -->
+                <div class="container-fluid bg-3 text-center">
+                    <div id="accordion" role="tablist"> <!-- acordion -->
+                    <%  for (String tipo: new ArrayList<>(Arrays.asList("Barajas", "Tapetes", "Avatares"))) {  %>
+                            <div class="card">
+                                <div class="card-header" role="tab" id="head<%=tipo%>">
+                                    <h5 class="mb-0">
+                                        <a data-toggle="collapse" href="#collapse<%=tipo%>" aria-expanded="true" aria-controls="collapse<%=tipo%>">
+                                            <%=tipo%>
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapse<%=tipo%>" class="collapse show" role="tabpanel" aria-labelledby="head<%=tipo%>">
+                                    <div class="card-body"> <!-- contenido de cada tipo -->
+                                        <form action="/ComprarObjeto.do" method="post">
+                                            <div class="row equal">
 
-<%--TODO: HACER FAVORITOS,  --%>
-    <div class="container-fluid bg-3 text-center">
-    <%  for (String tipo: new ArrayList<>(Arrays.asList("Barajas", "Tapetes", "Avatares"))) {  %>
+                                                <%  char t = tipo.charAt(0);
+                                                    int i = 0;
+                                                    for (ArticuloUsuarioVO art: articulos) {
 
-            <h3><%=tipo%></h3><br>
-            <div class="row equal">
-        <%  char t = tipo.charAt(0);
-            int i = 0;
-            for (ArticuloUsuarioVO art: articulos) {
-                if (art.getTipo() == t){
-                    if (usuarioVO.getAdmin() && !accionAdmin.equals("nada")){ %>
-                        <div class="col-sm-4">
-                            <div class="panel panel-primary">
-                                <div class="panel-heading"> <%= art.getNombre() %></div>
-                                <div class="panel-body"><img src= "<%=art.getRutaImagen()%>" class="img-responsive" style="width:100%" alt="Imagen baraja <%= art.getNombre()%>"></div>
-                                <% if (accionAdmin.equals("eliminar")){ %>
-                                <!-- Eliminar objeto -->
-                                <form action="/EliminarObjetoTienda.do" method="post">
-                                    <input type="hidden" value="<%=i%>" name="id_objeto"/>
-                                    <input type="submit" class="btn btn-primary" value="Eliminar"/>
-                                </form>
-                                <% } else if (accionAdmin.equals("modificar")){ %>
-                                <!-- Eliminar objeto -->
-                                <form action="/ModificarObjetoTienda.do" method="post">
-                                    <input type="hidden" value="<%=i%>" name="id_objeto"/>
-                                    <input type="submit" class="btn btn-primary" value="Modificar"/>
-                                </form>
-                                <% } %>
+                                                        if (art.getTipo() == t){
+                                                            if (usuarioVO.getAdmin() && !accionAdmin.equals("nada")){ %>
+                                                                <div class="col-sm-4">
+                                                                    <div class="panel panel-primary">
+                                                                        <div class="panel-heading"> <%= art.getNombre() %></div>
+                                                                        <div class="panel-body"><img src= "<%=art.getRutaImagen()%>" class="img-responsive" style="width:100%" alt="Imagen baraja <%= art.getNombre()%>"></div>
+                                                                        <% if (accionAdmin.equals("eliminar")){ %>
+                                                                        <!-- Eliminar objeto -->
+                                                                        <form action="/EliminarObjetoTienda.do" method="post">
+                                                                            <input type="hidden" value="<%=i%>" name="id_objeto"/>
+                                                                            <input type="submit" class="btn btn-primary" value="Eliminar"/>
+                                                                        </form>
+                                                                        <% } else if (accionAdmin.equals("modificar")){ %>
+                                                                        <!-- Eliminar objeto -->
+                                                                        <form action="/ModificarObjetoTienda.do" method="post">
+                                                                            <input type="hidden" value="<%=i%>" name="id_objeto"/>
+                                                                            <input type="submit" class="btn btn-primary" value="Modificar"/>
+                                                                        </form>
+                                                                        <% } %>
+                                                                    </div>
+                                                                </div>
+                                                        <%  } else { // No es admin
+
+                                                                LigaVO liga = art.getRequiere(); %>
+
+                                                                <div class="col-sm-4">
+                                                                    <div class="panel panel-primary">
+                                                                        <div class="panel-heading"> <%= art.getNombre() %></div>
+                                                                        <div class="panel-body"><img src= "<%=art.getRutaImagen()%>" class="img-responsive card-img-top mt-4" style="width:100%" alt="Imagen baraja <%= art.getNombre()%>"></div>
+                                                                        <% if (liga != null){ %>
+                                                                        <div class="panel-footer">Se desbloquea al alcanzar la liga <%=liga.getNombre()%></div>
+                                                                        <% } else { %>
+                                                                        <div class="panel-footer">Desbloqueado desde el inicio </div>
+                                                                        <% } if (art.isComprado()) { %>
+                                                                        <button  type="button" class="btn btn-success">Ya adquirido</button>
+                                                                        <input type="radio" name="id_objeto" value="<%=i%>"
+                                                                            <% if (art.isFavorito()){ %>
+                                                                               checked
+                                                                            <% } %>
+                                                                        >
+                                                                    <%  } else if (art.isDisponible()) { %>
+
+                                                                        <!-- Comprar objeto -->
+                                                                        <form action="/ComprarObjeto.do" method="post">
+                                                                            <input type="hidden" value="<%=i%>" name="id_objeto"/>
+                                                                            <input type="submit" class="btn btn-primary" value="Comprar: <%= art.getPrecio()%> monedas"/>
+                                                                        </form>
+                                                                        <% } else { %>
+                                                                        <button  type="button"  class="btn btn-blue-grey">Artículo bloqueado</button>
+                                                                        <% } %>
+                                                                    </div>
+                                                                </div>
+                                                        <%  }
+                                                     }
+                                                    ++i;
+                                                } %>
+                                            </div>
+                                        </form> <!-- final form favorito -->
+                                        <!-- fin contenido de cada tipo -->
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                <%  } else {
-
-                    LigaVO liga = art.getRequiere(); %>
-
-                    <div class="col-sm-4">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading"> <%= art.getNombre() %></div>
-                            <div class="panel-body"><img src= "<%=art.getRutaImagen()%>" class="img-responsive" style="width:100%" alt="Imagen baraja <%= art.getNombre()%>"></div>
-                            <% if (liga != null){ %>
-                                <div class="panel-footer">Se desbloquea al alcanzar la liga <%=liga.getNombre()%></div>
-                            <% } else { %>
-                                <div class="panel-footer">Desbloqueado desde el inicio </div>
-                            <% } if (art.isComprado()) { %>
-                                <button  type="button" class="btn btn-success">Ya adquirido</button>
-                            <% } else if (art.isDisponible()) { %>
-
-                                <!-- Comprar objeto -->
-                                <form action="/ComprarObjeto.do" method="post">
-                                    <input type="hidden" value="<%=i%>" name="id_objeto"/>
-                                    <input type="submit" class="btn btn-primary" value="Comprar: <%= art.getPrecio()%> monedas"/>
-                                </form>
-                            <% } else { %>
-                                <button  type="button"  class="btn btn-blue-grey">Artículo bloqueado</button>
-                            <% } %>
-                        </div>
+                    <%  } %>
                     </div>
-                <%  }
-                }
-                ++i;
-            } %>
-        </div>
-    <%  } %>
-    </div><br>
-    <%  } // else hay articulos
+                </div><br>
+        <%  } // else hay articulos
     } //else user != null %>
 
 </body>
