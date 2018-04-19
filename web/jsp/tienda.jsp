@@ -131,10 +131,6 @@
                                                     <%=art.getNombre()%>
                                                 </div>
                                                 <img class="card-img-top" src="<%=art.getRutaImagen()%>" alt="Card image cap">
-                                                <%--<form action="/ModificarObjetoTienda.do" method="post">--%>
-                                                    <%--<input id="price" class="text-center" value="a" type="text">--%>
-                                                    <%--<input type="submit" id="btnEnviar">--%>
-                                                <%--</form>--%>
 
                                                 <!-- Button trigger modal Modificar-->
                                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modificarArticulo">
@@ -143,33 +139,31 @@
 
                                                 <!-- Modal Modificar articulo -->
                                                 <div class="modal" id="modificarArticulo" tabindex="-1" role="dialog" aria-labelledby="modificarArticuloLabel" aria-hidden="true">
-                                                        <div class="modal-dialog" role="document">
                                                                         <form action="/ModificarObjetoTienda.do" method="post">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header text-center">
-                                                                    <h4 class="modal-title w-100 font-weight-bold">Modificar artículo</h4>
-                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="modal-body  container">
-                                                                    <div class="col-sm">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header text-center">
+                                                                <h4 class="modal-title w-100 font-weight-bold">Modificar artículo</h4>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body  container">
+                                                                <div class="col-sm">
                                                                             <div class="form-group">
                                                                                 <label for="precio">Precio</label>
-                                                                                <input type="number"  class="form-control" name="precio" id="precio"
-                                                                                       placeholder="Introduzca el nuevo valor" >
-                                                                                <input hidden id="objeto" name="posObjeto" value="<%=i%>">
+                                                                                <input type="number" class="form-control" name="precio" id="precio"
+                                                                                       placeholder="<%=art.getPrecio()%>">
                                                                             </div>
-                                                                                <%--<input type="submit" class="btn btn-primary" value="Guardar Cambios"/>--%>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <input type="submit" class="btn btn-primary" value="Guardar Cambios"/>
-                                                                        <input type="reset" class="btn btn-secondary" data-dismiss="modal" value="Cerrar"/>
-                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                                                                 </div>
                                                             </div>
-                                                                        </form>
                                                         </div>
+                                                    </div>
+                                                                        </form>
                                                 </div>
                                              </div>
                                       <%} else {
@@ -204,7 +198,7 @@
                                                     <% } else if (art.isDisponible()) { %>
                                                         <!-- Comprar objeto -->
                                                         <form action="/ComprarObjeto.do" method="post">
-                                                            <input type="hidden" value="<%=i%>" name="posObjeto"/>
+                                                            <input type="hidden" value="<%=i%>" name="id_objeto"/>
                                                             <input type="submit" class="btn btn-primary" value="Comprar: <%= art.getPrecio()%> monedas"/>
                                                         </form>
                                                   <%} else { %>
