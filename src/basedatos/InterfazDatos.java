@@ -231,6 +231,13 @@ public class InterfazDatos {
     public void modificarDatosLiga(LigaVO l) throws SQLException, ExceptionCampoInexistente {
         LigaDAO.modificarDatosLiga(l,this.cpds);    
     }
+
+    /*
+     * Devuelve todas las ligas del sistema
+     */
+    public ArrayList<LigaVO> obtenerLigas() throws SQLException, ExceptionCampoInvalido {
+        return LigaDAO.obtenerLigas(this.cpds);
+    }
     
     /* Devuelve la clasificación actual completa de la liga denominada nombre, formada por los nombres de los 
      * usuarios y sus puntuaciones (el resto de atributos de de los StatsUsuario tienen valor null)
