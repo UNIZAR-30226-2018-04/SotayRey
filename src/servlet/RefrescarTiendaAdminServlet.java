@@ -30,10 +30,10 @@ public class RefrescarTiendaAdminServlet extends HttpServlet {
                 String accion = request.getParameter("optionAdmin");
                 if (accion != null && accion.equals("modify")) {
                     session.setAttribute("accionAdmin", "modificar");
-                } else if (accion != null && accion.equals("delete")) {
-                    session.setAttribute("accionAdmin", "eliminar");
+                } else {
+                    session.setAttribute("accionAdmin", "nada");
                 }
-                response.sendRedirect("jsp/tienda.jsp");
+                response.sendRedirect("/jsp/tienda.jsp");
             }
         } catch (ExceptionCampoInexistente exceptionCampoInexistente){
             error = "adminNotFound";

@@ -16,7 +16,7 @@ import java.io.IOException;
 @WebServlet(name = "ModificarObjetoTiendaServlet")
 public class ModificarObjetoTiendaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        HttpServlet session = (HttpServlet) request.getSession(false);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

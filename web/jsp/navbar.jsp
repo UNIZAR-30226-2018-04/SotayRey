@@ -18,7 +18,7 @@
                     UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
                     String nick = usuarioVO.getUsername(); %>
                 <li class="nav-item">
-                    <a class="btn btn-outline" href="#" role="button">
+                    <a class="btn btn-outline" href="../jsp/matchmaking.jsp" role="button">
                         <i class="fa fa-play mr-2"></i>Jugar</a>
                 </li>
                 <li class="nav-item">

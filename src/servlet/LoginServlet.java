@@ -10,8 +10,6 @@
 package servlet;
 
 import basedatos.InterfazDatos;
-import basedatos.exceptions.ExceptionCampoInexistente;
-import basedatos.modelo.StatsUsuarioVO;
 import basedatos.modelo.UsuarioVO;
 
 import javax.servlet.RequestDispatcher;
@@ -21,18 +19,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.rmi.StubNotFoundException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 @WebServlet(name = "LoginServlet")
 public class LoginServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         String nick = request.getParameter("loginUser");
         String pass = request.getParameter("loginPass");
-        String error = "";
+        String error;
         try {
             if (nick== null || nick.equals("")) {
                 error = "emptyUser";
@@ -46,7 +40,7 @@ public class LoginServlet extends HttpServlet {
                 dispatcher.forward(request, response);
             } else {
 
-                InterfazDatos facade = null;
+                InterfazDatos facade;
                 try{
                     facade = InterfazDatos.instancia();
                 }catch (Exception e){
@@ -54,7 +48,7 @@ public class LoginServlet extends HttpServlet {
                     throw new ServletException();
                 }
 
-                boolean existUser = false;
+                boolean existUser;
                 try{
                     existUser = facade.autentificarUsuario(nick, pass);
                     System.out.println("Usuario autentificado");
@@ -64,7 +58,7 @@ public class LoginServlet extends HttpServlet {
                 }
 
                 if (existUser){
-                    UsuarioVO user = null;
+                    UsuarioVO user;
                     try{
                         user = facade.obtenerDatosUsuario(nick);
                     } catch (Exception e){
@@ -92,7 +86,7 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         doPost(request, response);
     }
 }
