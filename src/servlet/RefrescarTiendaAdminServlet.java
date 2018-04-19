@@ -1,7 +1,9 @@
 package servlet;
 
 import basedatos.InterfazDatos;
+import basedatos.dao.LigaDAO;
 import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.modelo.LigaVO;
 import basedatos.modelo.UsuarioVO;
 
 import javax.servlet.RequestDispatcher;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
 
 @WebServlet(name = "RefrescarTiendaAdminServlet")
 public class RefrescarTiendaAdminServlet extends HttpServlet {

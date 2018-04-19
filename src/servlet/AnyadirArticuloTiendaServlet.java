@@ -5,6 +5,7 @@ import basedatos.exceptions.ExceptionCampoInexistente;
 import basedatos.exceptions.ExceptionCampoInvalido;
 import basedatos.modelo.ArticuloUsuarioVO;
 import basedatos.modelo.ArticuloVO;
+import basedatos.modelo.LigaVO;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -27,7 +28,7 @@ public class AnyadirArticuloTiendaServlet extends HttpServlet {
             Integer precio = Integer.parseInt(request.getParameter("modPrecio"));
             String desc = request.getParameter("modDesc");
             String tipo = request.getParameter("tipo");
-            String liga = null;
+            String liga = request.getParameter("liga");
             String imagen = request.getParameter("imagen");
             imagen = "/img/" + imagen;
             InterfazDatos facade = null;
@@ -37,21 +38,21 @@ public class AnyadirArticuloTiendaServlet extends HttpServlet {
                 System.err.println("ERROR: creando interfaz");
             }
             try {
-                ArticuloVO art = new ArticuloVO(nombre, precio, desc, imagen, tipo.charAt(0));
+                ArticuloVO art = new ArticuloVO(nombre, precio, desc, imagen, tipo.charAt(0), new LigaVO(liga, 0, 100));
                 facade.crearArticulo(art);
-                System.out.println("Modificado precio articulo: " + art.getNombre());
+                System.out.println("Artículo añadido: " + art.getNombre());
                 response.sendRedirect("/MostrarObjetosTienda.do");
             } catch (ExceptionCampoInvalido exceptionCampoInvalido){
                 error = "camposArt";
                 request.setAttribute("error", error);
                 RequestDispatcher dispatcher = request.getRequestDispatcher
-                        ("jsp/login.jsp");
+                        ("jsp/anyadirArticulo.jsp");
                 dispatcher.forward(request, response);
             } catch (SQLException sql) {
                 error = "sqlArt";
                 request.setAttribute("error", error);
                 RequestDispatcher dispatcher = request.getRequestDispatcher
-                        ("jsp/login.jsp");
+                        ("jsp/anyadirArticulo.jsp");
                 dispatcher.forward(request, response);
             }catch (NullPointerException e){
                 System.err.println("ERROR: fachada creado, error al invocar " +

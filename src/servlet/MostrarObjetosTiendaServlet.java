@@ -12,6 +12,7 @@ package servlet;
 import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInexistente;
 import basedatos.modelo.ArticuloUsuarioVO;
+import basedatos.modelo.LigaVO;
 import basedatos.modelo.StatsUsuarioVO;
 import basedatos.modelo.UsuarioVO;
 
@@ -42,7 +43,10 @@ public class MostrarObjetosTiendaServlet extends HttpServlet {
                     .obtenerArticulosTienda(user.getUsername());
             session.setAttribute("articulos", articulos);
             System.out.println("Articulos usuario obtenidos");
-
+            if (user.getAdmin()){
+                ArrayList<LigaVO> ligas = facade.obtenerLigas();
+                session.setAttribute("ligas", ligas);
+            }
             StatsUsuarioVO stats = null;
             try {
                 stats = (StatsUsuarioVO) facade

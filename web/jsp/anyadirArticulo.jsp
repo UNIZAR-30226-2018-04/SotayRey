@@ -1,5 +1,7 @@
 <%@ page import="basedatos.modelo.UsuarioVO" %>
 <%@ page import="basedatos.modelo.StatsUsuarioVO" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="basedatos.modelo.LigaVO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%--
@@ -33,6 +35,7 @@
     int perdidas = 0;
     int ratio = 0;
     usuarioVO = (UsuarioVO) session.getAttribute("userId");
+    ArrayList<LigaVO>  ligas = new ArrayList<>();
 
     if ( session.getAttribute("userId") == null) {
         String error = "userNotFound";
@@ -45,8 +48,34 @@
             request.setAttribute("error", error);
             response.sendRedirect("/jsp/login.jsp");
         }
-        //TODO: get ligas
+        if (session.getAttribute("ligas") == null){ %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>No hay ninguna liga </strong> Añade una liga o inicia sesión.
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        <% } else {
+            ligas = (ArrayList<LigaVO>) session.getAttribute("ligas");
+
+            String error = (String) request.getAttribute("error");
+            if (error != null) { // Hay un error %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <%switch (error){
+                    case "camposArt": %>
+                        <strong>Algún campo vacío o incorrecto</strong> Inténtalo de nuevo.
+                        <%break;
+                case "sqlArt":%>
+                    <strong>Articulo incorrecto o ya existente</strong> Inténtalo de nuevo.
+                    <%
+                }%>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <% }
+        }
     }%>
+
 
 
 <body>
@@ -74,6 +103,14 @@
                         <option value="B">Baraja</option>
                         <option value="A">Avatar</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="liga">Tipo del artículo</label>
+                        <select id="liga" name="liga" class="form-control">
+                            <% for (LigaVO l: ligas) { %>
+                                <option value="<%=l.getNombre()%>"><%=l.getNombre()%></option>
+                            <%}%>
+                        </select>
                 </div>
                 <div class="form-group">
                     <label for="imagen">Imagen</label>
