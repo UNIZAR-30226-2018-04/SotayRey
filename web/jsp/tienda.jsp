@@ -20,14 +20,16 @@
     String accionAdmin = "";
     ArrayList<ArticuloUsuarioVO> articulos;
 
-    UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
-    StatsUsuarioVO statsVO = (StatsUsuarioVO) session.getAttribute("userMainStats");
+    UsuarioVO usuarioVO;
+    StatsUsuarioVO statsVO;
 
-    if (usuarioVO == null || statsVO == null) {
+    if (session.getAttribute("userId") == null || (StatsUsuarioVO) session.getAttribute("userMainStats") == null) {
         error = "userNotFound";
         session.setAttribute("error", error);
         response.sendRedirect("/jsp/login.jsp");
     } else {
+        usuarioVO = (UsuarioVO) session.getAttribute("userId");
+        statsVO = (StatsUsuarioVO) session.getAttribute("userMainStats");
         admin = usuarioVO.getAdmin();
         if (admin){
             accionAdmin = (String) session.getAttribute("accionAdmin");
@@ -68,10 +70,9 @@
         <h2>Opciones de administrador</h2>
 
         <div class="btn-toolbar">
-            <button class="btn btn-warning btn-md disabled" role="button"
-                    data-toggle="modal" data-target="#anyadirArticulo">
-                <i aria-hidden="true"></i>Añadir artículo
-            </button>
+            <a href="/jsp/anyadirArticulo.jsp" class="btn btn-warning btn-md">
+                <i aria-hidden="true"></i>Añadir Articulos
+            </a>
             <a href="/RefrescarTiendaAdmin.do" class="btn btn-warning btn-md">
                 <i aria-hidden="true"></i>Comprar Articulos
             </a>
@@ -128,10 +129,19 @@
                                         if (usuarioVO.getAdmin() && accionAdmin.equals("modificar")){ %>
                                             <div class="card col-sm-4">
                                                 <div class="card-footer text-center bg-primary text-white">
-                                                    <%=art.getNombre()%>
+                                                    <%=art.getNombre()%>  <%=i%>
                                                 </div>
                                                 <img class="card-img-top" src="<%=art.getRutaImagen()%>" alt="Card image cap">
-
+                                                <form id="form_prueba" action="/ModificarObjetoTienda.do" method="get">
+                                                    <div class="form-group">
+                                                        <label for="prueba">Precio</label>
+                                                        <input type="number" class="form-control" name="prueba" id="prueba"
+                                                               placeholder="<%=art.getPrecio()%>">
+                                                        <input type="hidden" value="<%=i%>" name="posObjeto" id="posObjeto__"/>
+                                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                    </div>
+                                                </form>
+                                                                        <form id="form_modificar" action="/ModificarObjetoTienda.do" method="get">
                                                 <!-- Button trigger modal Modificar-->
                                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modificarArticulo">
                                                     <i class="fa fa-pencil mr-2" aria-hidden="true"></i>Modifcar
@@ -139,7 +149,6 @@
 
                                                 <!-- Modal Modificar articulo -->
                                                 <div class="modal" id="modificarArticulo" tabindex="-1" role="dialog" aria-labelledby="modificarArticuloLabel" aria-hidden="true">
-                                                                        <form action="/ModificarObjetoTienda.do" method="post">
                                                     <div class="modal-dialog" role="document">
                                                         <div class="modal-content">
                                                             <div class="modal-header text-center">
@@ -154,6 +163,7 @@
                                                                                 <label for="precio">Precio</label>
                                                                                 <input type="number" class="form-control" name="precio" id="precio"
                                                                                        placeholder="<%=art.getPrecio()%>">
+                                                                                <input type="hidden" value="<%=i%>" name="posObjeto" id="posObjeto"/>
                                                                             </div>
                                                                 </div>
                                                                 <div class="modal-footer">
@@ -163,8 +173,8 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                                        </form>
                                                 </div>
+                                                                        </form>
                                              </div>
                                       <%} else {
 
@@ -194,11 +204,11 @@
                                                             >
                                                             <button type="submit" class="btn btn-primary" name="id_objeto" value="<%=i%>"> Favorito </button>
                                                         <%}%>
-                                                    </div>  
+                                                    </div>
                                                     <% } else if (art.isDisponible()) { %>
                                                         <!-- Comprar objeto -->
                                                         <form action="/ComprarObjeto.do" method="post">
-                                                            <input type="hidden" value="<%=i%>" name="id_objeto"/>
+                                                            <input type="hidden" value="<%=i%>" name="posObjeto" id="id_objeto"/>
                                                             <input type="submit" class="btn btn-primary" value="Comprar: <%= art.getPrecio()%> monedas"/>
                                                         </form>
                                                   <%} else { %>
