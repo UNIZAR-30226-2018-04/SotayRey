@@ -26,7 +26,7 @@ public class ComprarObjetoServlet extends HttpServlet {
         String error;
         if (session != null){
             try {
-                Integer i = Integer.parseInt(request.getParameter("id_objeto"));
+                Integer i = Integer.parseInt(request.getParameter("posObjeto"));
                 ArrayList<ArticuloUsuarioVO> articulos = (ArrayList<ArticuloUsuarioVO>) session.getAttribute("articulos");
                 ArticuloUsuarioVO art = articulos.get(i);
                 InterfazDatos facade = null;
@@ -68,6 +68,5 @@ public class ComprarObjetoServlet extends HttpServlet {
                     ("/jsp/login.jsp");
             dispatcher.forward(request, response);
         }
-
     }
 }

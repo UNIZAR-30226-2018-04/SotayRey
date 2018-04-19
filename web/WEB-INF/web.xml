@@ -80,7 +80,7 @@
 
     <servlet>
         <servlet-name>ModificarObjetoTienda</servlet-name>
-        <servlet-class>servlet.MostrarObjetosTiendaServlet</servlet-class>
+        <servlet-class>servlet.ModificarObjetoTiendaServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
