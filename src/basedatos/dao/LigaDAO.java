@@ -104,6 +104,32 @@ public class LigaDAO {
         if (connection != null) connection.close();
     }
 
+    public static ArrayList<LigaVO> obtenerLigas(ComboPooledDataSource pool) throws SQLException, ExceptionCampoInvalido {
+        Connection connection = null;
+        Statement statement = null;
+        connection = pool.getConnection();
+        statement = connection.createStatement();
+        String query = "SELECT * FROM liga";
+        ResultSet resultSet = statement.executeQuery(query);
+
+        ArrayList<LigaVO> lista_ligas = new ArrayList<>();
+
+        while (resultSet.next()) {
+            String nombre = resultSet.getString("nombre");
+            String descripcion = resultSet.getString("descripcion");
+            int porcentajeMin = resultSet.getInt("porcentaje_min");
+            int porcentajeMax = resultSet.getInt("porcentaje_max");
+            LigaVO l = new LigaVO(nombre, descripcion, porcentajeMin, porcentajeMax);
+            lista_ligas.add(l);
+        }
+
+        if (statement != null)  statement.close();
+        if (connection != null) connection.close();
+
+        return lista_ligas;
+    
+    }
+
     public static ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre, ComboPooledDataSource pool) throws SQLException, ExceptionCampoInvalido{
         Connection connection = null;
         Statement statement = null;
