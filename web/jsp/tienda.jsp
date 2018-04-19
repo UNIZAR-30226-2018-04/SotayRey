@@ -194,7 +194,7 @@
                                                             >
                                                             <button type="submit" class="btn btn-primary" name="id_objeto" value="<%=i%>"> Favorito </button>
                                                         <%}%>
-                                                    </div>
+                                                    </div>  
                                                     <% } else if (art.isDisponible()) { %>
                                                         <!-- Comprar objeto -->
                                                         <form action="/ComprarObjeto.do" method="post">
