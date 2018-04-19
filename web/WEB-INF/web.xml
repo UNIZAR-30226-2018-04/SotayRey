@@ -79,16 +79,6 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>EliminarObjetoTienda</servlet-name>
-        <servlet-class>servlet.EliminarObjetoTiendaServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>EliminarObjetoTienda</servlet-name>
-        <url-pattern>/EliminarObjetoTienda.do</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
         <servlet-name>ModificarObjetoTienda</servlet-name>
         <servlet-class>servlet.MostrarObjetosTiendaServlet</servlet-class>
     </servlet>
