@@ -61,6 +61,22 @@
             <p> Mis monedas: <%= monedas%> </p>
         </div>
     </div>
+    <% error = (String) request.getAttribute("error");
+    if (error != null){%>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+         <% if (error.equals("objectNotFound")){ %>
+                <strong>Objeto incorrecto </strong>Inténtalo de nuevo.
+          <% }  else if (error.equals("noMoney")){ %>
+                <strong>No dispones del dinero suficiente </strong>
+            <% } else{ %>
+                <strong>No hay ninguna liga </strong> Añade una liga o inicia sesión.
+          <% }  %>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <% } %>
     <%
         articulos = (ArrayList<ArticuloUsuarioVO>) session.getAttribute("articulos");
         if (admin){ %>
@@ -129,7 +145,7 @@
                                         if (usuarioVO.getAdmin() && accionAdmin.equals("modificar")){ %>
                                             <div class="card col-sm-4">
                                                 <div class="card-footer text-center bg-primary text-white">
-                                                    <%=art.getNombre()%>  <%=i%>
+                                                    <%=art.getNombre()%>
                                                 </div>
                                                 <img class="card-img-top" src="<%=art.getRutaImagen()%>" alt="Card image cap">
                                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modificarArticulo<%=i%>" >
@@ -141,25 +157,24 @@
                                                     <div class="modal-dialog" role="document">
                                                         <div class="modal-content">
                                                             <div class="modal-header text-center">
-                                                                <h4 class="modal-title w-100 font-weight-bold">Modificar artículo <%=i%></h4>
+                                                                <h4 class="modal-title w-100 font-weight-bold">Modificar artículo</h4>
                                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                     <span aria-hidden="true">&times;</span>
                                                                 </button>
                                                             </div>
                                                             <div class="modal-body  container">
                                                                 <div class="col-sm">
-                                                                            <div class="form-group">
-                                                                                <label for="precio">Precio <%=i%> <%=art.getNombre()%></label>
-                                                                                <input type="number" class="form-control" name="precio" id="precio"
+                                                                            <%--<div class="form-group">--%>
+                                                                                <label for="precio">Precio</label>
+                                                                                <input type="number" class="form-control" name="precio<%=i%>" id="precio"
                                                                                        placeholder="<%=art.getPrecio()%>" value="<%=art.getPrecio()%>">
-                                                                                <input type="hidden" value="<%=i%>" id="indiceObjeto" name="indiceObjeto">
-                                                                                <button type="submit" class="btn btn-primary"
-                                                                                        <%--value="<%=i%>" name="indiceObjeto" id="indiceObjeto"--%>
-                                                                                        formaction="/ModificarObjetoTienda.do" >Guardar Cambios</button>
-                                                                            </div>
+                                                                                <%--<button type="submit" class="btn btn-primary"--%>
+                                                                                        <%--&lt;%&ndash;value="<%=i%>" name="indiceObjeto" id="indiceObjeto"&ndash;%&gt;--%>
+                                                                                        <%--formaction="/ModificarObjetoTienda.do" >Guardar Cambios</button>--%>
+                                                                            <%--&lt;%&ndash;</div>&ndash;%&gt;--%>
                                                                 </div>
                                                                 <div class="modal-footer">
-                                                                    <%--<button type="submit" class="btn btn-primary" value="<%=i%>" name="indiceObjeto" id="indiceObjeto" formaction="/ModificarObjetoTienda.do" >Guardar Cambios</button>--%>
+                                                                    <button type="submit" class="btn btn-primary" value="<%=i%>" id="indiceObjeto<%=i%>" name="indiceObjeto" formaction="/ModificarObjetoTienda.do" >Guardar Cambios</button>
                                                                     <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                                                                 </div>
                                                             </div>

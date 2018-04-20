@@ -36,6 +36,7 @@ public class ComprarObjetoServlet extends HttpServlet {
                     System.err.println("ERROR: creando interfaz");
                 }
                 try {
+                    art.setFavorito(true);
                     facade.comprarArticuloUsuario(art);
                     System.out.println("Articulo " + art.getNombre() + " comprado");
                     response.sendRedirect("/MostrarObjetosTienda.do");
@@ -49,16 +50,20 @@ public class ComprarObjetoServlet extends HttpServlet {
                     System.err.println("ERROR: fachada creado, error al invocar " +
                             "métodos");
                     e.printStackTrace();
+                    throw new ServletException();
+
                 } catch (Exception e){
-                    System.err.println("ERROR: accediendo a la tienda");
-                    e.printStackTrace();
+                    error = "noMoney";
+                    request.setAttribute("error",error);
+                    RequestDispatcher dispatcher=request.getRequestDispatcher
+                            ("/jsp/tienda.jsp");
+                    dispatcher.forward(request,response);
                 }
             } catch (Exception e){
-                error = "objectNotExist";
-                //TODO: se conserva error
+                error = "objectNotFound";
                 request.setAttribute("error",error);
                 RequestDispatcher dispatcher=request.getRequestDispatcher
-                        ("/MostrarObjetosTienda.do");
+                        ("/jsp/tienda.jsp");
                 dispatcher.forward(request,response);
             }
         }else {

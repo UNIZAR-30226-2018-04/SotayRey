@@ -10,6 +10,8 @@
 package servlet;
 
 import basedatos.InterfazDatos;
+import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.exceptions.ExceptionCampoInvalido;
 import basedatos.modelo.UsuarioVO;
 
 import javax.servlet.RequestDispatcher;
@@ -19,11 +21,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.sql.SQLException;
 
 
 @WebServlet(name = "LoginServlet")
 public class LoginServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nick = request.getParameter("loginUser");
         String pass = request.getParameter("loginPass");
         String error;
@@ -62,6 +66,7 @@ public class LoginServlet extends HttpServlet {
                     try{
                         user = facade.obtenerDatosUsuario(nick);
                     } catch (Exception e){
+                        System.err.println("ERROR: autentificando usuario");
                         e.printStackTrace();
                         throw new ServletException();
                     }
@@ -79,14 +84,11 @@ public class LoginServlet extends HttpServlet {
         } catch (NullPointerException e){
             System.err.println("ERROR: NUll Pointer a Facade");
             e.printStackTrace();
-        }
-        catch (Exception e){
-            System.err.println("ERROR: autentificando usuario");
-            e.printStackTrace();
+            throw new ServletException();
         }
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
     }
 }

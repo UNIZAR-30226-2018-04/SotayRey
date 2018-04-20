@@ -55,6 +55,7 @@ public class MostrarObjetosTiendaServlet extends HttpServlet {
             } catch (Exception e){
                 System.err.println("ERROR: obteniendo stats usuario");
                 e.printStackTrace();
+                throw new ServletException();
             }
 
             session.setAttribute("userMainStats", stats);
@@ -70,9 +71,11 @@ public class MostrarObjetosTiendaServlet extends HttpServlet {
             System.err.println("ERROR: fachada creado, error al invocar " +
                     "métodos");
             e.printStackTrace();
+            throw new ServletException();
         } catch (Exception e){
             System.err.println("ERROR: accediendo a la tienda");
             e.printStackTrace();
+            throw new ServletException();
         }
     }
 

@@ -52,6 +52,10 @@
                     case "wrongRePass":%>
             <strong>La contraseña no coincide</strong>
             <%
+                    break;
+                case "sessionNotExist":%>
+            <strong>La sesión ha caducado.</strong> Inicie sesión de nuevo.
+            <%
                         break;
                     case "existentUser":%>
             <strong>Usuario ya existente.</strong> Inténtalo con otro nombre de usuario.

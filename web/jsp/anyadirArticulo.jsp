@@ -20,21 +20,7 @@
     <%@ include file="../html/imports.html"%>
 </head>
 
-<%  UsuarioVO usuarioVO = null;
-    StatsUsuarioVO statsVO = null;
-    String nick = null;
-    String liga = null;
-    String email = null;
-    String nombre = null;
-    String apellidos = null;
-    int puesto = 0;
-    int puntos = 0;
-    int monedas = 0;
-    int jugadas = 0;
-    int ganadas = 0;
-    int perdidas = 0;
-    int ratio = 0;
-    usuarioVO = (UsuarioVO) session.getAttribute("userId");
+<%  UsuarioVO usuarioVO;
     ArrayList<LigaVO>  ligas = new ArrayList<>();
 
     if ( session.getAttribute("userId") == null) {
