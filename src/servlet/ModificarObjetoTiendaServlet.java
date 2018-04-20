@@ -23,12 +23,11 @@ public class ModificarObjetoTiendaServlet extends HttpServlet {
         String error;
         if (session != null){
             try {
-                Integer pos = Integer.parseInt(request.getParameter("posObjeto"));
                 Integer precio = Integer.parseInt(request.getParameter("precio"));
+                Integer pos = Integer.parseInt(request.getParameter("indiceObjeto"));
                 ArrayList<ArticuloUsuarioVO> articulos = (ArrayList<ArticuloUsuarioVO>) session.getAttribute("articulos");
                 ArticuloUsuarioVO art = articulos.get(pos);
                 art.setPrecio(precio);
-                ArrayList<LigaVO> ligas;
                 InterfazDatos facade = null;
                 try {
                     facade = InterfazDatos.instancia();
@@ -37,7 +36,6 @@ public class ModificarObjetoTiendaServlet extends HttpServlet {
                 }
                 try {
                     facade.modificarArticulo(art);
-//                    ligas = facade.lig
                     System.out.println("Modificado precio articulo: " + art.getNombre());
                     response.sendRedirect("/MostrarObjetosTienda.do");
                 } catch (ExceptionCampoInexistente exceptionCampoInexistente){

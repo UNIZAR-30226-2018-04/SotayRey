@@ -132,27 +132,16 @@
                                                     <%=art.getNombre()%>  <%=i%>
                                                 </div>
                                                 <img class="card-img-top" src="<%=art.getRutaImagen()%>" alt="Card image cap">
-                                                <form id="form_prueba" action="/ModificarObjetoTienda.do" method="get">
-                                                    <div class="form-group">
-                                                        <label for="prueba">Precio</label>
-                                                        <input type="number" class="form-control" name="prueba" id="prueba"
-                                                               placeholder="<%=art.getPrecio()%>">
-                                                        <input type="hidden" value="<%=i%>" name="posObjeto" id="posObjeto__"/>
-                                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                                    </div>
-                                                </form>
-                                                                        <form id="form_modificar" action="/ModificarObjetoTienda.do" method="get">
-                                                <!-- Button trigger modal Modificar-->
-                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modificarArticulo">
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modificarArticulo<%=i%>" >
                                                     <i class="fa fa-pencil mr-2" aria-hidden="true"></i>Modifcar
                                                 </button>
 
                                                 <!-- Modal Modificar articulo -->
-                                                <div class="modal" id="modificarArticulo" tabindex="-1" role="dialog" aria-labelledby="modificarArticuloLabel" aria-hidden="true">
+                                                <div class="modal" id="modificarArticulo<%=i%>" tabindex="-1" role="dialog" aria-labelledby="modificarArticuloLabel" aria-hidden="true">
                                                     <div class="modal-dialog" role="document">
                                                         <div class="modal-content">
                                                             <div class="modal-header text-center">
-                                                                <h4 class="modal-title w-100 font-weight-bold">Modificar artículo</h4>
+                                                                <h4 class="modal-title w-100 font-weight-bold">Modificar artículo <%=i%></h4>
                                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                     <span aria-hidden="true">&times;</span>
                                                                 </button>
@@ -160,21 +149,23 @@
                                                             <div class="modal-body  container">
                                                                 <div class="col-sm">
                                                                             <div class="form-group">
-                                                                                <label for="precio">Precio</label>
+                                                                                <label for="precio">Precio <%=i%> <%=art.getNombre()%></label>
                                                                                 <input type="number" class="form-control" name="precio" id="precio"
-                                                                                       placeholder="<%=art.getPrecio()%>">
-                                                                                <input type="hidden" value="<%=i%>" name="posObjeto" id="posObjeto"/>
+                                                                                       placeholder="<%=art.getPrecio()%>" value="<%=art.getPrecio()%>">
+                                                                                <input type="hidden" value="<%=i%>" id="indiceObjeto" name="indiceObjeto">
+                                                                                <button type="submit" class="btn btn-primary"
+                                                                                        <%--value="<%=i%>" name="indiceObjeto" id="indiceObjeto"--%>
+                                                                                        formaction="/ModificarObjetoTienda.do" >Guardar Cambios</button>
                                                                             </div>
                                                                 </div>
                                                                 <div class="modal-footer">
-                                                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                                    <%--<button type="submit" class="btn btn-primary" value="<%=i%>" name="indiceObjeto" id="indiceObjeto" formaction="/ModificarObjetoTienda.do" >Guardar Cambios</button>--%>
                                                                     <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                                        </form>
                                              </div>
                                       <%} else {
 
@@ -202,15 +193,13 @@
                                                             <button type="submit" class="btn btn-primary disabled"> Favorito </button>
                                                         <%} else { %>
                                                             >
-                                                            <button type="submit" class="btn btn-primary" name="id_objeto" value="<%=i%>"> Favorito </button>
+                                                            <button type="submit" class="btn btn-primary" name="id_objeto" id="id_objeto" value="<%=i%>"> Favorito </button>
                                                         <%}%>
                                                     </div>
                                                     <% } else if (art.isDisponible()) { %>
                                                         <!-- Comprar objeto -->
-                                                        <form action="/ComprarObjeto.do" method="post">
-                                                            <input type="hidden" value="<%=i%>" name="posObjeto" id="id_objeto"/>
-                                                            <input type="submit" class="btn btn-primary" value="Comprar: <%= art.getPrecio()%> monedas"/>
-                                                        </form>
+                                                        <%--<input type="hidden" value="<%=i%>" name="posObjeto" id="id_objeto"/>--%>
+                                                        <button type="submit" class="btn btn-primary" value="<%=i%>" name ="id_objeto" id="id_objeto"> Comprar: <%= art.getPrecio()%> monedas </button>
                                                   <%} else { %>
                                                         <button  type="button"  class="btn btn-blue-grey">Artículo bloqueado</button>
                                                   <%} %>
