@@ -21,6 +21,10 @@
                     <a class="btn btn-outline" href="../jsp/matchmaking.jsp" role="button">
                         <i class="fa fa-play mr-2"></i>Jugar</a>
                 </li>
+            <li class="nav-item">
+                <a class="btn btn-outline" href="../jsp/torneos.html" role="button">
+                    <i class="fa fa-play mr-2"></i>Torneos</a>
+            </li>
                 <li class="nav-item">
                     <a class="btn btn-outline" href="../jsp/liga.jsp" role="button">
                         <i class="fa fa-trophy mr-2"></i>Ligas</a>
