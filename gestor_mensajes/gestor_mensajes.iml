@@ -21,6 +21,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="gestor" level="project" />
     <orderEntry type="module" module-name="SotayRey" />
-    <orderEntry type="library" name="annotations-api" level="project" />
+    <orderEntry type="library" name="tomcat-websocket" level="project" />
   </component>
 </module>
