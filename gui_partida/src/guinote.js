@@ -523,7 +523,7 @@ function listo_jugador(){
     var obj = {
         "tipo_mensaje" : "listo_jugador",
         "nombre_participante": nombre,
-        "total_jugadores": 2,
+        "total_jugadores": numJugadores,
         "tipo_participante": "jugador",
         "remitente" : {
             "id_partida" : idPartida,
@@ -742,6 +742,7 @@ function jugadorCambiaTriunfo(id, numero, palo){
                 modificarTriunfo(item.numero, item.palo);
                 jugador.cartasEnMano.removeChild(item);
                 var carta = crearCarta(numeroTriunfo, paloTriunfo);
+                carta.events.onInputDown.add(pulsaCarta, this);
                 jugador.cartasEnMano.add(carta);
                 dibujarJugador(jugador);
                 salir = true;
@@ -751,6 +752,24 @@ function jugadorCambiaTriunfo(id, numero, palo){
     else{
         modificarTriunfo(numero, palo);
     }
+}
+
+
+
+
+
+function jugadorCanta(id, cantidad){
+    console.log("Jugador canta");
+    var style = { font: "65px Arial", fill: "#ff0044", align: "center" };
+    //arrayJugadores[id].nombreUsuario
+    //var textoCantar = game.add.text(game.world.centerX, game.world.centerY, 0, + 'pepito HA CANTADO ' + cantidad);
+    var textoCantar = game.add.text(game.world.centerX, game.world.centerY, '' + 'pepito HA CANTADO ' + cantidad, style);
+    textoCantar.anchor.setTo(0.5,0.5);
+    //textoCantar.alpha = 0;
+
+    //game.add.tween(textoCantar).to( { alpha: 0 }, 3500, 'Linear', true, 0, 1000, true);
+    //game.add.tween(textoCantar).to({alpha: 0}, 1500, Phaser.Easing.Linear.None, true)
+    setTimeout(function(){ textoCantar.destroy()}, 3500);
 }
 
 /**
@@ -914,7 +933,7 @@ var HUDInicializado = false;
 var puntuacionMia = 0;
 var puntuacionRival = 0;
 var numRonda = 0;
-var restantes_mazo = 999999;
+var restantes_mazo = "NaN";
 var tipo_ronda = "IDAS";
 var color = "#fffff5";
 var fuente =  "15pt impact";
@@ -966,7 +985,7 @@ function actualizarHUD(datos){
         restantes_mazo.text = "CARTAS RESTANTES : " + restantes_mazo.restantes;
     }
 
-    if(restantes_mazo.restantes <= 1){
+    if(restantes_mazo.restantes <= 1) {
         triunfo.carta.alpha = 0.5;
         tipo_ronda.text = "TIPO RONDA: ARRASTRE";
     }

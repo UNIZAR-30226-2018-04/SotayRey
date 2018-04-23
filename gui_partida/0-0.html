@@ -6,15 +6,15 @@
 </head>
 <body>
 <script>
-    var miID = 0;
-    var idPartida = 0;
-    var numJugadores = 2;
-    var nombre = "cms";
-    var socket = new WebSocket("ws://localhost:8080/endpoint");
-    socket.onmessage = function (msg) {
-        console.log(msg.data);
-        recibirMensaje(msg.data);
-    };
+var miID = 0;
+var idPartida = 0;
+var numJugadores = 4;
+var nombre = "cms";
+var socket = new WebSocket("ws://localhost:8080/endpoint");
+socket.onmessage = function (msg) {
+console.log(msg.data);
+recibirMensaje(msg.data);
+};
 </script>
 <script src="src/phaser.min.js"></script>
 <script type="text/javascript" src='src/guinote.js'></script>

@@ -3,6 +3,8 @@
 <head>
     <title>Login/Registro</title>
     <%@ include file="../html/imports.html"%>
+    <!-- Facebook login -->
+    <script src="../js/facebookLogin.js"></script>
 </head>
 <body>
     <div class="container">
@@ -86,6 +88,8 @@
                                    placeholder="Contraseña">
                         </div>
                         <button type="submit" class="btn btn-primary">Entrar</button>
+                        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                        </fb:login-button>
                     </form>
                 </div>
             </div>

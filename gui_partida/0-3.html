@@ -6,11 +6,12 @@
 </head>
 <body>
 <script>
-    var miID = 0;
-    var idPartida = 1;
-    var numJugadores = 2;
-    var nombre = "jugdador10";
-    var socket = new WebSocket("ws://192.168.1.4:8080/endpoint");
+    var miID = 3;
+    var idPartida = 0;
+    var numJugadores = 4;
+    var nombre = "acastellanos";
+    //var socket = new WebSocket("ws://10.1.56.154:8080/endpoint");
+    var socket = new WebSocket("ws://localhost:8080/endpoint");
     socket.onmessage = function (msg) {
         console.log(msg.data);
         recibirMensaje(msg.data);

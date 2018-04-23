@@ -133,9 +133,29 @@
                     <i class="fa fa-shopping-cart mr-2" aria-hidden="true"></i>Gestionar Tienda
                 </a>
                 <!-- TODO: añadir aqui resto de botones del admin -->
-                <% } %>
             </div>
         </div>
+        <div class="row mt-2">
+            <h2>Gestión de torneos</h2>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Modificar</th>
+                    <!-- TODO: Añadir campos necesarios -->
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>22/04/2018</td>
+                    <td>TorneoEjemplo</td>
+                    <td>(Botón modif.)</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <% } %>
     </div>
 </body>
 </html>
