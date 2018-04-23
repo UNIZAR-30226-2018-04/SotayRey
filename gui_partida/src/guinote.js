@@ -523,7 +523,7 @@ function listo_jugador(){
     var obj = {
         "tipo_mensaje" : "listo_jugador",
         "nombre_participante": nombre,
-        "total_jugadores": 2,
+        "total_jugadores": numJugadores,
         "tipo_participante": "jugador",
         "remitente" : {
             "id_partida" : idPartida,
@@ -985,7 +985,7 @@ function actualizarHUD(datos){
         restantes_mazo.text = "CARTAS RESTANTES : " + restantes_mazo.restantes;
     }
 
-    if(restantes_mazo.restantes <= 1){
+    if(restantes_mazo.restantes <= 1) {
         triunfo.carta.alpha = 0.5;
         tipo_ronda.text = "TIPO RONDA: ARRASTRE";
     }
