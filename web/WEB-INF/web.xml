@@ -97,4 +97,14 @@
         <servlet-name>AnyadirArticuloTienda</servlet-name>
         <url-pattern>/AnyadirArticuloTienda.do</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>MostrarLiga</servlet-name>
+        <servlet-class>servlet.MostrarLigaServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>MostrarLiga</servlet-name>
+        <url-pattern>/MostrarLiga.do</url-pattern>
+    </servlet-mapping>
 </web-app>

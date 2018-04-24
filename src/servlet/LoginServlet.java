@@ -49,7 +49,8 @@ public class LoginServlet extends HttpServlet {
                     facade = InterfazDatos.instancia();
                 }catch (Exception e){
                     e.printStackTrace();
-                    throw new ServletException();
+                    response.sendRedirect("jsp/login.jsp");
+                    return;
                 }
 
                 boolean existUser;
@@ -58,7 +59,8 @@ public class LoginServlet extends HttpServlet {
                     System.out.println("Usuario autentificado");
                 }catch(Exception e){
                     e.printStackTrace();
-                    throw new ServletException();
+                    response.sendRedirect("jsp/login.jsp");
+                    return;
                 }
 
                 if (existUser){
@@ -68,7 +70,7 @@ public class LoginServlet extends HttpServlet {
                     } catch (Exception e){
                         System.err.println("ERROR: autentificando usuario");
                         e.printStackTrace();
-                        throw new ServletException();
+                        return;
                     }
                     HttpSession sesion= request.getSession();
                     sesion.setAttribute("userId", user);
@@ -84,7 +86,6 @@ public class LoginServlet extends HttpServlet {
         } catch (NullPointerException e){
             System.err.println("ERROR: NUll Pointer a Facade");
             e.printStackTrace();
-            throw new ServletException();
         }
     }
 
