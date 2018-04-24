@@ -407,13 +407,16 @@ def PlayGame():
 		# Use different numbers of iterations (simulations, tree nodes) for different players
 		if state.playerToMove == 1:
 			# Arbol lento
-			# m = ISMCTS(rootstate = state, itermax = 5000, verbose = False)
+			m = ISMCTS(rootstate = state, itermax = 5000, verbose = False)
 			# Arbol rapido
 			# m = ISMCTS(rootstate = state, itermax = 1000, verbose = False)
 			# Greedy
-			m = greedyPlay(state)
+			# m = greedyPlay(state)
 			# Random
-			# m = random.choice(state.GetMoves())
+            # m = random.choice(state.GetMoves())
+			# Jugar con la terminal
+			# index = int(input("Que carta quieres jugar?"))
+			# m = state.GetMoves()[index]
 		else:
 			# Arbol lento
 			# m = ISMCTS(rootstate = state, itermax = 5000, verbose = False)
@@ -422,7 +425,11 @@ def PlayGame():
 			# Greedy
 			# m = greedyPlay(state)
 			# Random
-			m = random.choice(state.GetMoves())
+			# m = random.choice(state.GetMoves())
+            # Jugar con la terminal
+			index = int(input("Que carta quieres jugar?"))
+			m = state.GetMoves()[index]
+        
 		print("Best Move: " + str(m) + "\n")
 		state.DoMove(m)
 	
@@ -471,4 +478,4 @@ def PlayGame50():
 		print(str(kk)+":"+str(partidasTotal[1])+":"+str(partidasTotal[2])+":"+str(puntosTotal[1])+":"+str(puntosTotal[2]))
 
 if __name__ == "__main__":
-	PlayGame50()
+	PlayGame()
