@@ -1,3 +1,5 @@
+<%@ page import="basedatos.modelo.LigaVO" %>
+<%@ page import="java.util.ArrayList" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -114,13 +116,25 @@
 </head>
 <body>
 
-<%
-    if (session.getAttribute("userId") == null) {
-        response.sendRedirect("/jsp/login.jsp");
-    } else {
-        //StatsUsuarioVO statsVO = (StatsUsuarioVO) session.getAttribute("userStats");
-        //monedas = statsVO.getDivisa();
-    }%>
+    <%
+        if (session.getAttribute("userId") == null) {
+            response.sendRedirect("/jsp/login.jsp");
+        }
+
+        //TODO: Capturar nombre de usuario para mostrarlo en verde
+
+        ArrayList<LigaVO> ligas = (ArrayList<LigaVO>) session.getAttribute("ligas");
+        if(ligas == null){
+            //TODO: Error?
+            response.sendRedirect("/jsp/home.jsp");
+        }
+
+        if(ligas.size() == 0){
+            //TODO: Error?
+            response.sendRedirect("/jsp/home.jsp");
+        }
+
+    %>
 
     <style type="text/css">
         .jumbotron{
@@ -142,14 +156,15 @@
             <div class="tab" role="tabpanel">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#Section1" aria-controls="home" role="tab" data-toggle="tab">Bronce</a></li>
-                    <li role="presentation"><a href="#Section2" aria-controls="profile" role="tab" data-toggle="tab">Plata</a></li>
-                    <li role="presentation"><a href="#Section3" aria-controls="messages" role="tab" data-toggle="tab">Oro</a></li>
+                    <li role="presentation" class="active"><a href="#Section1" aria-controls="home" role="tab" data-toggle="tab"><%= ligas.get(0).getNombre()%></a></li>
+                    <% for(Integer i = 1; i < ligas.size(); i++){ %>
+                    <li role="presentation"><a href= "<%= "#Section" + i.toString() %>" aria-controls="profile" role="tab" data-toggle="tab"><%= ligas.get(i).getNombre()%></a></li>
+                    <% } %>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content tabs">
                     <div role="tabpanel" class="tab-pane fade in active" id="Section1">
-                        <h3>BRONCE</h3>
+                        <h3><%=ligas.get(0).getNombre()%></h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, magna a ultricies volutpat, mi eros viverra massa, vitae consequat nisi justo in tortor. Proin accumsan felis ac felis dapibus, non iaculis mi varius.</p>
                         <div class="container">
                             <div class="row">
