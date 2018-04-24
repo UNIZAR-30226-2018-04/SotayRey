@@ -386,10 +386,16 @@ def ISMCTS(rootstate, itermax, verbose = False):
 			node = node.parentNode
 
 	# Output some information about the tree - can be omitted
-	if (verbose): print rootnode.TreeToString(0)
-	else: print rootnode.ChildrenToString()
+	#if (verbose): print rootnode.TreeToString(0)
+	#else: print rootnode.ChildrenToString()
 
 	return max(rootnode.childNodes, key = lambda c: c.visits).move # return the move that was most visited
+
+def greedyPlay(st):
+	if st.cartaTirada is None:
+		return min([(p.points,p) if p.suit!=st.triunfo.suit else (p.points+9,p) for p in st.playerHands[st.playerToMove]], key = lambda p: p[0])[1]
+	else:
+		return max([(-p.points-st.cartaTirada.points,p) if st.cartaTirada.comparar(p,st.triunfo.suit) else (p.points+st.cartaTirada.points,p) for p in st.playerHands[st.playerToMove]], key = lambda p: p[0])[1]
 
 def PlayGame():
 	""" Play a sample game between two ISMCTS players.
@@ -397,18 +403,28 @@ def PlayGame():
 	state = KnockoutWhistState()
 	
 	while (state.GetMoves() != []):
-		#print(state.playerHands[1])
-		print str(state)
+		print(str(state))
 		# Use different numbers of iterations (simulations, tree nodes) for different players
 		if state.playerToMove == 1:
-			m = ISMCTS(rootstate = state, itermax = 1000, verbose = False)
+			# Arbol lento
+			# m = ISMCTS(rootstate = state, itermax = 5000, verbose = False)
+			# Arbol rapido
+			# m = ISMCTS(rootstate = state, itermax = 1000, verbose = False)
+			# Greedy
+			m = greedyPlay(state)
+			# Random
+			# m = random.choice(state.GetMoves())
 		else:
-			#m = ISMCTS(rootstate = state, itermax = 100, verbose = False)
+			# Arbol lento
+			# m = ISMCTS(rootstate = state, itermax = 5000, verbose = False)
+			# Arbol rapido
+			# m = ISMCTS(rootstate = state, itermax = 1000, verbose = False)
+			# Greedy
+			# m = greedyPlay(state)
+			# Random
 			m = random.choice(state.GetMoves())
 		print("Best Move: " + str(m) + "\n")
-		#print(state.playerHands[1])
 		state.DoMove(m)
-		#print(state.playerHands[1])
 	
 	print("Finaaaaaaaal")
 	print(state)
@@ -417,5 +433,42 @@ def PlayGame():
 			print("Player " + str(p) + " wins!")
 			someoneWon = True
 
+def PlayGame50():
+	""" Play a sample game between two ISMCTS players.
+	"""
+	puntosTotal = {1: 0, 2:0}
+	partidasTotal = {1: 0, 2:0}
+	for kk in range(0,50):
+		state = KnockoutWhistState()	
+		while (state.GetMoves() != []):
+			if state.playerToMove == 1:
+				# Arbol lento
+				# m = ISMCTS(rootstate = state, itermax = 5000, verbose = False)
+				# Arbol rapido
+				m = ISMCTS(rootstate = state, itermax = 1000, verbose = False)
+				# Greedy
+				# m = greedyPlay(state)
+				# Random
+				# m = random.choice(state.GetMoves())
+			else:
+				# Arbol lento
+				# m = ISMCTS(rootstate = state, itermax = 5000, verbose = False)
+				# Arbol rapido
+				# m = ISMCTS(rootstate = state, itermax = 1000, verbose = False)
+				# Greedy
+				m = greedyPlay(state)
+				# Random
+				# m = random.choice(state.GetMoves())
+			state.DoMove(m)
+		
+		if state.GetResult(1)>0:
+			partidasTotal[1] += 1
+		else:
+			partidasTotal[2] += 1
+		puntosTotal[1] += state.playerPoints[1]
+		puntosTotal[2] += state.playerPoints[2]
+
+		print(str(kk)+":"+str(partidasTotal[1])+":"+str(partidasTotal[2])+":"+str(puntosTotal[1])+":"+str(puntosTotal[2]))
+
 if __name__ == "__main__":
-	PlayGame()
+	PlayGame50()
