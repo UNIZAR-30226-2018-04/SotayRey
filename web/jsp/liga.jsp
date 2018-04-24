@@ -1,3 +1,6 @@
+<%@ page import="basedatos.modelo.LigaVO" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="basedatos.modelo.StatsUsuarioVO" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -114,13 +117,25 @@
 </head>
 <body>
 
-<%
-    if (session.getAttribute("userId") == null) {
-        response.sendRedirect("/jsp/login.jsp");
-    } else {
-        //StatsUsuarioVO statsVO = (StatsUsuarioVO) session.getAttribute("userStats");
-        //monedas = statsVO.getDivisa();
-    }%>
+    <%
+        if (session.getAttribute("userId") == null) {
+            response.sendRedirect("/jsp/login.jsp");
+        }
+
+        //TODO: Capturar nombre de usuario para mostrarlo en verde
+
+        ArrayList<LigaVO> ligas = (ArrayList<LigaVO>) session.getAttribute("ligas");
+        if(ligas == null){
+            //TODO: Error?
+            response.sendRedirect("/jsp/home.jsp");
+        }
+
+        if(ligas.size() == 0){
+            //TODO: Error?
+            response.sendRedirect("/jsp/home.jsp");
+        }
+
+    %>
 
     <style type="text/css">
         .jumbotron{
@@ -142,28 +157,56 @@
             <div class="tab" role="tabpanel">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#Section1" aria-controls="home" role="tab" data-toggle="tab">Bronce</a></li>
-                    <li role="presentation"><a href="#Section2" aria-controls="profile" role="tab" data-toggle="tab">Plata</a></li>
-                    <li role="presentation"><a href="#Section3" aria-controls="messages" role="tab" data-toggle="tab">Oro</a></li>
+                    <li role="presentation" class="active"><a href="#Section1" aria-controls="home" role="tab" data-toggle="tab"><%= ligas.get(0).getNombre()%></a></li>
+                    <% for(Integer i = 1; i < ligas.size(); i++){ %>
+                     <li role="presentation"><a href= "<%= "#Section" + i.toString() %>" aria-controls="profile" role="tab" data-toggle="tab"><%= ligas.get(i).getNombre()%></a></li>
+                    <% } %>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content tabs">
-                    <div role="tabpanel" class="tab-pane fade in active" id="Section1">
-                        <h3>BRONCE</h3>
+                    <div role="tabpanel" class="tab-pane fade in active" id="Section0">
+                        <h3><%=ligas.get(0).getNombre()%></h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, magna a ultricies volutpat, mi eros viverra massa, vitae consequat nisi justo in tortor. Proin accumsan felis ac felis dapibus, non iaculis mi varius.</p>
+                        <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel panel-primary">
+                                <table class="table table-hover" id="rank-table0">
+                                    <thead>
+                                    <tr>
+                                        <th>Posicion</th>
+                                        <th>Usuario</th>
+                                        <th>Puntos</th>
+                                        <th>Monedas</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <%  ArrayList<StatsUsuarioVO> clasificacion = (ArrayList<StatsUsuarioVO>) session.getAttribute(ligas.get(0).getNombre());
+                                        for(StatsUsuarioVO user : clasificacion){
+                                    %>
+                                    <tr>
+                                        <td><%= user.getPuesto() %></td>
+                                        <td><%= user.getUsername() %></td>
+                                        <td><%= user.getPuntuacion()%></td>
+                                        <td><%= user.getDivisa()%></td>
+                                    </tr>
+                                    <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    <% for(Integer i = 1; i < ligas.size(); i++) { %>
+                    <div role="tabpanel" class="tab-pane fade" id="Section<%=i.toString()%>">
+                        <h3><%=ligas.get(i).getNombre()%></h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, magna a ultricies volutpat, mi eros viverra massa, vitae consequat nisi justo in tortor. Proin accumsan felis ac felis dapibus, non iaculis mi varius.</p>
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="panel panel-primary">
-                                        <!--       <div class="panel-heading">
-                                                   <h3 class="panel-title">Developers</h3>
-                                                   <div class="pull-right">
-                                                           <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
-                                                               <i class="glyphicon glyphicon-filter"></i>
-                                                           </span>
-                                                   </div>
-                                               </div> -->
-                                        <table class="table table-hover" id="rank-table">
+                                        <table class="table table-hover" id="rank-table<%=i.toString()%>">
                                             <thead>
                                             <tr>
                                                 <th>Posicion</th>
@@ -173,24 +216,16 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Kilgore</td>
-                                                <td>200</td>
-                                                <td>500</td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>Bob</td>
-                                                <td>100</td>
-                                                <td>200</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3</td>
-                                                <td>Holden</td>
-                                                <td>50</td>
-                                                <td>20</td>
-                                            </tr>
+                                            <%  clasificacion = (ArrayList<StatsUsuarioVO>) session.getAttribute(ligas.get(0).getNombre());
+                                                for(StatsUsuarioVO user : clasificacion){
+                                            %>
+                                                <tr>
+                                                    <td><%= user.getPuesto() %></td>
+                                                    <td><%= user.getUsername() %></td>
+                                                    <td><%= user.getPuntuacion()%></td>
+                                                    <td><%= user.getDivisa()%></td>
+                                                </tr>
+                                            <% } %>
                                             </tbody>
                                         </table>
                                     </div>
@@ -198,14 +233,7 @@
                             </div>
                         </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane fade" id="Section2">
-                        <h3>Section 2</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, magna a ultricies volutpat, mi eros viverra massa, vitae consequat nisi justo in tortor. Proin accumsan felis ac felis dapibus, non iaculis mi varius.</p>
-                    </div>
-                    <div role="tabpanel" class="tab-pane fade" id="Section3">
-                        <h3>Section 3</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, magna a ultricies volutpat, mi eros viverra massa, vitae consequat nisi justo in tortor. Proin accumsan felis ac felis dapibus, non iaculis mi varius.</p>
-                    </div>
+                    <% }%>
                 </div>
             </div>
         </div>
