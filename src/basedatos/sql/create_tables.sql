@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS torneo;
 DROP TABLE IF EXISTS usuario;
 
 CREATE TABLE usuario (
-    username VARCHAR(15) PRIMARY KEY, -- IA es un usuario especial con username = IA y tratado de forma especial
+    username VARCHAR(20) PRIMARY KEY, -- IA es un usuario especial con username = IA y tratado de forma especial
     pw_hash CHAR(60),
     correo VARCHAR(320) NOT NULL, 
     fb_auth BOOL, -- TODO: aprender a usar tokens de Facebook
@@ -24,7 +24,7 @@ CREATE TABLE usuario (
     fechaNac DATE,
     admin BOOL NOT NULL, -- true si administrador, false si usuario normal
     puntuacion INT UNSIGNED NOT NULL DEFAULT 0, -- No se contemplan puntuaciones negativas
-    divisa INT UNSIGNED NOT NULL DEFAULT 0, -- No se contempla perder dinero una vez tienes 0 (dinero negativo)
+    divisa INT UNSIGNED NOT NULL DEFAULT 10, -- No se contempla perder dinero una vez tienes 0 (dinero negativo), al registrarse por primera vez se conceden 10 monedas
     CONSTRAINT correo_unique UNIQUE(correo) -- no se permite más de un usuario con el mismo correo electrónico
 );
 -- Usuario borrado: pw_hash = null && token = null (los datos de ese usuario no se borran)
@@ -79,7 +79,7 @@ CREATE TABLE articulo (
 );
 
 CREATE TABLE juega (
-    usuario VARCHAR(15),
+    usuario VARCHAR(20),
     partida BIGINT UNSIGNED,
     equipo CHAR(1), -- TODO: solo puede ser 1:equipo1, 2:equipo2
     puntos TINYINT UNSIGNED, -- puntos conseguidos por ese equipo en esa partida (distinto de la puntuación conseguida por ganar o perder)
@@ -94,30 +94,31 @@ CREATE TABLE juega (
 );
 
 CREATE TABLE pertenece_liga (
-    usuario VARCHAR(15),
+    usuario VARCHAR(20),
     liga VARCHAR(50),
     timeEntrada DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Fecha de entrada del usuario en esa liga
     FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
     FOREIGN KEY (liga) REFERENCES liga(nombre) ON DELETE RESTRICT ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
-    -- No se permite el borrado de ligas si hay jugadores registrados en ellas. Realmente, no se van a borrar nunca usuarios ni ligas
+    -- No se permite el borrado de ligas si hay jugadores registrados en ellas. No se van a borrar nunca usuarios
     CONSTRAINT pertenece_liga_pk PRIMARY KEY (usuario, liga, timeEntrada)
 );
 
 CREATE TABLE posee (
-    usuario VARCHAR(15),
+    usuario VARCHAR(20),
     articulo VARCHAR(50),
     preferido BOOL, -- true: es el articulo preferido del usuario, false en caso contrario. TODO: solo puede haber un preferido por usuario y tipo de articulo
     FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
-    FOREIGN KEY (articulo) REFERENCES articulo(nombre) ON DELETE CASCADE ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
-    -- Si se borra un articulo, dejan de poseerlo todos los usuarios que lo tenían. cuidado!! al borrar articulos que sean preferidos de algun usuario
+    FOREIGN KEY (articulo) REFERENCES articulo(nombre) ON DELETE RESTRICT ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
+    -- Si se borra un articulo, no se podrá si algún usuario lo posee
     CONSTRAINT pertenece_liga_pk PRIMARY KEY (usuario, articulo)
 );
 
 CREATE TABLE participa_fase (
-    usuario VARCHAR(15),
+    usuario VARCHAR(20),
     fase_num INT UNSIGNED, -- null si la partida no pertenece a un torneo
     fase_torneo BIGINT UNSIGNED,
     FOREIGN KEY (fase_num, fase_torneo) REFERENCES fase(num, torneo) ON DELETE RESTRICT ON UPDATE CASCADE,    
     FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE,
+	-- No se pueden borrar torneos si algún usuario ya está apuntado en él
     CONSTRAINT participa_fase_pk PRIMARY KEY (usuario, fase_num, fase_torneo)
 );
