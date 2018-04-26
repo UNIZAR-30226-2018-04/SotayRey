@@ -33,14 +33,13 @@
 </div>
 
 
+
 <div class="container">
     <div class="row">
-        <div class="col-md-6">
-            <div class="panel panel-success">
-                <div class="panel-heading text-center">
-                    <h3 class="panel-title">Buscar partida</h3>
-                </div>
-                <div class="panel-body text-center">
+        <div class="col-md-12">
+            <div class="card text-white bg-success">
+                <div class="card-header text-center">Buscar partida</div>
+                <div class="card-body text-center">
                     <form action="/......" method="post">
                         <div class="form-group">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -66,57 +65,79 @@
                     </form>
                 </div>
             </div>
+
         </div>
-        <div class="col-md-6">
-            <div class="row">
-                <div class="panel panel-primary">
-                    <div class="panel-heading text-center">
-                        <h3 class="panel-title">Crear partida privada</h3>
-                    </div>
-                    <div class="panel-body text-center">
-                        <form action="/......" method="post">
-                            <div class="form-group">
-                                <input type="text" name="nombre" class="form-control" placeholder="Nombre partida">
+
+    </div>
+
+
+</div>
+
+<br/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header text-center">Crear partida privada</div>
+                <div class="card-body text-center">
+
+                    <form action="/......" method="post">
+                        <div class="form-group">
+                            <input type="text" name="nombre" class="form-control" placeholder="Nombre partida">
+                        </div>
+                        <div class="form-group">
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                <label class="btn btn-secondary active">
+                                    <input type="radio" name="tipoPartida" id="option1" autocomplete="off" value="parejas" checked> Parejas
+                                </label>
+                                <label class="btn btn-secondary">
+                                    <input type="radio" name="tipoPartida" value = "unocontrauno" autocomplete="off"> Uno contra uno
+                                </label>
                             </div>
-                            <div class="form-group">
-                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                    <label class="btn btn-secondary active">
-                                        <input type="radio" name="tipoPartida" id="option1" autocomplete="off" value="parejas" checked> Parejas
-                                    </label>
-                                    <label class="btn btn-secondary">
-                                        <input type="radio" name="tipoPartida" value = "unocontrauno" autocomplete="off"> Uno contra uno
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <input type="password" name="password" class="form-control" placeholder="Contraseña partida">
-                            </div>
-                            <button type="button" class="btn btn-default submit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Crear partida</button>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="password" class="form-control" placeholder="Contraseña partida">
+                        </div>
+                        <button type="button" class="btn btn-default submit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Crear partida</button>
+                    </form>
+
+
+
                 </div>
             </div>
-            <div class="row">
-                <div class="panel panel-primary">
-                    <div class="panel-heading text-center">
-                        <h3 class="panel-title">Unirse a una partida privada</h3>
-                    </div>
-                    <div class="panel-body text-center">
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#unirsePartida">Unirse</button>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="panel panel-primary">
-                    <div class="panel-heading text-center">
-                        <h3 class="panel-title">Espectar una partida</h3>
-                    </div>
-                    <div class="panel-body text-center">
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#espectarPartida">Espectar</button>
-                    </div>
-                </div>
-            </div>
+
         </div>
+
+
+
+
+        <div class="col-md-4">
+            <div class="card bg-light mb-3">
+                <div class="card-header text-center">Unirse a una partida privada</div>
+                <div class="card-body text-center">
+
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#unirsePartida">Unirse</button>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header text-center">Espectar una partida</div>
+                <div class="card-body text-center">
+
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#espectarPartida">Espectar</button>
+
+                </div>
+            </div>
+
+        </div>
+
+
     </div>
 </div>
 
