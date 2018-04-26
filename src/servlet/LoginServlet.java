@@ -10,8 +10,6 @@
 package servlet;
 
 import basedatos.InterfazDatos;
-import basedatos.exceptions.ExceptionCampoInexistente;
-import basedatos.exceptions.ExceptionCampoInvalido;
 import basedatos.modelo.UsuarioVO;
 
 import javax.servlet.RequestDispatcher;
@@ -22,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.sql.SQLException;
 
 
 @WebServlet(name = "LoginServlet")
@@ -75,7 +72,7 @@ public class LoginServlet extends HttpServlet {
                     HttpSession sesion= request.getSession();
                     sesion.setAttribute("userId", user);
                     sesion.setMaxInactiveInterval(24*60*60);
-                    response.sendRedirect("jsp/home.jsp");
+                    response.sendRedirect("jsp/matchmaking.jsp");
                 } else { // Usuario no existe
                     error= "userNotFound";
                     request.setAttribute("error",error);

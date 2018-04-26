@@ -1,13 +1,16 @@
 package servlet;
 
-import java.io.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
-
+import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInvalido;
 import basedatos.modelo.UsuarioVO;
-import basedatos.InterfazDatos;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * @author Víctor Soria
@@ -142,7 +145,7 @@ public class RegistroServlet extends HttpServlet {
                     sesion.setMaxInactiveInterval(24*60*60);
 
 
-                    response.sendRedirect("jsp/home.jsp");
+                    response.sendRedirect("jsp/matchmaking.jsp");
             }
 
         }

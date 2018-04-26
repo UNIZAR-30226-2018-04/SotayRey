@@ -6,11 +6,6 @@
 <html lang="en" >
 <head>
     <title>Buscar partida</title>
-    <%@ include file="navbar.jsp" %>
-    <!-- Bootstrap -->
-    <%@ include file="../html/imports.html"%>
-
-
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <meta charset="iso-8859-1">
@@ -18,6 +13,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- Bootstrap -->
+    <%@ include file="navbar.jsp" %>
+    <%@ include file="../html/imports.html"%>
 
 </head>
 <body>
