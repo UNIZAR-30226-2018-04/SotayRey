@@ -66,11 +66,11 @@
 
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
          <% if (error.equals("objectNotFound")){ %>
-                <strong>Objeto incorrecto </strong>Inténtalo de nuevo.
+                <strong>Objeto incorrecto </strong>Int&eacutentalo de nuevo.
           <% }  else if (error.equals("noMoney")){ %>
                 <strong>No dispones del dinero suficiente </strong>
             <% } else{ %>
-                <strong>No hay ninguna liga </strong> Añade una liga o inicia sesión.
+                <strong>No hay ninguna liga </strong> Añade una liga o inicia sesi&oacuten.
           <% }  %>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -94,7 +94,7 @@
             </a>
             <!-- <a href="#" class="btn btn-warning btn-md">Añadir Artículo</a> -->
             <% if (articulos == null || articulos.size() == 0){ %>
-            <a class="btn btn-warning btn-md disabled">Modificar Artículo</a>
+            <a class="btn btn-warning btn-md disabled">Modificar Art&iacuteculo</a>
             <% } else { %>
             <form action="/RefrescarTiendaAdmin.do" method="post">
                 <input type="hidden" name="optionAdmin" value="modify">
@@ -157,7 +157,7 @@
                                                     <div class="modal-dialog" role="document">
                                                         <div class="modal-content">
                                                             <div class="modal-header text-center">
-                                                                <h4 class="modal-title w-100 font-weight-bold">Modificar artículo</h4>
+                                                                <h4 class="modal-title w-100 font-weight-bold">Modificar art&iacuteculo</h4>
                                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                     <span aria-hidden="true">&times;</span>
                                                                 </button>
@@ -216,7 +216,7 @@
                                                         <%--<input type="hidden" value="<%=i%>" name="posObjeto" id="id_objeto"/>--%>
                                                         <button type="submit" class="btn btn-primary" value="<%=i%>" name ="id_objeto" id="id_objeto"> Comprar: <%= art.getPrecio()%> monedas </button>
                                                   <%} else { %>
-                                                        <button  type="button"  class="btn btn-blue-grey">Artículo bloqueado</button>
+                                                        <button  type="button"  class="btn btn-blue-grey">Art&iacuteculo bloqueado</button>
                                                   <%} %>
                                             </div>
                                       <%}

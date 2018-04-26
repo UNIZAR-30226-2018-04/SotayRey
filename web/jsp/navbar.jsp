@@ -1,6 +1,10 @@
 <%@ page import="basedatos.modelo.UsuarioVO" %>
 <nav class="navbar navbar-expand-lg sticky-top navbar-light" style="background-color: white">
-    <a class="navbar-brand" href="../index.jsp">
+    <% if (session.getAttribute("userId") == null) { %>
+        <a class="navbar-brand" href="../index.jsp">
+    <% } else { %>
+        <a class="navbar-brand" href="../jsp/matchmaking.jsp">
+    <% } %>
         <img src="../img/logo.png" width="30" class="mr-2">SotaYRey</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

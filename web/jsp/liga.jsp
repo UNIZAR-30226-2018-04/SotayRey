@@ -145,8 +145,9 @@
 
     <div class="jumbotron">
         <div class="container text-center">
-            <h1>Clasificacion</h1>
-            <p>Comprueba el puesto en el que vas. ¡Lucha por ser el campeon!</p>
+            <h1>Clasificaci&oacuten</h1>
+            <p>Comprueba el puesto en el que vas.</p>
+            <p>Lucha por ser el campe&oacuten</p>
         </div>
     </div>
 
@@ -165,7 +166,7 @@
                 <div class="tab-content tabs">
                     <div role="tabpanel" class="tab-pane fade in active" id="Section0">
                         <h3><%=ligas.get(0).getNombre()%></h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, magna a ultricies volutpat, mi eros viverra massa, vitae consequat nisi justo in tortor. Proin accumsan felis ac felis dapibus, non iaculis mi varius.</p>
+                        <br>
                         <div class="container">
                     <div class="row">
                         <div class="col-md-12">
@@ -200,7 +201,7 @@
                     <% for(Integer i = 1; i < ligas.size(); i++) { %>
                     <div role="tabpanel" class="tab-pane fade" id="Section<%=i.toString()%>">
                         <h3><%=ligas.get(i).getNombre()%></h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce semper, magna a ultricies volutpat, mi eros viverra massa, vitae consequat nisi justo in tortor. Proin accumsan felis ac felis dapibus, non iaculis mi varius.</p>
+                    <br>
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-12">

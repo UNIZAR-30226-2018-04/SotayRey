@@ -8,6 +8,7 @@
       </database-info>
       <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
       <user-name>sotaoros</user-name>
+      <introspection-schemas>*:sotayrey_db</introspection-schemas>
     </data-source>
   </component>
 </project>
