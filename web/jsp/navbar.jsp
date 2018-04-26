@@ -26,7 +26,7 @@
                         <i class="fa fa-play mr-2"></i>Jugar</a>
                 </li>
             <li class="nav-item">
-                <a class="btn btn-outline" href="../jsp/torneos.html" role="button">
+                <a class="btn btn-outline" href="../jsp/torneos.jsp" role="button">
                     <i class="fa fa-play mr-2"></i>Torneos</a>
             </li>
                 <li class="nav-item">
