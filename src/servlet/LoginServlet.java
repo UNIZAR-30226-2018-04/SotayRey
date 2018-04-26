@@ -27,9 +27,13 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nick = request.getParameter("loginUser");
         String pass = request.getParameter("loginPass");
+        String token = request.getParameter("Token");
+
         String error;
         try {
-            if (nick== null || nick.equals("")) {
+            if (token != null){
+
+            }else if (nick== null || nick.equals("")) {
                 error = "emptyUser";
                 request.setAttribute("error", error);
                 RequestDispatcher dispatcher = request.getRequestDispatcher("jsp/login.jsp");
