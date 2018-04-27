@@ -5,7 +5,7 @@
 //var ejeY = window.innerHeight * window.devicePixelRatio;
 
 /* PORCENTAJES RESPONSIVE */
-var numBotones = 2;
+var numBotones = 3;
 var zonaJugableY = 0.9; // Porcentaje
 var ejeXBotones = window.innerWidth;
 var ejeYBotones = window.innerHeight * zonaJugableY + ( window.innerHeight *(1-zonaJugableY)*0.20);
@@ -26,8 +26,8 @@ var ejeYCartaOriginal = 123;
 var ejeXCarta = (ejeX * 0.8) / 6;
 var ejeYCarta = ejeXCarta*(ejeYCartaOriginal/ejeXCartaOriginal);
 
-var avatarEjeX = 60;
-var avatarEjeY = 60;
+var avatarEjeX = ejeXCarta * 0.5;
+var avatarEjeY = avatarEjeX;
 
 var escalaCarta = 1;
 //var escalaCarta = ejeX / 5/ ejeXCarta;
@@ -75,6 +75,7 @@ var jArriba;
 var jDer;
 
 var turno; // punto rojo que indica el turno
+var idContador = 0;
 
 var triunfo;
 triunfo = {};
@@ -94,6 +95,8 @@ function inicializarDispositivo(){
         console.log(ejeX);
         ejeXCarta = ejeXCartaOriginal;
         ejeYCarta = ejeYCartaOriginal;
+        avatarEjeX = ejeXCarta * 0.7;
+        avatarEjeY = avatarEjeX;
 
     }
     else if (ejeX > 420){
@@ -101,7 +104,8 @@ function inicializarDispositivo(){
         console.log(ejeX);
         ejeXCarta = (ejeX * 0.65) / 6;
         ejeYCarta = ejeXCarta*(ejeYCartaOriginal/ejeXCartaOriginal);
-
+        avatarEjeX = ejeXCarta * 0.5;
+        avatarEjeY = avatarEjeX;
     }
     else{
         // El valor que esta por defecto
@@ -125,12 +129,13 @@ function inicializarDispositivo(){
     jRef.cartasEnMano = game.add.group();
     jRef.dorso;
     jRef.rotacion = 0;
-    jRef.nombreUsuario = game.add.text(jRef.XLanzar + ejeXCarta + 10, jRef.YLanzar + ejeYCarta/2, 'usuarioRef', {font: fuente, fill: color});
-    jRef.avatar = game.add.sprite(jRef.XLanzar + ejeXCarta + 30, jRef.YLanzar, 'avatar');
+    jRef.nombreUsuario = game.add.text(jRef.XLanzar + ejeXCarta * 1.10, jRef.YLanzar + ejeYCarta * 0.8, 'usuarioRef', {font: fuente, fill: color});
+    jRef.avatar = game.add.sprite(jRef.XLanzar + ejeXCarta*1.10, jRef.YLanzar + avatarEjeY/2, 'avatar');
     //game.physics.arcade.enable([jRef.avatar]);
     //jRef.avatar.body.setCircle(45);
     jRef.avatar.height = avatarEjeY;
     jRef.avatar.width = avatarEjeX;
+
 
     jIzq = {};
     jIzq.XPosMedia = ejeX * 0.15;
@@ -144,7 +149,12 @@ function inicializarDispositivo(){
     jIzq.cartasEnMano = game.add.group();
     jIzq.dorso;
     jIzq.rotacion = 90;
-    jIzq.nombreUsuario = game.add.text(0, 0, '', {font: fuente, fill: color});
+    if (numJugadores == 4){
+        jIzq.nombreUsuario = game.add.text(jIzq.XLanzar - ejeYCarta, jIzq.YLanzar - 30, 'usuarioIzq', {font: fuente, fill: color});
+        jIzq.avatar = game.add.sprite(jIzq.XLanzar - ejeXCarta*1.10, jIzq.YLanzar - 90, 'avatar');
+        jIzq.avatar.height = avatarEjeY;
+        jIzq.avatar.width = avatarEjeX;
+    }
 
     jArriba = {};
     jArriba.XPosMedia = ejeX / 2;
@@ -178,14 +188,23 @@ function inicializarDispositivo(){
     jDer.cartasEnMano = game.add.group();
     jDer.dorso;
     jDer.rotacion = 270;
-    jDer.nombreUsuario = game.add.text(0, 0, '', {font: fuente, fill: color});
+
+    if (numJugadores == 4){
+        jDer.nombreUsuario = game.add.text(jDer.XLanzar, jDer.YLanzar - ejeXCarta - 30, 'usuarioIzq', {font: fuente, fill: color});
+        jDer.avatar = game.add.sprite(jDer.XLanzar, jDer.YLanzar - ejeYCarta - avatarEjeY, 'avatar');
+        jDer.avatar.height = avatarEjeY;
+        jDer.avatar.width = avatarEjeX;
+    }
+
 
     turno = game.add.sprite(0, 0, 'turno');
     turno.height = ejeYCarta * 0.30;
     turno.width = ejeXCarta * 0.30;
 
 
-    arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
+    //arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
+    arrayJugadoresDefecto = [jRef, jIzq, jArriba, jDer];
+    arrayJugadoresDefecto2 = [jRef, jArriba];
 }
 
 /**
@@ -193,8 +212,15 @@ function inicializarDispositivo(){
  *  en funcion  del tipo de partida y mi identificador
  */
 function mapearJugadores(){
-    for (i = 0; i < numJugadores; i++) {
-        arrayJugadores[i] = arrayJugadoresDefecto[(miID + i)%numJugadores];
+    if (numJugadores == 4){
+        for (i = 0; i < numJugadores; i++) {
+            arrayJugadores[(miID + i)%numJugadores] = arrayJugadoresDefecto[i];
+        }
+    }
+    else{
+        for (i = 0; i < numJugadores; i++) {
+            arrayJugadores[(miID + i)%numJugadores] = arrayJugadoresDefecto2[i];
+        }
     }
 }
 
@@ -421,7 +447,6 @@ function create() {
 
     dibujarCuadroCarta(jRef); // TODO va un poco mal
 
-
 }
 
 /**
@@ -578,12 +603,21 @@ function enviarMensaje(obj){
  * Inicializa las variables y dibuja el estado
  * @param estado Estado que se desea representar
  */
+
+var estadoInicializado = false;
+
 function representarEstado(estado){
     // Se dibuja el triunfo
     modificarTriunfo(estado.triunfo.numero, estado.triunfo.palo);
     // Se dibujan las cartas de los jugadores
     // TODO hay que mapear antes
-    mapearJugadores();
+
+    if (!estadoInicializado){
+        mapearJugadores();
+    }
+    if (estadoInicializado){
+        rondaAcabada();
+    }
     estado.jugadores.forEach(function(item) {
         var jugador = arrayJugadores[item.id];
         if ([item.id] != miID){
@@ -605,6 +639,7 @@ function representarEstado(estado){
     var jugador = arrayJugadores[miID];
     var carta = {};
     estado.mano.forEach(function(item) {
+        console.log("CREANDO CARTA: " + item.numero + "  " +item.palo);
         carta = crearCarta(item.numero, item.palo);
         console.log(carta.numero + carta.palo);
         //carta.numero = item.numero;
@@ -618,10 +653,37 @@ function representarEstado(estado){
     // Se dibujan las cartas en la mesa
     estado.jugadores.forEach(function(item) {
         var jugador = arrayJugadores[item.id];
-        crearCuadroCarta(jugador);
+        if (!estadoInicializado){
+            crearCuadroCarta(jugador);
+        }
         dibujarCuadroCarta(jugador);
     }, this);
+
+
+    // HUD
+
+    datosHUD = {"restantes_mazo": estado.partida.restantes_mazo,
+        "id_jugador": estado.partida.ronda,
+        "puntuaciones":[{"id_jugador":0,"puntuacion":21},
+            {"id_jugador":1,"puntuacion":0},
+            {"id_jugador":2,"puntuacion":21},
+            {"id_jugador":3,"puntuacion":0}],
+        "nueva_ronda":2};
+
+    actualizarHUD(datosHUD);
+
+    estadoInicializado = true;
+
 }
+
+function prueba(){
+    estadito = {"triunfo":{"palo":"B","numero":10},"mano":[{"palo":"E","numero":5},{"palo":"B","numero":6},{"palo":"B","numero":2},{"palo":"E","numero":7},{"palo":"E","numero":2},{"palo":"C","numero":11}],"tipo_mensaje":"estado_inicial","jugadores":[{"tipo":"jugador","carta_mesa":{"palo":"X","numero":0},"num_cartas":6,"id":0,"avatar":"cms","puntos":0,"nombre":"cms"},{"tipo":"jugador","carta_mesa":{"palo":"X","numero":0},"num_cartas":6,"id":1,"avatar":"abadgabriel","puntos":0,"nombre":"abadgabriel"},{"tipo":"jugador","carta_mesa":{"palo":"X","numero":0},"num_cartas":6,"id":2,"avatar":"acasares","puntos":0,"nombre":"acasares"},{"tipo":"jugador","carta_mesa":{"palo":"X","numero":0},"num_cartas":6,"id":3,"avatar":"acastellanos","puntos":0,"nombre":"acastellanos"}],"partida":{"restantes_mazo":15,"ronda":0,"tipo_ronda":"idas"}};
+    var msg = JSON.stringify(estadito);
+    recibirMensaje(msg);
+}
+
+
+var mensajito = 0;
 
 function recibirMensaje(msg){
     console.log("RECIBO UN MENSAJEEEEEE");
@@ -860,6 +922,32 @@ function buscarCarta(numero, palo){
 }
 
 /* HUD */
+var tiempoTurno;
+var tiempoRestante;
+
+
+
+function crearTiempo(idJugador){
+    tiempoRestante = 30;
+    tiempoTurno.text = "TURNO " + arrayJugadores[idJugador].nombreUsuario.text + " " + tiempoRestante + " s";
+    var idNuevoContador = idContador;
+    setTimeout(function(){ updateCounter(idJugador, idNuevoContador);}, 1000);
+
+}
+
+function updateCounter(idJugador, idEsteContador){
+    //console.log("ACTUALIZO CONTADOR " + idContador);
+    if (tiempoRestante > 0 && idContador == idEsteContador){
+        tiempoRestante--;
+        tiempoTurno.text = "TURNO " + arrayJugadores[idJugador].nombreUsuario.text + " " + tiempoRestante + " s";
+        setTimeout(function(){ updateCounter(idJugador, idEsteContador);}, 1000);
+    }
+}
+
+function actualizarTiempo(idJugador){
+
+    tiempoTurno.text = "TURNO " + arrayJugadores[idJugador].nombreUsuario + " 15";
+}
 
 /**
  * Dibuja los botones de accion y asocia la funcion para enviar el mensaje: cantar20, cantar40 y cambiarTriunfo
@@ -869,11 +957,12 @@ function dibujarBotones(){
     //var style = {font: "20px", fill: "#000000", align:"center"};
 
     var cantar = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
-    var cambiarTriunfo = game.add.text(espacioBoton, ejeYBotones, '', {fill: '#ffffff'});
+    var cambiarTriunfo = game.add.text(espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
+    tiempoTurno = game.add.text(espacioBoton + espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
 
     cantar.text = "CANTAR";
     cambiarTriunfo.text = "CAMBIAR TRIUNFO";
-    cambiarTriunfo.text.fontSize = "20";
+    tiempoTurno.text = "TURNO pepito 15"
 
     cantar.inputEnabled = true;
     cantar.events.onInputDown.add(pulsaBoton, this);
@@ -924,6 +1013,8 @@ function dibujarTurno(id_jugador){
     turno.height = ejeYCarta;
     turno.angle = jugador.rotacion;
     turno.alpha = 0.5;
+    idContador++;
+    crearTiempo(id_jugador);
 
 }
 
@@ -936,7 +1027,7 @@ var numRonda = 0;
 var restantes_mazo = "NaN";
 var tipo_ronda = "IDAS";
 var color = "#fffff5";
-var fuente =  "15pt impact";
+var fuente =  "12pt impact";
 
 /**
  * Actualiza el HUD del jugador
