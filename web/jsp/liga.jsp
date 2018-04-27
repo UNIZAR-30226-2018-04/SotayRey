@@ -60,13 +60,14 @@
                     </li>
                     <% for(Integer i = 1; i < ligas.size(); i++){ %>
                     <li class="nav-item">
-                        <a class="nav-link" href="<%= "#Section" + i.toString() %>" role="tab" data-toggle="tab"><%= ligas.get(i).getNombre()%></a>
+                        <a class="nav-link" href="#Section<%= i.toString() %>" role="tab" data-toggle="tab"><%= ligas.get(i).getNombre()%></a>
                     </li>
                     <% } %>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane fade in active" id="Section0">
+                        <br>
                         <h3><%=ligas.get(0).getNombre()%></h3>
                         <br>
                         <div class="container">
@@ -102,8 +103,9 @@
             </div>
                     <% for(Integer i = 1; i < ligas.size(); i++) { %>
                     <div role="tabpanel" class="tab-pane fade" id="Section<%=i.toString()%>">
+                        <br>
                         <h3><%=ligas.get(i).getNombre()%></h3>
-                    <br>
+                        <br>
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-12">

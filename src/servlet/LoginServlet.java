@@ -33,7 +33,7 @@ public class LoginServlet extends HttpServlet {
         try {
             if (token != null){
 
-            }else if (nick== null || nick.equals("")) {
+            } else if (nick== null || nick.equals("")) {
                 error = "emptyUser";
                 request.setAttribute("error", error);
                 RequestDispatcher dispatcher = request.getRequestDispatcher("jsp/login.jsp");
