@@ -10,6 +10,7 @@ package basedatos.modelo;
 
 import java.util.Date;
 import java.sql.Timestamp;
+import java.math.BigInteger;
 
 import basedatos.exceptions.*;
 

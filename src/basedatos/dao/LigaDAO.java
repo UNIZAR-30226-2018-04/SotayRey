@@ -43,8 +43,8 @@ public class LigaDAO {
         } catch (MySQLIntegrityConstraintViolationException e) {
            throw new ExceptionCampoInvalido("Error de acceso a la base de datos: Liga: " + l.getNombre() + " ya existente");
         } finally {
-            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
-            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
         }
     }
 

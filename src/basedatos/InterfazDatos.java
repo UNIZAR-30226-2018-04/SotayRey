@@ -135,6 +135,12 @@ public class InterfazDatos {
         PartidaDAO.insertarNuevaPartida(p, this.cpds);
     }
 
+	/* Se crea un nuevo torneo con todas sus fases, se devuelve en t el id del torneo por si se necesita
+	 */
+	public void crearTorneo(TorneoVO t) throws SQLException {
+		TorneoDAO.crearTorneo(t, this.cpds);
+	}
+
     /* Inserta al Usuario u al Torneo t en su fase inicial. Si u llena el numero de participantes de la fase
      * se produce el emparejamiento
      */
@@ -166,9 +172,9 @@ public class InterfazDatos {
         //Jejeje
         if (p.getFaseNum()>0) {
             PartidaDAO.finalizarPartidaFaseTorneo(p,this.cpds);
-            TorneoVO t = TorneoDAO.obtenerDatosTorneo(p.getTorneoId());
-            puntosGanador = Math.pow(2,t.numFases()-p.getFaseNum())*2;
-            divisaGanador = Math.pow(2,t.numFases()-p.getFaseNum())*2;
+            TorneoVO t = TorneoDAO.obtenerDatosTorneo(p.getTorneoId(), this.cpds);
+            //puntosGanador = Math.pow(2,t.getNumFases()-p.getFaseNum())*2;
+            //divisaGanador = Math.pow(2,t.getNumFases()-p.getFaseNum())*2;
         }
 
         // Actualizar datos de los usuarios implicados
