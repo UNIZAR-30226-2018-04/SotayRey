@@ -54,7 +54,7 @@ function preload() {
     game.load.image('avatar', 'assets/avatar.png');
     game.load.image('victoria', 'assets/victoria.png');
     game.load.image('derrota', 'assets/derrota.png');
-    game.load.image('dorsoBase', 'assets/dorsoBase.png');
+    game.load.image('dorsoBase', 'assets/dorsoBase.jpg');
     game.load.audio('musica', ['assets/musica.mp3']);
 }
 
@@ -174,7 +174,7 @@ function inicializarDispositivo(){
     //jRef.avatar.body.setCircle(45);
     jArriba.avatar.height = avatarEjeY;
     jArriba.avatar.width = avatarEjeX;
-    jArriba.dorso;
+    jArriba.dorso = 'dorsoBase';
 
 
     jDer = {};
@@ -323,7 +323,7 @@ function dibujarCartaLanzada(jugador){
 function crearCartas(jugador){
     for (i = 0; i < jugador.numCartas; i++){
         console.log("CRANDO CARTAS PARA " + jugador.XPosMedia);
-        jugador.cartasEnMano.create(0, 0, 'cartas');
+        jugador.cartasEnMano.create(0, 0, jugador.dorso);
     }
 
 }
@@ -751,6 +751,13 @@ function crearDorso(numero, palo){
     return carta;
 }
 
+function crearDorsoPersonalizado(idJugador){
+    console.log("CREO EL DORSO PERSONALIZADO");
+    dorso = arrayJugadores[idJugador].dorso
+    var carta = game.add.sprite(0, 0, dorso);
+    return carta;
+}
+
 /**
  * Elimina la carta del mazo (cualquiera si no es referencia) y la pone en el centro en la variable cartaLanzada
  * @param idJugador Id del jugador que lanza la carta
@@ -867,7 +874,7 @@ function pulsaCarta(item){
 function jugadorRobaCarta(idJugador, numero, palo){
     var jugador = arrayJugadores[idJugador];
     if (idJugador!= miID){
-        var carta = crearDorso(numero, palo);
+        var carta = crearDorsoPersonalizado(idJugador);
         jugador.cartasEnMano.add(carta);
         dibujarJugador(jugador);
         dibujarCartaLanzada(jugador);
