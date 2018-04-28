@@ -6,21 +6,18 @@
 
 package basedatos.dao;
 
-import java.text.SimpleDateFormat;
+import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.exceptions.ExceptionCampoInvalido;
+import basedatos.modelo.LigaVO;
+import basedatos.modelo.StatsUsuarioVO;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import java.beans.PropertyVetoException;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Properties;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-
-import basedatos.exceptions.*;
-import basedatos.modelo.*;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 public class LigaDAO {
 
@@ -102,6 +99,32 @@ public class LigaDAO {
 
         if (statement != null)  statement.close();
         if (connection != null) connection.close();
+    }
+
+    public static ArrayList<LigaVO> obtenerLigas(ComboPooledDataSource pool) throws SQLException, ExceptionCampoInvalido {
+        Connection connection = null;
+        Statement statement = null;
+        connection = pool.getConnection();
+        statement = connection.createStatement();
+        String query = "SELECT * FROM liga";
+        ResultSet resultSet = statement.executeQuery(query);
+
+        ArrayList<LigaVO> lista_ligas = new ArrayList<>();
+
+        while (resultSet.next()) {
+            String nombre = resultSet.getString("nombre");
+            String descripcion = resultSet.getString("descripcion");
+            int porcentajeMin = resultSet.getInt("porcentaje_min");
+            int porcentajeMax = resultSet.getInt("porcentaje_max");
+            LigaVO l = new LigaVO(nombre, descripcion, porcentajeMin, porcentajeMax);
+            lista_ligas.add(l);
+        }
+
+        if (statement != null)  statement.close();
+        if (connection != null) connection.close();
+
+        return lista_ligas;
+    
     }
 
     public static ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre, ComboPooledDataSource pool) throws SQLException, ExceptionCampoInvalido{

@@ -18,6 +18,7 @@ public class UsuarioVO {
     private String correo;
     private Timestamp timeCreacion;
     private String plaintextPassword;
+    private String fb_auth;
     private String nombre;
     private String apellidos;
     private Date fechaNac;
@@ -39,6 +40,20 @@ public class UsuarioVO {
         this.plaintextPassword = plaintextPassword;
     }
 
+    public UsuarioVO(String username, String correo, String nombre, String apellidos, boolean admin, String fb_auth) throws ExceptionCampoInvalido {
+        // Comprobar que la longitud de los campos no sea mayor que los limites de la base de datos
+        if (username.length()>15 || nombre.length()>25 || apellidos.length()>50){
+            // Lanzar excepción de campo no válido
+            throw new ExceptionCampoInvalido("Campo invalido, longitud " + username.length() + " mayor que la máxima permitida");
+        }
+        this.username = username;
+        this.correo = correo;
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.admin = admin;
+        this.fb_auth = fb_auth;
+    }
+
     public String getPlaintextPassword() {
         return plaintextPassword;
     }
@@ -47,7 +62,7 @@ public class UsuarioVO {
         this.plaintextPassword = plaintextPassword;
     }
 
-    public UsuarioVO(String username, String plaintextPassword, String correo, String nombre, String apellidos, boolean admin, Date fechaNac) throws ExceptionCampoInvalido {
+    public UsuarioVO(String username, String correo, String nombre, String apellidos, boolean admin, Date fechaNac, String fb_auth) throws ExceptionCampoInvalido {
         // Comprobar que la longitud de los campos no sea mayor que los limites de la base de datos
         if (username.length()>15 || nombre.length()>25 || apellidos.length()>50){
             // Lanzar excepción de campo no válido 
@@ -60,6 +75,7 @@ public class UsuarioVO {
         this.apellidos = apellidos;
         this.fechaNac = fechaNac;
         this.admin = admin;
+        this.fb_auth = fb_auth;
     }
 
     public String getUsername(){
@@ -80,6 +96,14 @@ public class UsuarioVO {
     
     public boolean getAdmin(){
         return admin;    
+    }
+
+    public String getFb_auth() {
+        return fb_auth;
+    }
+
+    public void setFb_auth(String fb_auth) {
+        this.fb_auth = fb_auth;
     }
 
     public Date getFechaNac(){
