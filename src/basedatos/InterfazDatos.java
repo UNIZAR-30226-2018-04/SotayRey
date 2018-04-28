@@ -135,14 +135,41 @@ public class InterfazDatos {
         PartidaDAO.insertarNuevaPartida(p, this.cpds);
     }
 
+    /* Inserta al Usuario u al Torneo t en su fase inicial. Si u llena el numero de participantes de la fase
+     * se produce el emparejamiento
+     */
+    public void apuntarTorneo(UsuarioVO u, TorneoVO t) throws  ExceptionCampoInvalido, SQLException {
+        TorneoDAO.apuntarTorneo(u,t,this.cpds);
+    }
+
+    /* Rellena los campos de FaseVO f. f debe de poseer la id del torneo y el número de fase
+     * Se le rellenan los datos con las partidas (no empezadas, pero ya incluidas en la base de datos) y la lista
+     * de participantes.
+     */
+    public void  obtenerPartidasFaseTorneo(FaseVO f) throws SQLException {
+        PartidaDAO.obtenerPartidasFaseTorneo(f,this.cpds);
+    }
+
     /* Se modifican la partida p en la base de datos con los datos de finalización, p debe incluir
      * el id que se modificó en la función crearNuevaPartida(p).
      * Actualiza las puntuaciones y divisas de los usuarios implicados 
      *      (Ganada:3puntos / 5monedas, Perdida:0puntos / 1moneda, Abandonada:-1puntos/ 0monedas, Teabandonan:0puntos / 1moneda)
+     * Si la partida era de Torneo, incluye al ganador en la siguiente fase y la recompensa depende de la fase del torneo
      */
     public void finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido, ExceptionCampoInexistente, SQLException {
         // Finalizar partida
         PartidaDAO.finalizarPartida(p, this.cpds);
+
+        int puntosGanador = 3;
+        int divisaGanador = 5;
+
+        //Jejeje
+        if (p.getFaseNum()>0) {
+            PartidaDAO.finalizarPartidaFaseTorneo(p,this.cpds);
+            TorneoVO t = TorneoDAO.obtenerDatosTorneo(p.getTorneoId());
+            puntosGanador = Math.pow(2,t.numFases()-p.getFaseNum())*2;
+            divisaGanador = Math.pow(2,t.numFases()-p.getFaseNum())*2;
+        }
 
         // Actualizar datos de los usuarios implicados
         char gan = p.getGanador();
@@ -169,8 +196,8 @@ public class InterfazDatos {
                     StatsUsuarioDAO.modificarStatsUsuario(su1,this.cpds);
                     //ganador
                     StatsUsuarioVO su2 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i+1).getUsername(),this.cpds); 
-                    su2.setPuntuacion(su2.getPuntuacion()+3);
-                    su2.setDivisa(su2.getDivisa()+5); 
+                    su2.setPuntuacion(su2.getPuntuacion()+puntosGanador);
+                    su2.setDivisa(su2.getDivisa()+divisaGanador);
                     StatsUsuarioDAO.modificarStatsUsuario(su2,this.cpds);  
                     
                 }            
@@ -184,7 +211,8 @@ public class InterfazDatos {
                     su.setPuntuacion(su.getPuntuacion()-1);
                 }
                 else{
-                    su.setDivisa(su.getDivisa()+1);
+                    su.setDivisa(su.getDivisa()+divisaGanador);
+                    su.setPuntuacion(su.getPuntuacion()+puntosGanador);
                 } 
                 StatsUsuarioDAO.modificarStatsUsuario(su,this.cpds);           
             }        
