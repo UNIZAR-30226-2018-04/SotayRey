@@ -1,20 +1,24 @@
 package basedatos;
 
-import basedatos.dao.*;
-import basedatos.exceptions.ExceptionCampoInexistente;
-import basedatos.exceptions.ExceptionCampoInvalido;
-import basedatos.modelo.*;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.io.FileInputStream;
+import java.util.List;
+
+import basedatos.exceptions.*;
+import basedatos.dao.*;
+import basedatos.modelo.*;
 
 public class InterfazDatos {
 
@@ -134,17 +138,17 @@ public class InterfazDatos {
     /* Inserta al Usuario u al Torneo t en su fase inicial. Si u llena el numero de participantes de la fase
      * se produce el emparejamiento
      */
- //   public void apuntarTorneo(UsuarioVO u, TorneoVO t) throws  ExceptionCampoInvalido, SQLException {
- //       TorneoDAO.apuntarTorneo(u,t,this.cpds);
- //   }
+    public void apuntarTorneo(UsuarioVO u, TorneoVO t) throws  ExceptionCampoInvalido, SQLException {
+        TorneoDAO.apuntarTorneo(u,t,this.cpds);
+    }
 
     /* Rellena los campos de FaseVO f. f debe de poseer la id del torneo y el número de fase
      * Se le rellenan los datos con las partidas (no empezadas, pero ya incluidas en la base de datos) y la lista
      * de participantes.
      */
- //   public void  obtenerPartidasFaseTorneo(FaseVO f) throws SQLException {
- //       PartidaDAO.obtenerPartidasFaseTorneo(f,this.cpds);
- //   }
+    public void  obtenerPartidasFaseTorneo(FaseVO f) throws SQLException {
+        PartidaDAO.obtenerPartidasFaseTorneo(f,this.cpds);
+    }
 
     /* Se modifican la partida p en la base de datos con los datos de finalización, p debe incluir
      * el id que se modificó en la función crearNuevaPartida(p).
@@ -160,12 +164,12 @@ public class InterfazDatos {
         int divisaGanador = 5;
 
         //Jejeje
- //       if (p.getFaseNum()>0) {
- //           PartidaDAO.finalizarPartidaFaseTorneo(p,this.cpds);
- //           TorneoVO t = TorneoDAO.obtenerDatosTorneo(p.getTorneoId());
- //           puntosGanador = Math.pow(2,t.numFases()-p.getFaseNum())*2;
- //           divisaGanador = Math.pow(2,t.numFases()-p.getFaseNum())*2;
- //       }
+        if (p.getFaseNum()>0) {
+            PartidaDAO.finalizarPartidaFaseTorneo(p,this.cpds);
+            TorneoVO t = TorneoDAO.obtenerDatosTorneo(p.getTorneoId());
+            puntosGanador = Math.pow(2,t.numFases()-p.getFaseNum())*2;
+            divisaGanador = Math.pow(2,t.numFases()-p.getFaseNum())*2;
+        }
 
         // Actualizar datos de los usuarios implicados
         char gan = p.getGanador();

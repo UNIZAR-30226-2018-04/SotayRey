@@ -6,14 +6,15 @@
 
 package basedatos.dao;
 
-import basedatos.modelo.PartidaVO;
-import basedatos.modelo.UsuarioVO;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-
 import java.math.BigInteger;
 import java.sql.*;
+
+import basedatos.exceptions.ExceptionCampoInvalido;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import basedatos.modelo.*;
 
 public class PartidaDAO {
     public static void insertarNuevaPartida(PartidaVO p, ComboPooledDataSource pool) throws SQLException {
@@ -30,7 +31,11 @@ public class PartidaDAO {
                         sd.format(p.getTimeInicio()) + "'," + p.isPublica() + ")";
             }
             else{
-                insertPartida = "INSERT INTO partida (publica) VALUES (" + (p.isPublica()? 1:0) + ")";
+                if (p.getTorneoId() == 0) {
+                    insertPartida = "INSERT INTO partida (publica) VALUES (" + (p.isPublica() ? 1 : 0) + ")";
+                } else {
+                    insertPartida = "INSERT INTO partida (fase_num, fase_torneo,publica) VALUES (" + p.getFaseNum() + "," + p.getTorneoId() +",1)";
+                }
             }
 
             statement.executeUpdate(insertPartida);
@@ -417,6 +422,104 @@ public class PartidaDAO {
         if (connection != null) connection.close();
 
         return partidasCurso;
+    }
+
+    public static void obtenerPartidasFaseTorneo(FaseVO f, ComboPooledDataSource pool) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = pool.getConnection();
+            statement = connection.createStatement();
+
+            UsuarioVO u1;
+            UsuarioVO u2;
+            ArrayList<UsuarioVO> usersp;
+            ArrayList<UsuarioVO> ual = f.getParticipantes();
+            ArrayList<PartidaVO> pal = f.getParejas();
+
+            ResultSet res = statement.executeQuery("select p.id, j.usuario1, jj.usuario2 from partida p, juega j, juega jj where p.id = 2 and j.partida=p.id and jj.partida=p.id and j.usuario > jj.usuario AND p.fase_torneo = "+f.getTorneoId() + " AND p.fase_num = "+f.getNum());
+
+            while(res.next()) {
+                 u1 = new UsuarioVO();
+                 u1.setUsername(res.getString("usuario1"));
+                 u2 = new UsuarioVO();
+                 u2.setUsername(res.getString("usuario2"));
+                 ual.add(u1);
+                 ual.add(u2);
+                 usersp = new ArrayList<>();
+                 usersp.add(u1);
+                 usersp.add(u2);
+                 pal.add(new PartidaVO(new BigInteger(res.getString("id")),f.getNum(),f.getTorneoId(),true,usersp));
+            }
+        } catch (SQLException e ) {
+            if (connection != null) {
+                System.err.print("Transaction is being rolled back");
+                connection.rollback();
+            }
+            throw e;
+        } finally {
+            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (connection != null) try { connection.close();} catch (SQLException e) {e.printStackTrace();}
+        }
+    }
+
+    public static void finalizarPartidaFaseTorneo(PartidaVO p, ComboPooledDataSource pool) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = pool.getConnection();
+            statement = connection.createStatement();
+
+            if (p.getFaseNum()>1) {
+                if (p.getGanador() == 'A') {
+                    if (p.getAbandonador() == 1) {
+                        statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('" + p.getUsuarios().get(2).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + ")");
+                    } else {
+                        statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('" + p.getUsuarios().get(1).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + ")");
+                    }
+                } else if (p.getGanador() == '1') {
+                    statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('" + p.getUsuarios().get(1).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + ")");
+                } else {
+                    statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('" + p.getUsuarios().get(2).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + ")");
+                }
+
+                ResultSet res = statement.executeQuery("SELECT COUNT(*) total FROM participa_fase p WHERE p.fase_num =" + (p.getFaseNum() - 1) + "AND p.fase_torneo=" + p.getTorneoId());
+                res.next();
+                int participantes = res.getInt("total");
+
+                if (participantes == Math.pow(2, p.getFaseNum())) {
+                    // El torneo esta lleno, se produce el emparejamiento
+                    res = statement.executeQuery("SELECT p.usuario FROM participa_fase p WHERE p.fase_num =" + (p.getFaseNum() - 1) + "AND p.fase_torneo=" + p.getTorneoId());
+
+                    UsuarioVO u1;
+                    UsuarioVO u2;
+                    ArrayList<UsuarioVO> ual;
+                    PartidaVO pp;
+
+                    while (res.next()) {
+                        u1 = new UsuarioVO();
+                        u1.setUsername(res.getString("usuario"));
+                        res.next();
+                        u2 = new UsuarioVO();
+                        u2.setUsername(res.getString("usuario"));
+                        ual = new ArrayList<>();
+                        ual.add(u1);
+                        ual.add(u2);
+                        pp = new PartidaVO(p.getFaseNum() - 1, p.getTorneoId(), true, ual);
+                        PartidaDAO.insertarNuevaPartida(pp, pool);
+                    }
+                }
+            }
+        } catch (SQLException e ) {
+            if (connection != null) {
+                System.err.print("Transaction is being rolled back");
+                connection.rollback();
+            }
+            throw e;
+        } finally {
+            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (connection != null) try { connection.close();} catch (SQLException e) {e.printStackTrace();}
+        }
     }
 }
 
