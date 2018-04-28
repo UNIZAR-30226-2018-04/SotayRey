@@ -88,9 +88,9 @@
                                    placeholder="Contraseña">
                         </div>
                         <button type="submit" class="btn btn-primary">Entrar</button>
-                        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-                        </fb:login-button>
                     </form>
+                    <fb:login-button scope="public_profile,email" size="large" onlogin="checkLoginState();">
+                    </fb:login-button>
                 </div>
             </div>
             <div class="card col-md-6">
@@ -129,6 +129,39 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Registrarme</button>
                     </form>
+                    <button class="btn btn-primary" role="button"
+                            data-toggle="modal" data-target="#myModal">Registro con Facebook
+                    </button>
+
+                    <!-- Modal modificar usuario -->
+                    <div id="myModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                                <div class="modal-header text-center">
+                                    <h4 class="modal-title w-100 font-weight-bold">Crear nuevo usuario</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body container mx-4">
+                                    <div class="row">
+                                            <form action="/LoginServlet.do" method="post">
+                                                <div class="form-group">
+                                                    <label for="modUsername">Usuario</label>
+                                                    <input type="text" class="form-control" id="modUsername" placeholder="Usuario">
+                                                </div>
+                                                <!--<button type="submit" class="btn btn-primary">
+                                                    <i class="fa fa-save mr-2" aria-hidden="true"></i>Guardar</button>-->
+                                            </form>
+                                    </div>
+                                    <fb:login-button scope="public_profile,email" size="large" onlogin="checkLoginState();">
+                                    </fb:login-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

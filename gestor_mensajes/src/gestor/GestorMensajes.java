@@ -30,9 +30,7 @@ public class GestorMensajes {
         if (bd == null) {
             try {
                 bd = InterfazDatos.instancia();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (PropertyVetoException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

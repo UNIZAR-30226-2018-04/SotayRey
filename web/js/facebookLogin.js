@@ -1,5 +1,5 @@
 // This is called with the results from from FB.getLoginStatus().
-function statusChangeCallback(response) {
+function statusChangeCallback(action, response) {
     console.log('statusChangeCallback');
     console.log(response);
     // The response object is returned with a status field that lets the
@@ -8,7 +8,7 @@ function statusChangeCallback(response) {
     // for FB.getLoginStatus().
     if (response.status === 'connected') {
         // Logged into your app and Facebook.
-        testAPI();
+        testAPI(action);
     } else {
         // The person is not logged into your app or we are unable to tell and isn't on the login view.
         if (window.location.href.indexOf("https://localhost:8443/jsp/login.jsp") == -1) {
@@ -21,9 +21,9 @@ function statusChangeCallback(response) {
 // This function is called when someone finishes with the Login
 // Button.  See the onlogin handler attached to it in the sample
 // code below.
-function checkLoginState() {
-    FB.getLoginStatus(function(response) {
-        statusChangeCallback(response);
+function checkLoginState(action) {
+    FB.getLoginStatus(function(action, response) {
+        statusChangeCallback(action, response);
     });
 }
 
@@ -48,9 +48,9 @@ window.fbAsyncInit = function() {
     //
     // These three cases are handled in the callback function.
 
-    FB.getLoginStatus(function(response) {
-        statusChangeCallback(response);
-    });
+    //FB.getLoginStatus(function(response) {
+    //    statusChangeCallback(response);
+    //});
 
 };
 
@@ -65,13 +65,20 @@ window.fbAsyncInit = function() {
 
 // Here we run a very simple test of the Graph API after login is
 // successful.  See statusChangeCallback() for when this call is made.
-function testAPI() {
+function testAPI(action) {
     console.log('Welcome!  Fetching your information.... ');
     FB.api('/me', {fields: 'first_name, last_name, email'}, function(response) {
         console.log(response);
         console.log('Successful login for: ' + response.name + ' ' + response.email);
         //document.getElementById('status').innerHTML =
         //    'Thanks for logging in, ' + response.name + '!';
-        window.location = "https://localhost:8443/RegistroServlet.do?facebook=yes&nick=" + response.id + "&email=" + response.email + "&name=" + response.first_name + "&lastName=" + response.last_name;
+        if (action === 'login') {
+            window.location = "https://localhost:8443/RegistroServlet.do?facebook=yes&nick=" + response.id + "&email=" + response.email + "&name=" + response.first_name + "&lastName=" + response.last_name;
+        } else if (action === 'register') {
+            window.location = "https://localhost:8443/RegistroServlet.do?facebook=yes&nick=" + response.id + "&email=" + response.email + "&name=" + response.first_name + "&lastName=" + response.last_name;
+        } else {
+
+        }
+
     });
 }
