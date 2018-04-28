@@ -53,7 +53,7 @@ public class UsuarioDAO {
                 postvalues = postvalues + ", 1";
             } else {
                 prevalues = prevalues + ", pw_hash";
-                postvalues = postvalues + ", NULL,'" + hashPassword(u.getPlaintextPassword()) + "'";
+                postvalues = postvalues + ", 0,'" + hashPassword(u.getPlaintextPassword()) + "'";
             }
             prevalues = prevalues + ")";
             postvalues = postvalues + ")";
