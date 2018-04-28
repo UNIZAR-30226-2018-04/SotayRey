@@ -23,30 +23,50 @@ public class PartidaVO {
     private int puntos2; // puntos obtenidos por el equipo2
     private int abandonador; // Jugador que abandono la partida (1,2,3 o 4), si nadie abandona 0
 
-    /* Constructor para crear una nueva partida en curso sin especificar el time de Inicio, 
+    private int faseNum; // Fase del torneo
+    private BigInteger torneoId; //Id del torneo de la partida
+
+    /* Constructor para crear una nueva partida en curso sin especificar el time de Inicio,
      * (se actualizará automáticamente en la base de datos) los miembros del equipo
      * uno deben ir en las posiciones pares del vector, los miembros del equipo dos
      * en las impares.
-     */    
+     */
+
     public PartidaVO(boolean publica, List<UsuarioVO> usuarios) {
         this.publica = publica;
         this.usuarios = usuarios;
-    }    
-
+    }
     /* Constructor para crear una nueva partida en curso, los miembros del equipo
      * uno deben ir en las posiciones pares del vector, los miembros del equipo dos
      * en las impares
      */
+
     public PartidaVO(Timestamp timeInicio, boolean publica, List<UsuarioVO> usuarios) {
         this.timeInicio = timeInicio;
         this.publica = publica;
         this.usuarios = usuarios;
     }
 
+    public PartidaVO(int faseNum, BigInteger torneoId, boolean publica, List<UsuarioVO> usuarios) {
+        this.publica = publica;
+        this.usuarios = usuarios;
+        this.faseNum = faseNum;
+        this.torneoId = torneoId;
+    }
+
+    public PartidaVO(BigInteger id, int faseNum, BigInteger torneoId, boolean publica, List<UsuarioVO> usuarios) {
+        this.id = id;
+        this.publica = publica;
+        this.usuarios = usuarios;
+        this.faseNum = faseNum;
+        this.torneoId = torneoId;
+    }
+
     /* Constructor para crear una partida con todos los datos, los miembros del equipo
      * uno deben ir en las posiciones pares del vector, los miembros del equipo dos
      * en las impares
      */
+
     public PartidaVO(BigInteger id, Timestamp timeInicio, Timestamp timeFin, boolean publica, char ganador, List<UsuarioVO> usuarios, List<Integer> cuarentas, List<Integer> veintes, int puntos1, int puntos2, int abandonador) {
         this.id = id;
         this.timeInicio = timeInicio;
@@ -59,6 +79,21 @@ public class PartidaVO {
         this.puntos1 = puntos1;
         this.puntos2 = puntos2;
         this.abandonador = abandonador;
+    }
+    public int getFaseNum() {
+        return faseNum;
+    }
+
+    public void setFaseNum(int faseNum) {
+        this.faseNum = faseNum;
+    }
+
+    public BigInteger getTorneoId() {
+        return torneoId;
+    }
+
+    public void setTorneoId(BigInteger torneoId) {
+        this.torneoId = torneoId;
     }
 
     public BigInteger getId() {
