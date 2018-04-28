@@ -54,6 +54,7 @@ function preload() {
     game.load.image('avatar', 'assets/avatar.png');
     game.load.image('victoria', 'assets/victoria.png');
     game.load.image('derrota', 'assets/derrota.png');
+    game.load.image('dorsoBase', 'assets/dorsoBase.png');
     game.load.audio('musica', ['assets/musica.mp3']);
 }
 
@@ -127,7 +128,6 @@ function inicializarDispositivo(){
     jRef.cartaLanzada;
     jRef.numCartas;
     jRef.cartasEnMano = game.add.group();
-    jRef.dorso;
     jRef.rotacion = 0;
     jRef.nombreUsuario = game.add.text(jRef.XLanzar + ejeXCarta * 1.10, jRef.YLanzar + ejeYCarta * 0.8, 'usuarioRef', {font: fuente, fill: color});
     jRef.avatar = game.add.sprite(jRef.XLanzar + ejeXCarta*1.10, jRef.YLanzar + avatarEjeY/2, 'avatar');
@@ -135,6 +135,7 @@ function inicializarDispositivo(){
     //jRef.avatar.body.setCircle(45);
     jRef.avatar.height = avatarEjeY;
     jRef.avatar.width = avatarEjeX;
+    jRef.dorso = 'dorsoBase';
 
 
     jIzq = {};
@@ -147,7 +148,6 @@ function inicializarDispositivo(){
     jIzq.cartaLanzada;
     jIzq.numCartas;
     jIzq.cartasEnMano = game.add.group();
-    jIzq.dorso;
     jIzq.rotacion = 90;
     if (numJugadores == 4){
         jIzq.nombreUsuario = game.add.text(jIzq.XLanzar - ejeYCarta, jIzq.YLanzar - 30, 'usuarioIzq', {font: fuente, fill: color});
@@ -155,6 +155,7 @@ function inicializarDispositivo(){
         jIzq.avatar.height = avatarEjeY;
         jIzq.avatar.width = avatarEjeX;
     }
+    jIzq.dorso = 'dorsoBase';
 
     jArriba = {};
     jArriba.XPosMedia = ejeX / 2;
@@ -166,7 +167,6 @@ function inicializarDispositivo(){
     jArriba.cartaLanzada;
     jArriba.numCartas;
     jArriba.cartasEnMano = game.add.group();
-    jArriba.dorso;
     jArriba.rotacion = 0;
     jArriba.nombreUsuario = game.add.text(jArriba.XLanzar + ejeXCarta + 10, jArriba.YLanzar + ejeYCarta/2, 'usuarioArriba', {font: fuente, fill: color});
     jArriba.avatar = game.add.sprite(jArriba.XLanzar + ejeXCarta + 30, jArriba.YLanzar, 'avatar');
@@ -174,6 +174,7 @@ function inicializarDispositivo(){
     //jRef.avatar.body.setCircle(45);
     jArriba.avatar.height = avatarEjeY;
     jArriba.avatar.width = avatarEjeX;
+    jArriba.dorso;
 
 
     jDer = {};
@@ -186,8 +187,8 @@ function inicializarDispositivo(){
     jDer.cartaLanzada;
     jDer.numCartas;
     jDer.cartasEnMano = game.add.group();
-    jDer.dorso;
     jDer.rotacion = 270;
+    jDer.dorso = 'dorsoBase';
 
     if (numJugadores == 4){
         jDer.nombreUsuario = game.add.text(jDer.XLanzar, jDer.YLanzar - ejeXCarta - 30, 'usuarioIzq', {font: fuente, fill: color});
@@ -628,6 +629,8 @@ function representarEstado(estado){
             dibujarJugador(jugador);
             jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
             dibujarCartaLanzada(jugador);
+           // jugador.avatar.loadTexture(item.avatar);
+            jugador.avatar.loadTexture("avatar.png");
             arrayJugadores[item.id] = jugador;
         }
         else{
@@ -733,7 +736,7 @@ function crearCarta(numero, palo){
         carta = game.add.sprite(0, 0, 'cuadroCarta');
     }
     else{
-        carta = game.add.sprite(0, 0, 'cartas');
+        carta = crearDorso(numero, palo);
         carta.frame = indice;
     }
     carta.numero = numero; // Si no se pone despues el game.add lo machaca
