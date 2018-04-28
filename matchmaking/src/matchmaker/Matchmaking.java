@@ -215,6 +215,7 @@ public class Matchmaking {
         int i = 0;
         for (JugadorMatch jug : lobby) {
             enviarListo(jug, conIA, idPartida, i);
+            i++;
         }
     }
 
