@@ -44,7 +44,7 @@
                         <div class="form-group">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                 <label class="btn btn-secondary active">
-                                    <input type="radio" name="tipoRival" id="option1" autocomplete="off" value="false" checked> Multijugador
+                                    <input type="radio" name="tipoRival" autocomplete="off" value="false" checked> Multijugador
                                 </label>
                                 <label class="btn btn-secondary">
                                     <input type="radio" name="tipoRival" value = "true" autocomplete="off"> IA
@@ -54,14 +54,14 @@
                         <div class="form-group">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                 <label class="btn btn-secondary active">
-                                    <input type="radio" name="tipoPartidaPublica" id="option1" autocomplete="off" value="4" checked> Parejas
+                                    <input type="radio" name="tipoPartidaPublica" autocomplete="off" value="4" checked> Parejas
                                 </label>
                                 <label class="btn btn-secondary">
                                     <input type="radio" name="tipoPartidaPublica" value = "2" autocomplete="off"> Uno contra uno
                                 </label>
                             </div>
                         </div>
-                        <button type="button" onclick="buscarPartida()" class="btn btn-default submit" data-toggle="modal" data-target="#myModal"><i class="fa fa-paper-plane" aria-hidden="true"></i>Buscar partida</button>
+                        <button type="button" onclick="buscarPartida()" class="btn btn-default submit" data-toggle="modal" data-target="#buscarPartida"><i class="fa fa-paper-plane" aria-hidden="true"></i>Buscar partida</button>
                     </form>
                 </div>
             </div>
@@ -169,45 +169,69 @@ recibirMensaje("{
  -->
 
 <script>
+
+    function getRadioValue(campo)
+    {
+        for (var i = 0; i < document.getElementsByName(campo).length; i++)
+        {
+            if (document.getElementsByName(campo)[i].checked)
+            {
+                return document.getElementsByName(campo)[i].value;
+            }
+        }
+    }
+
+
     var socket;
     function buscarPartida(){
-        /*   socket = new WebSocket("ws://localhost:8080/matchmaking");
-         socket.onmessage = function (msg) {
-         console.log(msg.data);
-         recibirMensaje(msg.data);
-         };*/
+        socket = new WebSocket("ws://localhost:8080/matchmaking");
 
-        var listo = {
-            "tipo_mensaje" : "busco_partida",
-            "nombre_participante" : "miUsuario",
-            "total_jugadores" : document.getElementsByName("tipoPartidaPublica")[0].value,
-            "con_ia" : document.getElementsByName("tipoRival")[0].value,
-        }
-        var msg = JSON.stringify(listo);
-        console.log(msg);
-        //  socket.send(msg);
+        var nombre_jugador = nombreUsuario;
+        var socket = new WebSocket("ws://localhost:8080/matchmaking");
+        var listo = JSON.stringify({
+            "tipo_mensaje": "busco_partida",
+            "nombre_participante": nombre_jugador,
+            "tipo_partida": "publica",
+            "total_jugadores": parseInt(getRadioValue("tipoPartidaPublica")),
+            "con_ia" : false
+            //"con_ia": document.getElementsByName("tipoRival")[0].value
+        });
+
+        //console.log(msg);
+        //socket.send(msg)
+        socket.onopen = function() {
+            console.log(listo);
+            socket.send(listo);
+        };
+        socket.onmessage = function (msg) {
+            recibirMensaje(msg.data);
+            console.log(msg.data);
+        };
     }
 
     function cerrarSocket(){
-        //webSocket.close();
+        socket.close();
         console.log("socket cerrado");
     }
 
     function recibirMensaje(msg){
         console.log("HE RECIBIDO UN MENSAJE");
-        /*
+
          var mensaje = JSON.parse(msg);
+
+         // TODO otro tipo de mensaje que no sea partida lista?
          var total_jugadores = mensaje.total_jugadores;
          var id_partida = mensaje.id_partida;
          var nombre_jugador = mensaje.nombre_jugador;
          var id_jugador = mensaje.id_jugador;
          var con_ia = mensaje.con_ia;
-         */
-        var id_partida = 2392383;
-        var id_jugador = 1213;
-        var nombre_jugador = "juegadorPrueba";
-        var parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador;
-        window.location.replace("../../gui_partida/juego.html?"+parametros);
+
+       // var id_partida = 2392383;
+       // var id_jugador = 1213;
+       // var nombre_jugador = "juegadorPrueba";
+       // var parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador;
+        parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores;
+        window.location.replace("../juego.html?"+parametros);
 
     }
 
@@ -219,7 +243,7 @@ recibirMensaje("{
 
 <div class="container">
     <!-- Modal -->
-    <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal fade" id="buscarPartida" role="dialog">
         <div class="modal-dialog">
 
             <!-- Modal content-->
@@ -268,81 +292,6 @@ recibirMensaje("{
 
 </div>
 
-
-
-
-<div class="container">
-    <!-- Modal -->
-    <div class="modal fade" id="espectarPartida" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title text-center">Seleccione una partida para unirse</h4>
-                </div>
-                <div class="modal-body text-center">
-                    <table class="table table-hover" id="rank-table">
-                        <thead>
-                        <tr>
-                            <th>Hora de inicio</th>
-                            <th>Jugadores</th>
-                            <th>Puntos</th>
-                            <th>Espectar</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>
-                                20:00
-                            </td>
-                            <td>
-                                Pepito, Marco, Alicia, Bob
-                            </td>
-                            <td>
-                                <span style="color: red">25 </span> / <span style="color: blue">40 </span>
-                            </td>
-
-                            <td>
-                                <button type="button" class="btn btn-success">Espectar</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>05/05/2018 20:00</td>
-                            <td>
-                                Pepito, Marco, Alicia, Bob
-                            </td>
-                            <td>
-                                <span style="color: red">25 </span> / <span style="color: blue">40 </span>
-                            </td>
-
-                            <td>
-                                <button type="button" class="btn btn-success">Espectar</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>05/05/2018 20:00</td>
-                            <td>
-                                Pepito, Marco, Alicia, Bob
-                            </td>
-                            <td>
-                                <span style="color: red">25 </span> / <span style="color: blue">40 </span>
-                            </td>
-
-                            <td>
-                                <button type="button" class="btn btn-success">Espectar</button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-</div>
 
 </body>
 </html>
