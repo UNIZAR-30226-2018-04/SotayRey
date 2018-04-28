@@ -11,19 +11,16 @@
     <title>$Title$</title>
     <script>
         var id_partida = 0;
-        var id_jugador = 0;
-        var nombre_jugador = "jugador0";
-        var total_parts = 2;
-        var socket = new WebSocket("ws://localhost:8080/endpoint");
+        var id_jugador = 1;
+        var nombre_jugador = "abadgabriel";
+        var total_parts = 4;
+        var socket = new WebSocket("ws://localhost:8080/matchmaking");
         var listo = JSON.stringify({
-            "tipo_mensaje": "listo_jugador",
+            "tipo_mensaje": "busco_partida",
             "nombre_participante": nombre_jugador,
+            "tipo_partida": "publica",
             "total_jugadores": total_parts,
-            "tipo_participante": "jugador",
-            "remitente": {
-                "id_partida": id_partida,
-                "id_jugador": id_jugador
-            }
+            "con_ia": false
         });
         socket.onopen = function() {
             socket.send(listo);
@@ -32,11 +29,11 @@
             console.log(msg.data);
         };
         function send() {
-          socket.send(string);
+            socket.send(string);
         }
     </script>
   </head>
   <body>
-  <button onclick="send()">Hola0</button>
+  <button onclick="send()">Hola1</button>
   </body>
 </html>
