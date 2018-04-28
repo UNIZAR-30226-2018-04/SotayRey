@@ -26,9 +26,10 @@ public class TorneoVO {
 	private int premioPuntuacionPrimera;
 	private int premioDivisaPrimera;
 
-    public TorneoVO() { this.numFases = -1; }
+    public TorneoVO() { this.numFases = -1; this.premioPuntuacionPrimera = -1; this.premioDivisaPrimera = -1;}
 
-    public TorneoVO(String nombre, String descripcion, Timestamp timeInicio, Timestamp timeCreacion, boolean individual, int numFases, int premioPuntuacionPrimera, int premioDivisaPrimera) throws ExceptionCampoInvalido {
+	/* Constructor completo con descripcion del torneo */    
+	public TorneoVO(String nombre, String descripcion, Timestamp timeInicio, boolean individual, int numFases, int premioPuntuacionPrimera, int premioDivisaPrimera) throws ExceptionCampoInvalido {
         // Comprobar que la longitud de los campos no sea mayor que los limites de la base de datos
         if (nombre.length()>50){
             // Lanzar excepción de campo no válido
@@ -38,12 +39,12 @@ public class TorneoVO {
         this.descripcion = descripcion;
         this.individual = individual;
 		this.timeInicio = timeInicio;
-		this.timeCreacion = timeCreacion;
 		this.numFases = numFases;
 		this.premioPuntuacionPrimera = premioPuntuacionPrimera;
 		this.premioDivisaPrimera = premioDivisaPrimera;
     }
 
+	/* Constructor completo pero sin descripcion del torneo */  
 	public TorneoVO(String nombre, Timestamp timeInicio, boolean individual, int numFases, int premioPuntuacionPrimera, int premioDivisaPrimera) throws ExceptionCampoInvalido {
         // Comprobar que la longitud de los campos no sea mayor que los limites de la base de datos
         if (nombre.length()>50){
@@ -102,12 +103,32 @@ public class TorneoVO {
         this.descripcion = descripcion;    
     }
 
-    public void setPorcentajeMin(int porcentajeMin){
-        this.porcentajeMin = porcentajeMin;    
+	public void setId(BigInteger id){
+		this.id = id;
+	}
+
+	public void setTimeCreacion(Timestamp t){
+		this.timeCreacion = t;
+	}
+
+	public void setTimeInicio(Timestamp t){
+		this.timeInicio = t;
+	}
+
+	public void setIndividual(boolean individual){
+		this.individual = individual;
+	}
+
+	public void setNumFases(int numFases){
+		this.numFases = numFases;
+	}
+
+    public void setPremioPuntuacionPrimera(int p){
+        this.premioPuntuacionPrimera = p;  
     }
 
-    public void setPorcentajeMax(int porcentajeMax){
-        this.porcentajeMax = porcentajeMax;    
+    public void setPremioDivisaPrimera(int d){
+        this.premioDivisaPrimera = d;   
     }
        
 }
