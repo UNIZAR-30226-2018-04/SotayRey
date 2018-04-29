@@ -17,12 +17,20 @@ public class PruebaJulia {
     public static void main(String[] args) throws ExceptionCampoInexistente, ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException {
 
 		System.out.println("hola");
-		Timestamp ts = java.sql.Timestamp.valueOf("2007-09-23 10:54:09.0");
-        TorneoVO t = new TorneoVO("torneo1", "descripcion1", ts, true, 5, 2, 1);
-
-		System.out.println(t.getNombre());
+		Timestamp ts = java.sql.Timestamp.valueOf("2018-09-23 10:54:09.0");
+        TorneoVO t = new TorneoVO("torneo2", "descripcion1", ts, true, 5, 2, 1);
 
 		InterfazDatos.instancia().crearTorneo(t);
+
+		t.setDescripcion("una descripcion cambiada");
+		t.setNumFases(8);
+		t.setPremioPuntuacionPrimera(8);
+
+		InterfazDatos.instancia().modificarTorneo(t);
+		
+		//InterfazDatos.instancia().eliminarTorneo(t.getId());
+		//InterfazDatos.instancia().eliminarTorneo(2);
+		//InterfazDatos.instancia().eliminarTorneo(1);
 
 //a = new ArrayList<>();
 //v = new ArrayList<>(Collections.nCopies(2, 0));

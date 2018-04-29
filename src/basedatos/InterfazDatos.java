@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Properties;
 import java.io.FileInputStream;
 import java.util.List;
+import java.math.BigInteger;
 
 import basedatos.exceptions.*;
 import basedatos.dao.*;
@@ -136,9 +137,27 @@ public class InterfazDatos {
     }
 
 	/* Se crea un nuevo torneo con todas sus fases, se devuelve en t el id del torneo por si se necesita
+	 * El tiempo de inicio del torneo debe ser posterior al momento actual (en caso contrario, ExceptionCampoInvalido)
 	 */
-	public void crearTorneo(TorneoVO t) throws SQLException {
+	public void crearTorneo(TorneoVO t) throws ExceptionCampoInvalido, SQLException {
 		TorneoDAO.crearTorneo(t, this.cpds);
+	}
+
+	/* Modifica los datos del torneo (solamente aquellos atributos de t que no son null). 
+	 * t debe contener su id correspondiente de la base de datos (consultarlo con crearTorneo, o obtenerTorneosProgramados)
+	 * Solo es posible realizar esta operación si el torneo no ha comenzado todavía (timeInicio > timeActual) y
+	 * por tanto, no hay usuarios apuntados.
+	 */
+	public void modificarTorneo(TorneoVO t) throws ExceptionCampoInvalido, ExceptionCampoInexistente, SQLException {
+		TorneoDAO.modificarTorneo(t, this.cpds);
+	}
+
+	/* Elimina el torneo identificado por "id" y todas sus fases.
+	 * Solo es posible realizar esta operación si el torneo no ha comenzado todavía (timeInicio > timeActual) y
+	 * por tanto, no hay usuarios apuntados.
+	 */
+	public void eliminarTorneo(BigInteger id) throws ExceptionCampoInvalido, ExceptionCampoInexistente, SQLException {
+		TorneoDAO.eliminarTorneo(id, this.cpds);	
 	}
 
     /* Inserta al Usuario u al Torneo t en su fase inicial. Si u llena el numero de participantes de la fase
