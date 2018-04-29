@@ -160,6 +160,19 @@ public class InterfazDatos {
 		TorneoDAO.eliminarTorneo(id, this.cpds);	
 	}
 
+	/* Devuelve todos los datos del torneo identificado por "id"
+	 */
+	public TorneoVO obtenerDatosTorneo(BigInteger id) throws ExceptionCampoInexistente, SQLException {
+		return TorneoDAO.obtenerDatosTorneo(id, this.cpds);
+	}
+
+	/* Devuelve todos los torneos programados (no finalizados ni llenos) a los que el usuario puede o podrá en un futuro apuntarse
+	 * Para poder saber si es posible apuntarse en un torneo comprobar que timeInicio < timeActual
+	 */
+	public ArrayList<TorneoVO> obtenerTorneosProgramados() throws SQLException {
+		return TorneoDAO.obtenerTorneosProgramados(this.cpds);
+	}
+
     /* Inserta al Usuario u al Torneo t en su fase inicial. Si u llena el numero de participantes de la fase
      * se produce el emparejamiento
      */

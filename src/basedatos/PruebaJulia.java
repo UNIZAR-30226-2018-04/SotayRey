@@ -16,21 +16,38 @@ public class PruebaJulia {
 
     public static void main(String[] args) throws ExceptionCampoInexistente, ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException {
 
-		System.out.println("hola");
-		Timestamp ts = java.sql.Timestamp.valueOf("2018-09-23 10:54:09.0");
-        TorneoVO t = new TorneoVO("torneo2", "descripcion1", ts, true, 5, 2, 1);
+		Timestamp ts = java.sql.Timestamp.valueOf("2018-01-23 10:54:09.0");
+        TorneoVO t = new TorneoVO("torneo2", "descripcion1", ts, true, 3, 2, 1);
+		
+		UsuarioVO u1 = InterfazDatos.instancia().obtenerDatosUsuario("zcarrera");
+		UsuarioVO u2 = InterfazDatos.instancia().obtenerDatosUsuario("yolanda86");
+		UsuarioVO u3 = InterfazDatos.instancia().obtenerDatosUsuario("viniesta");
+		UsuarioVO u4 = InterfazDatos.instancia().obtenerDatosUsuario("somozablanca");
+		UsuarioVO u5 = InterfazDatos.instancia().obtenerDatosUsuario("rosario31");
+		UsuarioVO u6 = InterfazDatos.instancia().obtenerDatosUsuario("nplanas");
+		UsuarioVO u7 = InterfazDatos.instancia().obtenerDatosUsuario("inmaculada13");
+		UsuarioVO u8 = InterfazDatos.instancia().obtenerDatosUsuario("godoydiego");
 
 		InterfazDatos.instancia().crearTorneo(t);
 
-		t.setDescripcion("una descripcion cambiada");
-		t.setNumFases(8);
-		t.setPremioPuntuacionPrimera(8);
+//		t.setDescripcion("una descripcion cambiada");
+//		t.setNumFases(8);
+//		t.setPremioPuntuacionPrimera(8);
 
-		InterfazDatos.instancia().modificarTorneo(t);
-		
-		//InterfazDatos.instancia().eliminarTorneo(t.getId());
-		//InterfazDatos.instancia().eliminarTorneo(2);
-		//InterfazDatos.instancia().eliminarTorneo(1);
+//		InterfazDatos.instancia().modificarTorneo(t);
+//		
+//		TorneoVO t2 = InterfazDatos.instancia().obtenerDatosTorneo(t.getId());
+//		System.out.println("torneo " + t2.getNombre() + " desc: " + t2.getDescripcion() + "timeInicio: " + t2.getTimeInicio() + "numFases: " + t2.getNumFases() + "premiopunt: " + t2.getPremioPuntuacionPrimera() + "premiodiv: "+ t2.getPremioDivisaPrimera());
+
+//		InterfazDatos.instancia().eliminarTorneo(t2.getId());
+
+		InterfazDatos.instancia().apuntarTorneo(u1,t);
+		InterfazDatos.instancia().apuntarTorneo(u2,t);
+
+		ArrayList<TorneoVO> resultadoguay = InterfazDatos.instancia().obtenerTorneosProgramados();
+		for(int i = 0; i<resultadoguay.size(); i++){
+			System.out.println(resultadoguay.get(i).getNombre() + resultadoguay.get(i).getDescripcion());
+		}
 
 //a = new ArrayList<>();
 //v = new ArrayList<>(Collections.nCopies(2, 0));

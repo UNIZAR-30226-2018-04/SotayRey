@@ -14,6 +14,7 @@ import java.math.BigInteger;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TorneoDAO {
 	
@@ -28,9 +29,9 @@ public class TorneoDAO {
 
 		Timestamp actualts = new Timestamp(System.currentTimeMillis());
 		
-		if(actualts.after(t.getTimeInicio())){
-			throw new ExceptionCampoInvalido("El tiempo de inicio debe ser posterior a la fecha actual");		
-		}
+//		if(actualts.after(t.getTimeInicio())){
+//			throw new ExceptionCampoInvalido("El tiempo de inicio debe ser posterior a la fecha actual");		
+//		}
 		
 		String prevalues = "INSERT INTO torneo (nombre";
         String postvalues = " VALUES ('" + t.getNombre() + "'";
@@ -162,17 +163,113 @@ public class TorneoDAO {
         String delete = "DELETE FROM torneo WHERE id = " + id;
         statement.executeUpdate(delete);
 
-		delete = "DELETE FROM fase WHERE torneo = " + id;
-		statement.executeUpdate(delete);
+		// Realmente no sería necesario borrar sus fases porque se borran en CASCADE
+//		delete = "DELETE FROM fase WHERE torneo = " + id;
+//		statement.executeUpdate(delete);
 
 		connection.commit();
         if (statement != null)  statement.close();
         if (connection != null) {connection.setAutoCommit(true); connection.close();}
 	}
 
-	public static TorneoVO obtenerDatosTorneo(BigInteger id, ComboPooledDataSource pool) throws ExceptionCampoInvalido, SQLException {
+	public static TorneoVO obtenerDatosTorneo(BigInteger id, ComboPooledDataSource pool) throws ExceptionCampoInexistente, SQLException {
+		Connection connection = null;
+        Statement statement = null;
+        connection = pool.getConnection();
+        statement = connection.createStatement();
+		connection.setAutoCommit(false);
+
 		TorneoVO t = new TorneoVO();
+		t.setId(id);
+
+		String query = "SELECT * FROM torneo WHERE id = " + id;
+        ResultSet resultSet = statement.executeQuery(query);
+
+        if(!resultSet.isBeforeFirst()){
+            throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Torneo " + id + "  no existente");
+        }
+		resultSet.next();
+		t.setNombre(resultSet.getString("nombre"));
+		t.setDescripcion(resultSet.getString("descripcion"));
+		t.setTimeCreacion(resultSet.getTimestamp("timeCreacion"));
+		t.setTimeInicio(resultSet.getTimestamp("timeInicio"));
+		t.setIndividual(resultSet.getBoolean("individual"));
+
+		query = "SELECT COUNT(*) num FROM fase WHERE torneo = " + id;
+        resultSet = statement.executeQuery(query);
+
+        if(!resultSet.isBeforeFirst()){
+            t.setNumFases(0);
+        }
+		else {
+			resultSet.next();
+			t.setNumFases(resultSet.getInt("num"));
+			query = "SELECT * FROM fase WHERE torneo = " + id + " and num = " + t.getNumFases();
+        	resultSet = statement.executeQuery(query);
+			resultSet.next();
+			t.setPremioPuntuacionPrimera(resultSet.getInt("premioPunt"));
+			t.setPremioDivisaPrimera(resultSet.getInt("premioDiv"));
+		}
+		
+		connection.commit();
+		if (statement != null)  statement.close();
+        if (connection != null) {connection.setAutoCommit(true); connection.close();}
+
 		return t;
+	}
+
+	public static ArrayList<TorneoVO> obtenerTorneosProgramados(ComboPooledDataSource pool) throws SQLException {
+		Connection connection = null;
+        Statement statement = null;
+        connection = pool.getConnection();
+        statement = connection.createStatement();
+		connection.setAutoCommit(false);
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Timestamp actualts = new Timestamp(System.currentTimeMillis());
+
+		// Selecciona aquellos torneos que no están llenos ni han comenzado todavía
+        String query = "SELECT * FROM torneo t WHERE t.timeInicio >= " + actualts + 
+			" and (((SELECT COUNT(*) FROM participa_fase where fase_torneo = t.id) < POW(2,(SELECT COUNT(*) FROM fase where torneo = t.id)) and t.individual = true) " + 
+			" or ((SELECT COUNT(*) FROM participa_fase where fase_torneo = t.id) < POW(4,(SELECT COUNT(*) FROM fase where torneo = t.id)) and t.individual = false))";
+        ResultSet resultSet = statement.executeQuery(query);
+
+		query = "SELECT * FROM fase f WHERE num = (SELECT COUNT(*) FROM fase f2 where f2.torneo = f.torneo)";
+		ResultSet resultSet2 = statement.executeQuery(query);
+
+        HashMap<BigInteger,TorneoVO> dic = new HashMap<>();
+
+        while (resultSet.next()) {
+			TorneoVO t = new TorneoVO();
+			t.setId(BigInteger.valueOf(resultSet.getLong("id")));
+			t.setNombre(resultSet.getString("nombre"));
+			t.setDescripcion(resultSet.getString("descripcion"));
+			t.setTimeCreacion(resultSet.getTimestamp("timeCreacion"));
+			t.setTimeInicio(resultSet.getTimestamp("timeInicio"));
+			t.setIndividual(resultSet.getBoolean("individual"));
+            dic.put(t.getId(), t);
+        }
+
+		while (resultSet2.next()) {
+			BigInteger torneo = BigInteger.valueOf(resultSet2.getLong("torneo"));
+			if(dic.containsKey(torneo)){
+				TorneoVO aux;
+				aux = dic.get(torneo);
+				aux.setNumFases(resultSet2.getInt("num"));
+				aux.setPremioPuntuacionPrimera(resultSet2.getInt("premioPunt"));
+				aux.setPremioDivisaPrimera(resultSet2.getInt("premioDiv"));
+				dic.put(torneo, aux);		
+			}
+        }
+
+		// Rellenar el array con los valores del hashmap
+		ArrayList<TorneoVO> programados = new ArrayList<TorneoVO>(dic.values());
+
+		connection.commit();
+        if (statement != null)  statement.close();
+        if (connection != null) {connection.setAutoCommit(true); connection.close();}
+
+        return programados;
 	}
 
     public static void apuntarTorneo(UsuarioVO p, TorneoVO t, ComboPooledDataSource pool) throws ExceptionCampoInvalido, SQLException {
@@ -213,7 +310,7 @@ public class TorneoDAO {
             } else {
                 throw new ExceptionCampoInvalido("El Torneo ya está lleno o todavía no ha empezado");
             }
-        } catch (SQLException e ) {
+        } catch (SQLException e) {
             if (connection != null) {
                 System.err.print("Transaction is being rolled back");
                 connection.rollback();

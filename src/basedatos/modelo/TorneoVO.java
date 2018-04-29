@@ -27,7 +27,7 @@ public class TorneoVO {
 	private int premioPuntuacionPrimera;
 	private int premioDivisaPrimera;
 
-    public TorneoVO() { this.numFases = -1; this.premioPuntuacionPrimera = -1; this.premioDivisaPrimera = -1; this.individual = true;}
+    public TorneoVO() { this.numFases = -1; this.premioPuntuacionPrimera = -1; this.premioDivisaPrimera = -1; this.individual = true; }
 
 	/* Constructor completo con descripcion del torneo */    
 	public TorneoVO(String nombre, String descripcion, Timestamp timeInicio, boolean individual, int numFases, int premioPuntuacionPrimera, int premioDivisaPrimera) throws ExceptionCampoInvalido {
@@ -131,5 +131,5 @@ public class TorneoVO {
     public void setPremioDivisaPrimera(int d){
         this.premioDivisaPrimera = d;   
     }
-       
+
 }
