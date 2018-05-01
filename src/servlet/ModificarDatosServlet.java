@@ -21,6 +21,7 @@ public class ModificarDatosServlet extends HttpServlet {
         String nombre = request.getParameter("modNombre");
         String apellidos = request.getParameter("modApellidos");
         String password = request.getParameter("modPass");
+        String rePassword = request.getParameter("modRePass");
         String oldPassword = request.getParameter("modOldPass");
 
         if(oldPassword == null){
@@ -42,6 +43,13 @@ public class ModificarDatosServlet extends HttpServlet {
         }
         if(password.equals("")){
             password = user.getPlaintextPassword();
+        } else{
+            if(!password.equals(rePassword)){
+                String error = new String("wrongRePass");
+                request.setAttribute("error", error);
+                response.sendRedirect("jsp/perfil.jsp");
+                return;
+            }
         }
 
         InterfazDatos facade;
@@ -62,7 +70,7 @@ public class ModificarDatosServlet extends HttpServlet {
             e.printStackTrace();
             String error = new String("userNotFound");
             request.setAttribute("error", error);
-            response.sendRedirect("jsp/login.jsp");
+            response.sendRedirect("jsp/perfil.jsp");
             return;
         }
 
@@ -75,7 +83,8 @@ public class ModificarDatosServlet extends HttpServlet {
                 String error = new String("again");
                 request.setAttribute("error", error);
                 response.sendRedirect("jsp/perfil.jsp");
-                return;            }
+                return;
+            }
 
             try {
                 facade.modificarDatosUsuario(nuevoUsuario);
@@ -99,7 +108,7 @@ public class ModificarDatosServlet extends HttpServlet {
         } else{
             String error = new String("userNotFound");
             request.setAttribute("error", error);
-            response.sendRedirect("jsp/login.jsp");
+            response.sendRedirect("jsp/perfil.jsp");
             return;
         }
 

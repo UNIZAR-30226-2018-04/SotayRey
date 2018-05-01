@@ -58,67 +58,67 @@
 
 <body>
     <div class="container">
-        <div class="row">
-            <% String error = (String) request.getAttribute("error"); %>
-            <%
-                if (error != null) { // Hay un error %>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <% String error = (String) request.getAttribute("error"); %>
+        <%
+            if (error != null) { // Hay un error %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
 
-                <%
-                    switch (error){
-                        case "userNotFound": %>
-                <strong>Usuario no encontrado o contraseña incorrecta.</strong> Inténtalo de nuevo.
-                <%
-                        break;
+            <%
+                switch (error){
+                    case "userNotFound": %>
+            <strong>Usuario no encontrado o contraseña incorrecta.</strong> Inténtalo de nuevo.
+            <%
+                    break;
                     case "adminNotFound":%>
-                <strong>No eres administrador del sistema</strong>
-                <%
-                        break;
+            <strong>No eres administrador del sistema</strong>
+            <%
+                    break;
                     case "emptyUser":%>
-                <strong>Introduzca un usuario</strong>
-                <%
-                        break;
+            <strong>Introduzca un usuario</strong>
+            <%
+                    break;
                     case "emptyPass":%>
-                <strong>Introduzca la contraseña actual</strong>
-                <%
-                        break;
+            <strong>Introduzca la contraseña actual</strong>
+            <%
+                    break;
                     case "emptyLastName":%>
-                <strong>Introduzca sus apellidos</strong>
-                <%
-                        break;
+            <strong>Introduzca sus apellidos</strong>
+            <%
+                    break;
                     case "emptyName":%>
-                <strong>Introduce tu nombre</strong>
-                <%
-                        break;
+            <strong>Introduce tu nombre</strong>
+            <%
+                    break;
                     case "emptyEmail":%>
-                <strong>Introduce tu correo electrónico</strong>
-                <%
-                        break;
+            <strong>Introduce tu correo electrónico</strong>
+            <%
+                    break;
                     case "emptyRePass":%>
-                <strong>Debes repetir la contraseña</strong>
-                <%
-                        break;
+            <strong>Debes repetir la contraseña</strong>
+            <%
+                    break;
                     case "wrongRePass":%>
-                <strong>La contraseña no coincide</strong>
-                <%
-                        break;
+            <strong>La contraseña no coincide</strong>
+            <%
+                    break;
                     case "sessionNotExist":%>
-                <strong>La sesión ha caducado.</strong> Inicie sesión de nuevo.
-                <%
-                        break;
+            <strong>La sesión ha caducado.</strong> Inicie sesión de nuevo.
+            <%
+                    break;
                     case "existentUser":%>
-                <strong>Usuario ya existente.</strong> Inténtalo con otro nombre de usuario.
-                <%
-                        break;
+            <strong>Usuario ya existente.</strong> Inténtalo con otro nombre de usuario.
+            <%
+                    break;
                     default:%>
-                <strong><%=error%></strong> Inténtalo con otra vez.
-                <%
-                    }%>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <% } %>
+            <strong><%=error%></strong> Inténtalo con otra vez.
+            <%
+                }%>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <% } %>
+        <div class="row">
             <div class="col-md-4 mt-4">
                 <img class="img-thumbnail" style="width: 400px" src="#" alt="imagen usuario">
             </div>
@@ -166,6 +166,10 @@
                                             <div class="form-group">
                                                 <label for="modPass">Nueva contraseña</label>
                                                 <input type="password" class="form-control" id="modPass" name="modPass">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="modRePass">Repite la nueva contraseña</label>
+                                                <input type="password" class="form-control" id="modRePass" name="modRePass">
                                             </div>
                                             <div class="form-group">
                                                 <label for="modOldPass">Contraseña actual</label>
