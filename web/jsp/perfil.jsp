@@ -1,5 +1,6 @@
 <%@ page import="basedatos.modelo.UsuarioVO" %>
 <%@ page import="basedatos.modelo.StatsUsuarioVO" %>
+<%@ page import="basedatos.modelo.ArticuloUsuarioVO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%--
@@ -33,6 +34,8 @@
     int perdidas = 0;
     int ratio = 0;
 
+    ArticuloUsuarioVO avatar = null;
+
     if (session.getAttribute("userId") == null) {
         response.sendRedirect("/jsp/login.jsp");
     } else {
@@ -54,6 +57,11 @@
             ratio = ganadas/perdidas;
         }
 
+        avatar = (ArticuloUsuarioVO) session.getAttribute("Avatar");
+        if(avatar == null){
+            avatar = new ArticuloUsuarioVO(null, 'A', true, null);
+            avatar.setRutaImagen("#");
+        }
     }%>
 
 <body>
@@ -120,7 +128,7 @@
         <% } %>
         <div class="row">
             <div class="col-md-4 mt-4">
-                <img class="img-thumbnail" style="width: 400px" src="#" alt="imagen usuario">
+                <img class="img-thumbnail" style="width: 400px" src="<%= avatar.getRutaImagen() %>" alt="imagen usuario">
             </div>
             <div class="col-md-6 mt-4">
                 <h1> <%= nick %> </h1>

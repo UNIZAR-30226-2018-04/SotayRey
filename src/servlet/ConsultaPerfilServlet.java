@@ -1,11 +1,11 @@
 package servlet;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
-
 import basedatos.InterfazDatos;
+import basedatos.modelo.ArticuloUsuarioVO;
 import basedatos.modelo.StatsUsuarioVO;
 import basedatos.modelo.UsuarioVO;
+
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 
 @javax.servlet.annotation.WebServlet(name = "ConsultaPerfilServlet")
 public class ConsultaPerfilServlet extends javax.servlet.http.HttpServlet {
@@ -25,14 +25,27 @@ public class ConsultaPerfilServlet extends javax.servlet.http.HttpServlet {
                 facade = InterfazDatos.instancia();
             } catch(Exception e){
                 e.printStackTrace();
-                throw new ServletException();
             }
 
             try{
                 statsVO = facade.obtenerTodasStatsUsuario(username);
             }catch(Exception e ){
+                e.printStackTrace();
             }
             session.setAttribute("userStats",statsVO);
+
+            ArrayList<ArticuloUsuarioVO> lista = null;
+            try{
+                lista = facade.obtenerArticulosUsuario(username);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            for(ArticuloUsuarioVO iter : lista){
+                if(iter.getTipo() == 'A' && iter.isFavorito()){
+                    session.setAttribute("avatar",iter);
+                }
+            }
 
             response.sendRedirect("jsp/perfil.jsp");
         }
