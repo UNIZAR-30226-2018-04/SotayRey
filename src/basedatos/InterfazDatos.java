@@ -174,7 +174,7 @@ public class InterfazDatos {
 	}
 
     /* Inserta al Usuario u al Torneo t en su fase inicial. Si u llena el numero de participantes de la fase
-     * se produce el emparejamiento
+     * se produce el emparejamiento: utilizar obtenerPartidasFaseTorneo para saber el resultado de ese emparejamiento
      */
     public void apuntarTorneo(UsuarioVO u, TorneoVO t) throws  ExceptionCampoInvalido, SQLException {
         TorneoDAO.apuntarTorneo(u,t,this.cpds);
@@ -183,10 +183,23 @@ public class InterfazDatos {
     /* Rellena los campos de FaseVO f. f debe de poseer la id del torneo y el número de fase
      * Se le rellenan los datos con las partidas (no empezadas, pero ya incluidas en la base de datos) y la lista
      * de participantes.
+	 * Utilizar siempre esa función para comenzar todas las partidas de cada fase
      */
     public void  obtenerPartidasFaseTorneo(FaseVO f) throws SQLException {
         PartidaDAO.obtenerPartidasFaseTorneo(f,this.cpds);
     }
+
+	/* Elimina al jugador del torneo en el que estaba apuntado porque este lo abandona fuera de una partida, y por tanto,
+	 * sin penalización sobre su puntuación ni divisa.
+	 * Si el jugador se encontraba en la primera fase (aún no ha comenzado el torneo), simplemente lo elimina del torneo.
+	 * Si el jugador se encontraba en fases posteriores, es eliminado del torneo y sustituido por la IA que jugará en su lugar.
+	 * Cuidado! Esta función sólo debe utilizarse si un jugador abandona el torneo FUERA de una partida (esperando a 
+	 * que terminen el resto de partidas de la fase), ya que si es dentro de ella simplemente se debe rellenar el campo
+	 * abandonador de la PartidaVO y llamar a finalizarPartida.
+	 */
+	public void abandonarTorneo(UsuarioVO u, TorneoVO t) throws ExceptionCampoInexistente, SQLException {
+		TorneoDAO.abandonarTorneo(u,t,this.cpds);	
+	}
 
     /* Se modifican la partida p en la base de datos con los datos de finalización, p debe incluir
      * el id que se modificó en la función crearNuevaPartida(p).

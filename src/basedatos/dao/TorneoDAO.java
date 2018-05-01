@@ -32,9 +32,9 @@ public class TorneoDAO {
 
 		Timestamp actualts = new Timestamp(System.currentTimeMillis());
 		
-//		if(actualts.after(t.getTimeInicio())){
-//			throw new ExceptionCampoInvalido("El tiempo de inicio debe ser posterior a la fecha actual");		
-//		}
+		if(actualts.after(t.getTimeInicio())){
+			throw new ExceptionCampoInvalido("El tiempo de inicio debe ser posterior a la fecha actual");		
+		}
 		
 		String prevalues = "INSERT INTO torneo (nombre";
         String postvalues = " VALUES ('" + t.getNombre() + "'";
@@ -287,8 +287,6 @@ public class TorneoDAO {
         ArrayList<UsuarioVO> ual;
         PartidaVO pp;
 
-        //String mipopo = "SELECT COUNT(*) total FROM participa_fase p WHERE p.fase_num ="+t.getNumFases() + " AND p.fase_torneo="+t.getId();
-        //System.out.println(mipopo);
         ResultSet res = statement.executeQuery("SELECT COUNT(*) total FROM participa_fase p WHERE p.fase_num ="+t.getNumFases() + " AND p.fase_torneo="+t.getId());
         res.next();
         int participantes = res.getInt("total");
@@ -321,4 +319,42 @@ public class TorneoDAO {
         if (statement != null) { statement.close(); }
         if (connection != null) {connection.setAutoCommit(true);connection.close();}
     }
+
+	public static void abandonarTorneo(UsuarioVO u, TorneoVO t, ComboPooledDataSource pool) throws ExceptionCampoInexistente, SQLException {
+		Connection connection = null;
+        Statement statement = null;
+        connection = pool.getConnection();
+        statement = connection.createStatement();
+        connection.setAutoCommit(false);
+
+		// Saber en qué fase se encontraba el usuario
+		ResultSet res = statement.executeQuery("SELECT fase_num fase FROM participa_fase p WHERE p.fase_torneo ="+t.getId() + " AND p.usuario = '"+u.getUsername() + "' ORDER BY fase_num ASC");
+		if(!res.isBeforeFirst()){
+            throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario " + u.getUsername() + "  no está apuntado en el torneo " + t.getId());
+        }
+		res.next();
+		int fase = res.getInt("fase");
+		
+		// Eliminar la relación participa_fase, eliminando al usuario del torneo
+		String delete = "DELETE FROM participa_fase WHERE usuario = '" + u.getUsername() + "' AND fase_num = "+ fase + " AND fase_torneo = " + t.getId();
+        statement.executeUpdate(delete);
+	
+		// Sustituir al usuario eliminado por la IA si no es la primera fase
+		if(fase<t.getNumFases()){
+			int multip = 0;
+			ResultSet resultSet = statement.executeQuery("SELECT MAX(multip)+1 m FROM participa_fase WHERE usuario = 'marIA' AND fase_num = " + fase + " AND fase_torneo = "+ t.getId());
+			if(resultSet.isBeforeFirst()){
+				// ya existe una IA participando en esa fase, se añade una nueva multiplicidad
+            	resultSet.next();
+				multip= resultSet.getInt("m");
+        	}
+			String insert = "INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES('marIA', " + fase + ", " + t.getId() + ", " + multip + ")";
+        	statement.executeUpdate(insert);
+		}
+
+		connection.commit();
+
+        if (statement != null) { statement.close(); }
+        if (connection != null) {connection.setAutoCommit(true);connection.close();}
+	}
 }
