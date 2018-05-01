@@ -6,13 +6,16 @@
 
 package basedatos.dao;
 
-import java.text.SimpleDateFormat;
-import basedatos.exceptions.*;
-import basedatos.modelo.*;
+import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.exceptions.ExceptionCampoInvalido;
+import basedatos.modelo.PartidaVO;
+import basedatos.modelo.TorneoVO;
+import basedatos.modelo.UsuarioVO;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import java.math.BigInteger;
 
+import java.math.BigInteger;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -229,26 +232,26 @@ public class TorneoDAO {
 		Timestamp actualts = new Timestamp(System.currentTimeMillis());
 
 		// Selecciona aquellos torneos que no están llenos ni han comenzado todavía
-        String query = "SELECT * FROM torneo t WHERE t.timeInicio >= " + actualts + 
-			" and (((SELECT COUNT(*) FROM participa_fase where fase_torneo = t.id) < POW(2,(SELECT COUNT(*) FROM fase where torneo = t.id)) and t.individual = true) " + 
+        String query = "SELECT * FROM torneo t WHERE t.timeInicio >= '" + actualts +
+			"' or (((SELECT COUNT(*) FROM participa_fase where fase_torneo = t.id) < POW(2,(SELECT COUNT(*) FROM fase where torneo = t.id)) and t.individual = true) " +
 			" or ((SELECT COUNT(*) FROM participa_fase where fase_torneo = t.id) < POW(4,(SELECT COUNT(*) FROM fase where torneo = t.id)) and t.individual = false))";
         ResultSet resultSet = statement.executeQuery(query);
-
-		query = "SELECT * FROM fase f WHERE num = (SELECT COUNT(*) FROM fase f2 where f2.torneo = f.torneo)";
-		ResultSet resultSet2 = statement.executeQuery(query);
 
         HashMap<BigInteger,TorneoVO> dic = new HashMap<>();
 
         while (resultSet.next()) {
-			TorneoVO t = new TorneoVO();
-			t.setId(BigInteger.valueOf(resultSet.getLong("id")));
-			t.setNombre(resultSet.getString("nombre"));
-			t.setDescripcion(resultSet.getString("descripcion"));
-			t.setTimeCreacion(resultSet.getTimestamp("timeCreacion"));
-			t.setTimeInicio(resultSet.getTimestamp("timeInicio"));
-			t.setIndividual(resultSet.getBoolean("individual"));
+            TorneoVO t = new TorneoVO();
+            t.setId(BigInteger.valueOf(resultSet.getLong("id")));
+            t.setNombre(resultSet.getString("nombre"));
+            t.setDescripcion(resultSet.getString("descripcion"));
+            t.setTimeCreacion(resultSet.getTimestamp("timeCreacion"));
+            t.setTimeInicio(resultSet.getTimestamp("timeInicio"));
+            t.setIndividual(resultSet.getBoolean("individual"));
             dic.put(t.getId(), t);
         }
+
+        query = "SELECT * FROM fase f WHERE num = (SELECT COUNT(*) FROM fase f2 where f2.torneo = f.torneo)";
+        ResultSet resultSet2 = statement.executeQuery(query);
 
 		while (resultSet2.next()) {
 			BigInteger torneo = BigInteger.valueOf(resultSet2.getLong("torneo"));
@@ -275,50 +278,47 @@ public class TorneoDAO {
     public static void apuntarTorneo(UsuarioVO p, TorneoVO t, ComboPooledDataSource pool) throws ExceptionCampoInvalido, SQLException {
         Connection connection = null;
         Statement statement = null;
-        try {
-            connection = pool.getConnection();
-            statement = connection.createStatement();
+        connection = pool.getConnection();
+        statement = connection.createStatement();
+        connection.setAutoCommit(false);
 
-            UsuarioVO u1;
-            UsuarioVO u2;
-            ArrayList<UsuarioVO> ual;
-            PartidaVO pp;
+        UsuarioVO u1;
+        UsuarioVO u2;
+        ArrayList<UsuarioVO> ual;
+        PartidaVO pp;
 
-            ResultSet res = statement.executeQuery("SELECT COUNT(*) total FROM participa_fase p WHERE p.fase_num ="+t.getNumFases() + "AND p.fase_torneo="+t.getId());
-            res.next();
-            int participantes = res.getInt("total");
-            if ((new Timestamp(System.currentTimeMillis()).after(t.getTimeInicio())) && participantes < Math.pow(2,t.getNumFases())) {
-                // Cabe un jugador más
-                statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('"+ p.getUsername() +"',"+t.getNumFases()+","+t.getId()+")");
-                if (participantes + 1 == Math.pow(2,t.getNumFases())) {
-                    // El torneo esta lleno, se produce el emparejamiento
-                    res = statement.executeQuery("SELECT p.usuario FROM participa_fase p WHERE p.fase_num ="+t.getNumFases() + "AND p.fase_torneo="+t.getId());
-                    while (res.next()) {
-                        u1 = new UsuarioVO();
-                        u1.setUsername(res.getString("usuario"));
-                        res.next();
-                        u2 = new UsuarioVO();
-                        u2.setUsername(res.getString("usuario"));
-                        ual = new ArrayList<>();
-                        ual.add(u1);
-                        ual.add(u2);
-                        pp = new PartidaVO(t.getNumFases(),t.getId(),true,ual);
-                        PartidaDAO.insertarNuevaPartida(pp,pool);
-                    }
-
+        //String mipopo = "SELECT COUNT(*) total FROM participa_fase p WHERE p.fase_num ="+t.getNumFases() + " AND p.fase_torneo="+t.getId();
+        //System.out.println(mipopo);
+        ResultSet res = statement.executeQuery("SELECT COUNT(*) total FROM participa_fase p WHERE p.fase_num ="+t.getNumFases() + " AND p.fase_torneo="+t.getId());
+        res.next();
+        int participantes = res.getInt("total");
+        if ((new Timestamp(System.currentTimeMillis()).after(t.getTimeInicio())) && participantes < Math.pow(2,t.getNumFases())) {
+            // Cabe un jugador más
+            statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('"+ p.getUsername() +"',"+t.getNumFases()+","+t.getId()+")");
+            if (participantes + 1 == Math.pow(2,t.getNumFases())) {
+                // El torneo esta lleno, se produce el emparejamiento
+                res = statement.executeQuery("SELECT p.usuario FROM participa_fase p WHERE p.fase_num ="+t.getNumFases() + " AND p.fase_torneo="+t.getId());
+                while (res.next()) {
+                    u1 = new UsuarioVO();
+                    u1.setUsername(res.getString("usuario"));
+                    res.next();
+                    u2 = new UsuarioVO();
+                    u2.setUsername(res.getString("usuario"));
+                    ual = new ArrayList<>();
+                    ual.add(u1);
+                    ual.add(u2);
+                    pp = new PartidaVO(t.getNumFases(),t.getId(),true,ual);
+                    PartidaDAO.insertarNuevaPartida(pp,pool);
                 }
-            } else {
-                throw new ExceptionCampoInvalido("El Torneo ya está lleno o todavía no ha empezado");
+
             }
-        } catch (SQLException e) {
-            if (connection != null) {
-                System.err.print("Transaction is being rolled back");
-                connection.rollback();
-            }
-            throw e;
-        } finally {
-            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
-            if (connection != null) try { connection.close();} catch (SQLException e) {e.printStackTrace();}
+        } else {
+            throw new ExceptionCampoInvalido("El Torneo ya está lleno o todavía no ha empezado");
         }
+
+        connection.commit();
+
+        if (statement != null) { statement.close(); }
+        if (connection != null) {connection.setAutoCommit(true);connection.close();}
     }
 }
