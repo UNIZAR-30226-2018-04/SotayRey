@@ -1,16 +1,15 @@
 package basedatos;
 
+import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.exceptions.ExceptionCampoInvalido;
+import basedatos.modelo.TorneoVO;
+import basedatos.modelo.UsuarioVO;
+
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.math.BigInteger;
-
-import basedatos.modelo.*;
-import basedatos.exceptions.*;
 
 public class PruebaJulia {
 
@@ -18,7 +17,10 @@ public class PruebaJulia {
 
 		Timestamp ts = java.sql.Timestamp.valueOf("2018-01-23 10:54:09.0");
         TorneoVO t = new TorneoVO("torneo2", "descripcion1", ts, true, 3, 2, 1);
-		
+
+		Timestamp ts2 = java.sql.Timestamp.valueOf("2018-01-23 10:54:09.0");
+		TorneoVO t2 = new TorneoVO("torneoVacio", "descripcion1", ts2, true, 3, 2, 1);
+
 		UsuarioVO u1 = InterfazDatos.instancia().obtenerDatosUsuario("zcarrera");
 		UsuarioVO u2 = InterfazDatos.instancia().obtenerDatosUsuario("yolanda86");
 		UsuarioVO u3 = InterfazDatos.instancia().obtenerDatosUsuario("viniesta");
@@ -28,7 +30,8 @@ public class PruebaJulia {
 		UsuarioVO u7 = InterfazDatos.instancia().obtenerDatosUsuario("inmaculada13");
 		UsuarioVO u8 = InterfazDatos.instancia().obtenerDatosUsuario("godoydiego");
 
-		InterfazDatos.instancia().crearTorneo(t);
+		//InterfazDatos.instancia().crearTorneo(t);
+		InterfazDatos.instancia().crearTorneo(t2);
 
 //		t.setDescripcion("una descripcion cambiada");
 //		t.setNumFases(8);
@@ -41,8 +44,14 @@ public class PruebaJulia {
 
 //		InterfazDatos.instancia().eliminarTorneo(t2.getId());
 
-		InterfazDatos.instancia().apuntarTorneo(u1,t);
-		InterfazDatos.instancia().apuntarTorneo(u2,t);
+		InterfazDatos.instancia().apuntarTorneo(u1,t2);
+		InterfazDatos.instancia().apuntarTorneo(u2,t2);
+/*		InterfazDatos.instancia().apuntarTorneo(u3,t);
+		InterfazDatos.instancia().apuntarTorneo(u4,t);
+		InterfazDatos.instancia().apuntarTorneo(u5,t);
+		InterfazDatos.instancia().apuntarTorneo(u6,t);
+		InterfazDatos.instancia().apuntarTorneo(u7,t);
+		InterfazDatos.instancia().apuntarTorneo(u8,t);*/
 
 		ArrayList<TorneoVO> resultadoguay = InterfazDatos.instancia().obtenerTorneosProgramados();
 		for(int i = 0; i<resultadoguay.size(); i++){
