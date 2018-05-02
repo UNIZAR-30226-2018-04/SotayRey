@@ -275,12 +275,14 @@ public class TorneoDAO {
         return programados;
 	}
 
-    public static void apuntarTorneo(UsuarioVO p, TorneoVO t, ComboPooledDataSource pool) throws ExceptionCampoInvalido, SQLException {
+    public static boolean apuntarTorneo(UsuarioVO p, TorneoVO t, ComboPooledDataSource pool) throws ExceptionCampoInvalido, SQLException {
         Connection connection = null;
         Statement statement = null;
         connection = pool.getConnection();
         statement = connection.createStatement();
         connection.setAutoCommit(false);
+
+        boolean faseLlena = false;
 
         UsuarioVO u1;
         UsuarioVO u2;
@@ -295,6 +297,7 @@ public class TorneoDAO {
             statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('"+ p.getUsername() +"',"+t.getNumFases()+","+t.getId()+")");
             if (participantes + 1 == Math.pow(2,t.getNumFases())) {
                 // El torneo esta lleno, se produce el emparejamiento
+                faseLlena = true;
                 res = statement.executeQuery("SELECT p.usuario FROM participa_fase p WHERE p.fase_num ="+t.getNumFases() + " AND p.fase_torneo="+t.getId());
                 while (res.next()) {
                     u1 = new UsuarioVO();
@@ -318,6 +321,7 @@ public class TorneoDAO {
 
         if (statement != null) { statement.close(); }
         if (connection != null) {connection.setAutoCommit(true);connection.close();}
+        return faseLlena;
     }
 
 	public static void abandonarTorneo(UsuarioVO u, TorneoVO t, ComboPooledDataSource pool) throws ExceptionCampoInexistente, SQLException {

@@ -6,6 +6,7 @@
 
 package basedatos.dao;
 
+import basedatos.exceptions.ExceptionCampoInvalido;
 import basedatos.modelo.FaseVO;
 import basedatos.modelo.PartidaVO;
 import basedatos.modelo.UsuarioVO;
@@ -15,99 +16,227 @@ import java.math.BigInteger;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PartidaDAO {
     public static void insertarNuevaPartida(PartidaVO p, ComboPooledDataSource pool) throws SQLException {
         Connection connection = null;
         Statement statement = null;
-        try {
-            connection = pool.getConnection();
-            statement = connection.createStatement();
-            connection.setAutoCommit(false);
-            String insertPartida;
-            if(p.getTimeInicio()!=null){//Comienza transacción
-                SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                insertPartida = "INSERT INTO partida (timeInicio, publica) VALUES ('" +
-                        sd.format(p.getTimeInicio()) + "'," + p.isPublica() + ")";
-            }
-            else{
-                if (p.getTorneoId() == BigInteger.valueOf(0)) {
-                    insertPartida = "INSERT INTO partida (publica) VALUES (" + (p.isPublica() ? 1 : 0) + ")";
-                } else {
-                    insertPartida = "INSERT INTO partida (fase_num, fase_torneo,publica) VALUES (" + p.getFaseNum() + "," + p.getTorneoId() +",1)";
-                }
-            }
 
-            statement.executeUpdate(insertPartida);
+        connection = pool.getConnection();
+        statement = connection.createStatement();
+        connection.setAutoCommit(false);
 
-            //Conseguir id partida
-            ResultSet res = statement.executeQuery("SELECT LAST_INSERT_ID()");
-            res.next();
-            String p_id = res.getString("LAST_INSERT_ID()");
-            p.setId(new BigInteger(p_id));
-
-            // Recorremos los usuarios e insertamos la relacion juega
-            for (int i = 0; i<p.getUsuarios().size(); i++) {
-                String insertJuega = "INSERT INTO juega (usuario, partida, equipo) VALUES ('" +
-                                     p.getUsuarios().get(i).getUsername() + "'," + p_id + ",'" + (char)(((i%2)+1)+'0') +"')";
-                statement.executeUpdate(insertJuega);
+        String insertPartida;
+        if (p.getTimeInicio() != null) {//Comienza transacción
+            SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            insertPartida = "INSERT INTO partida (timeInicio, publica) VALUES ('" +
+                    sd.format(p.getTimeInicio()) + "'," + p.isPublica() + ")";
+        } else {
+            if (p.getTorneoId() == BigInteger.valueOf(0)) {
+                insertPartida = "INSERT INTO partida (publica) VALUES (" + (p.isPublica() ? 1 : 0) + ")";
+            } else {
+                insertPartida = "INSERT INTO partida (fase_num, fase_torneo,publica) VALUES (" + p.getFaseNum() + "," + p.getTorneoId() + ",1)";
             }
-            connection.commit();
+        }
 
-        } catch (SQLException e ) {
-            if (connection != null) {
-                System.err.print("Transaction is being rolled back");
-                connection.rollback();
-            }
-            throw e;
-        } finally {
-            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
-            if (connection != null) try { connection.setAutoCommit(true); connection.close();} catch (SQLException e) {e.printStackTrace();}
+        statement.executeUpdate(insertPartida);
+
+        //Conseguir id partida
+        ResultSet res = statement.executeQuery("SELECT LAST_INSERT_ID()");
+        res.next();
+        String p_id = res.getString("LAST_INSERT_ID()");
+        p.setId(new BigInteger(p_id));
+
+        // Recorremos los usuarios e insertamos la relacion juega
+        for (int i = 0; i < p.getUsuarios().size(); i++) {
+            String insertJuega = "INSERT INTO juega (usuario, partida, equipo) VALUES ('" +
+                    p.getUsuarios().get(i).getUsername() + "'," + p_id + ",'" + (char) (((i % 2) + 1) + '0') + "')";
+            statement.executeUpdate(insertJuega);
+        }
+        connection.commit();
+
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.setAutoCommit(true);
+            connection.close();
         }
     }
 
-    public static void finalizarPartida(PartidaVO p, ComboPooledDataSource pool) throws SQLException {
+    public static boolean finalizarPartida(PartidaVO p, ComboPooledDataSource pool) throws SQLException, ExceptionCampoInvalido {
         Connection connection = null;
         Statement statement = null;
-        try {
-            connection = pool.getConnection();
-            statement = connection.createStatement();
-            connection.setAutoCommit(false);
 
-            //Comienza transacción
-            SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String updatePartida = "UPDATE partida SET timeFin = '" +
-                    sd.format(p.getTimeFin()) + "', ganador = '" + p.getGanador() + "' WHERE id = " +
-                    p.getId().toString();
+        connection = pool.getConnection();
+        statement = connection.createStatement();
+        connection.setAutoCommit(false);
 
-            statement.executeUpdate(updatePartida);
+        boolean faseLlena = false;
+        //Comienza transacción
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String updatePartida = "UPDATE partida SET timeFin = '" +
+                sd.format(p.getTimeFin()) + "', ganador = '" + p.getGanador() + "' WHERE id = " +
+                p.getId().toString();
 
-            // Recorremos los usuarios e insertamos la relacion juega
-            for (int i = 0; i<p.getUsuarios().size(); i++) {
-                int puntos;
-                if (i%2 == 0) { puntos = p.getPuntos1(); }
-                else {puntos = p.getPuntos2(); }
-                String updateJuega = "UPDATE juega SET puntos = " + puntos +
-                        ", veintes = " + p.getVeintes().get(i) +
-                        ", cuarentas = " + p.getCuarentas().get(i) +
-                        ", abandonador = " + (p.getAbandonador()==i+1) +
-                        " WHERE partida = " + p.getId() +
-                        " AND usuario = '" + p.getUsuarios().get(i).getUsername() + "'";
-                statement.executeUpdate(updateJuega);
+        statement.executeUpdate(updatePartida);
+
+        // Recorremos los usuarios e insertamos la relacion juega
+        for (int i = 0; i < p.getUsuarios().size(); i++) {
+            int puntos;
+            if (i % 2 == 0) {
+                puntos = p.getPuntos1();
+            } else {
+                puntos = p.getPuntos2();
             }
-            connection.commit();
-
-
-        } catch (SQLException e ) {
-            if (connection != null) {
-                System.err.print("Transaction is being rolled back");
-                connection.rollback();
-            }
-            throw e;
-        } finally {
-            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
-            if (connection != null) try { connection.setAutoCommit(true); connection.close();} catch (SQLException e) {e.printStackTrace();}
+            String updateJuega = "UPDATE juega SET puntos = " + puntos +
+                    ", veintes = " + p.getVeintes().get(i) +
+                    ", cuarentas = " + p.getCuarentas().get(i) +
+                    ", abandonador = " + (p.getAbandonador() == i + 1) +
+                    " WHERE partida = " + p.getId() +
+                    " AND usuario = '" + p.getUsuarios().get(i).getUsername() + "' AND equipo = '" + (char) (((i % 2) + 1)) + '0' + "'";
+            statement.executeUpdate(updateJuega);
         }
+
+        //Obtención de premios
+        int premioPunt = 3;
+        int premioDiv = 5;
+        ResultSet res;
+        if (p.getFaseNum() > 0) {
+            res = statement.executeQuery("SELECT premioPunt, premioDiv FROM fase WHERE torneo = " + p.getTorneoId() + " AND fase = " + p.getFaseNum());
+            res.next();
+            premioPunt = res.getInt("premioPunt");
+            premioDiv = res.getInt("premioDiv");
+
+            if (p.getFaseNum() > 1) {
+                int multip = 0;
+                res = statement.executeQuery("SELECT MAX(multip)+1 m FROM participa_fase WHERE usuario = 'marIA' AND fase_num = " + (p.getFaseNum()-1) + " AND fase_torneo = " + p.getTorneoId());
+                if (res.isBeforeFirst()) {
+                    // ya existe una IA participando en esa fase, se añade una nueva multiplicidad
+                    res.next();
+                    multip = res.getInt("m");
+                }
+
+                if (p.getGanador() == 'A') {
+                    if (p.getAbandonador() == 1) {
+                        statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(2).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
+                    } else {
+                        statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(1).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
+                    }
+                } else if (p.getGanador() == '1') {
+                    statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(1).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
+                } else {
+                    statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(2).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
+                }
+
+                res = statement.executeQuery("SELECT COUNT(*) total FROM participa_fase p WHERE p.fase_num =" + (p.getFaseNum() - 1) + " AND p.fase_torneo=" + p.getTorneoId());
+                res.next();
+                int participantes = res.getInt("total");
+
+                if (participantes == Math.pow(2, p.getFaseNum() - 1)) {
+                    faseLlena = true;
+                    // El torneo esta lleno, se produce el emparejamiento
+                    res = statement.executeQuery("SELECT p.usuario FROM participa_fase p WHERE p.fase_num =" + (p.getFaseNum() - 1) + " AND p.fase_torneo=" + p.getTorneoId());
+
+                    UsuarioVO u1;
+                    UsuarioVO u2;
+                    ArrayList<UsuarioVO> ual;
+                    PartidaVO pp;
+
+                    while (res.next()) {
+                        u1 = new UsuarioVO();
+                        u1.setUsername(res.getString("usuario"));
+                        res.next();
+                        u2 = new UsuarioVO();
+                        u2.setUsername(res.getString("usuario"));
+                        ual = new ArrayList<>();
+                        ual.add(u1);
+                        ual.add(u2);
+                        pp = new PartidaVO(p.getFaseNum() - 1, p.getTorneoId(), true, ual);
+
+                        //Codigo repetido de insertar una partida
+                        String insertPartida;
+                        insertPartida = "INSERT INTO partida (fase_num, fase_torneo,publica) VALUES (" + pp.getFaseNum() + "," + pp.getTorneoId() + ",1)";
+
+                        statement.executeUpdate(insertPartida);
+
+                        //Conseguir id partida
+                        res = statement.executeQuery("SELECT LAST_INSERT_ID()");
+                        res.next();
+                        String p_id = res.getString("LAST_INSERT_ID()");
+
+                        // Recorremos los usuarios e insertamos la relacion juega
+                        for (int i = 0; i < pp.getUsuarios().size(); i++) {
+                            String insertJuega = "INSERT INTO juega (usuario, partida, equipo) VALUES ('" +
+                                    pp.getUsuarios().get(i).getUsername() + "'," + p_id + ",'" + (char) (((i % 2) + 1) + '0') + "')";
+                            statement.executeUpdate(insertJuega);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        //Actualizamos los puntos
+        // Actualizar datos de los usuarios implicados
+        char gan = p.getGanador();
+
+        List<UsuarioVO> lista = p.getUsuarios();
+        // Partida NO abandonada
+        if (gan == '1' || gan == '2') {
+            for (int i = 0; i < lista.size(); i = i + 2) {
+                if (gan == '1') {
+                    //ganador
+                    res = statement.executeQuery("SELECT puntuacion,divisa FROM usuario WHERE username = '" + lista.get(i).getUsername() + "'");
+                    res.next();
+                    statement.executeUpdate("UPDATE usuario SET puntuacion = " + (res.getInt("puntuacion") + premioPunt) + ", divisa = " + (res.getInt("divisa") + premioDiv) + " WHERE username = '" + lista.get(i).getUsername() + "'");
+
+                    //Perdedor
+                    res = statement.executeQuery("SELECT puntuacion,divisa FROM usuario WHERE username = '" + lista.get(i + 1).getUsername() + "'");
+                    res.next();
+                    statement.executeUpdate("UPDATE usuario SET divisa = " + (res.getInt("divisa") + 1) + " WHERE username = '" + lista.get(i + 1).getUsername() + "'");
+
+                } else {
+                    //ganador
+                    res = statement.executeQuery("SELECT puntuacion,divisa FROM usuario WHERE username = '" + lista.get(i + 1).getUsername() + "'");
+                    res.next();
+                    statement.executeUpdate("UPDATE usuario SET puntuacion = " + (res.getInt("puntuacion") + premioPunt) + ", divisa = " + (res.getInt("divisa") + premioDiv) + " WHERE username = '" + lista.get(i + 1).getUsername() + "'");
+
+                    //Perdedor
+                    res = statement.executeQuery("SELECT puntuacion,divisa FROM usuario WHERE username = '" + lista.get(i).getUsername() + "'");
+                    res.next();
+                    statement.executeUpdate("UPDATE usuario SET divisa = " + (res.getInt("divisa") + 1) + " WHERE username = '" + lista.get(i).getUsername() + "'");
+
+
+                }
+            }
+        }
+        // Partida abandonada
+        else if (gan == 'A') {
+            for (int i = 0; i < lista.size(); i++) {
+                res = statement.executeQuery("SELECT puntuacion,divisa FROM usuario WHERE username = '" + lista.get(i).getUsername() + "'");
+                res.next();
+                if (p.getAbandonador() == i) {
+                    statement.executeUpdate("UPDATE usuario SET puntuacion = " + Math.max(0,res.getInt("puntuacion") - 1) + " WHERE username = '" + lista.get(i).getUsername() + "'");
+                } else {
+                    statement.executeUpdate("UPDATE usuario SET puntuacion = " + (res.getInt("puntuacion") + premioPunt) + ", divisa = " + (res.getInt("divisa") + premioDiv) + " WHERE username = '" + lista.get(i).getUsername() + "'");
+                }
+            }
+        } else {
+            throw new ExceptionCampoInvalido("La partida debe estar finalizada (con ganador o abandonador)");
+        }
+
+        connection.commit();
+
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+        return faseLlena;
     }
 
     public static ArrayList<PartidaVO> obtenerHistorialPartidas(String user, ComboPooledDataSource pool) throws SQLException {
@@ -155,7 +284,7 @@ public class PartidaDAO {
             int puntos1 = res.getInt("puntos1");
             int puntos2 = res.getInt("puntos2");
             int abandonador = res.getInt("abandonador");
-            historial.add(new PartidaVO(id,timeInicio,timeFin,publica,ganador,usuarios,cuarentas,veintes,puntos1,puntos2,abandonador));
+            historial.add(new PartidaVO(id, timeInicio, timeFin, publica, ganador, usuarios, cuarentas, veintes, puntos1, puntos2, abandonador));
         }
 
         String partParejas = "SELECT p.id, p.timeInicio, p.timeFin, p.publica, p.ganador,\n" +
@@ -188,7 +317,7 @@ public class PartidaDAO {
             ArrayList<Integer> cuarentas = new ArrayList<>(4);
             ArrayList<Integer> veintes = new ArrayList<>(4);
 
-            for (int i=0; i<4; i++){
+            for (int i = 0; i < 4; i++) {
                 usuarios.add(new UsuarioVO());
                 cuarentas.add(-1);
                 veintes.add(-1);
@@ -295,7 +424,7 @@ public class PartidaDAO {
             }
 
             int abandonador = res.getInt("abandonador");
-            historial.add(new PartidaVO(id,timeInicio,timeFin,publica,ganador,usuarios,cuarentas,veintes,puntos1,puntos2,abandonador));
+            historial.add(new PartidaVO(id, timeInicio, timeFin, publica, ganador, usuarios, cuarentas, veintes, puntos1, puntos2, abandonador));
         }
 
         if (statement != null) statement.close();
@@ -332,7 +461,7 @@ public class PartidaDAO {
             UsuarioVO u2 = new UsuarioVO();
             u2.setUsername(res.getString("usuario2"));
             usuarios.add(u2);
-            PartidaVO p = new PartidaVO(timeInicio,true,usuarios);
+            PartidaVO p = new PartidaVO(timeInicio, true, usuarios);
             p.setId(id);
             partidasCurso.add(p);
         }
@@ -354,7 +483,7 @@ public class PartidaDAO {
 
             ArrayList<UsuarioVO> usuarios = new ArrayList<>(4);
 
-            for (int i=0; i<4; i++){
+            for (int i = 0; i < 4; i++) {
                 usuarios.add(new UsuarioVO());
             }
 
@@ -413,7 +542,7 @@ public class PartidaDAO {
                     }
                 }
             }
-            PartidaVO p = new PartidaVO(timeInicio,true,usuarios);
+            PartidaVO p = new PartidaVO(timeInicio, true, usuarios);
             p.setId(id);
             partidasCurso.add(p);
         }
@@ -438,75 +567,27 @@ public class PartidaDAO {
         ArrayList<UsuarioVO> ual = f.getParticipantes();
         ArrayList<PartidaVO> pal = f.getParejas();
 
-        ResultSet res = statement.executeQuery("select p.id, j.usuario1, jj.usuario2 from partida p, juega j, juega jj where p.id = 2 and j.partida=p.id and jj.partida=p.id and j.usuario > jj.usuario AND p.fase_torneo = "+f.getTorneoId() + " AND p.fase_num = "+f.getNum());
+        ResultSet res = statement.executeQuery("select p.id, j.usuario1, jj.usuario2 from partida p, juega j, juega jj where p.id = 2 and j.partida=p.id and jj.partida=p.id and j.usuario > jj.usuario AND p.fase_torneo = " + f.getTorneoId() + " AND p.fase_num = " + f.getNum());
 
-        while(res.next()) {
-             u1 = new UsuarioVO();
-             u1.setUsername(res.getString("usuario1"));
-             u2 = new UsuarioVO();
-             u2.setUsername(res.getString("usuario2"));
-             ual.add(u1);
-             ual.add(u2);
-             usersp = new ArrayList<>();
-             usersp.add(u1);
-             usersp.add(u2);
-             pal.add(new PartidaVO(new BigInteger(res.getString("id")),f.getNum(),f.getTorneoId(),true,usersp));
+        while (res.next()) {
+            u1 = new UsuarioVO();
+            u1.setUsername(res.getString("usuario1"));
+            u2 = new UsuarioVO();
+            u2.setUsername(res.getString("usuario2"));
+            ual.add(u1);
+            ual.add(u2);
+            usersp = new ArrayList<>();
+            usersp.add(u1);
+            usersp.add(u2);
+            pal.add(new PartidaVO(new BigInteger(res.getString("id")), f.getNum(), f.getTorneoId(), true, usersp));
         }
         connection.commit();
-        if (statement != null) {statement.close(); }
-        if (connection != null) {connection.setAutoCommit(true);connection.close();}
-    }
-
-    public static void finalizarPartidaFaseTorneo(PartidaVO p, ComboPooledDataSource pool) throws SQLException {
-        Connection connection = null;
-        Statement statement = null;
-        connection = pool.getConnection();
-        statement = connection.createStatement();
-        connection.setAutoCommit(false);
-
-        if (p.getFaseNum()>1) {
-            if (p.getGanador() == 'A') {
-                if (p.getAbandonador() == 1) {
-                    statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('" + p.getUsuarios().get(2).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + ")");
-                } else {
-                    statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('" + p.getUsuarios().get(1).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + ")");
-                }
-            } else if (p.getGanador() == '1') {
-                statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('" + p.getUsuarios().get(1).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + ")");
-            } else {
-                statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('" + p.getUsuarios().get(2).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + ")");
-            }
-
-            ResultSet res = statement.executeQuery("SELECT COUNT(*) total FROM participa_fase p WHERE p.fase_num =" + (p.getFaseNum() - 1) + " AND p.fase_torneo=" + p.getTorneoId());
-            res.next();
-            int participantes = res.getInt("total");
-
-            if (participantes == Math.pow(2, p.getFaseNum())) {
-                // El torneo esta lleno, se produce el emparejamiento
-                res = statement.executeQuery("SELECT p.usuario FROM participa_fase p WHERE p.fase_num =" + (p.getFaseNum() - 1) + " AND p.fase_torneo=" + p.getTorneoId());
-
-                UsuarioVO u1;
-                UsuarioVO u2;
-                ArrayList<UsuarioVO> ual;
-                PartidaVO pp;
-
-                while (res.next()) {
-                    u1 = new UsuarioVO();
-                    u1.setUsername(res.getString("usuario"));
-                    res.next();
-                    u2 = new UsuarioVO();
-                    u2.setUsername(res.getString("usuario"));
-                    ual = new ArrayList<>();
-                    ual.add(u1);
-                    ual.add(u2);
-                    pp = new PartidaVO(p.getFaseNum() - 1, p.getTorneoId(), true, ual);
-                    PartidaDAO.insertarNuevaPartida(pp, pool);
-                }
-            }
+        if (statement != null) {
+            statement.close();
         }
-        connection.commit();
-        if (statement != null) { statement.close(); }
-        if (connection != null) { connection.setAutoCommit(true);connection.close();}
+        if (connection != null) {
+            connection.setAutoCommit(true);
+            connection.close();
+        }
     }
 }
-
