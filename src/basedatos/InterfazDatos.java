@@ -345,4 +345,32 @@ public class InterfazDatos {
         return dorsoFavorito;
     }
 
+    /*
+        Devuelve el avatar favorito de un usuario
+     */
+    public ArticuloUsuarioVO obtenerAvatarFavorito(String username) throws SQLException, ExceptionCampoInexistente {
+        ArrayList<ArticuloUsuarioVO> articulos = obtenerArticulosTienda(username);
+        ArticuloUsuarioVO dorsoFavorito = null;
+        for(ArticuloUsuarioVO art : articulos){
+            if (art.isFavorito() && art.getTipo()=='A'){
+                dorsoFavorito = art;
+            }
+        }
+        return dorsoFavorito;
+    }
+
+    /*
+        Devuelve el tapete favorito de un usuario
+     */
+    public ArticuloUsuarioVO obtenerTapeteFavorito(String username) throws SQLException, ExceptionCampoInexistente {
+        ArrayList<ArticuloUsuarioVO> articulos = obtenerArticulosTienda(username);
+        ArticuloUsuarioVO dorsoFavorito = null;
+        for(ArticuloUsuarioVO art : articulos){
+            if (art.isFavorito() && art.getTipo()=='T'){
+                dorsoFavorito = art;
+            }
+        }
+        return dorsoFavorito;
+    }
+
 }

@@ -2,6 +2,7 @@ package gestor;
 
 import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.modelo.ArticuloUsuarioVO;
 import basedatos.modelo.UsuarioVO;
 import main.java.*;
 import org.json.simple.JSONArray;
@@ -457,7 +458,24 @@ public class GestorMensajes {
             JSONObject jugador = new JSONObject();
             jugador.put("id", jugGes.getId());
             jugador.put("nombre", jugadorVO.getUsername());
-            jugador.put("avatar", jugadorVO.getUsername()); // TODO: obtener avatar y gestionar usuario no existente.
+             // TODO: obtener avatar y gestionar usuario no existente.
+
+            // Esta ha modificado Carlos
+            ArticuloUsuarioVO dorso = null;
+            ArticuloUsuarioVO avatar = null;
+            try {
+                dorso = bd.obtenerDorsoFavorito(nombre);
+                avatar = bd.obtenerAvatarFavorito(nombre);
+            } catch (ExceptionCampoInexistente exceptionCampoInexistente) {
+                exceptionCampoInexistente.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            jugador.put("dorso" , dorso.getRutaImagen());
+            jugador.put("avatar", avatar.getRutaImagen());
+
+
+
             jugador.put("tipo", "jugador");
             try {
                 jugador.put("puntos", estado.getPuntosJugador(nombre));
