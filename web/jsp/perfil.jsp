@@ -1,5 +1,6 @@
 <%@ page import="basedatos.modelo.UsuarioVO" %>
 <%@ page import="basedatos.modelo.StatsUsuarioVO" %>
+<%@ page import="basedatos.modelo.ArticuloUsuarioVO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%--
@@ -33,6 +34,8 @@
     int perdidas = 0;
     int ratio = 0;
 
+    ArticuloUsuarioVO avatar = null;
+
     if (session.getAttribute("userId") == null) {
         response.sendRedirect("/jsp/login.jsp");
     } else {
@@ -54,13 +57,78 @@
             ratio = ganadas/perdidas;
         }
 
+        avatar = (ArticuloUsuarioVO) session.getAttribute("Avatar");
+        if(avatar == null){
+            avatar = new ArticuloUsuarioVO(null, 'A', true, null);
+            avatar.setRutaImagen("#");
+        }
     }%>
 
 <body>
     <div class="container">
+        <% String error = (String) request.getAttribute("error"); %>
+        <%
+            if (error != null) { // Hay un error %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+
+            <%
+                switch (error){
+                    case "userNotFound": %>
+            <strong>Usuario no encontrado o contraseña incorrecta.</strong> Inténtalo de nuevo.
+            <%
+                    break;
+                    case "adminNotFound":%>
+            <strong>No eres administrador del sistema</strong>
+            <%
+                    break;
+                    case "emptyUser":%>
+            <strong>Introduzca un usuario</strong>
+            <%
+                    break;
+                    case "emptyPass":%>
+            <strong>Introduzca la contraseña actual</strong>
+            <%
+                    break;
+                    case "emptyLastName":%>
+            <strong>Introduzca sus apellidos</strong>
+            <%
+                    break;
+                    case "emptyName":%>
+            <strong>Introduce tu nombre</strong>
+            <%
+                    break;
+                    case "emptyEmail":%>
+            <strong>Introduce tu correo electrónico</strong>
+            <%
+                    break;
+                    case "emptyRePass":%>
+            <strong>Debes repetir la contraseña</strong>
+            <%
+                    break;
+                    case "wrongRePass":%>
+            <strong>La contraseña no coincide</strong>
+            <%
+                    break;
+                    case "sessionNotExist":%>
+            <strong>La sesión ha caducado.</strong> Inicie sesión de nuevo.
+            <%
+                    break;
+                    case "existentUser":%>
+            <strong>Usuario ya existente.</strong> Inténtalo con otro nombre de usuario.
+            <%
+                    break;
+                    default:%>
+            <strong><%=error%></strong> Inténtalo con otra vez.
+            <%
+                }%>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <% } %>
         <div class="row">
             <div class="col-md-4 mt-4">
-                <img class="img-thumbnail" style="width: 400px" src="#" alt="imagen usuario">
+                <img class="img-thumbnail" style="width: 400px" src="<%= avatar.getRutaImagen() %>" alt="imagen usuario">
             </div>
             <div class="col-md-6 mt-4">
                 <h1> <%= nick %> </h1>
@@ -90,34 +158,35 @@
                             <div class="modal-body container">
                                 <div class="row">
                                     <div class="col-sm">
-                                        <form action="/LoginServlet.do" method="post" > <!-- TODO: Asegurar que funciona el form -->
+                                        <form action="/ModificarDatos.do" method="post" > <!-- TODO: Asegurar que funciona el form -->
                                             <div class="form-group">
                                                 <label for="modEmail">E-Mail</label>
-                                                <input type="email" class="form-control" id="modEmail" placeholder="<%= email %>">
+                                                <input type="email" class="form-control" id="modEmail" name="modEmail" placeholder="<%= email %>">
                                             </div>
                                             <div class="form-group">
                                                 <label for="modNombre">Nombre</label>
-                                                <input type="text" class="form-control" id="modNombre" placeholder="<%= nombre %>">
+                                                <input type="text" class="form-control" id="modNombre" name="modNombre" placeholder="<%= nombre %>">
                                             </div>
                                             <div class="form-group">
                                                 <label for="modApellidos">Apellidos</label>
-                                                <input type="text" class="form-control" id="modApellidos" placeholder="<%= apellidos %>">
+                                                <input type="text" class="form-control" id="modApellidos" name="modApellidos" placeholder="<%= apellidos %>">
                                             </div>
                                             <div class="form-group">
                                                 <label for="modPass">Nueva contraseña</label>
-                                                <input type="password" class="form-control" id="modPass" >
+                                                <input type="password" class="form-control" id="modPass" name="modPass">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="modRePass">Repite la nueva contraseña</label>
+                                                <input type="password" class="form-control" id="modRePass" name="modRePass">
                                             </div>
                                             <div class="form-group">
                                                 <label for="modOldPass">Contraseña actual</label>
-                                                <input type="password" class="form-control" id="modOldPass"
+                                                <input type="password" class="form-control" id="modOldPass" name="modOldPass"
                                                        placeholder="Introduce tu contraseña actual" required>
                                             </div>
                                             <button type="submit" class="btn btn-primary">
                                                 <i class="fa fa-save mr-2" aria-hidden="true"></i>Guardar</button>
                                         </form>
-                                    </div>
-                                    <div class="col-sm">
-                                        <a>Columna</a>
                                     </div>
                                 </div>
                             </div>

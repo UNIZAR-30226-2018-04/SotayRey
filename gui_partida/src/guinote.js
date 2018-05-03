@@ -54,6 +54,7 @@ function preload() {
     game.load.image('avatar', 'assets/avatar.png');
     game.load.image('victoria', 'assets/victoria.png');
     game.load.image('derrota', 'assets/derrota.png');
+    game.load.image('dorsoBase', 'assets/dorsoBase.jpg');
     game.load.audio('musica', ['assets/musica.mp3']);
 }
 
@@ -76,6 +77,9 @@ var jDer;
 
 var turno; // punto rojo que indica el turno
 var idContador = 0;
+
+var partida_pausa = false; // si se desconecta algun jugador
+var textoDesconectado;
 
 var triunfo;
 triunfo = {};
@@ -127,7 +131,6 @@ function inicializarDispositivo(){
     jRef.cartaLanzada;
     jRef.numCartas;
     jRef.cartasEnMano = game.add.group();
-    jRef.dorso;
     jRef.rotacion = 0;
     jRef.nombreUsuario = game.add.text(jRef.XLanzar + ejeXCarta * 1.10, jRef.YLanzar + ejeYCarta * 0.8, 'usuarioRef', {font: fuente, fill: color});
     jRef.avatar = game.add.sprite(jRef.XLanzar + ejeXCarta*1.10, jRef.YLanzar + avatarEjeY/2, 'avatar');
@@ -135,6 +138,7 @@ function inicializarDispositivo(){
     //jRef.avatar.body.setCircle(45);
     jRef.avatar.height = avatarEjeY;
     jRef.avatar.width = avatarEjeX;
+    jRef.dorso = 'dorsoBase';
 
 
     jIzq = {};
@@ -147,7 +151,6 @@ function inicializarDispositivo(){
     jIzq.cartaLanzada;
     jIzq.numCartas;
     jIzq.cartasEnMano = game.add.group();
-    jIzq.dorso;
     jIzq.rotacion = 90;
     if (numJugadores == 4){
         jIzq.nombreUsuario = game.add.text(jIzq.XLanzar - ejeYCarta, jIzq.YLanzar - 30, 'usuarioIzq', {font: fuente, fill: color});
@@ -155,6 +158,7 @@ function inicializarDispositivo(){
         jIzq.avatar.height = avatarEjeY;
         jIzq.avatar.width = avatarEjeX;
     }
+    jIzq.dorso = 'dorsoBase';
 
     jArriba = {};
     jArriba.XPosMedia = ejeX / 2;
@@ -166,7 +170,6 @@ function inicializarDispositivo(){
     jArriba.cartaLanzada;
     jArriba.numCartas;
     jArriba.cartasEnMano = game.add.group();
-    jArriba.dorso;
     jArriba.rotacion = 0;
     jArriba.nombreUsuario = game.add.text(jArriba.XLanzar + ejeXCarta + 10, jArriba.YLanzar + ejeYCarta/2, 'usuarioArriba', {font: fuente, fill: color});
     jArriba.avatar = game.add.sprite(jArriba.XLanzar + ejeXCarta + 30, jArriba.YLanzar, 'avatar');
@@ -174,6 +177,7 @@ function inicializarDispositivo(){
     //jRef.avatar.body.setCircle(45);
     jArriba.avatar.height = avatarEjeY;
     jArriba.avatar.width = avatarEjeX;
+    jArriba.dorso = 'dorsoBase';
 
 
     jDer = {};
@@ -186,8 +190,8 @@ function inicializarDispositivo(){
     jDer.cartaLanzada;
     jDer.numCartas;
     jDer.cartasEnMano = game.add.group();
-    jDer.dorso;
     jDer.rotacion = 270;
+    jDer.dorso = 'dorsoBase';
 
     if (numJugadores == 4){
         jDer.nombreUsuario = game.add.text(jDer.XLanzar, jDer.YLanzar - ejeXCarta - 30, 'usuarioIzq', {font: fuente, fill: color});
@@ -322,7 +326,7 @@ function dibujarCartaLanzada(jugador){
 function crearCartas(jugador){
     for (i = 0; i < jugador.numCartas; i++){
         console.log("CRANDO CARTAS PARA " + jugador.XPosMedia);
-        jugador.cartasEnMano.create(0, 0, 'cartas');
+        jugador.cartasEnMano.create(0, 0, jugador.dorso);
     }
 
 }
@@ -358,28 +362,16 @@ function dibujarJugador(identificador){
 
 }
 
-/* Dibuja las cartas del jugador de referencia */
-/*
-function dibujarJugadorRef(){
-    var jugador = jRef;
-    jugador.cartasEnMano.forEach(function(item) {
-        item.x = jugador.XPosMedia + i*jugador.sumX;
-        item.y = jugador.YPosMedia + i*jugador.sumY;
-        item.angle = jugador.rotacion;
-        //item.scale.setTo(escalaCarta, escalaCarta);
-        console.log("pongo carta en mesa");
-        console.log(item.x);
-        console.log(item.y);
-        i = i + 1;
-    }, this);
 
-}
-
-*/
 /**
  * Inicializa el juego
  */
 function create() {
+
+    // https://stackoverflow.com/questions/37780496/phaser-loading-images-dynamically-after-preload?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+  //  game.load.image('dorsoBase', 'assets/dorsoBase.jpg');
+  //  game.load.start();
+
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -403,42 +395,6 @@ function create() {
     //yo.scale.setTo(0.1, 0.1);
 
 
-    // Pruebas
-
-
-    // Estado inicial de prueba
-
-    //representarEstado(estado_inicial);
-
-    //mapearJugadores();
-
-    //jRef.cartasEnMano.inputEnabled = true;
-    //jRef.cartasEnMano.onInputDown.add(pulsarCarta, this);
-
-    //jArriba.numCartas = 6;
-    //jIzq.numCartas = 6;
-    //jDer.numCartas = 6;
-
-    //inicializarJugadores();
-    //dibujarJugador(jArriba);
-    //dibujarJugador(jIzq);
-    //dibujarJugador(jDer);
-    //inicializarRef();
-
-    //modificarTriunfo(12, "copas");
-
-
-    // Simulacion partida
-
-
-    //jugadorLanzaCarta(0, 3, "oros");
-
-    //jugadorLanzaCarta(1, 3, "bastos");
-
-
-    //jugadorLanzaCarta(2, 6, "espadas");
-
-    //jugadorLanzaCarta(3, 11, "copas");
 
     //controlMusica();
     actualizarHUD("");
@@ -607,6 +563,11 @@ function enviarMensaje(obj){
 var estadoInicializado = false;
 
 function representarEstado(estado){
+    if(partida_pausa){
+        textoDesconectado.destroy();
+    }
+
+    partida_pausa = false;
     // Se dibuja el triunfo
     modificarTriunfo(estado.triunfo.numero, estado.triunfo.palo);
     // Se dibujan las cartas de los jugadores
@@ -628,6 +589,8 @@ function representarEstado(estado){
             dibujarJugador(jugador);
             jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
             dibujarCartaLanzada(jugador);
+           // jugador.avatar.loadTexture(item.avatar);
+            jugador.avatar.loadTexture("avatar.png");
             arrayJugadores[item.id] = jugador;
         }
         else{
@@ -721,7 +684,35 @@ function recibirMensaje(msg){
         case "estado_inicial" :
             representarEstado(mensaje);
             break;
+        case "broadcast_desconectado":
+            var id = mensaje.id_jugador;
+            var timeout = mensaje.timeout;
+            partida_pausa = true;
+            setTimeout(function(){ jugadorDesconectado(id); mandarTimeout();}, timeout);
+            break;
     }
+}
+
+function mandarTimeout(){
+    if (partida_pausa){
+        var obj = {
+            "tipo_mensaje" : "timeout",
+            "remitente" : {
+                "id_partida" : idPartida,
+                "id_jugador" : miID
+            }
+        };
+        enviarMensaje(obj);
+    }
+}
+
+
+function jugadorDesconectado(id, cantidad){
+    console.log("Jugador desconectado");
+    var style = { font: "45px Arial", fill: "#ff0044", align: "center" };
+    textoDesconectado = game.add.text(game.world.centerX, game.world.centerY, "PARTIDA EN PAUSA\n"+arrayJugadores[id].nombreUsuario.text +" se ha desconectado", style);
+    textoDesconectado.x = textoDesconectado.x - textoDesconectado.width/2;
+
 }
 
 
@@ -733,7 +724,7 @@ function crearCarta(numero, palo){
         carta = game.add.sprite(0, 0, 'cuadroCarta');
     }
     else{
-        carta = game.add.sprite(0, 0, 'cartas');
+        carta = crearDorso(numero, palo);
         carta.frame = indice;
     }
     carta.numero = numero; // Si no se pone despues el game.add lo machaca
@@ -745,6 +736,13 @@ function crearCarta(numero, palo){
 function crearDorso(numero, palo){
     var carta = game.add.sprite(0, 0, 'cartas');
     carta.frame = 13;
+    return carta;
+}
+
+function crearDorsoPersonalizado(idJugador){
+    console.log("CREO EL DORSO PERSONALIZADO");
+    dorso = arrayJugadores[idJugador].dorso
+    var carta = game.add.sprite(0, 0, dorso);
     return carta;
 }
 
@@ -864,7 +862,7 @@ function pulsaCarta(item){
 function jugadorRobaCarta(idJugador, numero, palo){
     var jugador = arrayJugadores[idJugador];
     if (idJugador!= miID){
-        var carta = crearDorso(numero, palo);
+        var carta = crearDorsoPersonalizado(idJugador);
         jugador.cartasEnMano.add(carta);
         dibujarJugador(jugador);
         dibujarCartaLanzada(jugador);

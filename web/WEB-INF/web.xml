@@ -107,4 +107,14 @@
         <servlet-name>MostrarLiga</servlet-name>
         <url-pattern>/MostrarLiga.do</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ModificarDatos</servlet-name>
+        <servlet-class>servlet.ModificarDatosServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ModificarDatos</servlet-name>
+        <url-pattern>/ModificarDatos.do</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -13,7 +13,7 @@
         var id_partida = 0;
         var id_jugador = 0;
         var nombre_jugador = "cms";
-        var total_parts = 4;
+        var total_parts = 2;
         var socket = new WebSocket("ws://localhost:8080/matchmaking");
         var listo = JSON.stringify({
             "tipo_mensaje": "busco_partida",
