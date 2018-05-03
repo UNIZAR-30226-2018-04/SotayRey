@@ -1,9 +1,7 @@
 package basedatos;
 
-import basedatos.exceptions.ExceptionCampoInexistente;
-import basedatos.exceptions.ExceptionCampoInvalido;
-import basedatos.modelo.TorneoVO;
-import basedatos.modelo.UsuarioVO;
+import basedatos.exceptions.*;
+import basedatos.modelo.*;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
@@ -15,23 +13,37 @@ import java.math.BigInteger;
 public class PruebaJulia {
 
     public static void main(String[] args) throws ExceptionCampoInexistente, ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException {
+	
+		SesionVO s = new SesionVO("zcarrera", "www.nadasoloesunaprueba.com");
+		InterfazDatos.instancia().crearSesionAbierta(s);
+		
+		String url = InterfazDatos.instancia().obtenerUrlSesion("zcarrera");
+		System.out.println("Primera url: " + url);
 
-		Timestamp ts = java.sql.Timestamp.valueOf("2018-02-23 10:54:09.0");
-        TorneoVO t = new TorneoVO("torneo2", "descripcion1", ts, true, 3, 2, 1);
+		url = InterfazDatos.instancia().obtenerUrlSesion("viniesta");
+		System.out.println("Segunda url: " + url);
 
-		Timestamp ts2 = java.sql.Timestamp.valueOf("2018-02-23 10:54:09.0");
-		TorneoVO t2 = new TorneoVO("torneoVacio", "descripcion1", ts2, true, 3, 2, 1);
-		t2.setId(BigInteger.valueOf(7));
+		url = InterfazDatos.instancia().obtenerUrlSesion("juliagviu");
+		System.out.println("Tercera url: " + url);
 
-		UsuarioVO u1 = InterfazDatos.instancia().obtenerDatosUsuario("zcarrera");
-		UsuarioVO u2 = InterfazDatos.instancia().obtenerDatosUsuario("yolanda86");
-		UsuarioVO u3 = InterfazDatos.instancia().obtenerDatosUsuario("viniesta");
-		UsuarioVO u4 = InterfazDatos.instancia().obtenerDatosUsuario("somozablanca");
-		UsuarioVO u5 = InterfazDatos.instancia().obtenerDatosUsuario("rosario31");
-		UsuarioVO u6 = InterfazDatos.instancia().obtenerDatosUsuario("nplanas");
-		UsuarioVO u7 = InterfazDatos.instancia().obtenerDatosUsuario("inmaculada13");
-		UsuarioVO u8 = InterfazDatos.instancia().obtenerDatosUsuario("godoydiego");
-		UsuarioVO u9 = InterfazDatos.instancia().obtenerDatosUsuario("carmen90");
+//		InterfazDatos.instancia().crearSesionAbierta(s);
+
+//		Timestamp ts = java.sql.Timestamp.valueOf("2018-02-23 10:54:09.0");
+//        TorneoVO t = new TorneoVO("torneo2", "descripcion1", ts, true, 3, 2, 1);
+
+//		Timestamp ts2 = java.sql.Timestamp.valueOf("2018-02-23 10:54:09.0");
+//		TorneoVO t2 = new TorneoVO("torneoVacio", "descripcion1", ts2, true, 3, 2, 1);
+//		t2.setId(BigInteger.valueOf(7));
+
+//		UsuarioVO u1 = InterfazDatos.instancia().obtenerDatosUsuario("zcarrera");
+//		UsuarioVO u2 = InterfazDatos.instancia().obtenerDatosUsuario("yolanda86");
+//		UsuarioVO u3 = InterfazDatos.instancia().obtenerDatosUsuario("viniesta");
+//		UsuarioVO u4 = InterfazDatos.instancia().obtenerDatosUsuario("somozablanca");
+//		UsuarioVO u5 = InterfazDatos.instancia().obtenerDatosUsuario("rosario31");
+//		UsuarioVO u6 = InterfazDatos.instancia().obtenerDatosUsuario("nplanas");
+//		UsuarioVO u7 = InterfazDatos.instancia().obtenerDatosUsuario("inmaculada13");
+//		UsuarioVO u8 = InterfazDatos.instancia().obtenerDatosUsuario("godoydiego");
+//		UsuarioVO u9 = InterfazDatos.instancia().obtenerDatosUsuario("carmen90");
 
 		//InterfazDatos.instancia().crearTorneo(t);
 		//InterfazDatos.instancia().crearTorneo(t2);
@@ -54,9 +66,10 @@ public class PruebaJulia {
 //		InterfazDatos.instancia().apuntarTorneo(u5,t2);
 //		InterfazDatos.instancia().apuntarTorneo(u6,t2);
 //		InterfazDatos.instancia().apuntarTorneo(u7,t2);
-		//InterfazDatos.instancia().apuntarTorneo(u8,t2);
+//		InterfazDatos.instancia().apuntarTorneo(u8,t2);
 
-		InterfazDatos.instancia().abandonarTorneo(u6,t2);
+//		InterfazDatos.instancia().abandonarTorneo(u6,t2);
+
 //		InterfazDatos.instancia().apuntarTorneo(u8,t2);
 //		InterfazDatos.instancia().apuntarTorneo(u9,t2);
 
