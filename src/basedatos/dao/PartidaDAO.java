@@ -95,7 +95,7 @@ public class PartidaDAO {
                     ", cuarentas = " + p.getCuarentas().get(i) +
                     ", abandonador = " + (p.getAbandonador() == i + 1) +
                     " WHERE partida = " + p.getId() +
-                    " AND usuario = '" + p.getUsuarios().get(i).getUsername() + "' AND equipo = '" + (char) (((i % 2) + 1)) + '0' + "'";
+                    " AND usuario = '" + p.getUsuarios().get(i).getUsername() + "' AND equipo = '" + (char) ((((i % 2) + 1)) + '0') + "'";
             statement.executeUpdate(updateJuega);
         }
 
@@ -569,7 +569,7 @@ public class PartidaDAO {
         ArrayList<UsuarioVO> ual = new ArrayList<>();
         ArrayList<PartidaVO> pal = new ArrayList<>();
 
-        ResultSet res = statement.executeQuery("select p.id, j.usuario usuario1, jj.usuario usuario2 from partida p, juega j, juega jj where j.partida=p.id and jj.partida=p.id and j.usuario > jj.usuario AND p.fase_torneo = " + f.getTorneoId() + " AND p.fase_num = " + f.getNum());
+        ResultSet res = statement.executeQuery("select p.id, j.usuario usuario1, jj.usuario usuario2, j.equipo equipo1, jj.equipo equipo2 from partida p, juega j, juega jj where j.partida=p.id and jj.partida=p.id and j.usuario > jj.usuario AND p.fase_torneo = " + f.getTorneoId() + " AND p.fase_num = " + f.getNum());
 
         while (res.next()) {
             u1 = new UsuarioVO();
@@ -579,8 +579,13 @@ public class PartidaDAO {
             ual.add(u1);
             ual.add(u2);
             usersp = new ArrayList<>();
-            usersp.add(u1);
-            usersp.add(u2);
+            if (res.getString("equipo1").charAt(0) == '1') {
+                usersp.add(u1);
+                usersp.add(u2);
+            } else {
+                usersp.add(u2);
+                usersp.add(u1);
+            }
             pal.add(new PartidaVO(new BigInteger(res.getString("id")), f.getNum(), f.getTorneoId(), true, usersp));
         }
 
