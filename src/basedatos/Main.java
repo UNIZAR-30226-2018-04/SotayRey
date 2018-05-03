@@ -1,12 +1,14 @@
 package basedatos;
 
+import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.exceptions.ExceptionCampoInvalido;
+import basedatos.modelo.ArticuloVO;
+import basedatos.modelo.LigaVO;
+import basedatos.modelo.UsuarioVO;
+
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.SQLException;
-
-import basedatos.InterfazDatos;
-import basedatos.modelo.*;
-import basedatos.exceptions.*;
 
 public class Main {
     public static void main(String[] args) throws ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException, ExceptionCampoInexistente {
@@ -29,7 +31,7 @@ public class Main {
 
         ArticuloVO a1 = new ArticuloVO("Una cara", 100, "Te favorece más que la foto de comunión", "/rutaImagen", 'A');
         ArticuloVO a2 = new ArticuloVO("Cosecha de Paz", 200, "Demuestra a tus rivales que dejaste la escuela a los 15", "/rutaImagen", 'A',l2);
-        ArticuloVO a3 = new ArticuloVO("Huesitos", 100, "Deja el tinder y liga presumiendo de este tapete con calaveras", "/rutaImagen", 'A',l3);
+        ArticuloVO a3 = new ArticuloVO("Huesitos", 100, "Deja el tinder y liga presumiendo de este avatar de calavera", "/rutaImagen", 'A',l3);
 
         ArticuloVO b1 = new ArticuloVO("Heracleto Furnier", 0, "Vaya coincidencia de nombre", "/rutaImagen", 'B');
         ArticuloVO b2 = new ArticuloVO("Cartas de Cáñamo", 200, "Tu juega y no las quemes", "/rutaImagen", 'B',l2);

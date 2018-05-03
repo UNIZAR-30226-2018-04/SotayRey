@@ -1,25 +1,20 @@
 package basedatos;
 
+import basedatos.dao.*;
+import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.exceptions.ExceptionCampoInvalido;
+import basedatos.modelo.*;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 import java.io.FileInputStream;
-import java.util.List;
+import java.io.IOException;
 import java.math.BigInteger;
-
-import basedatos.exceptions.*;
-import basedatos.dao.*;
-import basedatos.modelo.*;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Properties;
 
 public class InterfazDatos {
 
@@ -175,9 +170,10 @@ public class InterfazDatos {
 
     /* Inserta al Usuario u al Torneo t en su fase inicial. Si u llena el numero de participantes de la fase
      * se produce el emparejamiento: utilizar obtenerPartidasFaseTorneo para saber el resultado de ese emparejamiento
+     * Devuelve cierto si y solo si cuando se apunta al nuevo usuario se realiza el emparejamiento
      */
-    public void apuntarTorneo(UsuarioVO u, TorneoVO t) throws  ExceptionCampoInvalido, SQLException {
-        TorneoDAO.apuntarTorneo(u,t,this.cpds);
+    public boolean apuntarTorneo(UsuarioVO u, TorneoVO t) throws  ExceptionCampoInvalido, SQLException {
+        return TorneoDAO.apuntarTorneo(u,t,this.cpds);
     }
 
     /* Rellena los campos de FaseVO f. f debe de poseer la id del torneo y el número de fase
@@ -206,71 +202,13 @@ public class InterfazDatos {
      * Actualiza las puntuaciones y divisas de los usuarios implicados 
      *      (Ganada:3puntos / 5monedas, Perdida:0puntos / 1moneda, Abandonada:-1puntos/ 0monedas, Teabandonan:0puntos / 1moneda)
      * Si la partida era de Torneo, incluye al ganador en la siguiente fase y la recompensa depende de la fase del torneo
+     *
+     * La partida devuelve cierto si y solo si al incluir al ganador de esta partida de torneo en la siguiente fase del torneo
+     * la fase se llena
      */
-    public void finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido, ExceptionCampoInexistente, SQLException {
+    public boolean finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido, ExceptionCampoInexistente, SQLException {
         // Finalizar partida
-        PartidaDAO.finalizarPartida(p, this.cpds);
-
-        int puntosGanador = 3;
-        int divisaGanador = 5;
-
-        //Jejeje
-        if (p.getFaseNum()>0) {
-            PartidaDAO.finalizarPartidaFaseTorneo(p,this.cpds);
-            TorneoVO t = TorneoDAO.obtenerDatosTorneo(p.getTorneoId(), this.cpds);
-            //puntosGanador = Math.pow(2,t.getNumFases()-p.getFaseNum())*2;
-            //divisaGanador = Math.pow(2,t.getNumFases()-p.getFaseNum())*2;
-        }
-
-        // Actualizar datos de los usuarios implicados
-        char gan = p.getGanador();
-        
-        List<UsuarioVO> lista = p.getUsuarios();
-        // Partida NO abandonada
-        if (gan=='1' || gan=='2'){
-            for(int i=0; i<lista.size(); i=i+2){
-                if(gan =='1'){
-                    //ganador
-                    StatsUsuarioVO su1 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i).getUsername(),this.cpds);
-                    su1.setPuntuacion(su1.getPuntuacion()+3);
-                    su1.setDivisa(su1.getDivisa()+5);
-                    StatsUsuarioDAO.modificarStatsUsuario(su1,this.cpds);
-                    //perdedor
-                    StatsUsuarioVO su2 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i+1).getUsername(),this.cpds); 
-                    su2.setDivisa(su2.getDivisa()+1); 
-                    StatsUsuarioDAO.modificarStatsUsuario(su2,this.cpds);         
-                }
-                else{
-                    //perdedor
-                    StatsUsuarioVO su1 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i).getUsername(),this.cpds);
-                    su1.setDivisa(su1.getDivisa()+1);
-                    StatsUsuarioDAO.modificarStatsUsuario(su1,this.cpds);
-                    //ganador
-                    StatsUsuarioVO su2 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i+1).getUsername(),this.cpds); 
-                    su2.setPuntuacion(su2.getPuntuacion()+puntosGanador);
-                    su2.setDivisa(su2.getDivisa()+divisaGanador);
-                    StatsUsuarioDAO.modificarStatsUsuario(su2,this.cpds);  
-                    
-                }            
-            }
-        }
-        // Partida abandonada
-        else if (gan=='A'){
-            for(int i=0; i<lista.size(); i++){
-                StatsUsuarioVO su = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i).getUsername(),this.cpds);
-                if(p.getAbandonador()==i){
-                    su.setPuntuacion(su.getPuntuacion()-1);
-                }
-                else{
-                    su.setDivisa(su.getDivisa()+divisaGanador);
-                    su.setPuntuacion(su.getPuntuacion()+puntosGanador);
-                } 
-                StatsUsuarioDAO.modificarStatsUsuario(su,this.cpds);           
-            }        
-        }
-        else{
-            throw new ExceptionCampoInvalido("La partida debe estar finalizada (con ganador o abandonador)");
-        } 
+        return PartidaDAO.finalizarPartida(p, this.cpds);
     }
 
     /* Devuelve un array con todas las partidas jugadas por el usuario identificado por username
