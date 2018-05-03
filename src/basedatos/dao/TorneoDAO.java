@@ -32,9 +32,9 @@ public class TorneoDAO {
 
 		Timestamp actualts = new Timestamp(System.currentTimeMillis());
 		
-		if(actualts.after(t.getTimeInicio())){
-			throw new ExceptionCampoInvalido("El tiempo de inicio debe ser posterior a la fecha actual");		
-		}
+//		if(actualts.after(t.getTimeInicio())){
+//			throw new ExceptionCampoInvalido("El tiempo de inicio debe ser posterior a la fecha actual");
+//		}
 		
 		String prevalues = "INSERT INTO torneo (nombre";
         String postvalues = " VALUES ('" + t.getNombre() + "'";

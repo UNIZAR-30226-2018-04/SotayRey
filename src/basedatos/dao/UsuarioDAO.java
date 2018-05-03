@@ -6,22 +6,17 @@
 
 package basedatos.dao;
 
-import java.text.SimpleDateFormat;
-
 import basedatos.BCrypt;
+import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.modelo.UsuarioVO;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import java.beans.PropertyVetoException;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Properties;
-import java.io.FileInputStream;
-
-import basedatos.exceptions.*;
-import basedatos.modelo.*;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
 
 public class UsuarioDAO {
 
@@ -48,11 +43,10 @@ public class UsuarioDAO {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 postvalues = postvalues + ", '" + sdf.format(u.getFechaNac()) + "'";
             }
-            prevalues = prevalues + ", fb_auth";
+            prevalues = prevalues + ", fb_auth, pw_hash ";
             if (u.getPlaintextPassword() == null) {
-                postvalues = postvalues + ", 1";
+                postvalues = postvalues + ",'" + u.getFb_auth() + "',NULL";
             } else {
-                prevalues = prevalues + ", pw_hash";
                 postvalues = postvalues + ", NULL,'" + hashPassword(u.getPlaintextPassword()) + "'";
             }
             prevalues = prevalues + ")";
@@ -101,6 +95,8 @@ public class UsuarioDAO {
 
         return  BCrypt.checkpw(plaintextPassword, stored_hash);
     }
+
+
 
     public static UsuarioVO obtenerDatosUsuario(String username, ComboPooledDataSource pool) throws SQLException, ExceptionCampoInexistente {
         Connection connection = null;
@@ -159,7 +155,7 @@ public class UsuarioDAO {
         if(u.getNombre()!=null) updatepre = updatepre + ", nombre = '" + u.getNombre() + "'";
         if(u.getApellidos()!=null) updatepre = updatepre + ", apellidos = '" + u.getApellidos() + "'";
         if(u.getFechaNac()!=null) updatepre = updatepre + ", fechaNac = '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(u.getFechaNac()) + "'";
-
+        if(u.getPlaintextPassword()!= null) updatepre = updatepre + ", pw_hash = '" + UsuarioDAO.hashPassword(u.getPlaintextPassword()) + "'";
         if(statement.executeUpdate(updatepre+updatepost) == 0){
             throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario: " + u.getUsername() + " no existente");
         }

@@ -104,7 +104,7 @@ public class PartidaDAO {
         int premioDiv = 5;
         ResultSet res;
         if (p.getFaseNum() > 0) {
-            res = statement.executeQuery("SELECT premioPunt, premioDiv FROM fase WHERE torneo = " + p.getTorneoId() + " AND fase = " + p.getFaseNum());
+            res = statement.executeQuery("SELECT premioPunt, premioDiv FROM fase WHERE torneo = " + p.getTorneoId() + " AND num = " + p.getFaseNum());
             res.next();
             premioPunt = res.getInt("premioPunt");
             premioDiv = res.getInt("premioDiv");
@@ -143,12 +143,13 @@ public class PartidaDAO {
                     UsuarioVO u2;
                     ArrayList<UsuarioVO> ual;
                     PartidaVO pp;
-
+                    System.out.println(res.getFetchSize());
                     while (res.next()) {
+                        System.out.println(res.getFetchSize());
                         u1 = new UsuarioVO();
                         u1.setUsername(res.getString("usuario"));
-                        res.next();
                         u2 = new UsuarioVO();
+                        res.next();
                         u2.setUsername(res.getString("usuario"));
                         ual = new ArrayList<>();
                         ual.add(u1);
@@ -159,19 +160,21 @@ public class PartidaDAO {
                         String insertPartida;
                         insertPartida = "INSERT INTO partida (fase_num, fase_torneo,publica) VALUES (" + pp.getFaseNum() + "," + pp.getTorneoId() + ",1)";
 
-                        statement.executeUpdate(insertPartida);
+                        Statement statement1 = connection.createStatement();
+                        statement1.executeUpdate(insertPartida);
 
                         //Conseguir id partida
-                        res = statement.executeQuery("SELECT LAST_INSERT_ID()");
-                        res.next();
-                        String p_id = res.getString("LAST_INSERT_ID()");
+                        ResultSet res3 = statement1.executeQuery("SELECT LAST_INSERT_ID()");
+                        res3.next();
+                        String p_id = res3.getString("LAST_INSERT_ID()");
 
                         // Recorremos los usuarios e insertamos la relacion juega
                         for (int i = 0; i < pp.getUsuarios().size(); i++) {
                             String insertJuega = "INSERT INTO juega (usuario, partida, equipo) VALUES ('" +
                                     pp.getUsuarios().get(i).getUsername() + "'," + p_id + ",'" + (char) (((i % 2) + 1) + '0') + "')";
-                            statement.executeUpdate(insertJuega);
+                            statement1.executeUpdate(insertJuega);
                         }
+                        statement1.close();
 
                     }
                 }
@@ -559,15 +562,14 @@ public class PartidaDAO {
 
         connection = pool.getConnection();
         statement = connection.createStatement();
-        connection.setAutoCommit(false);
 
         UsuarioVO u1;
         UsuarioVO u2;
         ArrayList<UsuarioVO> usersp;
-        ArrayList<UsuarioVO> ual = f.getParticipantes();
-        ArrayList<PartidaVO> pal = f.getParejas();
+        ArrayList<UsuarioVO> ual = new ArrayList<>();
+        ArrayList<PartidaVO> pal = new ArrayList<>();
 
-        ResultSet res = statement.executeQuery("select p.id, j.usuario1, jj.usuario2 from partida p, juega j, juega jj where p.id = 2 and j.partida=p.id and jj.partida=p.id and j.usuario > jj.usuario AND p.fase_torneo = " + f.getTorneoId() + " AND p.fase_num = " + f.getNum());
+        ResultSet res = statement.executeQuery("select p.id, j.usuario usuario1, jj.usuario usuario2 from partida p, juega j, juega jj where j.partida=p.id and jj.partida=p.id and j.usuario > jj.usuario AND p.fase_torneo = " + f.getTorneoId() + " AND p.fase_num = " + f.getNum());
 
         while (res.next()) {
             u1 = new UsuarioVO();
@@ -581,13 +583,35 @@ public class PartidaDAO {
             usersp.add(u2);
             pal.add(new PartidaVO(new BigInteger(res.getString("id")), f.getNum(), f.getTorneoId(), true, usersp));
         }
-        connection.commit();
+
+        f.setParticipantes(ual);
+        f.setParejas(pal);
+
+
         if (statement != null) {
             statement.close();
         }
         if (connection != null) {
-            connection.setAutoCommit(true);
             connection.close();
         }
+    }
+    public static BigInteger obtenerIdUltimaPartida(ComboPooledDataSource pool) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+
+        connection = pool.getConnection();
+        statement = connection.createStatement();
+
+        ResultSet res = statement.executeQuery("SELECT MAX(id) mid FROM partida");
+        res.next();
+        BigInteger bi =  new BigInteger(res.getString("mid"));
+
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+        return bi;
     }
 }

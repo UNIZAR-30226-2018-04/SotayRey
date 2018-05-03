@@ -181,7 +181,7 @@ public class InterfazDatos {
      * de participantes.
 	 * Utilizar siempre esa función para comenzar todas las partidas de cada fase
      */
-    public void  obtenerPartidasFaseTorneo(FaseVO f) throws SQLException {
+    public void obtenerPartidasFaseTorneo(FaseVO f) throws SQLException {
         PartidaDAO.obtenerPartidasFaseTorneo(f,this.cpds);
     }
 
@@ -206,9 +206,14 @@ public class InterfazDatos {
      * La partida devuelve cierto si y solo si al incluir al ganador de esta partida de torneo en la siguiente fase del torneo
      * la fase se llena
      */
-    public boolean finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido, ExceptionCampoInexistente, SQLException {
+    public boolean finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido, SQLException {
         // Finalizar partida
         return PartidaDAO.finalizarPartida(p, this.cpds);
+    }
+
+    /* Devuelve el id de la última partida que se ha introducido */
+    public BigInteger obtenerIdUltimaPartida() throws SQLException {
+        return PartidaDAO.obtenerIdUltimaPartida(this.cpds);
     }
 
     /* Devuelve un array con todas las partidas jugadas por el usuario identificado por username
