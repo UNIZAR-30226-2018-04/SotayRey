@@ -6,18 +6,21 @@
 
 package basedatos.dao;
 
-import basedatos.exceptions.ExceptionCampoInexistente;
-import basedatos.exceptions.ExceptionCampoInvalido;
-import basedatos.modelo.LigaVO;
-import basedatos.modelo.StatsUsuarioVO;
+import java.text.SimpleDateFormat;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
-
+import java.beans.PropertyVetoException;
+import java.io.IOException;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Properties;
+import java.io.FileInputStream;
 import java.util.ArrayList;
+
+import basedatos.exceptions.*;
+import basedatos.modelo.*;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 public class LigaDAO {
 
@@ -40,8 +43,8 @@ public class LigaDAO {
         } catch (MySQLIntegrityConstraintViolationException e) {
            throw new ExceptionCampoInvalido("Error de acceso a la base de datos: Liga: " + l.getNombre() + " ya existente");
         } finally {
-            if (statement != null) try { statement.close(); } catch (SQLException e) {e.printStackTrace();}
-            if (connection != null) try { connection.close(); } catch (SQLException e) {e.printStackTrace();}
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
         }
     }
 

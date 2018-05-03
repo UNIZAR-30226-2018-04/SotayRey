@@ -25,9 +25,6 @@ var idPartida = parseInt(findGetParameter("idPartida"));
 var numJugadores = parseInt(findGetParameter("numJugadores"));
 var nombre = findGetParameter("nombre");
 
-// TODO llamar al facade para que me devuelva mi tablero favorito
-var tablero;
-
 console.log("MI IDDDDD ES" + miID + "  "+numJugadores);
 
 var socket = new WebSocket("ws://localhost:8085/endpoint");

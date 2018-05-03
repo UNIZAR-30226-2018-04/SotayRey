@@ -2,6 +2,7 @@
 
 USE sotayrey_db;
 
+DROP TABLE IF EXISTS sesion_abierta;
 DROP TABLE IF EXISTS participa_fase;
 DROP TABLE IF EXISTS juega;
 DROP TABLE IF EXISTS pertenece_liga;
@@ -90,7 +91,7 @@ CREATE TABLE juega (
     -- Si se borra un usuario, se borran todas sus relaciones 'juega' (se borra por tanto parte de la información de esa partida)
     FOREIGN KEY (partida) REFERENCES partida(id) ON DELETE RESTRICT ON UPDATE CASCADE, -- cuidado! Cascades de foreign key no activan triggers
     -- No se permite el borrado de partidas si hay jugadores registrados en ellas. Realmente, no se van a borrar nunca usuarios ni partidas
-    CONSTRAINT juega_pk PRIMARY KEY (usuario, partida)
+    CONSTRAINT juega_pk PRIMARY KEY (usuario, partida, equipo)
 );
 
 CREATE TABLE pertenece_liga (
@@ -117,8 +118,17 @@ CREATE TABLE participa_fase (
     usuario VARCHAR(20),
     fase_num INT UNSIGNED, -- null si la partida no pertenece a un torneo
     fase_torneo BIGINT UNSIGNED,
+	multip INT UNSIGNED DEFAULT 0,
     FOREIGN KEY (fase_num, fase_torneo) REFERENCES fase(num, torneo) ON DELETE RESTRICT ON UPDATE CASCADE,    
     FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE,
 	-- No se pueden borrar torneos si algún usuario ya está apuntado en él
-    CONSTRAINT participa_fase_pk PRIMARY KEY (usuario, fase_num, fase_torneo)
+    CONSTRAINT participa_fase_pk PRIMARY KEY (usuario, fase_num, fase_torneo, multip)
+);
+
+CREATE TABLE sesion_abierta (
+	usuario VARCHAR(20),
+	url	VARCHAR(300),
+	timeCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (usuario),
+	FOREIGN KEY (usuario) REFERENCES usuario(username) ON DELETE CASCADE ON UPDATE CASCADE
 );

@@ -10,10 +10,10 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 public class InterfazDatos {
@@ -80,6 +80,13 @@ public class InterfazDatos {
         return UsuarioDAO.autentificarUsuario(username,plaintextPassword,this.cpds);
     }
 
+	/* Devuelve el usuario que corresponde al token de Facebook fbToken.
+	 * Devuelve null si no existe ningún usuario identificado con ese token.
+	 */
+	public UsuarioVO autentificarUsuarioFacebook(String fbToken) throws SQLException {
+		return UsuarioDAO.autentificarUsuarioFacebook(fbToken, this.cpds);
+	}
+
     /*
      * Devuelve un usuario con todos sus datos (datos de perfil de usuario), a partir de su username
      */
@@ -131,91 +138,89 @@ public class InterfazDatos {
         PartidaDAO.insertarNuevaPartida(p, this.cpds);
     }
 
+	/* Se crea un nuevo torneo con todas sus fases, se devuelve en t el id del torneo por si se necesita
+	 * El tiempo de inicio del torneo debe ser posterior al momento actual (en caso contrario, ExceptionCampoInvalido)
+	 */
+	public void crearTorneo(TorneoVO t) throws ExceptionCampoInvalido, SQLException {
+		TorneoDAO.crearTorneo(t, this.cpds);
+	}
+
+	/* Modifica los datos del torneo (solamente aquellos atributos de t que no son null).
+	 * t debe contener su id correspondiente de la base de datos (consultarlo con crearTorneo, o obtenerTorneosProgramados)
+	 * Solo es posible realizar esta operación si el torneo no ha comenzado todavía (timeInicio > timeActual) y
+	 * por tanto, no hay usuarios apuntados.
+	 */
+	public void modificarTorneo(TorneoVO t) throws ExceptionCampoInvalido, ExceptionCampoInexistente, SQLException {
+		TorneoDAO.modificarTorneo(t, this.cpds);
+	}
+
+	/* Elimina el torneo identificado por "id" y todas sus fases.
+	 * Solo es posible realizar esta operación si el torneo no ha comenzado todavía (timeInicio > timeActual) y
+	 * por tanto, no hay usuarios apuntados.
+	 */
+	public void eliminarTorneo(BigInteger id) throws ExceptionCampoInvalido, ExceptionCampoInexistente, SQLException {
+		TorneoDAO.eliminarTorneo(id, this.cpds);
+	}
+
+	/* Devuelve todos los datos del torneo identificado por "id"
+	 */
+	public TorneoVO obtenerDatosTorneo(BigInteger id) throws ExceptionCampoInexistente, SQLException {
+		return TorneoDAO.obtenerDatosTorneo(id, this.cpds);
+	}
+
+	/* Devuelve todos los torneos programados (no finalizados ni llenos) a los que el usuario puede o podrá en un futuro apuntarse
+	 * Para poder saber si es posible apuntarse en un torneo comprobar que timeInicio < timeActual
+	 */
+	public ArrayList<TorneoVO> obtenerTorneosProgramados() throws SQLException {
+		return TorneoDAO.obtenerTorneosProgramados(this.cpds);
+	}
+
     /* Inserta al Usuario u al Torneo t en su fase inicial. Si u llena el numero de participantes de la fase
-     * se produce el emparejamiento
+     * se produce el emparejamiento: utilizar obtenerPartidasFaseTorneo para saber el resultado de ese emparejamiento
+     * Devuelve cierto si y solo si cuando se apunta al nuevo usuario se realiza el emparejamiento
      */
- //   public void apuntarTorneo(UsuarioVO u, TorneoVO t) throws  ExceptionCampoInvalido, SQLException {
- //       TorneoDAO.apuntarTorneo(u,t,this.cpds);
- //   }
+    public boolean apuntarTorneo(UsuarioVO u, TorneoVO t) throws  ExceptionCampoInvalido, SQLException {
+        return TorneoDAO.apuntarTorneo(u,t,this.cpds);
+    }
 
     /* Rellena los campos de FaseVO f. f debe de poseer la id del torneo y el número de fase
      * Se le rellenan los datos con las partidas (no empezadas, pero ya incluidas en la base de datos) y la lista
      * de participantes.
+	 * Utilizar siempre esa función para comenzar todas las partidas de cada fase
      */
- //   public void  obtenerPartidasFaseTorneo(FaseVO f) throws SQLException {
- //       PartidaDAO.obtenerPartidasFaseTorneo(f,this.cpds);
- //   }
+    public void obtenerPartidasFaseTorneo(FaseVO f) throws SQLException {
+        PartidaDAO.obtenerPartidasFaseTorneo(f,this.cpds);
+    }
+
+	/* Elimina al jugador del torneo en el que estaba apuntado porque este lo abandona fuera de una partida, y por tanto,
+	 * sin penalización sobre su puntuación ni divisa.
+	 * Si el jugador se encontraba en la primera fase (aún no ha comenzado el torneo), simplemente lo elimina del torneo.
+	 * Si el jugador se encontraba en fases posteriores, es eliminado del torneo y sustituido por la IA que jugará en su lugar.
+	 * Cuidado! Esta función sólo debe utilizarse si un jugador abandona el torneo FUERA de una partida (esperando a
+	 * que terminen el resto de partidas de la fase), ya que si es dentro de ella simplemente se debe rellenar el campo
+	 * abandonador de la PartidaVO y llamar a finalizarPartida.
+	 */
+	public void abandonarTorneo(UsuarioVO u, TorneoVO t) throws ExceptionCampoInexistente, SQLException {
+		TorneoDAO.abandonarTorneo(u,t,this.cpds);
+	}
 
     /* Se modifican la partida p en la base de datos con los datos de finalización, p debe incluir
      * el id que se modificó en la función crearNuevaPartida(p).
      * Actualiza las puntuaciones y divisas de los usuarios implicados 
      *      (Ganada:3puntos / 5monedas, Perdida:0puntos / 1moneda, Abandonada:-1puntos/ 0monedas, Teabandonan:0puntos / 1moneda)
      * Si la partida era de Torneo, incluye al ganador en la siguiente fase y la recompensa depende de la fase del torneo
+     *
+     * La partida devuelve cierto si y solo si al incluir al ganador de esta partida de torneo en la siguiente fase del torneo
+     * la fase se llena
      */
-    public void finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido, ExceptionCampoInexistente, SQLException {
+    public boolean finalizarPartida(PartidaVO p) throws ExceptionCampoInvalido, SQLException {
         // Finalizar partida
-        PartidaDAO.finalizarPartida(p, this.cpds);
+        return PartidaDAO.finalizarPartida(p, this.cpds);
+    }
 
-        int puntosGanador = 3;
-        int divisaGanador = 5;
-
-        //Jejeje
- //       if (p.getFaseNum()>0) {
- //           PartidaDAO.finalizarPartidaFaseTorneo(p,this.cpds);
- //           TorneoVO t = TorneoDAO.obtenerDatosTorneo(p.getTorneoId());
- //           puntosGanador = Math.pow(2,t.numFases()-p.getFaseNum())*2;
- //           divisaGanador = Math.pow(2,t.numFases()-p.getFaseNum())*2;
- //       }
-
-        // Actualizar datos de los usuarios implicados
-        char gan = p.getGanador();
-        
-        List<UsuarioVO> lista = p.getUsuarios();
-        // Partida NO abandonada
-        if (gan=='1' || gan=='2'){
-            for(int i=0; i<lista.size(); i=i+2){
-                if(gan =='1'){
-                    //ganador
-                    StatsUsuarioVO su1 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i).getUsername(),this.cpds);
-                    su1.setPuntuacion(su1.getPuntuacion()+3);
-                    su1.setDivisa(su1.getDivisa()+5);
-                    StatsUsuarioDAO.modificarStatsUsuario(su1,this.cpds);
-                    //perdedor
-                    StatsUsuarioVO su2 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i+1).getUsername(),this.cpds); 
-                    su2.setDivisa(su2.getDivisa()+1); 
-                    StatsUsuarioDAO.modificarStatsUsuario(su2,this.cpds);         
-                }
-                else{
-                    //perdedor
-                    StatsUsuarioVO su1 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i).getUsername(),this.cpds);
-                    su1.setDivisa(su1.getDivisa()+1);
-                    StatsUsuarioDAO.modificarStatsUsuario(su1,this.cpds);
-                    //ganador
-                    StatsUsuarioVO su2 = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i+1).getUsername(),this.cpds); 
-                    su2.setPuntuacion(su2.getPuntuacion()+puntosGanador);
-                    su2.setDivisa(su2.getDivisa()+divisaGanador);
-                    StatsUsuarioDAO.modificarStatsUsuario(su2,this.cpds);  
-                    
-                }            
-            }
-        }
-        // Partida abandonada
-        else if (gan=='A'){
-            for(int i=0; i<lista.size(); i++){
-                StatsUsuarioVO su = StatsUsuarioDAO.obtenerStatsUsuario(lista.get(i).getUsername(),this.cpds);
-                if(p.getAbandonador()==i){
-                    su.setPuntuacion(su.getPuntuacion()-1);
-                }
-                else{
-                    su.setDivisa(su.getDivisa()+divisaGanador);
-                    su.setPuntuacion(su.getPuntuacion()+puntosGanador);
-                } 
-                StatsUsuarioDAO.modificarStatsUsuario(su,this.cpds);           
-            }        
-        }
-        else{
-            throw new ExceptionCampoInvalido("La partida debe estar finalizada (con ganador o abandonador)");
-        } 
+    /* Devuelve el id de la última partida que se ha introducido */
+    public BigInteger obtenerIdUltimaPartida() throws SQLException {
+        return PartidaDAO.obtenerIdUltimaPartida(this.cpds);
     }
 
     /* Devuelve un array con todas las partidas jugadas por el usuario identificado por username
@@ -372,5 +377,21 @@ public class InterfazDatos {
         }
         return dorsoFavorito;
     }
+
+	/* Crea una sesión abierta del usuario en la base de datos.
+	 * Se utiliza cuando un usuario se desconecta en mitad de una partida.
+	 */
+	public void crearSesionAbierta(SesionVO s) throws SQLException {
+		SesionDAO.crearSesionAbierta(s, this.cpds);
+	}
+
+	/* Devuelve la url del lugar donde se desconectó el usuario en la sesión abierta anterior.
+	 * Devuelve null si el usuario username no tiene ninguna sesión abierta.
+	 * Además, si existía borra la sesión abierta de la base de datos.
+	 * Se utiliza para gestionar el cambio de dispositivo.
+	 */
+	public String obtenerUrlSesion(String username) throws SQLException {
+		return SesionDAO.obtenerUrlSesion(username, this.cpds);
+	}
 
 }

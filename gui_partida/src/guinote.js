@@ -589,14 +589,7 @@ function representarEstado(estado){
             dibujarJugador(jugador);
             jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
             dibujarCartaLanzada(jugador);
-
-/* TODO se pone tambien en el de referencia
-            game.load.image(item.avatar, 'ruta del avatar');
-            game.load.image(item.dorso, 'ruta del dorso');
-            jugador.dorso = item.dorso;
-            game.load.start();
-           */
-
+           // jugador.avatar.loadTexture(item.avatar);
             jugador.avatar.loadTexture("avatar.png");
             arrayJugadores[item.id] = jugador;
         }
