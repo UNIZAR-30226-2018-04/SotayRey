@@ -11,7 +11,7 @@
     var numJugadores = 4;
     var nombre = "acastellanos";
     //var socket = new WebSocket("ws://10.1.56.154:8080/endpoint");
-    var socket = new WebSocket("ws://localhost:8080/endpoint");
+    var socket = new WebSocket("ws://192.168.1.38:8080/endpoint");
     socket.onmessage = function (msg) {
         console.log(msg.data);
         recibirMensaje(msg.data);

@@ -1,4 +1,9 @@
 <%@ page import="basedatos.modelo.UsuarioVO" %>
+
+<script>
+    var nombreUsuario;
+</script>
+
 <nav class="navbar navbar-expand-lg sticky-top navbar-light" style="background-color: white">
     <% if (session.getAttribute("userId") == null) { %>
         <a class="navbar-brand" href="../index.jsp">
@@ -39,6 +44,9 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" id="Preview" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <script>
+                            nombreUsuario = "<%=nick%>";
+                        </script>
                         <i class="fa fa-user mr-2"></i><%=nick%>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="Preview">
