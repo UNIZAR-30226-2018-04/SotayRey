@@ -72,7 +72,7 @@ public class UsuarioDAO {
             throw new ExceptionCampoInexistente("Error de acceso a la base de datos: Usuario: " + u.getUsername() + " ya existente");
         } finally {
             if (statement != null) statement.close();
-            if (connection != null) connection.close();
+            if (connection != null) {connection.setAutoCommit(true); connection.close();}
         }
     }
 
@@ -96,7 +96,32 @@ public class UsuarioDAO {
         return  BCrypt.checkpw(plaintextPassword, stored_hash);
     }
 
+	public static UsuarioVO autentificarUsuarioFacebook(String fb_auth, ComboPooledDataSource pool) throws  SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        connection = pool.getConnection();
+        statement = connection.createStatement();
 
+		UsuarioVO u = null;
+
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM usuario WHERE fb_auth = '" + fb_auth + "'");
+		if(resultSet.isBeforeFirst()){
+			u = new UsuarioVO();
+		    resultSet.next();
+		    u.setUsername(resultSet.getString("username"));
+		    u.setCorreo(resultSet.getString("correo"));
+		    u.setNombre(resultSet.getString("nombre"));
+		    u.setApellidos(resultSet.getString("apellidos"));
+		    u.setAdmin(resultSet.getBoolean("admin"));
+		    u.setFechaNac(resultSet.getDate("fechaNac"));
+		    u.setTimeCreacion(resultSet.getTimestamp("timeCreacion"));
+        }
+	
+        if (statement != null) statement.close();
+        if (connection != null) connection.close();
+
+        return u;
+    }
 
     public static UsuarioVO obtenerDatosUsuario(String username, ComboPooledDataSource pool) throws SQLException, ExceptionCampoInexistente {
         Connection connection = null;

@@ -80,6 +80,13 @@ public class InterfazDatos {
         return UsuarioDAO.autentificarUsuario(username,plaintextPassword,this.cpds);
     }
 
+	/* Devuelve el usuario que corresponde al token de Facebook fbToken.
+	 * Devuelve null si no existe ningún usuario identificado con ese token.
+	 */
+	public UsuarioVO autentificarUsuarioFacebook(String fbToken) throws SQLException {
+		return UsuarioDAO.autentificarUsuarioFacebook(fbToken, this.cpds);	
+	}
+
     /*
      * Devuelve un usuario con todos sus datos (datos de perfil de usuario), a partir de su username
      */
@@ -328,5 +335,21 @@ public class InterfazDatos {
     public ArrayList<ArticuloUsuarioVO> obtenerArticulosTienda(String username) throws SQLException, ExceptionCampoInexistente {
         return ArticuloUsuarioDAO.obtenerArticulosTienda(username, this.cpds);
     }
+
+	/* Crea una sesión abierta del usuario en la base de datos.
+	 * Se utiliza cuando un usuario se desconecta en mitad de una partida.
+	 */
+	public void crearSesionAbierta(SesionVO s) throws SQLException {
+		SesionDAO.crearSesionAbierta(s, this.cpds);	
+	}
+
+	/* Devuelve la url del lugar donde se desconectó el usuario en la sesión abierta anterior.
+	 * Devuelve null si el usuario username no tiene ninguna sesión abierta.
+	 * Además, si existía borra la sesión abierta de la base de datos.
+	 * Se utiliza para gestionar el cambio de dispositivo.
+	 */
+	public String obtenerUrlSesion(String username) throws SQLException {
+		return SesionDAO.obtenerUrlSesion(username, this.cpds);	
+	}
 
 }
