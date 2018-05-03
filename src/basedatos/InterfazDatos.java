@@ -331,4 +331,18 @@ public class InterfazDatos {
         return ArticuloUsuarioDAO.obtenerArticulosTienda(username, this.cpds);
     }
 
+    /*
+        Devuelve el dorso favorito de un usuario
+     */
+    public ArticuloUsuarioVO obtenerDorsoFavorito(String username) throws SQLException, ExceptionCampoInexistente {
+        ArrayList<ArticuloUsuarioVO> articulos = obtenerArticulosTienda(username);
+        ArticuloUsuarioVO dorsoFavorito = null;
+        for(ArticuloUsuarioVO art : articulos){
+            if (art.isFavorito() && art.getTipo()=='D'){
+                dorsoFavorito = art;
+            }
+        }
+        return dorsoFavorito;
+    }
+
 }
