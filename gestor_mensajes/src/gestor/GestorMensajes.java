@@ -472,8 +472,8 @@ public class GestorMensajes {
                 e.printStackTrace();
             }
             // TODO: Añadir personalización
-            //jugador.put("dorso" , dorso.getRutaImagen());
-            //jugador.put("avatar", avatar.getRutaImagen());
+//            jugador.put("dorso" , dorso.getRutaImagen());
+//            jugador.put("avatar", avatar.getRutaImagen());
 
 
 
