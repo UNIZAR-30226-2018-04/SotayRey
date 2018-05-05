@@ -1,6 +1,5 @@
-<%@ page import="basedatos.modelo.UsuarioVO" %>
-<%@ page import="basedatos.modelo.StatsUsuarioVO" %>
-<%@ page import="basedatos.modelo.ArticuloUsuarioVO" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="basedatos.modelo.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%--
@@ -224,7 +223,63 @@
                 </tbody>
             </table>
         </div>
-        <% } %>
+        <% } else {
+                ArrayList<basedatos.modelo.PartidaVO> historial = (ArrayList<PartidaVO>) session.getAttribute("historial");
+                if(historial != null){
+                %>
+
+            <div class="row mt-2">
+                <h2>Historial de Partidas</h2>
+                <br>
+                <table class="table table-hover" id="rank-table0">
+                    <thead>
+                    <tr>
+                        <th>Equipo1</th>
+                        <th>Equipo2</th>
+                        <th>Resultado</th>
+                        <th>Contringante</th>
+                        <th>Puntos Contringante</th>
+                        <th>Tus Puntos</th>
+                        <th>Moneda</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <%
+                        for(Integer j = 1; j < historial.size(); j++){
+                            PartidaVO partida = historial.get(j);
+                            ArrayList<UsuarioVO> usuarios = (ArrayList<UsuarioVO>) partida.getUsuarios();
+                            int equipo = 0;
+                            for(Integer i = 0; i < usuarios.size(); i++){
+                                if(usuarios.get(i).getUsername().equals(nick)){
+                                    equipo = i % 2 + 1;
+                                }
+                            }
+                            String resultado = null;
+                            if(partida.getGanador() == 'A'){
+                                resultado = "Abandonada";
+                            } else if(( partida.getGanador() == '1' && equipo == 1) ||
+                                      ( partida.getGanador() == '2' && equipo == 2)){
+                                resultado = "Ganada";
+                            } else {
+                                resultado = "Perdida";
+                            }
+                    %>
+                    <tr>
+                        <% if(usuarios.size() == 2){ %>
+                            <td><%= usuarios.get(0)%></td>
+                            <td><%= usuarios.get(1) %></td>
+                        <% } else { %>
+                            <td><%= usuarios.get(0) + ", " + usuarios.get(2) %></td>
+                            <td><%= usuarios.get(1) + ", " + usuarios.get(3) %></td>
+                        <% } %>
+                        <td><%= resultado%></td>
+                        <td>hola</td>
+                        <td>hola</td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+        <% } }%>
     </div>
 </body>
 </html>

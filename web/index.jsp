@@ -44,8 +44,5 @@
       </div>
       <% } %>
     </div>
-
-  <a href="0-0.html">Visit W3Schools</a>
-
   </body>
 </html>

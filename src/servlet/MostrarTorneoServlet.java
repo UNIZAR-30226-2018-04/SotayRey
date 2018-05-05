@@ -20,6 +20,8 @@ public class MostrarTorneoServlet extends HttpServlet {
             response.sendRedirect("jsp/login.jsp");
             return;
         }
+
+
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
