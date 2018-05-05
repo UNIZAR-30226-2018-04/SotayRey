@@ -10,6 +10,7 @@ import javax.websocket.Session;
 public class JugadorGestor {
     private int id;
     private String nombre;
+    private boolean conectado;
     // TODO: Mas datos privados del jugador
     private Session sesion;
 
@@ -17,6 +18,7 @@ public class JugadorGestor {
         this.id = id;
         this.nombre = nombre;
         this.sesion = sesion;
+        this.conectado = false;
     }
 
     public RemoteEndpoint.Basic getRemoto() {
@@ -30,4 +32,8 @@ public class JugadorGestor {
     public String getNombre() {
         return this.nombre;
     }
+
+    public boolean getConectado() { return this.conectado; }
+
+    public void setConectado(boolean estado) { this.conectado = estado; }
 }
