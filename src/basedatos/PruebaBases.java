@@ -1,16 +1,16 @@
 package basedatos;
 
+import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.exceptions.ExceptionCampoInvalido;
+import basedatos.modelo.PartidaVO;
+import basedatos.modelo.UsuarioVO;
+
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.math.BigInteger;
-
-import basedatos.modelo.*;
-import basedatos.exceptions.*;
 
 public class PruebaBases {
 
@@ -1519,7 +1519,6 @@ p.setPuntos1(86);
 p.setPuntos2(101);
 p.setAbandonador(0);
 InterfazDatos.instancia().finalizarPartida(p);
-
 
 
     }

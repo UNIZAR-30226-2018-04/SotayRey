@@ -180,6 +180,7 @@ public class Matchmaking {
                 }
                 // Se obtiene el id de la nueva partida
                 BigInteger idPartida = nuevaPartida.getId();
+                System.out.println("Nueva partida creada con id " + idPartida.toString());
                 broadcastListo(liga, idPartida, false); // Las partidas con IA se gestionan en otra parte
             }
             // Revisar si el número de sigos supera el límite (peor caso posible)
@@ -196,6 +197,7 @@ public class Matchmaking {
                 }
                 // Se obtiene el id de la nueva partida
                 BigInteger idPartida = nuevaPartida.getId();
+                System.out.println("Nueva partida creada con id " + idPartida.toString());
                 broadcastListo(lobby, idPartida, false);    // Las partidas con IA se gestionan en otra parte
             }
         }

@@ -2,6 +2,9 @@ package basedatos;
 
 import basedatos.exceptions.ExceptionCampoInexistente;
 import basedatos.exceptions.ExceptionCampoInvalido;
+import basedatos.modelo.ArticuloVO;
+import basedatos.modelo.LigaVO;
+import basedatos.modelo.UsuarioVO;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
@@ -10,7 +13,7 @@ import java.sql.SQLException;
 public class Main {
     public static void main(String[] args) throws ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException, ExceptionCampoInexistente {
 
- /*       //Ligas
+        //Ligas
         LigaVO l1 = new LigaVO("As de Oros", "Para los que dominan el arte del Guiñote", 0, 20);
         LigaVO l2 = new LigaVO("Caudillos de Pueblo", "Los que levantan rumores entre las olivas de las tabernas de sus pueblos", 21, 50);
         LigaVO l3 = new LigaVO("Cantamañanas", "Sus integrantes saben lo que es un triunfo", 51, 70);
@@ -28,7 +31,7 @@ public class Main {
 
         ArticuloVO a1 = new ArticuloVO("Una cara", 100, "Te favorece más que la foto de comunión", "/rutaImagen", 'A');
         ArticuloVO a2 = new ArticuloVO("Cosecha de Paz", 200, "Demuestra a tus rivales que dejaste la escuela a los 15", "/rutaImagen", 'A',l2);
-        ArticuloVO a3 = new ArticuloVO("Huesitos", 100, "Deja el tinder y liga presumiendo de este tapete con calaveras", "/rutaImagen", 'A',l3);
+        ArticuloVO a3 = new ArticuloVO("Huesitos", 100, "Deja el tinder y liga presumiendo de este avatar de calavera", "/rutaImagen", 'A',l3);
 
         ArticuloVO b1 = new ArticuloVO("Heracleto Furnier", 0, "Vaya coincidencia de nombre", "/rutaImagen", 'B');
         ArticuloVO b2 = new ArticuloVO("Cartas de Cáñamo", 200, "Tu juega y no las quemes", "/rutaImagen", 'B',l2);
@@ -545,5 +548,5 @@ public class Main {
         InterfazDatos.instancia().crearUsuario(new UsuarioVO("morenosonia", "1234","montserratsanjuan@palomino.com","Miguel","Alemany",false));
         InterfazDatos.instancia().crearUsuario(new UsuarioVO("boixisabel", "1234","martinezrocio@rebollo.com","Josefina","Atienza",false));
         InterfazDatos.instancia().crearUsuario(new UsuarioVO("marquezsilvia", "1234","juan-franciscoangel@arranz.org","Gregorio","Bernal",false));
-*/    }
+    }
 }

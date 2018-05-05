@@ -181,10 +181,10 @@ recibirMensaje("{
 
     var socket;
     function buscarPartida(){
-        socket = new WebSocket("ws://localhost:8080/matchmaking");
+        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
 
         var nombre_jugador = nombreUsuario;
-        var socket = new WebSocket("ws://localhost:8080/matchmaking");
+        var socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         var listo = JSON.stringify({
             "tipo_mensaje": "busco_partida",
             "nombre_participante": nombre_jugador,
@@ -229,7 +229,6 @@ recibirMensaje("{
        // var parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador;
         parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores;
         window.location.replace("../juego.html?"+parametros);
-
     }
 
     $("#myModal").on("hidden.bs.modal", function () {
