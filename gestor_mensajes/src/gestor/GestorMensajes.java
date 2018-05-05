@@ -471,8 +471,9 @@ public class GestorMensajes {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            jugador.put("dorso" , dorso.getRutaImagen());
-            jugador.put("avatar", avatar.getRutaImagen());
+            // TODO: Añadir personalización
+            //jugador.put("dorso" , dorso.getRutaImagen());
+            //jugador.put("avatar", avatar.getRutaImagen());
 
 
 
