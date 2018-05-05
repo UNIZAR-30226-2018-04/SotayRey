@@ -45,7 +45,6 @@
         <div class="container text-center">
             <h1>Clasificaci&oacuten</h1>
             <p>Comprueba el puesto en el que vas.</p>
-            <p>Lucha por ser el campe&oacuten</p>
         </div>
     </div>
 
@@ -70,6 +69,8 @@
                         <br>
                         <h3><%=ligas.get(0).getNombre()%></h3>
                         <br>
+                        <p><%= ligas.get(0).getDescripcion()%></p>
+                        <br>
                         <div class="container">
                     <div class="row">
                         <div class="col-md-12">
@@ -85,10 +86,11 @@
                                     </thead>
                                     <tbody>
                                     <%  ArrayList<StatsUsuarioVO> clasificacion = (ArrayList<StatsUsuarioVO>) session.getAttribute(ligas.get(0).getNombre());
-                                        for(StatsUsuarioVO user : clasificacion){
+                                        for(Integer j = 1; j < clasificacion.size(); j++){
+                                            StatsUsuarioVO user = clasificacion.get(j);
                                     %>
                                     <tr>
-                                        <td><%= user.getPuesto() %></td>
+                                        <td><%= j.toString() %></td>
                                         <td><%= user.getUsername() %></td>
                                         <td><%= user.getPuntuacion()%></td>
                                         <td><%= user.getDivisa()%></td>
@@ -106,6 +108,8 @@
                         <br>
                         <h3><%=ligas.get(i).getNombre()%></h3>
                         <br>
+                        <p><%=ligas.get(i).getDescripcion()%></p>
+                        <br>
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-12">
@@ -120,11 +124,12 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <%  clasificacion = (ArrayList<StatsUsuarioVO>) session.getAttribute(ligas.get(0).getNombre());
-                                                for(StatsUsuarioVO user : clasificacion){
+                                            <%  clasificacion = (ArrayList<StatsUsuarioVO>) session.getAttribute(ligas.get(i).getNombre());
+                                                for(Integer j = 1; j < clasificacion.size(); j++){
+                                                    StatsUsuarioVO user = clasificacion.get(j);
                                             %>
                                                 <tr>
-                                                    <td><%= user.getPuesto() %></td>
+                                                    <td><%= j.toString() %></td>
                                                     <td><%= user.getUsername() %></td>
                                                     <td><%= user.getPuntuacion()%></td>
                                                     <td><%= user.getDivisa()%></td>

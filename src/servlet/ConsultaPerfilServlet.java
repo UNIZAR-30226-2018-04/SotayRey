@@ -1,6 +1,7 @@
 package servlet;
 import basedatos.InterfazDatos;
 import basedatos.modelo.ArticuloUsuarioVO;
+import basedatos.modelo.PartidaVO;
 import basedatos.modelo.StatsUsuarioVO;
 import basedatos.modelo.UsuarioVO;
 
@@ -46,6 +47,16 @@ public class ConsultaPerfilServlet extends javax.servlet.http.HttpServlet {
                     session.setAttribute("avatar",iter);
                 }
             }
+
+            ArrayList<PartidaVO> historial = null;
+
+            try{
+                historial = facade.obtenerHistorialPartidas(username);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            session.setAttribute("historial",historial);
 
             response.sendRedirect("jsp/perfil.jsp");
         }
