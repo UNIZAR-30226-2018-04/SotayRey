@@ -187,7 +187,7 @@ recibirMensaje("{
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
 
         var nombre_jugador = nombreUsuario;
-        var socket = new WebSocket("ws://192.168.1.4:8080/mm/matchmaking");
+        var socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         var listo = JSON.stringify({
             "tipo_mensaje": "busco_partida",
             "nombre_participante": nombre_jugador,
