@@ -193,9 +193,44 @@
                     </div>
                 </div>
 
-                <a class="btn btn-danger mt-2" href="/BorrarUsuario.do" role="button">
-                    <i class="fa fa-trash mr-2" aria-hidden="true"></i>Borrar cuenta
-                </a>
+
+                <button class="btn btn-primary mt-2" role="button"
+                        data-toggle="modal" data-target="#modalborrar">
+                    <i class="fa fa-pencil mr-2" aria-hidden="true"></i>Borrar Usuario
+                </button>
+
+                <!-- Modal borrar usuario -->
+                <div id="modalborrar" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <div class="modal-header text-center">
+                                <h4 class="modal-title w-100 font-weight-bold">Borrar Usuario</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <form action="/BorrarUsuario.do" method="post" > <!-- TODO: Asegurar que funciona el form -->
+
+                                            <div class="form-group">
+                                                <label for="modOldPass">Contraseña</label>
+                                                <input type="password" class="form-control" id="passwd" name="passwd"
+                                                       placeholder="Introduce tu contraseña" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-save mr-2" aria-hidden="true"></i>Eliminar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <% if(usuarioVO != null && usuarioVO.getAdmin()){ %>
                 <a class="btn btn-warning mt-2" href="/MostrarObjetosTienda.do" role="button">
                     <i class="fa fa-shopping-cart mr-2" aria-hidden="true"></i>Gestionar Tienda
