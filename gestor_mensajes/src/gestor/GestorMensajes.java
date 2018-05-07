@@ -2,7 +2,9 @@ package gestor;
 
 import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.exceptions.ExceptionCampoInvalido;
 import basedatos.modelo.ArticuloUsuarioVO;
+import basedatos.modelo.PartidaVO;
 import basedatos.modelo.UsuarioVO;
 import main.java.*;
 import org.json.simple.JSONArray;
@@ -366,6 +368,8 @@ public class GestorMensajes {
             try {
                 LogicaPartida partida = new LogicaPartida(lobby.getTodosNombres());
                 partida.crearPartida();
+                // TODO: Obtener partidaVO para luego poder eliminarla
+                //lobby.setPartidaVO(nuevaPartida);
                 listaPartidas.put(idPartida, partida);
                 // Manda el estado a todos los clientes
                 broadcastEstado(idPartida, false); // TODO: Detectar cuando se vaya de vueltas
@@ -373,7 +377,7 @@ public class GestorMensajes {
                 lobby.incRonda();
                 // Manda el turno a todos los clientes
                 broadcastTurno(idPartida);
-                System.out.println("Nueva partida añadida con identificador: " + idPartida);
+                System.out.println("Nueva partida añadida con identificador de lobby: " + idPartida);
             } catch (ExceptionEquipoIncompleto exceptionEquipoIncompleto) {
                 exceptionEquipoIncompleto.printStackTrace();
             } catch (ExceptionNumeroMaximoCartas exceptionNumeroMaximoCartas) {
@@ -384,6 +388,8 @@ public class GestorMensajes {
                 exceptionJugadorIncorrecto.printStackTrace();
             } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
                 exceptionCartaYaExiste.printStackTrace();
+            //} catch (SQLException e) {
+            //    e.printStackTrace();
             }
         }
     }
@@ -550,20 +556,41 @@ public class GestorMensajes {
         broadcastMensaje(lobby, objDesc);
     }
 
+    private void finalizarPartida(int idPartida) {
+        System.out.println("Partida finalizada: " + idPartida);
+        broadcastGanaRonda(idPartida);
+        partidasPausadas.remove(idPartida);
+        // Elimina la partida de la lista de partidas activas
+        listaPartidas.remove(idPartida);
+        /*try {
+            //bd.finalizarPartida(lobbies.get(idPartida).getPartidaVO()); // TODO: Obtener partida para poder eliminarla
+        } catch (ExceptionCampoInvalido exceptionCampoInvalido) {
+            exceptionCampoInvalido.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+    }
+
     private void desconectar(Session sesion) {
         for (int id : lobbies.keySet()) {
-            JugadorGestor jugador = lobbies.get(id).buscarSesion(sesion);
+            Lobby lobby = lobbies.get(id);
+            JugadorGestor jugador = lobby.buscarSesion(sesion);
             if (jugador != null) {
                 // Si se encuentra al jugador desconectado
                 jugador.desconectar();  // Desconectar al jugador
-                // TODO: Revisar si no quedan jugadores para eliminar la partida
-                // Pausar la partida
-                if (!partidasPausadas.contains(id)) {
-                    partidasPausadas.add(id);   // Si la partida no estaba ya pausada, se marca como pausada
+                if (!lobby.algunConectado()) {
+                    // TODO: Eliminar partida
+                    finalizarPartida(id);
                 }
-                // Notificar al resto de jugadores
-                broadcastDesconectado(id, jugador.getId());
-                break;
+                else {
+                    // Pausar la partida
+                    if (!partidasPausadas.contains(id)) {
+                        partidasPausadas.add(id);   // Si la partida no estaba ya pausada, se marca como pausada
+                    }
+                    // Notificar al resto de jugadores
+                    broadcastDesconectado(id, jugador.getId());
+                    break;
+                }
             }
         }
     }

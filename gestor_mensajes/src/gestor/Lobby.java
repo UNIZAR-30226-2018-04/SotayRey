@@ -1,5 +1,7 @@
 package gestor;
 
+import basedatos.modelo.PartidaVO;
+
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 public class Lobby {
     private HashMap<String, JugadorGestor> jugadores = new HashMap<>();
     private int ronda = 0;
+    private PartidaVO partidaVO = null;
 
     public Lobby() {
         ronda = 0;
@@ -115,4 +118,19 @@ public class Lobby {
     public int tam() {
         return jugadores.size();
     }
+
+    public boolean algunConectado() {
+        for (JugadorGestor jug : jugadores.values()) {
+            if (jug.getDesconectado() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setPartidaVO(PartidaVO p) {
+        this.partidaVO = p;
+    }
+
+    public PartidaVO getPartidaVO() {return this.partidaVO;}
 }
