@@ -23,8 +23,10 @@ import java.util.HashMap;
 @ServerEndpoint("/endpoint")
 public class GestorMensajes {
     private static HashMap<Integer, LogicaPartida> listaPartidas = new HashMap<>();
+    private static ArrayList<Integer> partidasPausadas = new ArrayList<Integer>();
     private static HashMap<Integer, Lobby> lobbies = new HashMap<>(); // TODO: En 4 jugadores, orden (eq1, eq2, eq1, eq2)
     private static InterfazDatos bd = null;
+    private static int timeoutDesconectado = 30;
 
     @OnOpen
     public void onOpen(Session session) {
@@ -48,6 +50,7 @@ public class GestorMensajes {
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
         System.out.println("Conexion cerrada");
+        desconectar(session);
     }
 
     @OnError
@@ -409,10 +412,12 @@ public class GestorMensajes {
     }
 
     private void mandarMensaje(RemoteEndpoint.Basic remoto, JSONObject obj) {
-        try {
-            remoto.sendText(obj.toJSONString());
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (remoto != null) {
+            try {
+                remoto.sendText(obj.toJSONString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -531,6 +536,34 @@ public class GestorMensajes {
                 jug.getRemoto().sendText(objEstado.toJSONString());
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    private void broadcastDesconectado(int idPartida, int idJugador) {
+        // Obtiene el estado de la partida
+        Lobby lobby = lobbies.get(idPartida);
+        JSONObject objDesc = new JSONObject();
+        objDesc.put("tipo_mensaje", "broadcast_desconectado");
+        objDesc.put("id_jugador", idJugador);
+        objDesc.put("timeout", timeoutDesconectado);
+        broadcastMensaje(lobby, objDesc);
+    }
+
+    private void desconectar(Session sesion) {
+        for (int id : lobbies.keySet()) {
+            JugadorGestor jugador = lobbies.get(id).buscarSesion(sesion);
+            if (jugador != null) {
+                // Si se encuentra al jugador desconectado
+                jugador.desconectar();  // Desconectar al jugador
+                // TODO: Revisar si no quedan jugadores para eliminar la partida
+                // Pausar la partida
+                if (!partidasPausadas.contains(id)) {
+                    partidasPausadas.add(id);   // Si la partida no estaba ya pausada, se marca como pausada
+                }
+                // Notificar al resto de jugadores
+                broadcastDesconectado(id, jugador.getId());
+                break;
             }
         }
     }

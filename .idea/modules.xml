@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/SotayRey.iml" filepath="$PROJECT_DIR$/SotayRey.iml" />
       <module fileurl="file://$PROJECT_DIR$/gestor_mensajes/gestor_mensajes.iml" filepath="$PROJECT_DIR$/gestor_mensajes/gestor_mensajes.iml" />
       <module fileurl="file://$PROJECT_DIR$/logica_juego/logica_juego.iml" filepath="$PROJECT_DIR$/logica_juego/logica_juego.iml" />
+      <module fileurl="file://$PROJECT_DIR$/matchmaking/matchmaking.iml" filepath="$PROJECT_DIR$/matchmaking/matchmaking.iml" />
     </modules>
   </component>
 </project>

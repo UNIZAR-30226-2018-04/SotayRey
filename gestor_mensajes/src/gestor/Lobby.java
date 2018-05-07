@@ -1,6 +1,7 @@
 package gestor;
 
 import javax.websocket.RemoteEndpoint;
+import javax.websocket.Session;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -51,6 +52,19 @@ public class Lobby {
         }
     }
 
+    public boolean isConectadoJug(String nombre) {
+        return jugadores.get(nombre).getDesconectado() == null;
+    }
+
+    public JugadorGestor buscarSesion(Session sesion) {
+        for (JugadorGestor jug : jugadores.values()) {
+            if (sesion == jug.getSesion()) {
+                return jug;
+            }
+        }
+        return null;
+    }
+
     public RemoteEndpoint.Basic getRemotoJug(int id) {
         JugadorGestor jug = buscarId(id);
         if (jug != null) {
@@ -63,7 +77,7 @@ public class Lobby {
 
     public RemoteEndpoint.Basic getRemotoJug(String nombre) {
         JugadorGestor jug = buscarNombre(nombre);
-        if (jug != null) {
+        if (jug != null && jug.getDesconectado() == null) {
             return jug.getRemoto();
         }
         else {
@@ -74,7 +88,10 @@ public class Lobby {
     public ArrayList<RemoteEndpoint.Basic> getTodosRemotos() {
         ArrayList<RemoteEndpoint.Basic> lista = new ArrayList<>();
         for (String nombre : jugadores.keySet()) {
-            lista.add(getRemotoJug(nombre));
+            RemoteEndpoint.Basic remoto = this.getRemotoJug(nombre);
+            if (remoto != null) {
+                lista.add(remoto);
+            }
         }
         return lista;
     }
