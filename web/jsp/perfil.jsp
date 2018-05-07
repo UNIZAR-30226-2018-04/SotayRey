@@ -1,5 +1,6 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="basedatos.modelo.*" %>
+<%@ page import="org.junit.experimental.theories.suppliers.TestedOn" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%--
@@ -127,7 +128,7 @@
         <% } %>
         <div class="row">
             <div class="col-md-4 mt-4">
-                <img class="img-thumbnail" style="width: 400px" src="<%= avatar.getRutaImagen() %>" alt="imagen usuario">
+                <img class="img-thumbnail" src="<%=avatar.getRutaImagen()%>" alt="imagen usuario">
             </div>
             <div class="col-md-6 mt-4">
                 <h1> <%= nick %> </h1>
@@ -196,7 +197,7 @@
 
                 <button class="btn btn-primary mt-2" role="button"
                         data-toggle="modal" data-target="#modalborrar">
-                    <i class="fa fa-pencil mr-2" aria-hidden="true"></i>Borrar Usuario
+                    <i class="fa fa-eraser mr-2" aria-hidden="true"></i>Borrar Usuario
                 </button>
 
                 <!-- Modal borrar usuario -->
@@ -222,7 +223,7 @@
                                                        placeholder="Introduce tu contraseña" required>
                                             </div>
                                             <button type="submit" class="btn btn-primary">
-                                                <i class="fa fa-save mr-2" aria-hidden="true"></i>Eliminar</button>
+                                                <i class="fa fa-eraser mr-2" aria-hidden="true"></i>Eliminar</button>
                                         </form>
                                     </div>
                                 </div>
@@ -238,6 +239,10 @@
                 <!-- TODO: añadir aqui resto de botones del admin -->
             </div>
         </div>
+        <% ArrayList<TorneoVO> torneos = (ArrayList<TorneoVO>) session.getAttribute("torneos");
+           if(torneos == null){ %>
+             <h2> No hay torneos programados</h2>
+        <% } else { %>
         <div class="row mt-2">
             <h2>Gestión de torneos</h2>
             <table class="table">
@@ -250,18 +255,26 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>22/04/2018</td>
-                    <td>TorneoEjemplo</td>
-                    <td>(Botón modif.)</td>
-                </tr>
+                <% for(Integer i = 0; i < torneos.size(); i++){
+                      TorneoVO torneo = torneos.get(i);
+                %>
+                    <tr>
+                        <td><%=torneo.getTimeInicio()%></td>
+                        <td><%=torneo.getNombre()%></td>
+                        <td>(Botón modif.)</td>
+                    </tr>
+                <% } %>
                 </tbody>
             </table>
         </div>
+        <% } %>
         <% } else {
+
                 ArrayList<basedatos.modelo.PartidaVO> historial = (ArrayList<PartidaVO>) session.getAttribute("historial");
                 if(historial != null){
                 %>
+            </div>
+        </div>
 
             <div class="row mt-2">
                 <h2>Historial de Partidas</h2>
