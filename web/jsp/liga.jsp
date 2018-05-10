@@ -86,11 +86,12 @@
                                     </thead>
                                     <tbody>
                                     <%  ArrayList<StatsUsuarioVO> clasificacion = (ArrayList<StatsUsuarioVO>) session.getAttribute(ligas.get(0).getNombre());
-                                        for(Integer j = 1; j < clasificacion.size(); j++){
+                                        for(Integer j = 0; j < clasificacion.size(); j++){
                                             StatsUsuarioVO user = clasificacion.get(j);
+                                            Integer posicion = j+1;
                                     %>
                                     <tr>
-                                        <td><%= j.toString() %></td>
+                                        <td><%= posicion.toString() %></td>
                                         <td><%= user.getUsername() %></td>
                                         <td><%= user.getPuntuacion()%></td>
                                         <td><%= user.getDivisa()%></td>
@@ -125,11 +126,12 @@
                                             </thead>
                                             <tbody>
                                             <%  clasificacion = (ArrayList<StatsUsuarioVO>) session.getAttribute(ligas.get(i).getNombre());
-                                                for(Integer j = 1; j < clasificacion.size(); j++){
+                                                for(Integer j = 0; j < clasificacion.size(); j++){
                                                     StatsUsuarioVO user = clasificacion.get(j);
+                                                    Integer posicion = j + 1;
                                             %>
                                                 <tr>
-                                                    <td><%= j.toString() %></td>
+                                                    <td><%= posicion.toString() %></td>
                                                     <td><%= user.getUsername() %></td>
                                                     <td><%= user.getPuntuacion()%></td>
                                                     <td><%= user.getDivisa()%></td>
