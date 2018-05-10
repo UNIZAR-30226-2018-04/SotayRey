@@ -346,13 +346,13 @@ public class TorneoDAO {
 		// Sustituir al usuario eliminado por la IA si no es la primera fase
 		if(fase<t.getNumFases()){
 			int multip = 0;
-			ResultSet resultSet = statement.executeQuery("SELECT MAX(multip)+1 m FROM participa_fase WHERE usuario = 'marIA' AND fase_num = " + fase + " AND fase_torneo = "+ t.getId());
+			ResultSet resultSet = statement.executeQuery("SELECT MAX(multip)+1 m FROM participa_fase WHERE usuario = 'SophIA' AND fase_num = " + fase + " AND fase_torneo = "+ t.getId());
 			if(resultSet.isBeforeFirst()){
 				// ya existe una IA participando en esa fase, se añade una nueva multiplicidad
             	resultSet.next();
 				multip= resultSet.getInt("m");
         	}
-			String insert = "INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES('marIA', " + fase + ", " + t.getId() + ", " + multip + ")";
+			String insert = "INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES('SophIA', " + fase + ", " + t.getId() + ", " + multip + ")";
         	statement.executeUpdate(insert);
 		}
 

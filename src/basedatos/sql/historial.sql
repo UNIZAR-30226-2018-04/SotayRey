@@ -41,3 +41,10 @@ FROM partida p, juega j1, juega j2, juega j3, juega j4
 WHERE p.id = j1.partida AND p.id = j2.partida AND p.id = j3.partida AND p.id = j4.partida 
 					AND p.publica = 1 AND p.timeFin IS NULL
                     AND j1.usuario > j2.usuario AND j2.usuario > j3.usuario AND j3.usuario > j4.usuario;
+
+-- SELECT perus.user, l.nombre
+-- FROM
+-- 	(SELECT ((@rank:=@rank+1)/nu.numUsers)*100 AS porcentaje, u1.username user, u1.puntuacion
+-- 	FROM (SELECT @rank:=0) r, usuario u1, (SELECT COUNT(*) numUsers FROM usuario) nu
+-- 	ORDER BY puntuacion DESC) perus, liga l
+-- WHERE l.porcentaje_min < perus.porcentaje AND perus.porcentaje <= l.porcentaje_max;

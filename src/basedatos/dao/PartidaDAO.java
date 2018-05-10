@@ -111,7 +111,7 @@ public class PartidaDAO {
 
             if (p.getFaseNum() > 1) {
                 int multip = 0;
-                res = statement.executeQuery("SELECT MAX(multip)+1 m FROM participa_fase WHERE usuario = 'marIA' AND fase_num = " + (p.getFaseNum()-1) + " AND fase_torneo = " + p.getTorneoId());
+                res = statement.executeQuery("SELECT MAX(multip)+1 m FROM participa_fase WHERE usuario = 'SophIA' AND fase_num = " + (p.getFaseNum()-1) + " AND fase_torneo = " + p.getTorneoId());
                 if (res.isBeforeFirst()) {
                     // ya existe una IA participando en esa fase, se añade una nueva multiplicidad
                     res.next();

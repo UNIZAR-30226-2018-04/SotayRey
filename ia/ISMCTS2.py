@@ -107,7 +107,7 @@ class KnockoutWhistState(GameState):
 		self.playerPoints   = {p:puntos[p] for p in range(1,3)}
 		self.playerHands    = {p:[] for p in range(1,3)}
 		self.vueltas 		= self.playerPoints[1]>0
-		self.restantes      = [] #Cartas que quedan por jugar
+		self.restantes      = [] #Cartas que ningun jugador sabe (del mazo)
 		self.cantadas		= []
 		self.triunfo        = None
 		self.cartaTirada	= None

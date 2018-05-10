@@ -394,4 +394,26 @@ public class InterfazDatos {
 		return SesionDAO.obtenerUrlSesion(username, this.cpds);
 	}
 
-}
+	/* Crea un evento para crear torneos que se crearán periódicamente
+	 */
+	public void crearTorneoPeriodico(TorneoPeriodicoVO t) throws SQLException {
+	    TorneoPeriodicoDAO.crearTorneoPeriodico(t,this.cpds);
+    }
+
+    /* Elimina un evento de creación de torneos periódicos. No elimina los torneos ya
+     * jugados o en juego relacionados con él, simplemente dejará de crear nuevos.
+     */
+    public void eliminarTorneoPeriodico(String nombre) throws SQLException {
+	    TorneoPeriodicoDAO.eliminarTorneoPeriodico(nombre,this.cpds);
+    }
+
+    /* Devuelve la información de todos los torneos periódicos que hay programados.
+     * Si el evento se ha creado, pero todavía no se ha creado ningún torneo en concreto
+     * devuelve solo la información asociada al evento (nombre, timePrimero y periodicidad en días)
+     * y el resto de campos a null.
+     * Si existen ya torneos creados por ese evento devuelve toda la información.
+     */
+	public ArrayList<TorneoPeriodicoVO> obtenerTorneosPeriodicos() throws  SQLException {
+	    return TorneoPeriodicoDAO.obtenerTorneosPeriodicos(this.cpds);
+    }
+ }
