@@ -7,10 +7,11 @@ package main.java;
  */
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class LogicaPartida {
 
+    private ArrayList<Cante> cantes;
+    private ArrayList<Cante> recienCantadas;
     private EstadoPartida estado;
     private boolean deVueltas;
     private int ganador;
@@ -23,6 +24,8 @@ public class LogicaPartida {
      */
     public LogicaPartida(ArrayList<String> jugadores) throws
            ExceptionEquipoIncompleto {
+        cantes = new ArrayList<>();
+        recienCantadas = new ArrayList<>();
         estado = new EstadoPartida(jugadores);
         deVueltas = false;
         ganador = -1;
@@ -187,7 +190,8 @@ public class LogicaPartida {
         ArrayList<String> jugadores = estado.getJugadoresId();
         if(jugadores.contains(jugador)){
             if(estado.getCartasEnTapete().size() == 0){
-                estado.sumaCante(jugador);
+                recienCantadas = estado.sumaCante(jugador);
+                cantes.addAll(recienCantadas);
             }
             else {
                 throw new ExceptionRondaNoAcabada();
@@ -303,6 +307,24 @@ public class LogicaPartida {
             ganadores.add(jug);
         }
         return ganadores;
+    }
+
+    public ArrayList<Cante> getCantes() {
+        ArrayList<Cante> copiaLista = new ArrayList<>();
+        for(Cante iter : this.cantes){
+            Cante copiaCante = new Cante(iter.getTipo(),iter.getPalo());
+            copiaLista.add(copiaCante);
+        }
+        return copiaLista;
+    }
+
+    public ArrayList<Cante> getRecienCantadas() {
+        ArrayList<Cante> copiaLista = new ArrayList<>();
+        for(Cante iter : this.recienCantadas){
+            Cante copiaCante = new Cante(iter.getTipo(),iter.getPalo());
+            copiaLista.add(copiaCante);
+        }
+        return copiaLista;
     }
 
     //TODO: funcion para pruebas por terminal, eliminar al final
