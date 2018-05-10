@@ -268,8 +268,9 @@ public class InterfazDatos {
         return LigaDAO.obtenerLigas(this.cpds);
     }
     
-    /* Devuelve la clasificación actual completa de la liga denominada nombre, formada por los nombres de los 
-     * usuarios y sus puntuaciones (el resto de atributos de de los StatsUsuario tienen valor null)
+    /* Devuelve la clasificación actual completa de la liga denominada nombre ordenada de mayor a menor puntuacion, 
+	 * formada por los nombres de los usuarios, sus puntuaciones y su puesto 
+	 * (el resto de atributos de de los StatsUsuario tienen valor null o -1 si son int)
      */
     public ArrayList<StatsUsuarioVO> obtenerClasificacionLiga(String nombre) throws SQLException, ExceptionCampoInvalido {
         return LigaDAO.obtenerClasificacionLiga(nombre, this.cpds);

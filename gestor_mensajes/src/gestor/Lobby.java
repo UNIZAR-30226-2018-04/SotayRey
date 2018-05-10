@@ -1,6 +1,9 @@
 package gestor;
 
+import basedatos.modelo.PartidaVO;
+
 import javax.websocket.RemoteEndpoint;
+import javax.websocket.Session;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,6 +14,7 @@ import java.util.HashMap;
 public class Lobby {
     private HashMap<String, JugadorGestor> jugadores = new HashMap<>();
     private int ronda = 0;
+    private PartidaVO partidaVO = null;
 
     public Lobby() {
         ronda = 0;
@@ -51,6 +55,19 @@ public class Lobby {
         }
     }
 
+    public boolean isConectadoJug(String nombre) {
+        return jugadores.get(nombre).getDesconectado() == null;
+    }
+
+    public JugadorGestor buscarSesion(Session sesion) {
+        for (JugadorGestor jug : jugadores.values()) {
+            if (sesion == jug.getSesion()) {
+                return jug;
+            }
+        }
+        return null;
+    }
+
     public RemoteEndpoint.Basic getRemotoJug(int id) {
         JugadorGestor jug = buscarId(id);
         if (jug != null) {
@@ -63,7 +80,7 @@ public class Lobby {
 
     public RemoteEndpoint.Basic getRemotoJug(String nombre) {
         JugadorGestor jug = buscarNombre(nombre);
-        if (jug != null) {
+        if (jug != null && jug.getDesconectado() == null) {
             return jug.getRemoto();
         }
         else {
@@ -74,7 +91,10 @@ public class Lobby {
     public ArrayList<RemoteEndpoint.Basic> getTodosRemotos() {
         ArrayList<RemoteEndpoint.Basic> lista = new ArrayList<>();
         for (String nombre : jugadores.keySet()) {
-            lista.add(getRemotoJug(nombre));
+            RemoteEndpoint.Basic remoto = this.getRemotoJug(nombre);
+            if (remoto != null) {
+                lista.add(remoto);
+            }
         }
         return lista;
     }
@@ -98,4 +118,19 @@ public class Lobby {
     public int tam() {
         return jugadores.size();
     }
+
+    public boolean algunConectado() {
+        for (JugadorGestor jug : jugadores.values()) {
+            if (jug.getDesconectado() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setPartidaVO(PartidaVO p) {
+        this.partidaVO = p;
+    }
+
+    public PartidaVO getPartidaVO() {return this.partidaVO;}
 }

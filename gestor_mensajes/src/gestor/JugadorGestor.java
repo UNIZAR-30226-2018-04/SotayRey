@@ -2,6 +2,7 @@ package gestor;
 
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
+import java.util.Date;
 
 /**
  * Autor: Javier
@@ -10,17 +11,22 @@ import javax.websocket.Session;
 public class JugadorGestor {
     private int id;
     private String nombre;
-    // TODO: Mas datos privados del jugador
+    private Date desconectado;
     private Session sesion;
 
     public JugadorGestor(int id, String nombre, Session sesion) {
         this.id = id;
         this.nombre = nombre;
         this.sesion = sesion;
+        this.desconectado = null;
     }
 
     public RemoteEndpoint.Basic getRemoto() {
-        return this.sesion.getBasicRemote();
+        if (this.sesion != null) {
+            return this.sesion.getBasicRemote();
+        } else {
+            return null;
+        }
     }
 
     public int getId() {
@@ -30,4 +36,12 @@ public class JugadorGestor {
     public String getNombre() {
         return this.nombre;
     }
+
+    public Date getDesconectado() { return this.desconectado; }
+
+    public void reconectar(Session nuevaSesion) { this.desconectado = null; this.sesion = nuevaSesion; }
+
+    public void desconectar() { this.desconectado = new Date(); this.sesion = null; }
+
+    public Session getSesion() { return this.sesion; }
 }

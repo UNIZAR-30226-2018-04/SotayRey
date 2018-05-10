@@ -19,26 +19,26 @@
 <style type="text/css">
     .jumbotron{
         color: #040404;
-        background-size: cover;
-        background-image: url('https://upload.wikimedia.org/wikipedia/commons/2/2f/Spanish_deck_printed_in_Valencia%2C_in_1778.jpg');
+        background-size: auto;
+        background-image: url('http://1.bp.blogspot.com/-XzkALf18FQM/UiPLGhELPBI/AAAAAAAAFYo/ux53uYsgc44/s1600/ESPA%C3%91OLA+2.jpg');
         background-repeat: repeat;
     }
+
+    .titulo{
+        font-weight: bold;
+        font-size: 120%;
+    }
+
 </style>
 
 <div class="jumbotron">
-    <div class="container text-center">
-        <h1>Buscar partida</h1>
-        <p>¡Es hora de jugar!</p>
-    </div>
 </div>
-
-
 
 <div class="container">
     <div class="row">
         <div class="col-md-12">
             <div class="card text-white bg-success">
-                <div class="card-header text-center">Buscar partida</div>
+                <div class="card-header text-center titulo">Buscar partida</div>
                 <div class="card-body text-center">
                     <form action="/......" method="post">
                         <div class="form-group">
@@ -61,7 +61,7 @@
                                 </label>
                             </div>
                         </div>
-                        <button type="button" onclick="buscarPartida()" class="btn btn-default submit" data-toggle="modal" data-target="#buscarPartida"><i class="fa fa-paper-plane" aria-hidden="true"></i>Buscar partida</button>
+                        <button type="button" onclick="buscarPartida()" class="btn btn-default submit" data-toggle="modal" data-target="#buscarPartida"><i class="fa fa-paper-plane" aria-hidden="true"></i> Buscar partida</button>
                     </form>
                 </div>
             </div>
@@ -79,7 +79,7 @@
     <div class="row">
         <div class="col-md-4">
             <div class="card text-white bg-info mb-3">
-                <div class="card-header text-center">Crear partida privada</div>
+                <div class="card-header text-center titulo">Crear partida privada</div>
                 <div class="card-body text-center">
 
                     <form action="/......" method="post">
@@ -99,11 +99,8 @@
                         <div class="form-group">
                             <input type="password" name="password" class="form-control" placeholder="Contraseña partida">
                         </div>
-                        <button type="button" class="btn btn-default submit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Crear partida</button>
+                        <button type="button" class="btn btn-default submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> Crear partida</button>
                     </form>
-
-
-
                 </div>
             </div>
 
@@ -114,7 +111,7 @@
 
         <div class="col-md-4">
             <div class="card bg-light mb-3">
-                <div class="card-header text-center">Unirse a una partida privada</div>
+                <div class="card-header text-center titulo">Unirse a una partida privada</div>
                 <div class="card-body text-center">
 
                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#unirsePartida">Unirse</button>
@@ -127,7 +124,7 @@
 
         <div class="col-md-4">
             <div class="card text-white bg-dark mb-3">
-                <div class="card-header text-center">Espectar una partida</div>
+                <div class="card-header text-center titulo">Espectar una partida</div>
                 <div class="card-body text-center">
 
                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#espectarPartida">Espectar</button>
@@ -184,10 +181,10 @@ recibirMensaje("{
 
     var socket;
     function buscarPartida(){
-        socket = new WebSocket("ws://localhost:8080/matchmaking");
+        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
 
         var nombre_jugador = nombreUsuario;
-        var socket = new WebSocket("ws://localhost:8080/matchmaking");
+        var socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         var listo = JSON.stringify({
             "tipo_mensaje": "busco_partida",
             "nombre_participante": nombre_jugador,
@@ -232,7 +229,6 @@ recibirMensaje("{
        // var parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador;
         parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores;
         window.location.replace("../juego.html?"+parametros);
-
     }
 
     $("#myModal").on("hidden.bs.modal", function () {

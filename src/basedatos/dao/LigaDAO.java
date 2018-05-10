@@ -143,11 +143,15 @@ public class LigaDAO {
 
         ArrayList<StatsUsuarioVO> clasificacion = new ArrayList<>();
 
+		int puesto = 1;
+
         while (resultSet.next()) {
             String username = resultSet.getString("usuario");
             StatsUsuarioVO su = new StatsUsuarioVO(username);
             su.setPuntuacion(resultSet.getInt("punt"));
+			su.setPuesto(puesto);
             clasificacion.add(su);
+			puesto = puesto + 1;
         }
 
         if (statement != null)  statement.close();

@@ -55,6 +55,7 @@ function preload() {
     game.load.image('victoria', 'assets/victoria.png');
     game.load.image('derrota', 'assets/derrota.png');
     game.load.image('dorsoBase', 'assets/dorsoBase.jpg');
+    game.load.image('botonSonido', 'assets/botonSonido.png');
     game.load.audio('musica', ['assets/musica.mp3']);
 }
 
@@ -396,7 +397,7 @@ function create() {
 
 
 
-    //controlMusica();
+    controlMusica();
     actualizarHUD("");
 
     listo_jugador(); // Confirma que el jugador ya esta listo para jugar
@@ -582,16 +583,32 @@ function representarEstado(estado){
     estado.jugadores.forEach(function(item) {
         var jugador = arrayJugadores[item.id];
         if ([item.id] != miID){
-            console.log("JUGADORSITO " + jugador.XPosMedia + " " + item.id);
-            jugador.numCartas = item.num_cartas;
-            jugador.nombreUsuario.text = item.nombre;
-            crearCartas(jugador);
-            dibujarJugador(jugador);
-            jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
-            dibujarCartaLanzada(jugador);
-           // jugador.avatar.loadTexture(item.avatar);
-            jugador.avatar.loadTexture("avatar.png");
-            arrayJugadores[item.id] = jugador;
+
+            // personalizacion
+            game.load.image(item.id.toString()+'avatar', '/img/avatares/african.png');
+            game.load.image(item.id.toString()+'dorso', '/img/hearthstone1.png');
+            game.load.start();
+
+            game.load.onLoadComplete.add(function(){
+
+                jugador.avatar.loadTexture(item.id.toString()+'avatar');
+                jugador.dorso = item.id.toString()+'dorso';
+
+
+                console.log("JUGADORSITO " + jugador.XPosMedia + " " + item.id);
+                jugador.numCartas = item.num_cartas;
+                jugador.nombreUsuario.text = item.nombre;
+                crearCartas(jugador);
+                dibujarJugador(jugador);
+                jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
+                dibujarCartaLanzada(jugador);
+
+                arrayJugadores[item.id] = jugador;
+
+            }, this);
+
+
+
         }
         else{
             jugador.nombreUsuario.text = item.nombre;
@@ -599,19 +616,29 @@ function representarEstado(estado){
     }, this);
 
     // Se pone la mano del jugador
-    var jugador = arrayJugadores[miID];
-    var carta = {};
-    estado.mano.forEach(function(item) {
-        console.log("CREANDO CARTA: " + item.numero + "  " +item.palo);
-        carta = crearCarta(item.numero, item.palo);
-        console.log(carta.numero + carta.palo);
-        //carta.numero = item.numero;
-        carta.inputEnabled = true;
-        carta.atributo = "HELLOW DA";
-        carta.events.onInputDown.add(pulsaCarta, this);
-        jugador.cartasEnMano.add(carta);
+    // TODO si soy espectador esto no se hace
+    game.load.image(miID.toString()+'avatar', '/img/avatares/bellgirl.png');
+    game.load.start();
+
+    game.load.onLoadComplete.add(function(){
+        var jugador = arrayJugadores[miID];
+
+        jugador.avatar.loadTexture(miID.toString()+'avatar');
+        var carta = {};
+        estado.mano.forEach(function(item) {
+            console.log("CREANDO CARTA: " + item.numero + "  " +item.palo);
+            carta = crearCarta(item.numero, item.palo);
+            console.log(carta.numero + carta.palo);
+            //carta.numero = item.numero;
+            carta.inputEnabled = true;
+            carta.atributo = "HELLOW DA";
+            carta.events.onInputDown.add(pulsaCarta, this);
+            jugador.cartasEnMano.add(carta);
+        }, this);
+        dibujarJugador(jugador);
+
+
     }, this);
-    dibujarJugador(jugador);
 
     // Se dibujan las cartas en la mesa
     estado.jugadores.forEach(function(item) {
@@ -1133,12 +1160,17 @@ function sleep(milliseconds) {
 var music;
 var playPause;
 function controlMusica(){
+
     music = game.add.audio('musica');
-    playPause = game.add.text(0, ejeY/2, '', { fill: '#ffffff'});
-    playPause.text = "MUSIKOTE";
+    game.world.centerX-50
+    playPause = game.add.sprite(ejeX - 50, 20, 'botonSonido');
+    playPause.width = 30;
+    playPause.height= 30;
+    //playPause = game.add.text(0, ejeY/2, '', { fill: '#ffffff'});
+    //playPause.text = "MUSIKOTE";
     playPause.inputEnabled = true;
     playPause.events.onInputDown.add(botonMusica, this);
-    //music.play();
+    music.play();
     playPause.estado = "pause";
 }
 

@@ -117,4 +117,14 @@
         <servlet-name>ModificarDatos</servlet-name>
         <url-pattern>/ModificarDatos.do</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>BorrarUsuario</servlet-name>
+        <servlet-class>servlet.BorrarUsuarioServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>BorrarUsuario</servlet-name>
+        <url-pattern>/BorrarUsuario.do</url-pattern>
+    </servlet-mapping>
 </web-app>

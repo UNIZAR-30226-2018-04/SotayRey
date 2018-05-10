@@ -1,8 +1,6 @@
 package servlet;
 import basedatos.InterfazDatos;
-import basedatos.modelo.ArticuloUsuarioVO;
-import basedatos.modelo.StatsUsuarioVO;
-import basedatos.modelo.UsuarioVO;
+import basedatos.modelo.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -25,12 +23,16 @@ public class ConsultaPerfilServlet extends javax.servlet.http.HttpServlet {
                 facade = InterfazDatos.instancia();
             } catch(Exception e){
                 e.printStackTrace();
+                response.sendRedirect("jsp/matchmaking.jsp");
+                return;
             }
 
             try{
                 statsVO = facade.obtenerTodasStatsUsuario(username);
             }catch(Exception e ){
                 e.printStackTrace();
+                response.sendRedirect("jsp/matchmaking.jsp");
+                return;
             }
             session.setAttribute("userStats",statsVO);
 
@@ -39,6 +41,8 @@ public class ConsultaPerfilServlet extends javax.servlet.http.HttpServlet {
                 lista = facade.obtenerArticulosUsuario(username);
             } catch (Exception e){
                 e.printStackTrace();
+                response.sendRedirect("jsp/matchmaking.jsp");
+                return;
             }
 
             for(ArticuloUsuarioVO iter : lista){
@@ -47,7 +51,37 @@ public class ConsultaPerfilServlet extends javax.servlet.http.HttpServlet {
                 }
             }
 
-            response.sendRedirect("jsp/perfil.jsp");
+            if(usuarioVO.getAdmin()){
+                ArrayList<TorneoVO> torneos = null;
+
+                try{
+                    torneos = facade.obtenerTorneosProgramados();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    response.sendRedirect("jsp/matchmaking.jsp");
+                    return;
+                }
+
+                session.setAttribute("torneos", torneos);
+
+                response.sendRedirect("jsp/perfil.jsp");
+            }
+            else {
+
+                ArrayList<PartidaVO> historial = null;
+
+                try{
+                    historial = facade.obtenerHistorialPartidas(username);
+                } catch (Exception e){
+                    e.printStackTrace();
+                    response.sendRedirect("jsp/matchmaking.jsp");
+                    return;
+                }
+
+                session.setAttribute("historial", historial);
+
+                response.sendRedirect("jsp/perfil.jsp");
+            }
         }
     }
 

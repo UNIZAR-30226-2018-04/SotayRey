@@ -1,6 +1,6 @@
-<%@ page import="basedatos.modelo.UsuarioVO" %>
-<%@ page import="basedatos.modelo.StatsUsuarioVO" %>
-<%@ page import="basedatos.modelo.ArticuloUsuarioVO" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="basedatos.modelo.*" %>
+<%@ page import="org.junit.experimental.theories.suppliers.TestedOn" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%--
@@ -128,7 +128,7 @@
         <% } %>
         <div class="row">
             <div class="col-md-4 mt-4">
-                <img class="img-thumbnail" style="width: 400px" src="<%= avatar.getRutaImagen() %>" alt="imagen usuario">
+                <img class="img-thumbnail" src="<%=avatar.getRutaImagen()%>" alt="imagen usuario">
             </div>
             <div class="col-md-6 mt-4">
                 <h1> <%= nick %> </h1>
@@ -194,9 +194,44 @@
                     </div>
                 </div>
 
-                <a class="btn btn-danger mt-2" href="/BorrarUsuario.do" role="button">
-                    <i class="fa fa-trash mr-2" aria-hidden="true"></i>Borrar cuenta
-                </a>
+
+                <button class="btn btn-primary mt-2" role="button"
+                        data-toggle="modal" data-target="#modalborrar">
+                    <i class="fa fa-eraser mr-2" aria-hidden="true"></i>Borrar Usuario
+                </button>
+
+                <!-- Modal borrar usuario -->
+                <div id="modalborrar" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <div class="modal-header text-center">
+                                <h4 class="modal-title w-100 font-weight-bold">Borrar Usuario</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <form action="/BorrarUsuario.do" method="post" > <!-- TODO: Asegurar que funciona el form -->
+
+                                            <div class="form-group">
+                                                <label for="modOldPass">Contraseña</label>
+                                                <input type="password" class="form-control" id="passwd" name="passwd"
+                                                       placeholder="Introduce tu contraseña" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-eraser mr-2" aria-hidden="true"></i>Eliminar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <% if(usuarioVO != null && usuarioVO.getAdmin()){ %>
                 <a class="btn btn-warning mt-2" href="/MostrarObjetosTienda.do" role="button">
                     <i class="fa fa-shopping-cart mr-2" aria-hidden="true"></i>Gestionar Tienda
@@ -204,6 +239,10 @@
                 <!-- TODO: añadir aqui resto de botones del admin -->
             </div>
         </div>
+        <% ArrayList<TorneoVO> torneos = (ArrayList<TorneoVO>) session.getAttribute("torneos");
+           if(torneos == null){ %>
+             <h2> No hay torneos programados</h2>
+        <% } else { %>
         <div class="row mt-2">
             <h2>Gestión de torneos</h2>
             <table class="table">
@@ -216,15 +255,79 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>22/04/2018</td>
-                    <td>TorneoEjemplo</td>
-                    <td>(Botón modif.)</td>
-                </tr>
+                <% for(Integer i = 0; i < torneos.size(); i++){
+                      TorneoVO torneo = torneos.get(i);
+                %>
+                    <tr>
+                        <td><%=torneo.getTimeInicio()%></td>
+                        <td><%=torneo.getNombre()%></td>
+                        <td>(Botón modif.)</td>
+                    </tr>
+                <% } %>
                 </tbody>
             </table>
         </div>
         <% } %>
+        <% } else {
+
+                ArrayList<basedatos.modelo.PartidaVO> historial = (ArrayList<PartidaVO>) session.getAttribute("historial");
+                if(historial != null){
+                %>
+            </div>
+        </div>
+
+            <div class="row mt-2">
+                <h2>Historial de Partidas</h2>
+                <br>
+                <table class="table table-hover" id="rank-table0">
+                    <thead>
+                    <tr>
+                        <th>Equipo1</th>
+                        <th>Equipo2</th>
+                        <th>Resultado</th>
+                        <th>Contringante</th>
+                        <th>Puntos Contringante</th>
+                        <th>Tus Puntos</th>
+                        <th>Moneda</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <%
+                        for(Integer j = 1; j < historial.size(); j++){
+                            PartidaVO partida = historial.get(j);
+                            ArrayList<UsuarioVO> usuarios = (ArrayList<UsuarioVO>) partida.getUsuarios();
+                            int equipo = 0;
+                            for(Integer i = 0; i < usuarios.size(); i++){
+                                if(usuarios.get(i).getUsername().equals(nick)){
+                                    equipo = i % 2 + 1;
+                                }
+                            }
+                            String resultado = null;
+                            if(partida.getGanador() == 'A'){
+                                resultado = "Abandonada";
+                            } else if(( partida.getGanador() == '1' && equipo == 1) ||
+                                      ( partida.getGanador() == '2' && equipo == 2)){
+                                resultado = "Ganada";
+                            } else {
+                                resultado = "Perdida";
+                            }
+                    %>
+                    <tr>
+                        <% if(usuarios.size() == 2){ %>
+                            <td><%= usuarios.get(0)%></td>
+                            <td><%= usuarios.get(1) %></td>
+                        <% } else { %>
+                            <td><%= usuarios.get(0) + ", " + usuarios.get(2) %></td>
+                            <td><%= usuarios.get(1) + ", " + usuarios.get(3) %></td>
+                        <% } %>
+                        <td><%= resultado%></td>
+                        <td>hola</td>
+                        <td>hola</td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+        <% } }%>
     </div>
 </body>
 </html>

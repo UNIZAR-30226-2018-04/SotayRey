@@ -1,3 +1,5 @@
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="basedatos.modelo.TorneoVO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 
 <html lang="en" >
@@ -23,58 +25,53 @@
 <div class="jumbotron">
     <div class="container text-center">
         <h1>Torneos</h1>
-        <p>Apúntate y demuestra ser el mejor</p>
+        <p>Ap&uacutentate y demuestra ser el mejor</p>
     </div>
 </div>
 
+<% ArrayList<TorneoVO> lista = (ArrayList<TorneoVO>) session.getAttribute("torneos");
+   if(lista == null){ %>
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-                <table class="table table-hover" id="rank-table">
-                    <thead>
-                    <tr>
-                        <th>Comienzo del torneo</th>
-                        <th>Tiempo restante</th>
-                        <th>Participantes</th>
-                        <th>Participar</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>05/05/2018 20:00</td>
-                        <td>
-                            Nada todavía
-                        </td>
-                        <td>
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-striped active" role="progressbar"
-                                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">
-                                        40/100
-                                    </div>
-                                </div>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Bob</td>
-                        <td>100</td>
-                        <td>200</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Holden</td>
-                        <td>50</td>
-                        <td>20</td>
-                    </tr>
-                    </tbody>
-                </table>
+     <div class="container text-center">
+        <h2>No hay torneos a los que puedas apuntarte. Vuelve en otro momento</h2>
+     </div>
+
+  <% } else {%>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                    <table class="table table-hover" id="rank-table">
+                        <thead>
+                        <tr>
+                            <th>Nombre del torneo</th>
+                            <th>Comienzo del torneo</th>
+                            <th>N&uacutemero de fases</th>
+                            <th>Premio en monedas al primer puesto</th>
+                            <th>Premio en puntos al primer puesto</th>
+                            <th>Participar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <% for(Integer i = 0; i < lista.size(); i++){
+                                TorneoVO torneo = lista.get(i);       %>
+                            <tr>
+                                <td><%=torneo.getNombre()%></td>
+                                <td><%=torneo.getTimeInicio()%></td>
+                                <td><%=torneo.getNumFases()%> </td>
+                                <td><%=torneo.getPremioDivisaPrimera()%><td>
+                                <td><%=torneo.getPremioPuntuacionPrimera()%><td>
+                                <td>
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+            </div>
         </div>
     </div>
-</div>
+  <% } %>
 
 
 <div class="container">
