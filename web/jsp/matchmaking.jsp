@@ -20,6 +20,7 @@
     .jumbotron{
         color: #040404;
         background-size: auto;
+        background-position: 0% 3%;
         background-image: url('http://1.bp.blogspot.com/-XzkALf18FQM/UiPLGhELPBI/AAAAAAAAFYo/ux53uYsgc44/s1600/ESPA%C3%91OLA+2.jpg');
         background-repeat: repeat;
     }

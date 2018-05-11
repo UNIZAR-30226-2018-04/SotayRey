@@ -18,7 +18,9 @@
 <style type="text/css">
     .jumbotron{
         color: black;
-        background-size: cover;
+        background-image: url('https://www.shareicon.net/download/2016/05/31/773539_trophy_512x512.png');
+        background-repeat: no-repeat;
+
     }
 </style>
 

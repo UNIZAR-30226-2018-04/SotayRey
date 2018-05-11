@@ -38,19 +38,22 @@
         .jumbotron{
             color: black;
             background-size: cover;
+            background-position: 0% 79%;
+            background-image: url('https://cloud10.todocoleccion.online/calendarios-antiguos/tc/2014/12/04/21/46580351.jpg');
         }
     </style>
 
     <div class="jumbotron">
         <div class="container text-center">
-            <h1>Clasificaci&oacuten</h1>
-            <p>Comprueba el puesto en el que vas.</p>
+
         </div>
     </div>
 
 <div class="container">
     <div class="row">
         <div class="col-md-12">
+            <h1 class="text-center">Clasificaci&oacuten</h1>
+            <p class="text-center">Comprueba el puesto en el que vas.</p>
             <div class="tab" role="tabpanel">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
