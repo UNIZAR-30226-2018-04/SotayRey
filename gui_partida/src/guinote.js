@@ -612,18 +612,21 @@ function representarEstado(estado){
         }
         else{
             jugador.nombreUsuario.text = item.nombre;
+
+            game.load.image(miID.toString()+'avatar', item.avatar);
+            game.load.start();
+
+            game.load.onLoadComplete.add(function(){
+                var jugador = arrayJugadores[miID];
+                jugador.avatar.loadTexture(miID.toString()+'avatar');
+            }, this);
+
         }
     }, this);
 
     // Se pone la mano del jugador
     // TODO si soy espectador esto no se hace
-    game.load.image(miID.toString()+'avatar', item.avatar);
-    game.load.start();
-
-    game.load.onLoadComplete.add(function(){
         var jugador = arrayJugadores[miID];
-
-        jugador.avatar.loadTexture(miID.toString()+'avatar');
         var carta = {};
         estado.mano.forEach(function(item) {
             console.log("CREANDO CARTA: " + item.numero + "  " +item.palo);
@@ -634,7 +637,6 @@ function representarEstado(estado){
             carta.atributo = "HELLOW DA";
             carta.events.onInputDown.add(pulsaCarta, this);
             jugador.cartasEnMano.add(carta);
-        }, this);
         dibujarJugador(jugador);
 
 
