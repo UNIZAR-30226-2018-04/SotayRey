@@ -1,6 +1,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="basedatos.modelo.*" %>
 <%@ page import="java.util.Arrays" %>
+<%@ page import="basedatos.InterfazDatos" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 
 <html lang="en" >
@@ -31,6 +32,10 @@
     }
 
 </style>
+
+<%
+
+%>
 
 <div class="jumbotron">
 </div>
@@ -166,6 +171,19 @@ recibirMensaje("{
 
  -->
 
+<%
+    // Se necesita para acceder al tapete del usuario y luego enviarselo al juego
+    InterfazDatos facade = null;
+    try {
+        facade = InterfazDatos.instancia();
+    } catch (Exception e) {
+        System.err.println("ERROR: creando interfaz");
+    }
+    UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
+    String nick = usuarioVO.getUsername();
+    String miTapete = facade.obtenerTapeteFavorito(nick).getRutaImagen();
+%>
+
 <script>
 
     function getRadioValue(campo)
@@ -228,7 +246,8 @@ recibirMensaje("{
        // var id_jugador = 1213;
        // var nombre_jugador = "juegadorPrueba";
        // var parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador;
-        parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores;
+        var tapete = "<%=miTapete%>";
+        parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete;
         window.location.replace("../juego.html?"+parametros);
     }
 

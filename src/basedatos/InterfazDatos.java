@@ -344,7 +344,7 @@ public class InterfazDatos {
         ArrayList<ArticuloUsuarioVO> articulos = obtenerArticulosTienda(username);
         ArticuloUsuarioVO dorsoFavorito = null;
         for(ArticuloUsuarioVO art : articulos){
-            if (art.isFavorito() && art.getTipo()=='D'){
+            if (art.isFavorito() && art.getTipo()=='B'){
                 dorsoFavorito = art;
             }
         }

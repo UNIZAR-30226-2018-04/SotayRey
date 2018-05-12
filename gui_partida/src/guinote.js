@@ -50,7 +50,7 @@ function preload() {
     game.load.image('naipe', 'assets/naipe.png');
     game.load.image('cuadroCarta', 'assets/dragHere.png');
     game.load.image('turno', 'assets/turno.png');
-    game.load.image('tapete', 'assets/tapete.png');
+    game.load.image('tapete', tapete);
     game.load.image('avatar', 'assets/avatar.png');
     game.load.image('victoria', 'assets/victoria.png');
     game.load.image('derrota', 'assets/derrota.png');
@@ -585,8 +585,8 @@ function representarEstado(estado){
         if ([item.id] != miID){
 
             // personalizacion
-            game.load.image(item.id.toString()+'avatar', '/img/avatares/african.png');
-            game.load.image(item.id.toString()+'dorso', '/img/hearthstone1.png');
+            game.load.image(item.id.toString()+'avatar', item.avatar);
+            game.load.image(item.id.toString()+'dorso', item.dorso);
             game.load.start();
 
             game.load.onLoadComplete.add(function(){
@@ -617,7 +617,7 @@ function representarEstado(estado){
 
     // Se pone la mano del jugador
     // TODO si soy espectador esto no se hace
-    game.load.image(miID.toString()+'avatar', '/img/avatares/bellgirl.png');
+    game.load.image(miID.toString()+'avatar', item.avatar);
     game.load.start();
 
     game.load.onLoadComplete.add(function(){
@@ -1170,7 +1170,7 @@ function controlMusica(){
     //playPause.text = "MUSIKOTE";
     playPause.inputEnabled = true;
     playPause.events.onInputDown.add(botonMusica, this);
-    music.play();
+    //music.play();
     playPause.estado = "pause";
 }
 
