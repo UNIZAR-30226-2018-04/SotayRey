@@ -199,8 +199,12 @@ public class Jugador {
      * Función que consulta si se puede cantar con la sota y el rey de
      * cualquier palo. Si no puede cantar lanza una excepcción.
      */
-    public void anyadirCante(Carta triunfo) throws
+    public ArrayList<Cante> anyadirCante(Carta triunfo) throws
                ExceptionNoPuedesCantar {
+
+        ArrayList<Cante> cantadas = new ArrayList<>();
+        Cante auxiliar = null;
+
         boolean reyes[] = {false, false, false, false};
         boolean sotas[] = {false, false, false, false};
 
@@ -218,15 +222,21 @@ public class Jugador {
                 cantes[i] = true;
                 if(esPaloTriunfo(triunfo,i)) {
                     sumaTotal += 40;
+                    auxiliar = new Cante(Cante.TipoCante.LAS40,getPalo(i));
+                    cantadas.add(auxiliar);
                 }
                 else{
                     sumaTotal += 20;
+                    auxiliar = new Cante(Cante.TipoCante.LAS20,getPalo(i));
+                    cantadas.add(auxiliar);
                 }
             }
         }
         puntos += sumaTotal;
         if (sumaTotal == 0){
             throw new ExceptionNoPuedesCantar();
+        } else{
+            return cantadas;
         }
     }
 
@@ -263,13 +273,32 @@ public class Jugador {
 
 
     /**
+     * Devuelve el palo de las cartas correspondientes al indice i
+     * @param i
+     * @return
+     */
+    private String getPalo(int i){
+        switch (i){
+            case 0:
+                return "B";
+            case 1:
+                return "C";
+            case 2:
+                return "E";
+            case 3:
+                return "O";
+        }
+        return "B";
+    }
+
+    /**
      * Devuelve true si "i" corresponde al palo de triunfo.
      * @param triunfo
      * @param i
      * @return
      */
     private boolean esPaloTriunfo(Carta triunfo, int i){
-        String palo="B";
+        String palo = "B";
         switch (i){
             case 0:
                 palo="B";

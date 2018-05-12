@@ -8,14 +8,7 @@ package main.java;
  */
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-
-import main.java.ExceptionCartaIncorrecta;
-import main.java.ExceptionCartaYaExiste;
-import main.java.ExceptionEquipoIncompleto;
-import main.java.ExceptionJugadorIncorrecto;
-import main.java.ExceptionJugadorSinCarta;
 
 import static java.lang.Math.abs;
 
@@ -532,14 +525,14 @@ public class EstadoPartida {
      * @param jugador
      * @throws ExceptionJugadorIncorrecto
      */
-    public void sumaCante(String jugador) throws ExceptionJugadorIncorrecto,
+    public ArrayList<Cante> sumaCante(String jugador) throws ExceptionJugadorIncorrecto,
             ExceptionNoPuedesCantar{
         Jugador jugadorEncontrado = encuentraJugador(jugador);
         if (ganadorUltimaRonda < 0 || ganadorUltimaRonda > 3){
             throw new ExceptionNoPuedesCantar();
         }
         else if(jugadores.get(ganadorUltimaRonda).equals(encuentraJugador(jugador)) || jugadores.get(ganadorUltimaRonda+2).equals(encuentraJugador(jugador))){
-            jugadorEncontrado.anyadirCante(triunfo);
+            return jugadorEncontrado.anyadirCante(triunfo);
         }
         else{
             throw new ExceptionNoPuedesCantar();
