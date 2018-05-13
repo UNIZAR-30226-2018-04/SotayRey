@@ -57,7 +57,7 @@
             ratio = ganadas/perdidas;
         }
 
-        avatar = (ArticuloUsuarioVO) session.getAttribute("Avatar");
+        avatar = (ArticuloUsuarioVO) session.getAttribute("avatar");
         if(avatar == null){
             avatar = new ArticuloUsuarioVO(null, 'A', true, null);
             avatar.setRutaImagen("#");
@@ -233,6 +233,7 @@
                 </div>
 
                 <% if(usuarioVO != null && usuarioVO.getAdmin()){ %>
+                <br>
                 <a class="btn btn-warning mt-2" href="/MostrarObjetosTienda.do" role="button">
                     <i class="fa fa-shopping-cart mr-2" aria-hidden="true"></i>Gestionar Tienda
                 </a>

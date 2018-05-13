@@ -50,7 +50,7 @@ function preload() {
     game.load.image('naipe', 'assets/naipe.png');
     game.load.image('cuadroCarta', 'assets/dragHere.png');
     game.load.image('turno', 'assets/turno.png');
-    game.load.image('tapete', 'assets/tapete.png');
+    game.load.image('tapete', tapete);
     game.load.image('avatar', 'assets/avatar.png');
     game.load.image('victoria', 'assets/victoria.png');
     game.load.image('derrota', 'assets/derrota.png');
@@ -87,6 +87,8 @@ triunfo = {};
 triunfo.carta = {}
 triunfo.x = ejeX / 2;
 triunfo.y = (ejeY / 2) * 0.85;
+
+var estanCantando = false;
 
 var arrayJugadoresDefecto = [];
 var arrayJugadores = [];
@@ -585,8 +587,8 @@ function representarEstado(estado){
         if ([item.id] != miID){
 
             // personalizacion
-            game.load.image(item.id.toString()+'avatar', '/img/avatares/african.png');
-            game.load.image(item.id.toString()+'dorso', '/img/hearthstone1.png');
+            game.load.image(item.id.toString()+'avatar', item.avatar);
+            game.load.image(item.id.toString()+'dorso', item.dorso);
             game.load.start();
 
             game.load.onLoadComplete.add(function(){
@@ -612,18 +614,21 @@ function representarEstado(estado){
         }
         else{
             jugador.nombreUsuario.text = item.nombre;
+
+            game.load.image(miID.toString()+'avatar', item.avatar);
+            game.load.start();
+
+            game.load.onLoadComplete.add(function(){
+                var jugador = arrayJugadores[miID];
+                jugador.avatar.loadTexture(miID.toString()+'avatar');
+            }, this);
+
         }
     }, this);
 
     // Se pone la mano del jugador
     // TODO si soy espectador esto no se hace
-    game.load.image(miID.toString()+'avatar', '/img/avatares/bellgirl.png');
-    game.load.start();
-
-    game.load.onLoadComplete.add(function(){
         var jugador = arrayJugadores[miID];
-
-        jugador.avatar.loadTexture(miID.toString()+'avatar');
         var carta = {};
         estado.mano.forEach(function(item) {
             console.log("CREANDO CARTA: " + item.numero + "  " +item.palo);
@@ -634,7 +639,6 @@ function representarEstado(estado){
             carta.atributo = "HELLOW DA";
             carta.events.onInputDown.add(pulsaCarta, this);
             jugador.cartasEnMano.add(carta);
-        }, this);
         dibujarJugador(jugador);
 
 
@@ -694,6 +698,12 @@ function recibirMensaje(msg){
                     }
                     break;
                 case "cantar":
+                    if(estanCantando){
+                        setTimeout(function() { jugadorCanta(mensaje.id_jugador, mensaje.palo, mensaje.cantidad);}, 4000);
+                    }
+                    else {
+                        jugadorCanta(mensaje.id_jugador, mensaje.palo, mensaje.cantidad);
+                    }
                     break;
                 case "cambiar_triunfo":
                     jugadorCambiaTriunfo(mensaje.id_jugador, mensaje.nuevo_triunfo.numero, mensaje.nuevo_triunfo.palo);
@@ -845,18 +855,19 @@ function jugadorCambiaTriunfo(id, numero, palo){
 
 
 
-function jugadorCanta(id, cantidad){
+function jugadorCanta(id, palo, cantidad){
+    estanCantando = true;
     console.log("Jugador canta");
     var style = { font: "65px Arial", fill: "#ff0044", align: "center" };
     //arrayJugadores[id].nombreUsuario
     //var textoCantar = game.add.text(game.world.centerX, game.world.centerY, 0, + 'pepito HA CANTADO ' + cantidad);
-    var textoCantar = game.add.text(game.world.centerX, game.world.centerY, '' + 'pepito HA CANTADO ' + cantidad, style);
+    var textoCantar = game.add.text(game.world.centerX, game.world.centerY, '' + 'pepito HA CANTADO ' + cantidad + ' EN ' + palo, style);
     textoCantar.anchor.setTo(0.5,0.5);
     //textoCantar.alpha = 0;
 
     //game.add.tween(textoCantar).to( { alpha: 0 }, 3500, 'Linear', true, 0, 1000, true);
     //game.add.tween(textoCantar).to({alpha: 0}, 1500, Phaser.Easing.Linear.None, true)
-    setTimeout(function(){ textoCantar.destroy()}, 3500);
+    setTimeout(function(){ textoCantar.destroy(); estanCantando = false;}, 3500);
 }
 
 /**
@@ -1170,7 +1181,7 @@ function controlMusica(){
     //playPause.text = "MUSIKOTE";
     playPause.inputEnabled = true;
     playPause.events.onInputDown.add(botonMusica, this);
-    music.play();
+    //music.play();
     playPause.estado = "pause";
 }
 
