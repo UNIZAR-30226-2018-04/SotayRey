@@ -206,11 +206,24 @@ public class GestorMensajes {
     private void broadcastCantar(int idPartida) {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
-        JSONObject objC = new JSONObject();
-        objC.put("tipo_mensaje", "broadcast_accion");
-        objC.put("tipo_accion", "cantar");
-        objC.put("id_jugador", partida.getEstado().getTurno());
-        broadcastMensaje(lobby, objC);
+        ArrayList<Cante> cantadas = partida.getRecienCantadas();
+
+        for (Cante c : cantadas){
+            JSONObject objC = new JSONObject();
+            objC.put("tipo_mensaje", "broadcast_accion");
+            objC.put("tipo_accion", "cantar");
+            objC.put("id_jugador", partida.getEstado().getTurno());
+            objC.put("palo", c.getPalo());
+            switch(c.getTipo()) {
+                case LAS20:
+                    objC.put("cantidad", 20);
+                    break;
+                case LAS40:
+                    objC.put("cantidad", 40);
+                    break;
+            }
+            broadcastMensaje(lobby, objC);
+        }
     }
 
     private void broadcastCambiarTriunfo(int idPartida, Carta nuevoTriunfo) {
