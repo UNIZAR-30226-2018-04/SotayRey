@@ -309,5 +309,50 @@ recibirMensaje("{
 </div>
 
 
+<div class="container">
+    <!-- Modal -->
+    <div class="modal fade" id="espectarPartida" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-center">Espectar partida</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body text-center">
+
+
+                        <table class="table table-striped custab">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th class="text-primary">Equipo A</th>
+                                <th class="text-primary">Puntos A</th>
+                                <th class="text-danger">Equipo B</th>
+                                <th class="text-danger">Puntos B</th>
+                                <th class="text-center">Espectar</th>
+                            </tr>
+                            </thead>
+                            <tr>
+                                <td>1</td>
+                                <td>Carlos, Marius</td>
+                                <td>60</td>
+                                <td>Víctor, Javier</td>
+                                <td>30</td>
+                                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span>Espectar</a></td>
+                            </tr>
+                        </table>
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
 </body>
 </html>
