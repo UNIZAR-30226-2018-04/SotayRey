@@ -10,6 +10,7 @@
 package servlet;
 
 import basedatos.InterfazDatos;
+import basedatos.modelo.TorneoVO;
 import basedatos.modelo.UsuarioVO;
 
 import javax.servlet.RequestDispatcher;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 @WebServlet(name = "LoginServlet")
@@ -79,7 +81,20 @@ public class LoginServlet extends HttpServlet {
                         e.printStackTrace();
                         return;
                     }
+
                     HttpSession sesion= request.getSession();
+                    ArrayList<TorneoVO> torneos = null;
+
+                    try{
+                        torneos = facade.obtenerTorneosProgramados();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        response.sendRedirect("jsp/matchmaking.jsp");
+                        return;
+                    }
+
+                    sesion.setAttribute("torneos", torneos);
+
                     sesion.setAttribute("userId", user);
                     sesion.setMaxInactiveInterval(24*60*60);
                     response.sendRedirect("jsp/matchmaking.jsp");
