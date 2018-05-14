@@ -30,17 +30,28 @@ WHERE p.id = j1.partida AND p.id = j2.partida AND p.id = j3.partida AND p.id = j
 
 
 */
+SELECT p.id, p.timeInicio, p.timeFin, p.publica, p.ganador,
+  j1.usuario usuario1, j2.usuario usuario2,
+  j1.cuarentas cuarentas1, j2.cuarentas cuarentas2,
+  j1.veintes veintes1, j2.veintes veintes2,
+  j1.puntos puntos1, j2.puntos puntos2,
+  (j1.abandonador + 2*j2.abandonador) abandonador
+FROM partida p, juega j1, juega j2
+WHERE p.id = j1.partida AND p.id = j2.partida
+      AND (j1.usuario = 'cms' OR j2.usuario = 'cms')
+      AND j1.usuario > j2.usuario
+      AND (NOT EXISTS (SELECT * FROM juega jj WHERE jj.partida = p.id
+                                                    AND j1.usuario <> jj.usuario AND j2.usuario <> jj.usuario));
 
-
-SELECT p.id, p.timeInicio, p.timeFin, p.publica,
-                    j1.usuario usuario1, j2.usuario usuario2,
-                    j3.usuario usuario3, j4.usuario usuario4,
-                    j1.equipo equipo1, j2.equipo equipo2, 
-                    j3.equipo equipo3, j4.equipo equipo4 
-FROM partida p, juega j1, juega j2, juega j3, juega j4
-WHERE p.id = j1.partida AND p.id = j2.partida AND p.id = j3.partida AND p.id = j4.partida 
-					AND p.publica = 1 AND p.timeFin IS NULL
-                    AND j1.usuario > j2.usuario AND j2.usuario > j3.usuario AND j3.usuario > j4.usuario;
+-- SELECT p.id, p.timeInicio, p.timeFin, p.publica,
+--                     j1.usuario usuario1, j2.usuario usuario2,
+--                     j3.usuario usuario3, j4.usuario usuario4,
+--                     j1.equipo equipo1, j2.equipo equipo2,
+--                     j3.equipo equipo3, j4.equipo equipo4
+-- FROM partida p, juega j1, juega j2, juega j3, juega j4
+-- WHERE p.id = j1.partida AND p.id = j2.partida AND p.id = j3.partida AND p.id = j4.partida
+-- 					AND p.publica = 1 AND p.timeFin IS NULL
+--                     AND j1.usuario > j2.usuario AND j2.usuario > j3.usuario AND j3.usuario > j4.usuario;
 
 -- SELECT perus.user, l.nombre
 -- FROM
