@@ -30,7 +30,8 @@
         usuarioVO = (UsuarioVO) session.getAttribute("userId");
         admin = usuarioVO.getAdmin();
         torneos = (ArrayList<TorneoVO>) session.getAttribute("torneos");
-    }%>
+    }
+%>
 
 <body>
 
@@ -52,6 +53,36 @@
 
 <div class="container">
 
+    <!-- Gestión de errores -->
+    <% String error = (String) request.getAttribute("error"); %>
+    <%
+        if (error != null) { // Hay un error %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+
+        <%
+            switch (error){
+                case "date": %>
+        <strong>Fecha introducida incorrecta o demasiado antigua.</strong> Inténtalo de nuevo.
+        <%
+                break;
+            case "interno": %>
+        <strong> Sistema en mantenimiento.</strong> Vuelva a intentarlo en unos minutos.
+        <%
+                break;
+            case "done": %>
+        <strong>Tarea realizada correctamente.</strong>
+        <%
+                break;
+            default:%>
+        <strong><%=error%></strong> Ha ocurrido un error. Vuelva a iniciar sesión e intentelo de nuevo.
+        <%
+            }%>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <% } %>
     <div class="card">
     <% if (admin) {%>
             <div class="card-header">
