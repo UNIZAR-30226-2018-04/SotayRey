@@ -1,4 +1,4 @@
-<%--
+<%@ page import="basedatos.InterfazDatos" %><%--
   Created by IntelliJ IDEA.
   User: Javier
   Date: 17/10/2017

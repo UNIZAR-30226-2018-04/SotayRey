@@ -70,7 +70,7 @@
           <% }  else if (error.equals("noMoney")){ %>
                 <strong>No dispones del dinero suficiente </strong>
             <% } else{ %>
-                <strong>No hay ninguna liga </strong> Añade una liga o inicia sesi&oacuten.
+                <strong>No hay ninguna liga </strong> A&ntilde;ade una liga o inicia sesi&oacuten.
           <% }  %>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -86,15 +86,15 @@
         <h2>Opciones de administrador</h2>
 
         <div class="btn-toolbar">
-            <a href="/jsp/anyadirArticulo.jsp" class="btn btn-warning btn-md">
-                <i aria-hidden="true"></i>Añadir Articulos
+            <a href="/jsp/anyadirArticulo.jsp" class="btn btn-warning btn-md my-1 mx-1">
+                <i aria-hidden="true"></i>A&ntilde;adir Articulos
             </a>
-            <a href="/RefrescarTiendaAdmin.do" class="btn btn-warning btn-md">
+            <a href="/RefrescarTiendaAdmin.do" class="btn btn-warning btn-md my-1 mx-1">
                 <i aria-hidden="true"></i>Comprar Articulos
             </a>
             <!-- <a href="#" class="btn btn-warning btn-md">Añadir Artículo</a> -->
             <% if (articulos == null || articulos.size() == 0){ %>
-            <a class="btn btn-warning btn-md disabled">Modificar Art&iacuteculo</a>
+            <a class="btn btn-warning btn-md disabled my-1 mx-1">Modificar Art&iacuteculo</a>
             <% } else { %>
             <form action="/RefrescarTiendaAdmin.do" method="post">
                 <input type="hidden" name="optionAdmin" value="modify">
@@ -125,7 +125,7 @@
         <%-- Hay articulos que mostrar--%>
         <div id="accordion" role="tablist" aria-multiselectable="true">
           <%for (String tipo: new ArrayList<>(Arrays.asList("Barajas", "Tapetes", "Avatares"))) {  %>
-                <div class="card mt-2">
+                <div class="row list-group my-4">
                     <div class="card-header" role="tab" id="heading<%=tipo%>">
                         <h5 class="mb-0">
                             <a class="text-center" data-toggle="collapse" data-parent="#accordion" href="#collapse<%=tipo%>" aria-expanded="true" aria-controls="collapse<%=tipo%>">
@@ -147,7 +147,26 @@
                                                 <div class="card-footer text-center bg-primary text-white">
                                                     <%=art.getNombre()%>
                                                 </div>
-                                                <img class="card-img-top" src="<%=art.getRutaImagen()%>" alt="Card image cap">
+                                                <style>
+                                                    .image-holder {
+                                                    background-size: cover;
+                                                    background-position: center center;
+                                                    height: 400px;
+                                                    width: 100%;
+                                                }
+                                                .box {
+                                                    border: 1px solid #ddd;
+                                                    display: inline-flex;
+                                                    align-items: center;
+                                                    justify-content: center;
+                                                    flex: 1 50%;
+                                                    min-width: 200px;
+                                                }
+                                                </style>
+
+                                                <div class="col-lg-6 box">
+                                                    <img class="responsive" src="<%=art.getRutaImagen()%>" alt="Card image cap" width="600" height="400">
+                                                </div>
                                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modificarArticulo<%=i%>" >
                                                     <i class="fa fa-pencil mr-2" aria-hidden="true"></i>Modifcar
                                                 </button>
@@ -164,14 +183,9 @@
                                                             </div>
                                                             <div class="modal-body  container">
                                                                 <div class="col-sm">
-                                                                            <%--<div class="form-group">--%>
                                                                                 <label for="precio">Precio</label>
                                                                                 <input type="number" class="form-control" name="precio<%=i%>" id="precio"
                                                                                        placeholder="<%=art.getPrecio()%>" value="<%=art.getPrecio()%>">
-                                                                                <%--<button type="submit" class="btn btn-primary"--%>
-                                                                                        <%--&lt;%&ndash;value="<%=i%>" name="indiceObjeto" id="indiceObjeto"&ndash;%&gt;--%>
-                                                                                        <%--formaction="/ModificarObjetoTienda.do" >Guardar Cambios</button>--%>
-                                                                            <%--&lt;%&ndash;</div>&ndash;%&gt;--%>
                                                                 </div>
                                                                 <div class="modal-footer">
                                                                     <button type="submit" class="btn btn-primary" value="<%=i%>" id="indiceObjeto<%=i%>" name="indiceObjeto" formaction="/ModificarObjetoTienda.do" >Guardar Cambios</button>
@@ -213,7 +227,6 @@
                                                     </div>
                                                     <% } else if (art.isDisponible()) { %>
                                                         <!-- Comprar objeto -->
-                                                        <%--<input type="hidden" value="<%=i%>" name="posObjeto" id="id_objeto"/>--%>
                                                         <button type="submit" class="btn btn-primary" value="<%=i%>" name ="id_objeto" id="id_objeto"> Comprar: <%= art.getPrecio()%> monedas </button>
                                                   <%} else { %>
                                                         <button  type="button"  class="btn btn-blue-grey">Art&iacuteculo bloqueado</button>

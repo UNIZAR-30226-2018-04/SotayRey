@@ -1,6 +1,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="basedatos.modelo.*" %>
 <%@ page import="java.util.Arrays" %>
+<%@ page import="basedatos.InterfazDatos" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 
 <html lang="en" >
@@ -31,6 +32,10 @@
     }
 
 </style>
+
+<%
+
+%>
 
 <div class="jumbotron">
 </div>
@@ -166,6 +171,19 @@ recibirMensaje("{
 
  -->
 
+<%
+    // Se necesita para acceder al tapete del usuario y luego enviarselo al juego
+    InterfazDatos facade = null;
+    try {
+        facade = InterfazDatos.instancia();
+    } catch (Exception e) {
+        System.err.println("ERROR: creando interfaz");
+    }
+    UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
+    String nick = usuarioVO.getUsername();
+    String miTapete = facade.obtenerTapeteFavorito(nick).getRutaImagen();
+%>
+
 <script>
 
     function getRadioValue(campo)
@@ -228,7 +246,8 @@ recibirMensaje("{
        // var id_jugador = 1213;
        // var nombre_jugador = "juegadorPrueba";
        // var parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador;
-        parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores;
+        var tapete = "<%=miTapete%>";
+        parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete;
         window.location.replace("../juego.html?"+parametros);
     }
 
@@ -281,6 +300,51 @@ recibirMensaje("{
                 </div>
                 <div class="modal-footer text-center">
                     <button type="button" onclick="cerrarSocket()" class="btn btn-default" data-dismiss="modal">Cancelar búsqueda</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<div class="container">
+    <!-- Modal -->
+    <div class="modal fade" id="espectarPartida" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-center">Espectar partida</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body text-center">
+
+
+                        <table class="table table-striped custab">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th class="text-primary">Equipo A</th>
+                                <th class="text-primary">Puntos A</th>
+                                <th class="text-danger">Equipo B</th>
+                                <th class="text-danger">Puntos B</th>
+                                <th class="text-center">Espectar</th>
+                            </tr>
+                            </thead>
+                            <tr>
+                                <td>1</td>
+                                <td>Carlos, Marius</td>
+                                <td>60</td>
+                                <td>Víctor, Javier</td>
+                                <td>30</td>
+                                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span>Espectar</a></td>
+                            </tr>
+                        </table>
+
+
                 </div>
             </div>
 
