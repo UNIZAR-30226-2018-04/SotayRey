@@ -24,8 +24,10 @@
 
     if (session.getAttribute("userId") == null) {
         error = "userNotFound";
-        session.setAttribute("error", error);
-        response.sendRedirect("/jsp/login.jsp");
+        request.setAttribute("error", error);
+        RequestDispatcher dispatcher = request.getRequestDispatcher
+                ("/jsp/login.jsp");
+        dispatcher.forward(request, response);
     } else {
         usuarioVO = (UsuarioVO) session.getAttribute("userId");
         admin = usuarioVO.getAdmin();
@@ -54,7 +56,7 @@
 <div class="container">
 
     <!-- Gestión de errores -->
-    <% String error = (String) request.getAttribute("error"); %>
+    <%  error = (String) request.getAttribute("error"); %>
     <%
         if (error != null) { // Hay un error %>
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
