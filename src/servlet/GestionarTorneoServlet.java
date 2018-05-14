@@ -26,7 +26,7 @@ public class GestionarTorneoServlet extends HttpServlet {
         // Error con las fechas
         request.setAttribute("error", error);
         RequestDispatcher dispatcher = request.getRequestDispatcher
-                ("jsp/torneo.jsp");
+                ("jsp/torneos.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -61,7 +61,7 @@ public class GestionarTorneoServlet extends HttpServlet {
                     facade = InterfazDatos.instancia();
                 }catch (Exception e){
                     e.printStackTrace();
-                    response.sendRedirect("jsp/torneo.jsp");
+                    response.sendRedirect("jsp/torneos.jsp");
                     return;
                 }
 
@@ -211,7 +211,7 @@ public class GestionarTorneoServlet extends HttpServlet {
                 error = "done";
                 request.setAttribute("error", error);
                 RequestDispatcher dispatcher = request.getRequestDispatcher
-                        ("jsp/torneo.jsp");
+                        ("jsp/torneos.jsp");
                 dispatcher.forward(request, response);
 
             } else {

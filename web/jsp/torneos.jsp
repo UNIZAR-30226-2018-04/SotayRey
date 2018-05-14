@@ -101,100 +101,128 @@
                 <h2>No hay torneos a los que puedas apuntarte. Vuelve en otro momento</h2>
         </div>
     <% } else {%>
-        <div class="card-body">
-            <div class="col-md-12">
-                <table class="table">
-                    <thead>
-                    <tr class="bg-info">
-                        <th>Nombre del torneo</th>
-                        <th>Comienzo del torneo</th>
-                        <th>N&uacutemero de fases</th>
-                        <th>Premio en monedas al primer puesto</th>
-                        <th>Premio en puntos al primer puesto</th>
-                        <th>Participar</th>
-                    </tr>
-                    </thead>
+            <div id="accordion" role="tablist">
+                <div class="card mb-1">
+                    <div class="card-header" role="tab" id="headingOne">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Torneos Puntuales
+                            </a>
+                        </h5>
+                    </div>
 
-                    <tbody>
-                    <% for(Integer i = 0; i < torneos.size(); i++){
-                        TorneoVO torneo = torneos.get(i);       %>
-                    <tr class="active">
-                        <td><%=torneo.getNombre()%></td>
-                        <td><%=torneo.getTimeInicio()%></td>
-                        <td><%=torneo.getNumFases()%> </td>
-                        <td><%=torneo.getPremioDivisaPrimera()%><td>
-                        <td><%=torneo.getPremioPuntuacionPrimera()%><td>
-                        <td>
-                            <div class="btn-toolbar">
-                                <button type="button" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
-                                <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
+                    <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+                        <%--<div class="card-body">--%>
+                                <table class="table">
+                                    <thead>
+                                    <tr class="bg-info">
+                                        <th>Nombre del torneo</th>
+                                        <th>Comienzo del torneo</th>
+                                        <th>N&uacutemero de fases</th>
+                                        <th>Premio en monedas al primer puesto</th>
+                                        <th>Premio en puntos al primer puesto</th>
+                                        <th>Participar</th>
+                                    </tr>
+                                    </thead>
 
-                                <form action="/GestionarTorneo.do" method="post">
-                                    <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">
-                                    <input type="hidden" id="action<%=i%>" name="action_torneo" value="eliminar">
-                                    <input type="submit" class="btn btn-danger mx-1 my-1"
-                                           value="Eliminar">
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+                                    <tbody>
+                                    <% for(Integer i = 0; i < torneos.size(); i++){
+                                        TorneoVO torneo = torneos.get(i);       %>
+                                    <tr class="active">
+                                        <td><%=torneo.getNombre()%></td>
+                                        <td><%=torneo.getTimeInicio()%></td>
+                                        <td><%=torneo.getNumFases()%> </td>
+                                        <td><%=torneo.getPremioDivisaPrimera()%><td>
+                                        <td><%=torneo.getPremioPuntuacionPrimera()%><td>
+                                        <td>
+                                            <div class="btn-toolbar">
+                                                <button type="button" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
+                                                <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
 
-                    <!-- Modal Modificar Torneo -->
-                    <div class="modal fade" id="modificarTorneo<%=i%>" role="dialog">
-                        <div class="modal-dialog" role="document">
-
-                            <!-- Modal content-->
-                            <div class="modal-content text-center">
-                                <div class="modal-header">
-                                    <h4 class="modal-title text-center">Modificar Torneo</h4>
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                </div>
-
-                                <div class="modal-body text-center container">
-                                    <p>Introduzca los siguientes datos para crear un nuevo torneo</p>
-                                    <form action="/GestionarTorneo.do" method="post">
-                                        <div class="col-sm">
-                                            <div class="row">
-                                                <label for="punt_mod">Puntos 1ª ronda:</label>
-                                                <input type="number" class="form-control my-1" name="punt_mod" id="punt_mod"
-                                                       placeholder="Puntos al ganar la priemra ronda" value="<%=torneo.getPremioPuntuacionPrimera()%>">
+                                                <form action="/GestionarTorneo.do" method="post">
+                                                    <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">
+                                                    <input type="hidden" id="action<%=i%>" name="action_torneo" value="eliminar">
+                                                    <input type="submit" class="btn btn-danger mx-1 my-1"
+                                                           value="Eliminar">
+                                                </form>
                                             </div>
-                                            <div class="row">
-                                                <label for="divisas_mod">Divisas 1ª ronda:</label>
-                                                <input type="number" class="form-control my-1" name="divisas_mod" id="divisas_mod"
-                                                       placeholder="Divisas al ganar la priemra ronda" value="<%=torneo.getPremioDivisaPrimera()%>">
-                                            </div>
-                                            <div class="row">
-                                                <label for="date_ini<%=i%>" class="text-sm-left">Fecha inicio:</label>
-                                                <div class="col-sm">
+                                        </td>
+                                    </tr>
 
-                                                    <input type="date" class="form-control my-1" name="date_ini" id="date_ini<%=i%>"
-                                                           placeholder="N.º de fases" value="<%=torneo.getTimeInicio().toString().split(" ")[0]%>">
+                                    <!-- Modal Modificar Torneo -->
+                                    <div class="modal fade" id="modificarTorneo<%=i%>" role="dialog">
+                                        <div class="modal-dialog" role="document">
+
+                                            <!-- Modal content-->
+                                            <div class="modal-content text-center">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title text-center">Modificar Torneo</h4>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                                                 </div>
-                                            </div>
-                                            <div class="row">
-                                                <label for="time_ini<%=i%>" class="text-sm-left">Tiempo inicio:</label>
-                                                <div class="col-sm">
-                                                    <input type="time" class="form-control my-1" name="time_ini" id="time_ini<%=i%>"
-                                                           placeholder="N.º de fases" value="<%=torneo.getTimeInicio().toString().split(" ")[1]%>">
+
+                                                <div class="modal-body text-center container">
+                                                    <p>Introduzca los siguientes datos para crear un nuevo torneo</p>
+                                                    <form action="/GestionarTorneo.do" method="post">
+                                                        <div class="col-sm">
+                                                            <div class="row">
+                                                                <label for="punt_mod">Puntos 1ª ronda:</label>
+                                                                <input type="number" class="form-control my-1" name="punt_mod" id="punt_mod"
+                                                                       placeholder="Puntos al ganar la priemra ronda" value="<%=torneo.getPremioPuntuacionPrimera()%>">
+                                                            </div>
+                                                            <div class="row">
+                                                                <label for="divisas_mod">Divisas 1ª ronda:</label>
+                                                                <input type="number" class="form-control my-1" name="divisas_mod" id="divisas_mod"
+                                                                       placeholder="Divisas al ganar la priemra ronda" value="<%=torneo.getPremioDivisaPrimera()%>">
+                                                            </div>
+                                                            <div class="row">
+                                                                <label for="date_ini<%=i%>" class="text-sm-left">Fecha inicio:</label>
+                                                                <div class="col-sm">
+
+                                                                    <input type="date" class="form-control my-1" name="date_ini" id="date_ini<%=i%>"
+                                                                           placeholder="N.º de fases" value="<%=torneo.getTimeInicio().toString().split(" ")[0]%>">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <label for="time_ini<%=i%>" class="text-sm-left">Tiempo inicio:</label>
+                                                                <div class="col-sm">
+                                                                    <input type="time" class="form-control my-1" name="time_ini" id="time_ini<%=i%>"
+                                                                           placeholder="N.º de fases" value="<%=torneo.getTimeInicio().toString().split(" ")[1]%>">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <input type="hidden" name="pos_torneo_mod" value="<%=i%>">
+                                                            <button type="submit" class="btn btn-primary" name="action_torneo" value="modificar">Modifcar Torneo</button>
+                                                            <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <input type="hidden" name="pos_torneo_mod" value="<%=i%>">
-                                            <button type="submit" class="btn btn-primary" name="action_torneo" value="modificar">Modifcar Torneo</button>
-                                            <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                                    </div>
+                                    <% } %>
+                                    </tbody>
+                                </table>
+                        <%--</div>--%>
+                    </div>
+                </div>
+                <div class="card mb-1">
+                    <div class="card-header" role="tab" id="headingTwo">
+                        <h5 class="mb-0">
+                            <a class="collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Torneos Peri&oacute;dicos
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
+                        <div class="card-body">
+
                         </div>
                     </div>
-                    <% } %>
-                    </tbody>
-                </table>
+                </div>
             </div>
-        </div>
+
+        <%--</div>--%>
     <% } %>
     </div>
 
