@@ -28,7 +28,7 @@ public class GestorMensajes {
     private static ArrayList<Integer> partidasPausadas = new ArrayList<Integer>();
     private static HashMap<Integer, Lobby> lobbies = new HashMap<>(); // TODO: En 4 jugadores, orden (eq1, eq2, eq1, eq2)
     private static InterfazDatos bd = null;
-    private static int timeoutDesconectado = 30;
+    private static int timeoutDesconectado = 30000;
 
     @OnOpen
     public void onOpen(Session session) {
