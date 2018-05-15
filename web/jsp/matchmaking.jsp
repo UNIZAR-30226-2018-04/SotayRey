@@ -247,7 +247,8 @@ recibirMensaje("{
        // var nombre_jugador = "juegadorPrueba";
        // var parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador;
         var tapete = "<%=miTapete%>";
-        parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete;
+        var espectador = false;
+        parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
         window.location.replace("../juego.html?"+parametros);
     }
 
@@ -353,6 +354,7 @@ recibirMensaje("{
 
 </div>
 
+<a href="../juego.html?miID=3&idPartida=..&nombre=pepito&numJugadores=2&tapete="> ESPECTADOR PARA DEPURAR </a>
 
 </body>
 </html>

@@ -7,6 +7,8 @@
 /* PORCENTAJES RESPONSIVE */
 var numBotones = 3;
 var zonaJugableY = 0.9; // Porcentaje
+
+
 var ejeXBotones = window.innerWidth;
 var ejeYBotones = window.innerHeight * zonaJugableY + ( window.innerHeight *(1-zonaJugableY)*0.20);
 
@@ -992,18 +994,27 @@ function dibujarBotones(){
     var espacioBoton = ejeX / numBotones;
     //var style = {font: "20px", fill: "#000000", align:"center"};
 
-    var cantar = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
-    var cambiarTriunfo = game.add.text(espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
+    if (espectador){
+
+    }
+    else{
+        var cantar = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
+        var cambiarTriunfo = game.add.text(espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
+        cantar.text = "CANTAR";
+        cambiarTriunfo.text = "CAMBIAR TRIUNFO";
+        cantar.inputEnabled = true;
+        cantar.events.onInputDown.add(pulsaBoton, this);
+        cambiarTriunfo.inputEnabled = true;
+        cambiarTriunfo.events.onInputDown.add(pulsaBoton, this);
+    }
+
+
     tiempoTurno = game.add.text(espacioBoton + espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
 
-    cantar.text = "CANTAR";
-    cambiarTriunfo.text = "CAMBIAR TRIUNFO";
+
     tiempoTurno.text = "TURNO pepito 15"
 
-    cantar.inputEnabled = true;
-    cantar.events.onInputDown.add(pulsaBoton, this);
-    cambiarTriunfo.inputEnabled = true;
-    cambiarTriunfo.events.onInputDown.add(pulsaBoton, this);
+
 }
 
 
