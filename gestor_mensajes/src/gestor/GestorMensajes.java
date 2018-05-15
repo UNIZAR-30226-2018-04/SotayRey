@@ -67,15 +67,43 @@ public class GestorMensajes {
         switch(tipo) {
             case "listo_jugador":
                 System.out.println(tipo + " recibido");
+                intentarReconectar(session, msg);
                 recibirListo(session, msg);
                 break;
             case "accion":
                 System.out.println(tipo + " recibida");
                 recibirAccion(msg);
                 break;
+            case "timeout":
+                System.out.println(tipo + " recibido");
+                recibirTimeout(msg);
+                break;
             default:
                 System.out.println("Tipo de mensaje no reconocido");
         }
+    }
+
+    private void intentarReconectar(Session sesion, JSONObject msg) {
+        // Obtener datos del remitente
+        int idPartida = getIdPartidaMsg(msg);
+        int idJugador = getIdJugadorMsg(msg);
+        if (partidasPausadas.contains(idPartida)) {
+            // La partida estaba pausada
+            Lobby lobby = lobbies.get(idPartida);
+            JugadorGestor jug = lobby.buscarId(idJugador);
+            if (jug.getDesconectado() != null) {
+                jug.reconectar(sesion);
+            }
+            // Eliminar la partida de pausadas
+            partidasPausadas.remove((Integer) idPartida);
+        }
+    }
+
+    private void recibirTimeout(JSONObject msg) {
+        // Obtener datos del remitente
+        int idPartida = getIdPartidaMsg(msg);
+        System.out.println("Partida con id " + idPartida + " finalizada por timeout");
+        finalizarPartida(idPartida);
     }
 
     private void recibirAccion(JSONObject msg) {
@@ -120,7 +148,7 @@ public class GestorMensajes {
                     try {
                         // LÓGICA DE FINALIZACIÓN DE RONDA
                         partida.siguienteRonda();
-                        broadcastGanaRonda(idPartida);
+                        broadcastGanaRonda(idPartida, false);
                         // Se intenta que todos los jugadores vuelvan a tener 6 cartas
                         broadcastRobarCarta(idPartida);
                         // Asigna el turno al jugador correspondiente
@@ -137,13 +165,13 @@ public class GestorMensajes {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionPartidaFinalizada exceptionPartidaFinalizada) {
                         System.out.println("Partida finalizada: " + idPartida);
-                        broadcastGanaRonda(idPartida);
+                        broadcastGanaRonda(idPartida, false);
                         // Elimina la partida de la lista de partidas activas
-                        listaPartidas.remove(idPartida);
+                        finalizarPartida(idPartida);
                     } catch (ExceptionDeVueltas exceptionDeVueltas) {
                         System.out.println("De vueltas: " + idPartida);
                         broadcastEstado(idPartida, true, -1);
-                        broadcastGanaRonda(idPartida);
+                        broadcastGanaRonda(idPartida, false);
                         broadcastRobarCarta(idPartida);
                         // Manda el turno a todos los clientes
                         broadcastTurno(idPartida);
@@ -299,7 +327,7 @@ public class GestorMensajes {
     }
 
 
-    private void broadcastGanaRonda(int idPartida) {
+    private void broadcastGanaRonda(int idPartida, boolean timeout) {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
         // Incrementa la ronda
@@ -316,12 +344,25 @@ public class GestorMensajes {
         for (String nombre : lobby.getTodosNombres()) {
             JSONObject jug = new JSONObject();
             jug.put("id_jugador", i);
-            try {
-                jug.put("puntuacion", partida.consultarPuntos(nombre));
-            } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
-                exceptionJugadorIncorrecto.printStackTrace();
-            } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
-                exceptionRondaNoAcabada.printStackTrace();
+            if (!timeout) {
+                try {
+                    jug.put("puntuacion", partida.consultarPuntos(nombre));
+                } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                    exceptionJugadorIncorrecto.printStackTrace();
+                } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
+                    // Caso de que no haya acabado la ronda
+                    if (lobby.buscarNombre(nombre).getDesconectado() != null) {
+                        jug.put("puntuacion", 0);
+                    } else {
+                        jug.put("puntuacion", 101);
+                    }
+                }
+            } else {
+                if (lobby.buscarNombre(nombre).getDesconectado() != null) {
+                    jug.put("puntuacion", 0);
+                } else {
+                    jug.put("puntuacion", 101);
+                }
             }
             punts.add(jug);
             i++;
@@ -592,8 +633,8 @@ public class GestorMensajes {
 
     private void finalizarPartida(int idPartida) {
         System.out.println("Partida finalizada: " + idPartida);
-        broadcastGanaRonda(idPartida);
-        partidasPausadas.remove(idPartida);
+        broadcastGanaRonda(idPartida, true);
+        partidasPausadas.remove((Integer) idPartida);
         // Elimina la partida de la lista de partidas activas
         listaPartidas.remove(idPartida);
         /*try {
