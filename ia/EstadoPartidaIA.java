@@ -1,4 +1,4 @@
-package ia;
+package main.java;
 
 
 
@@ -10,16 +10,7 @@ package ia;
  */
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-
-import main.java.ExceptionCartaIncorrecta;
-import main.java.ExceptionCartaYaExiste;
-import main.java.ExceptionEquipoIncompleto;
-import main.java.ExceptionJugadorIncorrecto;
-import main.java.ExceptionJugadorSinCarta;
-
-import static java.lang.Math.abs;
 
 /**
  * Mazo:  almacena todas las cartas no utilizadas en la partida de la baraja española
@@ -36,19 +27,21 @@ public class EstadoPartidaIA {
 
     //mano y puntos
     //private ArrayList<Jugador> jugadores;
-    private int puntosIA;
-    private int puntosRival;
+    private Integer puntosIA;
+    private Integer puntosRival;
     private ArrayList<Carta> manoIA;
     private ArrayList<Carta> manoRival;
 
     private ArrayList<Carta> mazo;
 
-    private boolean finVuelta;
+    private boolean vueltas;
 
     private boolean cantes[] = {false, false, false, false};
 
     private Carta triunfo;
     private ArrayList<Carta> cartasEnTapete;
+    private Carta cartaTirada;
+
     private ArrayList<Carta> restantes;
 
 
@@ -57,7 +50,7 @@ public class EstadoPartidaIA {
     private Random random;
     private int ganadorUltimaRonda;
 
-   public EstadoPartidaIA Clone() {
+    public EstadoPartidaIA Clone() {
         return new EstadoPartidaIA(this);
     }
 
@@ -129,8 +122,39 @@ public class EstadoPartidaIA {
 
         this.turno = 0;
         this.triunfo = null;
-        this.finVuelta = false;
+        this.vueltas = false;
         this.ganadorUltimaRonda = -1;
+    }
+
+
+    /**
+     * Crea un estado para la IA ha partir del estado de la partida
+     * @param p
+     */
+    public EstadoPartidaIA(EstadoPartida p) {
+        this.random = new Random();
+
+        this.mazo = p.getMazo();
+
+        this.restantes = new ArrayList<>(this.mazo);
+
+        this.cartasEnTapete = p.getCartasEnTapete();
+        //this.jugadores = new ArrayList<>();
+        this.manoRival = p.getJugadores().get(1).getCartasEnMano();
+        for(int i=0;i<6;i++) {
+            this.restantes.add(this.manoRival.get(i));
+        }
+        this.manoIA = p.getJugadores().get(0).getCartasEnMano();
+        this.puntosIA=p.getJugadores().get(0).getPuntos();
+        this.puntosRival=p.getJugadores().get(1).getPuntos();
+
+        this.triunfo_entregado = p.getTriunfoEntregado();
+
+        this.turno = p.getTurno();
+        this.triunfo = p.getTriunfo();
+        this.vueltas = p.isFinVuelta();
+        this.ganadorUltimaRonda = p.getGanadorUltimaRonda();
+
     }
 
     /*
@@ -147,7 +171,7 @@ public class EstadoPartidaIA {
         this.turno = - 1;
         this.triunfo = null;
         this.triunfo_entregado = false;
-        this.finVuelta = false;
+        this.vueltas = false;
         this.ganadorUltimaRonda = -1;
     }
 
@@ -176,9 +200,10 @@ public class EstadoPartidaIA {
 
         this.restantes=p.getRestantes();
         this.cantes=p.getCantes();
-        this.finVuelta = p.isFinVuelta();
+        this.vueltas = p.isvueltas();
         this.ganadorUltimaRonda = p.getGanadorUltimaRonda();
     }
+
 
     public boolean[] getCantes() {
         return cantes;
@@ -204,8 +229,8 @@ public class EstadoPartidaIA {
         return manoRival;
     }
 
-    public boolean isFinVuelta() {
-        return finVuelta;
+    public boolean isvueltas() {
+        return vueltas;
     }
 
     /**
@@ -220,16 +245,247 @@ public class EstadoPartidaIA {
         return res;
     }
 
+    public void doMove(Carta move){
+
+        Boolean ganador=false;
+        ArrayList<Carta> mano,manoOtro;
+        Integer puntos, puntosOtro;
+        if(turno==1){
+            mano=manoRival;
+            manoOtro=manoIA;
+            puntos = puntosRival;
+            puntosOtro=puntosIA;
+        }
+        else{
+            mano=manoIA;
+            manoOtro=manoRival;
+            puntos = puntosIA;
+            puntosOtro=puntosRival;
+        }
+
+/*
+        if(turno==1){
+            manoRival.remove(move);
+        }
+        else{
+            Carta cartaTirada=manoIA.get(move);
+            manoIA.remove(move);
+        }
+        */
+        mano.remove(move);
+
+        if(cartasEnTapete.size()==0){
+            cartasEnTapete.add(move);
+        }
+        else{
+            if(!move.mataCartaOtra(triunfo,cartasEnTapete.get(0))){
+                ganador=false;
+                //Pierde el jugador de este movimiento
+                puntosOtro+=cartasEnTapete.get(0).getValor()+move.getValor();
+                if(turno==0){
+                    turno=1;
+                }
+                else{
+                    turno=0;
+                }
+            }
+            else{
+                ganador=true;
+                puntos+=cartasEnTapete.get(0).getValor()+move.getValor();
+            }
+            //Robar carta
+            ArrayList<Carta> cartasRestantes=this.mazo;
+
+            cartasRestantes.add(this.triunfo);
+            if(cartasRestantes.size()>1){
+                mano.add(cartasRestantes.get(0));
+                manoOtro.add(cartasRestantes.get(1));
+            }
+            cartasEnTapete.remove(0);
+
+            //Comprobar si el que gana la ronda tiene cantes
+            if(ganador==true){ anyadirCante(mano,puntos); }
+            else{ anyadirCante(manoOtro,puntosOtro); }
+
+            //Sumar las diez ultimas
+
+            if((mano.size()==0) && (manoOtro.size()==0)){
+                if(ganador=true) { puntos+=10; }else{ puntosOtro+=10; }
+            }
+
+            // Si tiene el 7 de triunfo lo cambia
+            if(ganador==true){ cambiarSiete(mano); }
+            else{ cambiarSiete(manoOtro); }
+
+
+
+            //Si se ha acabado la partida de idas sin ganador, se reparten las vueltas
+            if(((mano.size()==0) && (manoOtro.size()==0)) && (puntos<101 && puntosOtro<101)){
+                if(ganador){ turno=0;} else{ turno=1;}
+                vueltas=true;
+                for(int i=0;i<4;i++) {
+                    cantes[i]=false;
+                }
+                this.mazo=barajear();
+                for(int i=0;i<6;i++) {
+                    manoIA.add(mazo.get(i));
+                    mazo.remove(i);
+                    manoRival.add(mazo.get(i));
+                    mazo.remove(i);
+                }
+                this.restantes=new ArrayList<>(mazo);
+                for(int i=0;i<6;i++) {
+                    restantes.add(manoRival.get(i));
+                }
+            }
+
+        }
+
+    }
+
+    public ArrayList<Carta> getMoves(){
+        ArrayList<Carta> mano;
+
+        if(turno==1){ mano=manoRival;}
+        else{ mano=manoIA; }
+
+        ArrayList<Carta> lista= new ArrayList<>();
+        if(vueltas && (puntosRival>100 || puntosIA>100)){
+            return lista;
+        }
+        else if(mazo.size()>0 || cartasEnTapete.size()==0){
+            return mano;
+        }
+        else{
+            ArrayList<Carta> cartasPalo= cartasDelPalo(cartasEnTapete.get(0),mano);
+            ArrayList<Carta> cartasTriunfo= cartasDelPalo(triunfo,mano);
+
+            if(cartasPalo.size()>0){
+                ArrayList<Carta> cartasPaloMatan=cartasDelPaloMatan(cartasEnTapete.get(0),cartasPalo);
+                if(cartasPaloMatan.size()>0){ return cartasPaloMatan;}
+                else{return cartasPalo;}
+            }
+            else if(cartasTriunfo.size()>0){
+                return cartasTriunfo;
+            }
+            else{
+                return mano;
+            }
+        }
+    }
+
+    private ArrayList<Carta> cartasDelPalo(Carta palo, ArrayList<Carta> mano ){
+        ArrayList<Carta> res= new ArrayList<>();
+        for(int i=0;i<mano.size();i++){
+            if(mano.get(i).esMismoPalo(palo)){
+                res.add(mano.get(i));
+            }
+        }
+        return res;
+    }
+
+    private ArrayList<Carta> cartasDelPaloMatan(Carta otra, ArrayList<Carta> mano ){
+        ArrayList<Carta> res= new ArrayList<>();
+        for(int i=0;i<mano.size();i++){
+            if(mano.get(i).mataCartaOtra(triunfo,otra)){
+                res.add(mano.get(i));
+            }
+        }
+        return res;
+    }
+
+    private void cambiarSiete(ArrayList<Carta> mano){
+        for(int i=0; i<mano.size();i++){
+            Carta c = mano.get(i);
+            if(c.esMismoPalo(triunfo) && c.getValor()==7 && triunfo.getPuntuacion()>0){
+                Carta aux=new Carta(c);
+                mano.add(i,triunfo);
+                triunfo=aux;
+            }
+        }
+    }
+
+    private void anyadirCante(ArrayList<Carta> cartasEnMano, Integer puntos){
+
+
+        boolean reyes[] = {false, false, false, false};
+        boolean sotas[] = {false, false, false, false};
+
+        for(Carta iterador : cartasEnMano){
+            if(iterador.getValor() == 10){
+                marcaSotaORey(sotas, iterador);
+            }
+            if(iterador.getValor() == 12){
+                marcaSotaORey(reyes, iterador);
+            }
+        }
+        int sumaTotal=0;
+        for(int i = 0; i < 4; i++){
+            if(reyes[i] && sotas[i] && !cantes[i]){
+                cantes[i] = true;
+                if(esPaloTriunfo(i)) {
+                    sumaTotal += 40;
+
+                }
+                else{
+                    sumaTotal += 20;
+                }
+            }
+        }
+        puntos += sumaTotal;
+    }
+
+    private void marcaSotaORey(boolean[] vectorApariciones, Carta iterador) {
+        switch (iterador.getPalo()){
+            case "B":
+                vectorApariciones[0] = true;
+                break;
+            case "C":
+                vectorApariciones[1] = true;
+                break;
+            case "E":
+                vectorApariciones[2] = true;
+                break;
+            case "O":
+                vectorApariciones[3] = true;
+                break;
+        }
+    }
+
+    private boolean esPaloTriunfo(int i){
+        String palo = "B";
+        switch (i){
+            case 0:
+                palo="B";
+                break;
+            case 1:
+                palo="C";
+                break;
+            case 2:
+                palo="E";
+                break;
+            case 3:
+                palo="O";
+                break;
+        }
+
+        if (triunfo.getPalo().equals(palo)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
     /**
      * Devuelve el identificador del jugador que debe lanzar la siguiente carta
      * @return
      *
     public String getTurnoId() {
-        String copia = new String(this.jugadores.get(turno).getId());
-        return copia;
+    String copia = new String(this.jugadores.get(turno).getId());
+    return copia;
     }
-    */
+     */
 
     /**
      * Devuelve el ganador de la última ronda. Si no hay un ganador aún,
@@ -255,13 +511,13 @@ public class EstadoPartidaIA {
      * @return List<Integer>
      *
     public ArrayList<String> getJugadoresId(){
-        ArrayList<String> res = new ArrayList<>();
-        for (Jugador j: jugadores) {
-            res.add(j.getId());
-        }
-        return res;
+    ArrayList<String> res = new ArrayList<>();
+    for (Jugador j: jugadores) {
+    res.add(j.getId());
     }
-    */
+    return res;
+    }
+     */
 
 
     /**
@@ -271,11 +527,11 @@ public class EstadoPartidaIA {
      * @throws ExceptionJugadorIncorrecto
      *
     public ArrayList<Carta> getCartasEnMano(int i) throws
-            ExceptionJugadorIncorrecto{
-        Jugador jugadorEncontrado = encuentraJugador(jugador);
-        return jugadorEncontrado.getCartasEnMano();
+    ExceptionJugadorIncorrecto{
+    Jugador jugadorEncontrado = encuentraJugador(jugador);
+    return jugadorEncontrado.getCartasEnMano();
     }
-    */
+     */
 
 
     /**
@@ -283,35 +539,33 @@ public class EstadoPartidaIA {
      * quedan cartas devuelve el triunfo una vez. La siguiente
      * invocación lanza una excepcion.
      * @return Carta
-     * @throws ExceptionMazoVacio
-     */
-    public Carta getPrimeraCartaMazo() throws ExceptionMazoVacio {
-        if(mazo.size() > 0){
-            return new Carta(mazo.remove(0));
-        }
+     *
+    public Carta getPrimeraCartaMazo() {
+    if(mazo.size() > 0){
+    return new Carta(mazo.remove(0));
+    }
 
-        // Hay que entregar el triunfo
-        if (!this.triunfo_entregado){
-            this.triunfo_entregado = true;
-            return getTriunfo();
-        }
-        throw new ExceptionMazoVacio();
+    // Hay que entregar el triunfo
+    if (!this.triunfo_entregado){
+    this.triunfo_entregado = true;
+    return getTriunfo();
+    }
     }
 
 
     /**
      * Devuelve los puntos del jugador si pertenece a la partida. En caso
      * contrario lanza una excepción.
-     * @param jugador
+     * @param
      * @return int
      * @throws ExceptionJugadorIncorrecto
-     */
+     *
     public int getPuntosJugador(String jugador) throws
-            ExceptionJugadorIncorrecto {
-        Jugador j = encuentraJugador(jugador);
-        return j.getPuntos();
+    ExceptionJugadorIncorrecto {
+    Jugador j = encuentraJugador(jugador);
+    return j.getPuntos();
     }
-
+     */
 
     /**
      * Devuelve las cartas que están encima de la mesa.
@@ -328,13 +582,13 @@ public class EstadoPartidaIA {
      * @param jugador
      * @return ArrayList<Carta>
      * @throws ExceptionJugadorIncorrecto
-     */
+     *
     public ArrayList<Carta> getCartasGanadas(String jugador) throws
-            ExceptionJugadorIncorrecto {
-        Jugador j = encuentraJugador(jugador);
-        return j.getCartasGanadas();
+    ExceptionJugadorIncorrecto {
+    Jugador j = encuentraJugador(jugador);
+    return j.getCartasGanadas();
     }
-
+     */
 
     /**
      * Devuelve una copia del triunfo de la partida.
@@ -382,9 +636,7 @@ public class EstadoPartidaIA {
      * @throws ExceptionJugadorIncorrecto
      * @throws ExceptionCartaYaExiste
      */
-    public void anyadirCartaJugador(int i, Carta carta) throws
-            ExceptionNumeroMaximoCartas, ExceptionJugadorIncorrecto,
-            ExceptionCartaYaExiste {
+    public void anyadirCartaJugador(int i, Carta carta){
         if(i==0){
             manoIA.add(carta);
         }
@@ -402,8 +654,7 @@ public class EstadoPartidaIA {
      * @throws ExceptionJugadorIncorrecto
      * @throws ExceptionJugadorSinCarta
      */
-    public void quitarCartaJugador(int i, Carta c) throws
-            ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta {
+    public void quitarCartaJugador(int i, Carta c){
         if(i==0){
             manoIA.remove(c);
         }
@@ -416,144 +667,140 @@ public class EstadoPartidaIA {
 
     /**
      * El jugador pone la carta en la mesa si cumple con las normas del
-     * guiñote especificadas en el fichero: //TODO crear README.txt
+     * guiñote especificadas en el fichero:
      * si no se lanza un excepción.
-     * @param jugador
-     * @param carta
-     * @throws ExceptionJugadorIncorrecto
-     * @throws ExceptionJugadorSinCarta
-     * @throws ExceptionTurnoIncorrecto
-     * @throws ExceptionCartaIncorrecta
-     */
-    public void lanzarCartaJugador(Carta carta) throws
-            ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
-            ExceptionTurnoIncorrecto, ExceptionCartaIncorrecta {
-        Jugador jugadorEncontrado = encuentraJugador(jugador);
-        if(jugadores.get(turno).equals(jugadorEncontrado)) {
-            if (jugadorEncontrado.getCartasEnMano().contains(carta)) {
-                int n_cartas = cartasEnTapete.size();
-                //Ronda de descarte o es el primero
-                if (mazo.size() > 0 || n_cartas == 0) {
-                    ponerCartaMesa(carta, jugadorEncontrado);
-                }
-
-                //Ronda de arrastre
-                else {
-
-                    // Obligación de jugar al Palo de arrastre
-                    Carta inicial = cartasEnTapete.get(0);
-
-                    //Solo ha lanzado uno
-                    if (n_cartas == 1) {
+     *
+     *
+     *
+     public void lanzarCartaJugador(Carta carta) throws
+     ExceptionJugadorIncorrecto, ExceptionJugadorSinCarta,
+     ExceptionTurnoIncorrecto, ExceptionCartaIncorrecta {
+     //Jugador jugadorEncontrado = encuentraJugador(jugador);
 
 
-                        if (carta.esMismoPalo(inicial)) {
 
-                            //Carta es del mismo palo
-                            puedeLanzarDelPalo(carta, inicial,
-                                    jugadorEncontrado);
+     if ((turno==0)&&(manoIA.contains(carta)) || (turno==1)&&(manoRival.contains(carta))) {
+     int n_cartas = cartasEnTapete.size();
+     //Ronda de descarte o es el primero
+     if (mazo.size() > 0 || n_cartas == 0) {
+     ponerCartaMesa(carta, jugadorEncontrado);
+     }
 
-                        } else {
+     //Ronda de arrastre
+     else {
 
-                            // Comprueba si tiene del palo inicial en la mano
-                            if (tienePaloEnMano(jugadorEncontrado,
-                                    inicial)) {
-                                throw new ExceptionCartaIncorrecta
-                                        ("Tienes una carta del palo de " +
-                                                "salida en la mano");
-                            } else {
+     // Obligación de jugar al Palo de arrastre
+     Carta inicial = cartasEnTapete.get(0);
 
-                                /** Obligación de matar con el Triunfo **/
-                                if (carta.esMismoPalo(triunfo)) {
-
-                                    //Lanza un triunfo porque el anterior no
-                                    // ha lanzado un triunfo
-                                    ponerCartaMesa(carta, jugadorEncontrado);
-
-                                } else {
-
-                                    // Comprueba si tiene un triunfo en la mano
-                                    if (tienePaloEnMano(jugadorEncontrado,
-                                            triunfo)) {
-                                        throw new ExceptionCartaIncorrecta
-                                                ("Tiene un triunfo salida en " +
-                                                        "la mano");
-                                    } else {
-                                        /** Lanza cualquier carta porque no
-                                         * cumple ninguna obligación
-                                         */
-                                        ponerCartaMesa(carta, jugadorEncontrado);
-                                    }
-                                }
-                            }
-
-                        }
-                    } else { // Han lanzado dos o más
-
-                        // Es del palo inicial
-                        if (carta.esMismoPalo(inicial)){
-                            // Comprueba si ha matado el compañero
-                            if (haMatadoCompanyero()){
-                                ponerCartaMesa(carta, jugadorEncontrado);
-                            } else { // compañero no ha matado
-                                puedeLanzarDelPalo(carta, inicial,
-                                        jugadorEncontrado);
-                            }
-                        } else {
-                            // Comprueba si tiene del palo inicial en la mano
-                            if (tienePaloEnMano(jugadorEncontrado,
-                                    inicial)) {
-                                throw new ExceptionCartaIncorrecta
-                                        ("Tienes una carta del palo de " +
-                                                "salida en la mano");
-                            } else {
-                                if (haMatadoCompanyero()){
-                                    ponerCartaMesa(carta, jugadorEncontrado);
-                                } else {
-                                    if (carta.esMismoPalo(triunfo)){
-                                        if (mataTriunfoCartaEnTapete(carta)){
-                                            // Lanza un triunfo que mata
-                                            ponerCartaMesa(carta, jugadorEncontrado);
-                                        } else {
-                                            if (tieneTriunfoQueMata
-                                                    (jugadorEncontrado.getCartasEnMano())){
-                                                //mirar si tiene un triunfo en
-                                                // mano y ademas mata
-                                                throw new
-                                                        ExceptionCartaIncorrecta("Tienes un triunfo en la mano que mata");
-                                            } else{
-                                                /** Lanza cualquier carta
-                                                 * porque no cumple ninguna
-                                                 * obligación
-                                                 */
-                                                ponerCartaMesa(carta, jugadorEncontrado);
-                                            }
-                                        }
-                                    }
-                                    else{
-                                        if(tienePaloEnMano(jugadorEncontrado,triunfo)) {
-                                            throw new
-                                                    ExceptionCartaIncorrecta("Tienes un triunfo en la mano que mata");
-                                        }
-                                        else{
-                                            ponerCartaMesa(carta, jugadorEncontrado);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                throw new ExceptionJugadorSinCarta();
-            }
-        } else{
-            throw new ExceptionTurnoIncorrecto();
-        }
-    }
+     //Solo ha lanzado uno
+     if (n_cartas == 1) {
 
 
-    /**
+     if (carta.esMismoPalo(inicial)) {
+
+     //Carta es del mismo palo
+     puedeLanzarDelPalo(carta, inicial,
+     jugadorEncontrado);
+
+     } else {
+
+     // Comprueba si tiene del palo inicial en la mano
+     if (tienePaloEnMano(jugadorEncontrado,
+     inicial)) {
+     throw new ExceptionCartaIncorrecta
+     ("Tienes una carta del palo de " +
+     "salida en la mano");
+     } else {
+
+     /** Obligación de matar con el Triunfo **
+     if (carta.esMismoPalo(triunfo)) {
+
+     //Lanza un triunfo porque el anterior no
+     // ha lanzado un triunfo
+     ponerCartaMesa(carta, jugadorEncontrado);
+
+     } else {
+
+     // Comprueba si tiene un triunfo en la mano
+     if (tienePaloEnMano(jugadorEncontrado,
+     triunfo)) {
+     throw new ExceptionCartaIncorrecta
+     ("Tiene un triunfo salida en " +
+     "la mano");
+     } else {
+     /** Lanza cualquier carta porque no
+     * cumple ninguna obligación
+     *
+     ponerCartaMesa(carta, jugadorEncontrado);
+     }
+     }
+     }
+
+     }
+     } else { // Han lanzado dos o más
+
+     // Es del palo inicial
+     if (carta.esMismoPalo(inicial)){
+     // Comprueba si ha matado el compañero
+     if (haMatadoCompanyero()){
+     ponerCartaMesa(carta, jugadorEncontrado);
+     } else { // compañero no ha matado
+     puedeLanzarDelPalo(carta, inicial,
+     jugadorEncontrado);
+     }
+     } else {
+     // Comprueba si tiene del palo inicial en la mano
+     if (tienePaloEnMano(jugadorEncontrado,
+     inicial)) {
+     throw new ExceptionCartaIncorrecta
+     ("Tienes una carta del palo de " +
+     "salida en la mano");
+     } else {
+     if (haMatadoCompanyero()){
+     ponerCartaMesa(carta, jugadorEncontrado);
+     } else {
+     if (carta.esMismoPalo(triunfo)){
+     if (mataTriunfoCartaEnTapete(carta)){
+     // Lanza un triunfo que mata
+     ponerCartaMesa(carta, jugadorEncontrado);
+     } else {
+     if (tieneTriunfoQueMata
+     (jugadorEncontrado.getCartasEnMano())){
+     //mirar si tiene un triunfo en
+     // mano y ademas mata
+     throw new
+     ExceptionCartaIncorrecta("Tienes un triunfo en la mano que mata");
+     } else{
+     /** Lanza cualquier carta
+     * porque no cumple ninguna
+     * obligación
+     *
+     ponerCartaMesa(carta, jugadorEncontrado);
+     }
+     }
+     }
+     else{
+     if(tienePaloEnMano(jugadorEncontrado,triunfo)) {
+     throw new
+     ExceptionCartaIncorrecta("Tienes un triunfo en la mano que mata");
+     }
+     else{
+     ponerCartaMesa(carta, jugadorEncontrado);
+     }
+     }
+     }
+     }
+     }
+     }
+     }
+     } else {
+     throw new ExceptionJugadorSinCarta();
+     }
+
+     }
+
+
+     /**
      * Asigna a ganadorUltimaRonda -1 porque no hay ningún ganador.
      */
     public void resetGanadorUltimaRonda() {
@@ -568,58 +815,58 @@ public class EstadoPartidaIA {
      * @throws ExceptionJugadorIncorrecto
      * @throws ExceptionRondaNoAcabada
      * @throws ExceptionCartaYaExiste
-     */
+     *
     public void terminarRonda() throws ExceptionRondaNoAcabada,
-            ExceptionCartaYaExiste {
-        int n_jug = 2;
-        if (cartasEnTapete.size() == n_jug){
-            Carta aux, mejor_triunfo = null,
-                    mejor_otro = cartasEnTapete.get(0);
-            int ganador = 0;
-            Carta inicial = cartasEnTapete.get(0);
+    ExceptionCartaYaExiste {
+    int n_jug = 2;
+    if (cartasEnTapete.size() == n_jug){
+    Carta aux, mejor_triunfo = null,
+    mejor_otro = cartasEnTapete.get(0);
+    int ganador = 0;
+    Carta inicial = cartasEnTapete.get(0);
 
-            //Busqueda del ganador
-            for (int i = 0; i < n_jug; i++) {
+    //Busqueda del ganador
+    for (int i = 0; i < n_jug; i++) {
 
-                aux = cartasEnTapete.get(i);
-                if (aux.esMismoPalo(triunfo)) { // Si hay triunfo gana el mejor
-                    if (mejor_triunfo == null ||
-                            aux.mataCartaOtra(triunfo,mejor_triunfo)) {
-                        // Pirmer triunfo o encontrado un triunfo mejor
-                        mejor_triunfo = aux;
-                        ganador = i;
-                    }
-                } else if (aux.esMismoPalo(mejor_otro)){
-                    if (mejor_triunfo == null && aux.mataCartaOtra(inicial,
-                            mejor_otro)) {
-                        // No hay ningun triunfo y es la mejor carta
-                        // inicial encontrada
-                        mejor_otro = aux;
-                        ganador = i;
-                    }
-                }
-            }
+    aux = cartasEnTapete.get(i);
+    if (aux.esMismoPalo(triunfo)) { // Si hay triunfo gana el mejor
+    if (mejor_triunfo == null ||
+    aux.mataCartaOtra(triunfo,mejor_triunfo)) {
+    // Pirmer triunfo o encontrado un triunfo mejor
+    mejor_triunfo = aux;
+    ganador = i;
+    }
+    } else if (aux.esMismoPalo(mejor_otro)){
+    if (mejor_triunfo == null && aux.mataCartaOtra(inicial,
+    mejor_otro)) {
+    // No hay ningun triunfo y es la mejor carta
+    // inicial encontrada
+    mejor_otro = aux;
+    ganador = i;
+    }
+    }
+    }
 
-            // Asigna turno a jugador ganador
-            turno = (turno + ganador)%n_jug;
-            ganadorUltimaRonda = ganador;
+    // Asigna turno a jugador ganador
+    turno = (turno + ganador)%n_jug;
+    ganadorUltimaRonda = ganador;
 
-            // Suma puntos y cartas a ganador
-            asignaCartasJugador(jugadores.get(turno));
+    // Suma puntos y cartas a ganador
+    asignaCartasJugador(jugadores.get(turno));
 
-            // Suma 10 puntos al ganador de la última ronda
-            if (jugadores.get(0).getCartasEnMano().size() == 0){
-                // Se ha terminado la primera vuelta
-                jugadores.get(turno).sumarPuntos(10);
-                finVuelta = true;
+    // Suma 10 puntos al ganador de la última ronda
+    if (jugadores.get(0).getCartasEnMano().size() == 0){
+    // Se ha terminado la primera vuelta
+    jugadores.get(turno).sumarPuntos(10);
+    vueltas = true;
 
-                //el turno en la siguiente vuelta es del siguiente al último
-                // ganador
-                turno = (++turno%jugadores.size());
-            }
-        } else {
-            throw new ExceptionRondaNoAcabada();
-        }
+    //el turno en la siguiente vuelta es del siguiente al último
+    // ganador
+    turno = (++turno%jugadores.size());
+    }
+    } else {
+    throw new ExceptionRondaNoAcabada();
+    }
     }
 
 
@@ -628,20 +875,20 @@ public class EstadoPartidaIA {
      * identificado por "jugador". Si no existe ningún jugador en la partida
      * con ese identificador lanza una excepcion. Si el jugador no puede cantar
      * lanza una excepción.
-     * @param jugador
+     * @param
      * @throws ExceptionJugadorIncorrecto
-     */
+     *
     public void sumaCante(int i) throws ExceptionJugadorIncorrecto,
-            ExceptionNoPuedesCantar{
-        if (ganadorUltimaRonda < 0 || ganadorUltimaRonda > 3){
-            throw new ExceptionNoPuedesCantar();
-        }
-        else if(jugadores.get(ganadorUltimaRonda).equals(encuentraJugador(jugador)) || jugadores.get(ganadorUltimaRonda+2).equals(encuentraJugador(jugador))){
-            jugadorEncontrado.anyadirCante(triunfo);
-        }
-        else{
-            throw new ExceptionNoPuedesCantar();
-        }
+    ExceptionNoPuedesCantar{
+    if (ganadorUltimaRonda < 0 || ganadorUltimaRonda > 3){
+    throw new ExceptionNoPuedesCantar();
+    }
+    else if(jugadores.get(ganadorUltimaRonda).equals(encuentraJugador(jugador)) || jugadores.get(ganadorUltimaRonda+2).equals(encuentraJugador(jugador))){
+    jugadorEncontrado.anyadirCante(triunfo);
+    }
+    else{
+    throw new ExceptionNoPuedesCantar();
+    }
     }
 
     //TODO: funcion para pruebas por terminal, eliminar al final
@@ -678,12 +925,12 @@ public class EstadoPartidaIA {
     /**
      * Vacia las cartas ganadas por cada jugador para empezar una nueva ronda.
      *
-    public void resetJugadores(){
-        for(Jugador iterador : jugadores){
-            iterador.resetCartas();
-        }
-    }
-    */
+     public void resetJugadores(){
+     for(Jugador iterador : jugadores){
+     iterador.resetCartas();
+     }
+     }
+     */
 
     /***************************** FUNCIONES AUXILIARES ***********************/
 
@@ -715,18 +962,18 @@ public class EstadoPartidaIA {
      * @return >= 0
      *
     private int posJugador(Jugador jugador) throws ExceptionJugadorIncorrecto {
-        int i = 0;
-        for (Jugador j : jugadores) {
-            if (jugador.equals(j)){
-                return i;
-            }
-            ++i;
-        }
-        throw new ExceptionJugadorIncorrecto();
+    int i = 0;
+    for (Jugador j : jugadores) {
+    if (jugador.equals(j)){
+    return i;
+    }
+    ++i;
+    }
+    throw new ExceptionJugadorIncorrecto();
 
     }
 
-    */
+     */
 
     /**
      * Asigna el turno al jugador que ocupa la siguiente posición en
