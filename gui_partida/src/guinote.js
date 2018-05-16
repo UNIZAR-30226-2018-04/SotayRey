@@ -58,6 +58,7 @@ function preload() {
     game.load.image('derrota', 'assets/derrota.png');
     game.load.image('dorsoBase', 'assets/dorsoBase.jpg');
     game.load.image('botonSonido', 'assets/botonSonido.png');
+    game.load.image('botonSalir', 'assets/botonSalir.png');
     game.load.audio('musica', ['assets/musica.mp3']);
 }
 
@@ -1152,6 +1153,21 @@ function finPartida(){
 
 //    puntuacionMia.x = logo.x + logo.width/2 - 80;
  //   puntuacionMia.y = logo.y + logo.height * 1.2;
+
+    // Logo para volver al menu principal
+
+    var botonSalir = game.add.sprite(0, 0, 'botonSalir');
+    botonSalir.width = 150;
+    botonSalir.height = 50;
+    botonSalir.x = game.world.centerX - botonSalir.width/2;
+    botonSalir.y =  logo.y + logo.height - 20;
+    console.log("DIBUJO EL BOTON DE SALIR");
+    botonSalir.inputEnabled = true;
+    botonSalir.events.onInputDown.add(
+        function salir(){
+            window.location.replace("../jsp/matchmaking.jsp");
+        }
+        , this);
 }
 
 var arrastre;
