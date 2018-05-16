@@ -132,8 +132,8 @@
                                         <td><%=torneo.getNombre()%></td>
                                         <td><%=torneo.getTimeInicio()%></td>
                                         <td><%=torneo.getNumFases()%> </td>
-                                        <td><%=torneo.getPremioDivisaPrimera()%><td>
-                                        <td><%=torneo.getPremioPuntuacionPrimera()%><td>
+                                        <td><%=torneo.getPremioDivisaPrimera()%></td>
+                                        <td><%=torneo.getPremioPuntuacionPrimera()%></td>
                                         <td>
                                             <div class="btn-toolbar">
                                                 <button type="button" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>

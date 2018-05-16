@@ -3,6 +3,7 @@ package servlet;
 import basedatos.InterfazDatos;
 import basedatos.modelo.UsuarioVO;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,7 +29,8 @@ public class ModificarDatosServlet extends HttpServlet {
             System.out.println("ERROR1");
             String error = new String("emptyPass");
             request.setAttribute("error", error);
-            response.sendRedirect("jsp/perfil.jsp");
+            RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/perfil.jsp");
+            dispatcher.forward(request,response);
             return;
         }
 
@@ -47,7 +49,8 @@ public class ModificarDatosServlet extends HttpServlet {
             if(!password.equals(rePassword)){
                 String error = new String("wrongRePass");
                 request.setAttribute("error", error);
-                response.sendRedirect("jsp/perfil.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/perfil.jsp");
+                dispatcher.forward(request,response);
                 return;
             }
         }
@@ -59,7 +62,8 @@ public class ModificarDatosServlet extends HttpServlet {
             e.printStackTrace();
             String error = new String("again");
             request.setAttribute("error", error);
-            response.sendRedirect("jsp/perfil.jsp");
+            RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/perfil.jsp");
+            dispatcher.forward(request,response);
             return;
         }
 
@@ -70,7 +74,8 @@ public class ModificarDatosServlet extends HttpServlet {
             e.printStackTrace();
             String error = new String("userNotFound");
             request.setAttribute("error", error);
-            response.sendRedirect("jsp/perfil.jsp");
+            RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/perfil.jsp");
+            dispatcher.forward(request,response);
             return;
         }
 
@@ -82,7 +87,8 @@ public class ModificarDatosServlet extends HttpServlet {
                 e.printStackTrace();
                 String error = new String("again");
                 request.setAttribute("error", error);
-                response.sendRedirect("jsp/perfil.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/perfil.jsp");
+                dispatcher.forward(request,response);
                 return;
             }
 
@@ -93,7 +99,8 @@ public class ModificarDatosServlet extends HttpServlet {
                 e.printStackTrace();
                 String error = new String("again");
                 request.setAttribute("error", error);
-                response.sendRedirect("jsp/perfil.jsp");
+                RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/perfil.jsp");
+                dispatcher.forward(request,response);
                 return;
             }
 
@@ -108,7 +115,8 @@ public class ModificarDatosServlet extends HttpServlet {
         } else{
             String error = new String("userNotFound");
             request.setAttribute("error", error);
-            response.sendRedirect("jsp/perfil.jsp");
+            RequestDispatcher dispatcher=request.getRequestDispatcher("jsp/perfil.jsp");
+            dispatcher.forward(request,response);
             return;
         }
 

@@ -28,7 +28,6 @@ public class MostrarLigaServlet extends HttpServlet {
             facade = InterfazDatos.instancia();
         } catch (Exception e){
             System.err.println("ERROR: creando interfaz");
-            //TODO: Crear pagina de error y asignarla
             response.sendRedirect("jsp/home.jsp");
 
         }
