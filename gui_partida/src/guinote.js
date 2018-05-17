@@ -618,7 +618,6 @@ function representarEstado(estado){
             }, this);
 
 
-
         }
         else{
             jugador.nombreUsuario.text = item.nombre;
@@ -631,14 +630,20 @@ function representarEstado(estado){
                 jugador.avatar.loadTexture(miID.toString()+'avatar');
             }, this);
 
+            jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
+            dibujarCartaLanzada(jugador);
+
         }
     }, this);
 
     // Se pone la mano del jugador
     // TODO si soy espectador esto no se hace
-    if (!espectador){
+    if (espectador=="false"){
         var jugador = arrayJugadores[miID];
         var carta = {};
+
+
+
         estado.mano.forEach(function(item) {
             console.log("CREANDO CARTA: " + item.numero + "  " +item.palo);
             carta = crearCarta(item.numero, item.palo);
@@ -648,10 +653,13 @@ function representarEstado(estado){
             carta.atributo = "HELLOW DA";
             carta.events.onInputDown.add(pulsaCarta, this);
             jugador.cartasEnMano.add(carta);
+
             dibujarJugador(jugador);
 
 
         }, this);
+
+
     }
     // Se dibujan las cartas en la mesa
     /*
@@ -1002,7 +1010,7 @@ function dibujarBotones(){
     var espacioBoton = ejeX / numBotones;
     //var style = {font: "20px", fill: "#000000", align:"center"};
 
-    if (espectador){
+    if (espectador=="true"){
 
     }
     else{
