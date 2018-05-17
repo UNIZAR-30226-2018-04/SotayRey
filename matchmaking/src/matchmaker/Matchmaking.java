@@ -58,7 +58,6 @@ public class Matchmaking {
 
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
-        // TODO: Buscar al jugador que ha cerrado la sesion a traves de su sesion
         System.out.println("Conexion cerrada");
         eliminarJugador(session);
     }

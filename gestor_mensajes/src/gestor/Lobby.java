@@ -143,7 +143,7 @@ public class Lobby {
 
     public boolean algunConectado() {
         for (JugadorGestor jug : jugadores.values()) {
-            if (jug.getDesconectado() != null) {
+            if (jug.getDesconectado() == null) {
                 return true;
             }
         }

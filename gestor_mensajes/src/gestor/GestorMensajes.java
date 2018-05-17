@@ -67,8 +67,7 @@ public class GestorMensajes {
         switch(tipo) {
             case "listo_jugador":
                 System.out.println(tipo + " recibido");
-                intentarReconectar(session, msg);
-                recibirListo(session, msg);
+                recibirListo(session, msg, intentarReconectar(session, msg));
                 break;
             case "accion":
                 System.out.println(tipo + " recibida");
@@ -112,7 +111,7 @@ public class GestorMensajes {
 
     }
 
-    private void intentarReconectar(Session sesion, JSONObject msg) {
+    private boolean intentarReconectar(Session sesion, JSONObject msg) {
         // Obtener datos del remitente
         int idPartida = getIdPartidaMsg(msg);
         int idJugador = getIdJugadorMsg(msg);
@@ -125,14 +124,19 @@ public class GestorMensajes {
             }
             // Eliminar la partida de pausadas
             partidasPausadas.remove((Integer) idPartida);
+            System.out.println("Partida " + idPartida + " continua, jugador " + jug.getNombre() + " reconectado");
+            return true;
         }
+        return false;
     }
 
     private void recibirTimeout(JSONObject msg) {
         // Obtener datos del remitente
         int idPartida = getIdPartidaMsg(msg);
-        System.out.println("Partida con id " + idPartida + " finalizada por timeout");
-        finalizarPartida(idPartida);
+        if (partidasPausadas.contains(idPartida)) {
+            finalizarPartida(idPartida);
+            System.out.println("Partida con id " + idPartida + " finalizada por timeout");
+        }
     }
 
     private void recibirAccion(JSONObject msg) {
@@ -428,7 +432,7 @@ public class GestorMensajes {
         return (String) msg.get("tipo_accion");
     }
 
-    private void recibirListo(Session session, JSONObject msg) {
+    private void recibirListo(Session session, JSONObject msg, boolean reconexion) {
         // Obtener datos del remitente
         int idPartida = getIdPartidaMsg(msg);
         int idJugador = getIdJugadorMsg(msg);
@@ -482,6 +486,10 @@ public class GestorMensajes {
         }
         else if(lobby.tam() > totalJugadores && listaPartidas.containsKey(idPartida)){
             System.out.println("ES UN ESPECTADOR Y ENVIO ESTADO INICIAL");
+            broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
+            // Manda el turno a todos los clientes
+            broadcastTurno(idPartida);
+        } else if (reconexion) {
             broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
             // Manda el turno a todos los clientes
             broadcastTurno(idPartida);
@@ -693,6 +701,7 @@ public class GestorMensajes {
                 jugador.desconectar();  // Desconectar al jugador
                 if (!lobby.algunConectado()) {
                     // TODO: Eliminar partida
+                    System.out.println("Todos los jugadores desconectados en la partida " + id);
                     finalizarPartida(id);
                 }
                 else {
