@@ -299,12 +299,17 @@ function crearCuadroCarta(jugador){
  */
 function dibujarCuadroCarta(jugador){
     //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
+    jugador.cartaLanzada.destroy();
+    jugador.cartaLanzada = crearCarta(0, 0);
+    dibujarCartaLanzada(jugador);
+    /*
     jugador.cartaLanzada.loadTexture('cuadroCarta');
     jugador.cartaLanzada.numero = 0;
     jugador.cartaLanzada.palo = 0;
     jugador.cartaLanzada.width = ejeXCarta;
     jugador.cartaLanzada.height = ejeYCarta;
     jugador.cartaLanzada.angle = jugador.rotacion;
+    */
     //cuadro.scale.setTo(escalaCarta, escalaCarta);
 }
 
@@ -631,6 +636,7 @@ function representarEstado(estado){
 
     // Se pone la mano del jugador
     // TODO si soy espectador esto no se hace
+    if (!espectador){
         var jugador = arrayJugadores[miID];
         var carta = {};
         estado.mano.forEach(function(item) {
@@ -642,12 +648,13 @@ function representarEstado(estado){
             carta.atributo = "HELLOW DA";
             carta.events.onInputDown.add(pulsaCarta, this);
             jugador.cartasEnMano.add(carta);
-        dibujarJugador(jugador);
+            dibujarJugador(jugador);
 
 
-    }, this);
-
+        }, this);
+    }
     // Se dibujan las cartas en la mesa
+    /*
     estado.jugadores.forEach(function(item) {
         var jugador = arrayJugadores[item.id];
         if (!estadoInicializado){
@@ -655,7 +662,7 @@ function representarEstado(estado){
         }
         dibujarCuadroCarta(jugador);
     }, this);
-
+    */
 
     // HUD
 
@@ -760,7 +767,7 @@ function crearCarta(numero, palo){
     console.log("ME PIDEN CARTA CON NUMERO: " +numero+" PALO: "+palo);
     var carta;
     var indice = buscarCarta(numero, palo);
-    if (palo == 0){
+    if (numero == 0){
         carta = game.add.sprite(0, 0, 'cuadroCarta');
     }
     else{

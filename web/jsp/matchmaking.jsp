@@ -225,6 +225,26 @@ recibirMensaje("{
         };
     }
 
+    function espectarPartida(){
+        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+
+        var nombre_jugador = nombreUsuario;
+        var socket = new WebSocket("ws://localhost:8080/gm/endpoint");
+        var listo = JSON.stringify({
+            "tipo_mensaje": "espectar_partida",
+            "id_partida": 387
+        });
+
+        socket.onopen = function() {
+            console.log(listo);
+            socket.send(listo);
+        };
+        socket.onmessage = function (msg) {
+            recibirMensaje(msg.data);
+            console.log(msg.data);
+        };
+    }
+
     function cerrarSocket(){
         socket.close();
         console.log("socket cerrado");
@@ -235,21 +255,30 @@ recibirMensaje("{
 
          var mensaje = JSON.parse(msg);
 
-         // TODO otro tipo de mensaje que no sea partida lista?
-         var total_jugadores = mensaje.total_jugadores;
-         var id_partida = mensaje.id_partida;
-         var nombre_jugador = mensaje.nombre_jugador;
-         var id_jugador = mensaje.id_jugador;
-         var con_ia = mensaje.con_ia;
+        var total_jugadores = mensaje.total_jugadores;
+        var id_partida = mensaje.id_partida;
+        var nombre_jugador = nombreUsuario;
+        var id_jugador;
+        var con_ia = mensaje.con_ia;
 
-       // var id_partida = 2392383;
-       // var id_jugador = 1213;
-       // var nombre_jugador = "juegadorPrueba";
-       // var parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador;
         var tapete = "<%=miTapete%>";
         var espectador = false;
-        parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
-        window.location.replace("../juego.html?"+parametros);
+        console.log("EL MENSAJE ES: " + mensaje.tipo_mensaje);
+         switch(mensaje.tipo_mensaje){
+             case "partida_lista":
+                 id_jugador = mensaje.id_jugador;
+                 parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
+                 window.location.replace("../juego.html?"+parametros);
+                 break;
+             case "espectar_partida":
+                 id_jugador = mensaje.id_espectador;
+                 var espectador = true;
+                 parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
+                 window.location.replace("../juego.html?"+parametros);
+                 break;
+         }
+
+
     }
 
     $("#myModal").on("hidden.bs.modal", function () {
@@ -354,6 +383,7 @@ recibirMensaje("{
 
 </div>
 
+<button type="button" onclick="espectarPartida()" class="btn btn-default submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> DEBUG ESPECTAR</button>
 <a href="../juego.html?miID=3&idPartida=..&nombre=pepito&numJugadores=2&tapete="> ESPECTADOR PARA DEPURAR </a>
 
 </body>

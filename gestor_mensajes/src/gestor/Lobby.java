@@ -15,6 +15,16 @@ public class Lobby {
     private HashMap<String, JugadorGestor> jugadores = new HashMap<>();
     private int ronda = 0;
     private PartidaVO partidaVO = null;
+    private int maxID = 4; // Para asignarlo a los espectadores
+    private int numJugadores = 0;
+
+    public void setNumJugadores(int numJugadores) {
+        this.numJugadores = numJugadores;
+    }
+
+    public int getNumJugadores(){
+        return numJugadores;
+    }
 
     public Lobby() {
         ronda = 0;
@@ -28,6 +38,14 @@ public class Lobby {
         if (!jugadores.containsKey(jug.getNombre())) {
             jugadores.put(jug.getNombre(), jug);
         }
+    }
+
+    public int getMaxID(){
+        return maxID;
+    }
+
+    public void incrementarMaxID(){
+        maxID++;
     }
 
     public int getRonda() {
@@ -101,9 +119,13 @@ public class Lobby {
 
     public ArrayList<String> getTodosNombres() {
         ArrayList<String> lista = new ArrayList<String>();
-        for (int i = 0; i<tam(); i++) {
-            lista.add(buscarId(i).getNombre());
+        for (JugadorGestor jug : jugadores.values()){
+            lista.add(jug.getNombre());
         }
+        /*
+        for (int i = 0; i<numJugadores; i++) {
+            lista.add(buscarId(i).getNombre());
+        **/
         return lista;
     }
 

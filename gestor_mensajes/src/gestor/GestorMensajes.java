@@ -78,9 +78,38 @@ public class GestorMensajes {
                 System.out.println(tipo + " recibido");
                 recibirTimeout(msg);
                 break;
+            case "espectar_partida": // Se ha de tener este caso porque hace falta mandarle un identificador único
+                System.out.println(tipo + " recibido");
+                nuevoEspectador(session, msg);
+                break;
             default:
                 System.out.println("Tipo de mensaje no reconocido");
         }
+    }
+
+    private void nuevoEspectador(Session session, JSONObject msg){
+        System.out.println("ME HA LLEGADO EL ID " + msg.get("id_partida"));
+        int idPartida = (int) (long) msg.get("id_partida");
+        Lobby lobby = new Lobby();
+        if (lobbies.containsKey(idPartida)) {
+            lobby = lobbies.get(idPartida);
+            int nuevoID = lobby.getMaxID();
+            lobby.incrementarMaxID();
+            JSONObject objC = new JSONObject();
+            objC.put("tipo_mensaje", "espectar_partida");
+            objC.put("id_partida", idPartida);
+            objC.put("id_espectador", nuevoID);
+            objC.put("total_jugadores", lobby.getNumJugadores());
+            objC.put("con_ia", false);
+
+            try {
+                System.out.println("ENVIO MENSAJE DE VUELTA");
+                session.getBasicRemote().sendText(objC.toJSONString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     private void intentarReconectar(Session sesion, JSONObject msg) {
@@ -424,6 +453,7 @@ public class GestorMensajes {
         */
         if (lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida)) {
             try {
+                lobby.setNumJugadores(totalJugadores);
                 LogicaPartida partida = new LogicaPartida(lobby.getTodosNombres());
                 partida.crearPartida();
                 // TODO: Obtener partidaVO para luego poder eliminarla
@@ -451,6 +481,7 @@ public class GestorMensajes {
             }
         }
         else if(lobby.tam() > totalJugadores && listaPartidas.containsKey(idPartida)){
+            System.out.println("ES UN ESPECTADOR Y ENVIO ESTADO INICIAL");
             broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
             // Manda el turno a todos los clientes
             broadcastTurno(idPartida);
@@ -609,7 +640,14 @@ public class GestorMensajes {
                 }
             }
             try {
+                System.out.println("ID DEL JUGADOR REMOTO "  + id);
+                if (id > 0){
+                    System.out.println(lobby.buscarId(id).getNombre());
+                }
+                System.out.println(jug.getNombre());
                 if(id > 0 && lobby.buscarId(id).getNombre() == jug.getNombre()) {
+                    System.out.println("LE ENVIO EL ESTADO INICIAL, QUE ES:");
+                    System.out.println(objEstado.toJSONString());
                     jug.getRemoto().sendText(objEstado.toJSONString());
                 }
                 else if (id < 0){
