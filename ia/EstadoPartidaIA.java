@@ -48,15 +48,21 @@ public class EstadoPartidaIA {
 
     private boolean triunfo_entregado;
     private Random random;
-    private int ganadorUltimaRonda;
 
     public static void main(String[] args){
         EstadoPartidaIA p= new EstadoPartidaIA();
         EstadoPartidaIA copia = p.CloneAndRandomize();
-        ArrayList<Carta> movs=copia.getMoves();
-        copia.doMove(movs.get(0));
-        movs=copia.getMoves();
-        copia.doMove(movs.get(0));
+        for (int i=0;i<28;i++) {
+            ArrayList<Carta> movs = copia.getMoves();
+            copia.doMove(movs.get(0));
+        }
+        boolean ganaIA=false, ganaRival=false;
+        while(!ganaIA && !ganaRival) {
+            ArrayList<Carta> movs = copia.getMoves();
+            copia.doMove(movs.get(0));
+            ganaIA=copia.getResult(0);
+            ganaRival=copia.getResult(1);
+        }
     }
 
     public EstadoPartidaIA Clone() {
@@ -89,22 +95,6 @@ public class EstadoPartidaIA {
         return clonacion;
     }
 
-/*
-    public ArrayList<Carta> barajearRestantes(){
-        ArrayList<Carta> cartas = crearBaraja();
-        Carta uno, dos;
-        int num;
-        for (int i = 0; i < 40; ++i){
-            num = abs(random.nextInt()) % 40;
-            uno = cartas.get(num);
-            dos = cartas.get(i);
-            cartas.set(num, dos);
-            cartas.set(i, uno);
-        }
-        return cartas;
-    }
-
-    */
 
     /**
      * Constructor que genera un estado de partida sin ninguna carta en
@@ -143,7 +133,6 @@ public class EstadoPartidaIA {
 
         this.turno = 0;
         this.vueltas = false;
-        this.ganadorUltimaRonda = -1;
     }
 
 
@@ -151,82 +140,65 @@ public class EstadoPartidaIA {
      * Crea un estado para la IA ha partir del estado de la partida
      * @param p
      */
-    public EstadoPartidaIA(EstadoPartida p) {
+    public EstadoPartidaIA(EstadoPartida p, ArrayList<Carta> mIA, ArrayList<Carta> mRival, Integer pIA, Integer pRival) {
         this.random = new Random();
 
         this.mazo = p.getMazo();
 
         this.restantes = new ArrayList<>(this.mazo);
 
-        this.cartasEnTapete = p.getCartasEnTapete();
-        //this.jugadores = new ArrayList<>();
-        this.manoRival = p.getJugadores().get(1).getCartasEnMano();
+        this.cartasEnTapete = new ArrayList<>(p.getCartasEnTapete());
+
+        this.manoRival = new ArrayList<>(mRival);
         for(int i=0;i<6;i++) {
             this.restantes.add(this.manoRival.get(i));
         }
-        this.manoIA = p.getJugadores().get(0).getCartasEnMano();
-        this.puntosIA=p.getJugadores().get(0).getPuntos();
-        this.puntosRival=p.getJugadores().get(1).getPuntos();
+        this.manoIA = new ArrayList<>(mIA);
+        this.puntosIA=pIA;
+        this.puntosRival=pRival;
 
         this.triunfo_entregado = p.getTriunfoEntregado();
 
         this.turno = p.getTurno();
         this.triunfo = p.getTriunfo();
         this.vueltas = p.isFinVuelta();
-        this.ganadorUltimaRonda = p.getGanadorUltimaRonda();
 
     }
 
-    /*
-    /**
-     * Constructor que genera un estado de partida sin ninguna carta en
-     * tapete, ni jugadores, turno y triunfo. El mazo está compuesto por las
-     * cartas de la baraja española en un orden aleatorio.
-     *
-    public EstadoPartidaIA(){
-        this.random = new Random();
-        this.mazo = barajear();
-        this.cartasEnTapete = new ArrayList<>();
-        this.jugadores = new ArrayList<>();
-        this.turno = - 1;
-        this.triunfo = null;
-        this.triunfo_entregado = false;
-        this.vueltas = false;
-        this.ganadorUltimaRonda = -1;
-    }
-
-    */
 
     /**
      * Constructor que genera una copia del estado partida "p".
      */
     public EstadoPartidaIA(EstadoPartidaIA p){
         this.random = new Random();
-        this.mazo = p.getMazo();
-        this.cartasEnTapete = p.getCartasEnTapete();
+        this.mazo = new ArrayList<>(p.getMazo());
+        this.cartasEnTapete = new ArrayList<>(p.getCartasEnTapete());
         //this.jugadores = p.getJugadores();
-        this.manoRival=p.getManoRival();
-        this.manoIA=p.getManoIA();
+        this.manoRival=new ArrayList<>(p.getManoRival());
+        this.manoIA=new ArrayList<>(p.getManoIA());
         this.puntosIA=p.getPuntosIA();
         this.puntosRival=p.getPuntosRival();
 
         this.turno = p.getTurno();
         this.triunfo_entregado = p.getTriunfoEntregado();
-        try {
-            this.triunfo = p.getTriunfo();
-        } catch (NullPointerException e){
-            this.triunfo = null;
-        }
 
-        this.restantes=p.getRestantes();
+        this.triunfo = new Carta(p.getTriunfo());
+
+
+        this.restantes=new ArrayList<>(p.getRestantes());
         this.cantes=p.getCantes();
         this.vueltas = p.isvueltas();
-        this.ganadorUltimaRonda = p.getGanadorUltimaRonda();
     }
 
 
     public boolean[] getCantes() {
-        return cantes;
+        boolean[] res={false, false, false, false};
+        for(int i=0;i<4;i++){
+            if(cantes[i]==true){
+                res[i]=true;
+            }
+        }
+        return res;
     }
 
     public ArrayList<Carta> getRestantes() {
@@ -269,7 +241,8 @@ public class EstadoPartidaIA {
 
         Boolean ganador=false;
         ArrayList<Carta> mano,manoOtro;
-        Integer puntos, puntosOtro;
+        Integer puntos, puntosOtro, who=turno;
+
         if(turno==1){
             mano=manoRival;
             manoOtro=manoIA;
@@ -317,6 +290,8 @@ public class EstadoPartidaIA {
             if(cartasRestantes.size()>1){
                 mano.add(cartasRestantes.get(0));
                 manoOtro.add(cartasRestantes.get(1));
+                mazo.remove(0);
+                mazo.remove(0);
             }
             cartasEnTapete.remove(0);
 
@@ -337,7 +312,7 @@ public class EstadoPartidaIA {
 
 
             //Si se ha acabado la partida de idas sin ganador, se reparten las vueltas
-            if(((mano.size()==0) && (manoOtro.size()==0)) && (puntos<101 && puntosOtro<101)){
+            if(((mano.size()==0) && (manoOtro.size()==0)) && (puntos<101 || puntosOtro<101)){
                 if(ganador){ turno=0;} else{ turno=1;}
                 vueltas=true;
                 for(int i=0;i<4;i++) {
@@ -355,7 +330,7 @@ public class EstadoPartidaIA {
                     restantes.add(manoRival.get(i));
                 }
             }
-            if (turno == 1) {
+            if (who == 1) {
                 this.puntosIA= puntosOtro;
                 this.puntosRival= puntos;
 
@@ -508,13 +483,38 @@ public class EstadoPartidaIA {
 
 
     /**
-     * Devuelve el ganador de la última ronda. Si no hay un ganador aún,
-     * devuelve -1.
+     * Devuelve true si y solo si el jugador que le toca jugar ha ganado
      * @return
      */
-    public int getGanadorUltimaRonda() {
-        return ganadorUltimaRonda;
+    public boolean getResult(int jugador){
+        if(jugador==0){
+            if(puntosIA>100 && vueltas){
+                if(puntosRival>100 && turno==1){
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            if(puntosRival>100 && vueltas){
+                if(puntosIA>100 && turno==0){
+                    return false;
+                }
+                else{
+                    return true;
+                }
+            }
+            else{
+                return false;
+            }
+        }
     }
+
 
 
     /**
@@ -612,12 +612,6 @@ public class EstadoPartidaIA {
 
 
 
-    /**
-     * Asigna a ganadorUltimaRonda -1 porque no hay ningún ganador.
-     */
-    public void resetGanadorUltimaRonda() {
-        this.ganadorUltimaRonda = -1;
-    }
 
 
 
@@ -633,15 +627,7 @@ public class EstadoPartidaIA {
         }
     }
 
-    //TODO: funcion para pruebas por terminal, eliminar al final
 
-    /**
-     * Modificar valor de ganadorUltimaRonda
-     * @param i
-     */
-    public void setGanadorUltimaRonda(int i){
-        ganadorUltimaRonda=i;
-    }
 
     //TODO: funcion para pruebas por terminal, eliminar al final
 
