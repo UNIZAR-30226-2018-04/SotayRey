@@ -83,7 +83,6 @@
                                         <th>Posicion</th>
                                         <th>Usuario</th>
                                         <th>Puntos</th>
-                                        <th>Monedas</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -96,7 +95,6 @@
                                         <td><%= posicion.toString() %></td>
                                         <td><%= user.getUsername() %></td>
                                         <td><%= user.getPuntuacion()%></td>
-                                        <td><%= user.getDivisa()%></td>
                                     </tr>
                                     <% } %>
                                     </tbody>
@@ -123,7 +121,6 @@
                                                 <th>Posicion</th>
                                                 <th>Usuario</th>
                                                 <th>Puntos</th>
-                                                <th>Monedas</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -136,7 +133,6 @@
                                                     <td><%= posicion.toString() %></td>
                                                     <td><%= user.getUsername() %></td>
                                                     <td><%= user.getPuntuacion()%></td>
-                                                    <td><%= user.getDivisa()%></td>
                                                 </tr>
                                             <% } %>
                                             </tbody>

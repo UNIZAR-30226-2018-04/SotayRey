@@ -47,17 +47,17 @@
 
     <style type="text/css">
         .jumbotron{
-            background-image: url('../img/fondoCabeceraTienda.jpg');
-            color: white;
-            background-size: cover;
+            background-image: url('http://signup.hit2c.com/assets/shop_your_way/syw_logo-c9c5f0519c7e2ac8c800758f0e53c6ca55ed4396a34a7cd39cf9310adb29c66a.png');
+            background-size: 22%;
+            background-repeat: no-repeat;
+            background-position: 0% 45%;
         }
     </style>
 
     <div class="jumbotron">
         <div class="container text-center">
             <h1>Tienda</h1>
-            <p>Aqu&iacute podr&aacutes encontrar todo tipo de cosas para ser el m&aacutes chulo en el gui&ntildeote. ¡No seas rata y compra
-                algo para marcar estilo!</p>
+            <p>Aqu&iacute podr&aacutes encontrar todo tipo de cosas para ser el m&aacutes chulo en el gui&ntildeote</p>
             <p> Mis monedas: <%= monedas%> </p>
         </div>
     </div>
