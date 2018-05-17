@@ -1,36 +1,35 @@
-import main.java.Carta;
-
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Sophia {
-    public static Carta ismcts(EstadoGuinote estadoRaiz, int iteraciones) {
+    public static CartaIA ismcts(EstadoPartidaIA estadoRaiz, int iteraciones) {
         Nodo raiz = new Nodo();
         Random rand = new Random();
         for (int i=0; i<iteraciones; i++) {
             Nodo nodo = raiz;
 
-            EstadoGuinote estado = estadoRaiz.determinizar();
+            EstadoPartidaIA estado = estadoRaiz.determinizar(estadoRaiz.getTurno());
 
             //Seleccion
             while (!estado.obtenerMovimientos().isEmpty() && nodo.obtenerMovimientosNoProbados(estado.obtenerMovimientos()).isEmpty()) {
                 nodo = nodo.seleccionUCB(estado.obtenerMovimientos());
-                estado.realizarMovimiento(nodo.getMovimiento());
+                estado.realizarMovimiento(nodo.getMovimiento(),estado.getTurno());
             }
 
             //Expansion
-            ArrayList<Carta> movimientosNoProbados = nodo.obtenerMovimientosNoProbados(estado.obtenerMovimientos());
+            ArrayList<CartaIA> movimientosNoProbados = nodo.obtenerMovimientosNoProbados(estado.obtenerMovimientos());
             if (!movimientosNoProbados.isEmpty()) {
-                Carta m = movimientosNoProbados.get(rand.nextInt(movimientosNoProbados.size()));
-                int jugador = estado.obtenerSiguienteJugador();
-                estado.realizarMovimiento(m);
+                CartaIA m = movimientosNoProbados.get(rand.nextInt(movimientosNoProbados.size()));
+                int jugador = estado.getTurno();
+                estado.realizarMovimiento(m,jugador);
                 nodo = nodo.nuevoHijo(m,jugador);
             }
 
             // Simulacion
-            while (!estado.obtenerMovimientos.isEmpty()) {
-                ArrayList<Carta> movs = estado.obtenerMovimientos();
-                estado.realizarMovimiento(movs.get(rand.nextInt(movs.size())));
+            while (!estado.obtenerMovimientos().isEmpty()) {
+                ArrayList<CartaIA> movs = estado.obtenerMovimientos();
+                estado.realizarMovimiento(movs.get(rand.nextInt(movs.size())),estado.getTurno());
             }
 
             // Backpropagation
@@ -40,7 +39,7 @@ public class Sophia {
             }
         }
         int maxVisitas = 0;
-        Carta maxCarta = null;
+        CartaIA maxCarta = null;
         for (Nodo n: raiz.getHijos()) {
             if (n.getVisitas()>maxVisitas) {
                 maxVisitas = n.getVisitas();
@@ -49,4 +48,32 @@ public class Sophia {
         }
         return maxCarta;
     }
+
+    public static void main(String[] args) {
+        EstadoPartidaIA estado = EstadoPartidaIA.nuevaPartida();
+
+        while (estado.obtenerMovimientos().size()>0) {
+            System.out.println(estado);
+
+            CartaIA m;
+            if (estado.getTurno() == 0) {
+                m = Sophia.ismcts(estado, 5000);
+            } else {
+                Scanner in = new Scanner(System.in);
+                System.out.printf("Que carta quieres jugar?:  ");
+                m = estado.obtenerMovimientos().get(in.nextInt());
+            }
+            System.out.println("Mejor movimiento: " + m);
+            estado.realizarMovimiento(m, estado.getTurno());
+        }
+
+        System.out.println("\n\nFinal de la Partida\n\n");
+        System.out.println(estado);
+        if (estado.obtenerResultado(0)>0) {
+            System.out.println("\n\nGana la IA");
+        } else {
+            System.out.println("\n\nGana el rival");
+        }
+    }
+
 }

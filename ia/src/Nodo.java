@@ -1,67 +1,8 @@
-import main.java.Carta;
-
 import java.util.ArrayList;
 
 public class Nodo {
-    private Carta movimiento;       // Carta que ha llevado hasta este nodo (null para la raiz)
+    private CartaIA movimiento;       // CartaIA que ha llevado hasta este nodo (null para la raiz)
     private Nodo padre;             // Padre del nodo (null para la raiz)
-
-    public Carta getMovimiento() {
-        return movimiento;
-    }
-
-    public void setMovimiento(Carta movimiento) {
-        this.movimiento = movimiento;
-    }
-
-    public Nodo getPadre() {
-        return padre;
-    }
-
-    public void setPadre(Nodo padre) {
-        this.padre = padre;
-    }
-
-    public ArrayList<Nodo> getHijos() {
-        return hijos;
-    }
-
-    public void setHijos(ArrayList<Nodo> hijos) {
-        this.hijos = hijos;
-    }
-
-    public int getVictorias() {
-        return victorias;
-    }
-
-    public void setVictorias(int victorias) {
-        this.victorias = victorias;
-    }
-
-    public int getVisitas() {
-        return visitas;
-    }
-
-    public void setVisitas(int visitas) {
-        this.visitas = visitas;
-    }
-
-    public int getAvails() {
-        return avails;
-    }
-
-    public void setAvails(int avails) {
-        this.avails = avails;
-    }
-
-    public int getJugadorTirador() {
-        return jugadorTirador;
-    }
-
-    public void setJugadorTirador(int jugadorTirador) {
-        this.jugadorTirador = jugadorTirador;
-    }
-
     private ArrayList<Nodo> hijos;  // Hijos del nodo
     private int victorias;
     private int visitas;
@@ -79,7 +20,7 @@ public class Nodo {
         this.jugadorTirador = -1;
     }
 
-    public Nodo(Carta movimiento, Nodo padre, int jugadorTirador) {
+    public Nodo(CartaIA movimiento, Nodo padre, int jugadorTirador) {
         this.movimiento = movimiento;
         this.padre = padre;
         this.hijos = new ArrayList<>();
@@ -89,13 +30,13 @@ public class Nodo {
         this.jugadorTirador = jugadorTirador;
     }
 
-    public ArrayList<Carta> obtenerMovimientosNoProbados(ArrayList<Carta> movimientosLegales) {
-        ArrayList<Carta> probados = new ArrayList<>();
+    public ArrayList<CartaIA> obtenerMovimientosNoProbados(ArrayList<CartaIA> movimientosLegales) {
+        ArrayList<CartaIA> probados = new ArrayList<>();
         for (Nodo h: this.hijos) {
             probados.add(h.movimiento);
         }
-        ArrayList<Carta> resultado = new ArrayList<>();
-        for (Carta c: movimientosLegales) {
+        ArrayList<CartaIA> resultado = new ArrayList<>();
+        for (CartaIA c: movimientosLegales) {
             if (!probados.contains(c)) {
                 resultado.add(c);
             }
@@ -103,7 +44,7 @@ public class Nodo {
         return resultado;
     }
 
-    public Nodo seleccionUCB(ArrayList<Carta> movimientosLegales) {
+    public Nodo seleccionUCB(ArrayList<CartaIA> movimientosLegales) {
         double maxUCB = 0;
         Nodo max = null;
         for (Nodo h: this.hijos) {
@@ -119,17 +60,45 @@ public class Nodo {
         return max;
     }
 
-    public Nodo nuevoHijo(Carta m, int jugador) {
+    public Nodo nuevoHijo(CartaIA m, int jugador) {
         Nodo n = new Nodo(m,this,jugador);
         this.hijos.add(n);
         return n;
     }
 
-    public void actualizar(EstadoGuinote e) {
+    public void actualizar(EstadoPartidaIA e) {
         this.visitas += 1;
         if (this.jugadorTirador != -1) {
-            this.victorias += e.obtenerResultado();
+            this.victorias += e.obtenerResultado(this.jugadorTirador);
         }
     }
 
+    // Setter and getters
+    public CartaIA getMovimiento() {
+        return movimiento;
+    }
+
+    public Nodo getPadre() {
+        return padre;
+    }
+
+    public ArrayList<Nodo> getHijos() {
+        return hijos;
+    }
+
+    public int getVictorias() {
+        return victorias;
+    }
+
+    public int getVisitas() {
+        return visitas;
+    }
+
+    public int getAvails() {
+        return avails;
+    }
+
+    public int getJugadorTirador() {
+        return jugadorTirador;
+    }
 }

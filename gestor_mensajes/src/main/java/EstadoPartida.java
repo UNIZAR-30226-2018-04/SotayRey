@@ -640,7 +640,7 @@ public class EstadoPartida {
      * Devuelve los jugadores de una partida.
      * @return
      */
-    private ArrayList<Jugador> getJugadores(){
+    public ArrayList<Jugador> getJugadores(){
         ArrayList<Jugador> res = new ArrayList<>();
         for (Jugador j: this.jugadores) {
             res.add(new Jugador(j));
