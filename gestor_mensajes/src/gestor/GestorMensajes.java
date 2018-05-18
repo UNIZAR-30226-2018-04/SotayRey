@@ -455,7 +455,11 @@ public class GestorMensajes {
         System.out.println(totalJugadores);
         System.out.println(listaPartidas.containsKey(idPartida));
         */
-        if (lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida)) {
+        if (reconexion) {
+            broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
+            // Manda el turno a todos los clientes
+            broadcastTurno(idPartida);
+        } else if (lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida)) {
             try {
                 lobby.setNumJugadores(totalJugadores);
                 LogicaPartida partida = new LogicaPartida(lobby.getTodosNombres());
@@ -486,10 +490,6 @@ public class GestorMensajes {
         }
         else if(lobby.tam() > totalJugadores && listaPartidas.containsKey(idPartida)){
             System.out.println("ES UN ESPECTADOR Y ENVIO ESTADO INICIAL");
-            broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
-            // Manda el turno a todos los clientes
-            broadcastTurno(idPartida);
-        } else if (reconexion) {
             broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
             // Manda el turno a todos los clientes
             broadcastTurno(idPartida);
@@ -649,11 +649,11 @@ public class GestorMensajes {
             }
             try {
                 System.out.println("ID DEL JUGADOR REMOTO "  + id);
-                if (id > 0){
+                if (id >= 0){
                     System.out.println(lobby.buscarId(id).getNombre());
                 }
                 System.out.println(jug.getNombre());
-                if(id > 0 && lobby.buscarId(id).getNombre() == jug.getNombre()) {
+                if(id >= 0 && lobby.buscarId(id).getNombre() == jug.getNombre()) {
                     System.out.println("LE ENVIO EL ESTADO INICIAL, QUE ES:");
                     System.out.println(objEstado.toJSONString());
                     jug.getRemoto().sendText(objEstado.toJSONString());
