@@ -203,9 +203,10 @@ public class GestorMensajes {
                         finalizarPartida(idPartida);
                     } catch (ExceptionDeVueltas exceptionDeVueltas) {
                         System.out.println("De vueltas: " + idPartida);
+
                         broadcastEstado(idPartida, true, -1);
                         broadcastGanaRonda(idPartida, false);
-                        broadcastRobarCarta(idPartida);
+                        //broadcastRobarCarta(idPartida);
                         // Manda el turno a todos los clientes
                         broadcastTurno(idPartida);
                     }
@@ -469,6 +470,7 @@ public class GestorMensajes {
                 listaPartidas.put(idPartida, partida);
                 // Manda el estado a todos los clientes
                 broadcastEstado(idPartida, false, -1); // TODO: Detectar cuando se vaya de vueltas
+
                 // Incrementa el numero de ronda a 1
                 lobby.incRonda();
                 // Manda el turno a todos los clientes
@@ -632,6 +634,7 @@ public class GestorMensajes {
         for (String nombre : lobby.getTodosNombres()) {
             JugadorGestor jug = lobby.buscarNombre(nombre);
             if (no_espectadores.contains(nombre)){ // Es un jugador
+                System.out.println(nombre + " NO ES UN ESPECTADOR");
                 // Array mano personalizado para cada jugador
                 JSONArray mano = new JSONArray();
                 try {
@@ -659,6 +662,7 @@ public class GestorMensajes {
                     jug.getRemoto().sendText(objEstado.toJSONString());
                 }
                 else if (id < 0){
+                    System.out.println("LE ENVIO EL ESTADO AL JUGADOR: " +id);
                     jug.getRemoto().sendText(objEstado.toJSONString());
                 }
             } catch (IOException e) {
