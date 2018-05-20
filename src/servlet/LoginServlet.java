@@ -10,6 +10,7 @@
 package servlet;
 
 import basedatos.InterfazDatos;
+import basedatos.modelo.SesionVO;
 import basedatos.modelo.TorneoVO;
 import basedatos.modelo.UsuarioVO;
 
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 
@@ -97,7 +99,19 @@ public class LoginServlet extends HttpServlet {
 
                     sesion.setAttribute("userId", user);
                     sesion.setMaxInactiveInterval(24*60*60);
-                    response.sendRedirect("jsp/matchmaking.jsp");
+                    String urlAbierta = null;
+                    try {
+                        urlAbierta = facade.obtenerUrlSesion(nick);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (urlAbierta != null) {
+                        // Tiene una partida abierta
+                        System.out.println("Jugador con partida abierta. Redirigiendo...");
+                        response.sendRedirect("juego.html?"+urlAbierta);
+                    } else {
+                        response.sendRedirect("jsp/matchmaking.jsp");
+                    }
                 } else { // Usuario no existe
                     error= "userNotFound";
                     request.setAttribute("error",error);

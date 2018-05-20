@@ -5,6 +5,7 @@ import basedatos.exceptions.ExceptionCampoInexistente;
 import basedatos.exceptions.ExceptionCampoInvalido;
 import basedatos.modelo.ArticuloUsuarioVO;
 import basedatos.modelo.PartidaVO;
+import basedatos.modelo.SesionVO;
 import basedatos.modelo.UsuarioVO;
 import main.java.*;
 import org.json.simple.JSONArray;
@@ -704,6 +705,12 @@ public class GestorMensajes {
             if (jugador != null) {
                 // Si se encuentra al jugador desconectado
                 jugador.desconectar();  // Desconectar al jugador
+                SesionVO sesionAbierta = new SesionVO(jugador.getNombre(), "miID="+jugador.getId()+"&idPartida="+id+"&nombre="+jugador.getNombre()+"&numJugadores="+"2"+"&tapete="+"/img/coche.jpg"+"&espectador=false");
+                try {
+                    bd.crearSesionAbierta(sesionAbierta);
+                } catch (SQLException e) {
+                    System.out.println("No se pudo crear sesión abierta");
+                }
                 if (!lobby.algunConectado()) {
                     // TODO: Eliminar partida
                     System.out.println("Todos los jugadores desconectados en la partida " + id);
