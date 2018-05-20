@@ -168,98 +168,7 @@
     String miTapete = facade.obtenerTapeteFavorito(nick).getRutaImagen();
 %>
 
-<script>
-    function getRadioValue(campo)
-    {
-        for (var i = 0; i < document.getElementsByName(campo).length; i++)
-        {
-            if (document.getElementsByName(campo)[i].checked)
-            {
-                return document.getElementsByName(campo)[i].value;
-            }
-        }
-    }
-    var socket;
-    function buscarPartida() {
-        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
-        var nombre_jugador = nombreUsuario;
-        var socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
-        var tipo = null;
-        if (parseInt(getRadioValue("esPublica")) == 1) {
-            tipo = "publica";
-        } else {
-            tipo = "privada";
-        }
 
-        var listo = JSON.stringify({
-            "tipo_mensaje": "busco_partida",
-            "nombre_participante": nombre_jugador,
-            "tipo_partida": tipo,
-            "total_jugadores": parseInt(getRadioValue("tipoPartidaPublica")),
-            "con_ia" : false,
-            //"con_ia": document.getElementsByName("tipoRival")[0].value
-        });
-        //console.log(msg);
-        //socket.send(msg)
-        socket.onopen = function() {
-            console.log(listo);
-            socket.send(listo);
-        };
-        socket.onmessage = function (msg) {
-            recibirMensaje(msg.data);
-            console.log(msg.data);
-        };
-    }
-    function espectarPartida(idPartida){
-        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
-        var nombre_jugador = nombreUsuario;
-        var socket = new WebSocket("ws://localhost:8080/gm/endpoint");
-        var listo = JSON.stringify({
-            "tipo_mensaje": "espectar_partida",
-            "id_partida": idPartida
-        });
-        socket.onopen = function() {
-            console.log(listo);
-            socket.send(listo);
-        };
-        socket.onmessage = function (msg) {
-            recibirMensaje(msg.data);
-            console.log(msg.data);
-        };
-    }
-    function cerrarSocket(){
-        socket.close();
-        console.log("socket cerrado");
-    }
-    function recibirMensaje(msg){
-        console.log("HE RECIBIDO UN MENSAJE");
-        var mensaje = JSON.parse(msg);
-        var total_jugadores = mensaje.total_jugadores;
-        var id_partida = mensaje.id_partida;
-        var nombre_jugador = nombreUsuario;
-        var id_jugador;
-        var con_ia = mensaje.con_ia;
-        var tapete = "<%=miTapete%>";
-        var espectador = false;
-        console.log("EL MENSAJE ES: " + mensaje.tipo_mensaje);
-        switch(mensaje.tipo_mensaje){
-            case "partida_lista":
-                id_jugador = mensaje.id_jugador;
-                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
-                window.location.replace("../juego.html?"+parametros);
-                break;
-            case "espectar_partida":
-                id_jugador = mensaje.id_espectador;
-                var espectador = true;
-                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
-                window.location.replace("../juego.html?"+parametros);
-                break;
-        }
-    }
-    $("#myModal").on("hidden.bs.modal", function () {
-        cerrarSocket();
-    });
-</script>
 
 <div class="container">
     <!-- Modal -->
@@ -276,7 +185,7 @@
                     <img src="../img/loading.gif" alt="animacion cargando">
                 </div>
                 <div class="modal-footer text-center">
-                    <button type="button" onclick="cerrarSocket()" class="btn btn-default" data-dismiss="modal">Cancelar búsqueda</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="cerrarSocket()">Cancelar búsqueda</button>
                 </div>
             </div>
 
@@ -382,6 +291,99 @@
 
 <button type="button" onclick="espectarPartida(387)" class="btn btn-default submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> DEBUG ESPECTAR</button>
 <a href="../juego.html?miID=3&idPartida=..&nombre=pepito&numJugadores=2&tapete="> ESPECTADOR PARA DEPURAR </a>
+
+<script>
+    var socket;
+    function getRadioValue(campo)
+    {
+        for (var i = 0; i < document.getElementsByName(campo).length; i++)
+        {
+            if (document.getElementsByName(campo)[i].checked)
+            {
+                return document.getElementsByName(campo)[i].value;
+            }
+        }
+    }
+    function buscarPartida() {
+        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        var nombre_jugador = nombreUsuario;
+        socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        var tipo = null;
+        if (parseInt(getRadioValue("esPublica")) == 1) {
+            tipo = "publica";
+        } else {
+            tipo = "privada";
+        }
+
+        var listo = JSON.stringify({
+            "tipo_mensaje": "busco_partida",
+            "nombre_participante": nombre_jugador,
+            "tipo_partida": tipo,
+            "total_jugadores": parseInt(getRadioValue("tipoPartidaPublica")),
+            "con_ia" : false,
+            //"con_ia": document.getElementsByName("tipoRival")[0].value
+        });
+        //console.log(msg);
+        //socket.send(msg)
+        socket.onopen = function() {
+            console.log(listo);
+            socket.send(listo);
+        };
+        socket.onmessage = function (msg) {
+            recibirMensaje(msg.data);
+            console.log(msg.data);
+        };
+    }
+    function espectarPartida(idPartida){
+        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        var nombre_jugador = nombreUsuario;
+        socket = new WebSocket("ws://localhost:8080/gm/endpoint");
+        var listo = JSON.stringify({
+            "tipo_mensaje": "espectar_partida",
+            "id_partida": idPartida
+        });
+        socket.onopen = function() {
+            console.log(listo);
+            socket.send(listo);
+        };
+        socket.onmessage = function (msg) {
+            recibirMensaje(msg.data);
+            console.log(msg.data);
+        };
+    }
+    function cerrarSocket(){
+        socket.close();
+        console.log("socket cerrado");
+    }
+    function recibirMensaje(msg){
+        console.log("HE RECIBIDO UN MENSAJE");
+        var mensaje = JSON.parse(msg);
+        var total_jugadores = mensaje.total_jugadores;
+        var id_partida = mensaje.id_partida;
+        var nombre_jugador = nombreUsuario;
+        var id_jugador;
+        var con_ia = mensaje.con_ia;
+        var tapete = "<%=miTapete%>";
+        var espectador = false;
+        console.log("EL MENSAJE ES: " + mensaje.tipo_mensaje);
+        switch(mensaje.tipo_mensaje){
+            case "partida_lista":
+                id_jugador = mensaje.id_jugador;
+                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
+                window.location.replace("../juego.html?"+parametros);
+                break;
+            case "espectar_partida":
+                id_jugador = mensaje.id_espectador;
+                var espectador = true;
+                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
+                window.location.replace("../juego.html?"+parametros);
+                break;
+        }
+    }
+    $("#buscarPartida").on("hidden.bs.modal", function () {
+        cerrarSocket();
+    });
+</script>
 
 </body>
 </html>
