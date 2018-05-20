@@ -25,16 +25,13 @@
         background-image: url('http://1.bp.blogspot.com/-XzkALf18FQM/UiPLGhELPBI/AAAAAAAAFYo/ux53uYsgc44/s1600/ESPA%C3%91OLA+2.jpg');
         background-repeat: repeat;
     }
-
     .titulo{
         font-weight: bold;
         font-size: 120%;
     }
-
 </style>
 
 <%
-
 %>
 
 <div class="jumbotron">
@@ -64,6 +61,16 @@
                                 </label>
                                 <label class="btn btn-secondary">
                                     <input type="radio" name="tipoPartidaPublica" value = "2" autocomplete="off"> Uno contra uno
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                <label class="btn btn-secondary active">
+                                    <input type="radio" name="esPublica" autocomplete="off" value="1" checked> Publica
+                                </label>
+                                <label class="btn btn-secondary">
+                                    <input type="radio" name="esPublica" value="0" autocomplete="off"> Privada
                                 </label>
                             </div>
                         </div>
@@ -145,32 +152,6 @@
 </div>
 
 
-
-<!-- MENSAJE PRUEBA
-
-
-{
-    "tipo_mensaje": "partida_lista",
-    "total_jugadores": 2,
-    ?id_partida?: 0,
-    ?nombre_jugador?: ?jugador0?,
-    ?id_jugador?: 0,
-    ?avatar?: ?ruta_avatar?,
-    ?con_ia?: true
-}
-
-recibirMensaje("{
-    "tipo_mensaje": "partida_lista",
-    "total_jugadores": 2,
-    ?id_partida?: 0,
-    ?nombre_jugador?: ?jugador0?,
-    ?id_jugador?: 0,
-    ?avatar?: ?ruta_avatar?,
-    ?con_ia?: true
-}");
-
- -->
-
 <%
     // Se necesita para acceder al tapete del usuario y luego enviarselo al juego
     InterfazDatos facade = null;
@@ -185,7 +166,6 @@ recibirMensaje("{
 %>
 
 <script>
-
     function getRadioValue(campo)
     {
         for (var i = 0; i < document.getElementsByName(campo).length; i++)
@@ -196,12 +176,9 @@ recibirMensaje("{
             }
         }
     }
-
-
     var socket;
     function buscarPartida(){
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
-
         var nombre_jugador = nombreUsuario;
         var socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         var listo = JSON.stringify({
@@ -209,10 +186,10 @@ recibirMensaje("{
             "nombre_participante": nombre_jugador,
             "tipo_partida": "publica",
             "total_jugadores": parseInt(getRadioValue("tipoPartidaPublica")),
-            "con_ia" : false
+            "con_ia" : false,
+            "es_publica": parseInt(getRadioValue("esPublica")), // O es privada, != 0 es publica
             //"con_ia": document.getElementsByName("tipoRival")[0].value
         });
-
         //console.log(msg);
         //socket.send(msg)
         socket.onopen = function() {
@@ -224,17 +201,14 @@ recibirMensaje("{
             console.log(msg.data);
         };
     }
-
     function espectarPartida(){
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
-
         var nombre_jugador = nombreUsuario;
         var socket = new WebSocket("ws://localhost:8080/gm/endpoint");
         var listo = JSON.stringify({
             "tipo_mensaje": "espectar_partida",
             "id_partida": 387
         });
-
         socket.onopen = function() {
             console.log(listo);
             socket.send(listo);
@@ -244,47 +218,38 @@ recibirMensaje("{
             console.log(msg.data);
         };
     }
-
     function cerrarSocket(){
         socket.close();
         console.log("socket cerrado");
     }
-
     function recibirMensaje(msg){
         console.log("HE RECIBIDO UN MENSAJE");
-
-         var mensaje = JSON.parse(msg);
-
+        var mensaje = JSON.parse(msg);
         var total_jugadores = mensaje.total_jugadores;
         var id_partida = mensaje.id_partida;
         var nombre_jugador = nombreUsuario;
         var id_jugador;
         var con_ia = mensaje.con_ia;
-
         var tapete = "<%=miTapete%>";
         var espectador = false;
         console.log("EL MENSAJE ES: " + mensaje.tipo_mensaje);
-         switch(mensaje.tipo_mensaje){
-             case "partida_lista":
-                 id_jugador = mensaje.id_jugador;
-                 parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
-                 window.location.replace("../juego.html?"+parametros);
-                 break;
-             case "espectar_partida":
-                 id_jugador = mensaje.id_espectador;
-                 var espectador = true;
-                 parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
-                 window.location.replace("../juego.html?"+parametros);
-                 break;
-         }
-
-
+        switch(mensaje.tipo_mensaje){
+            case "partida_lista":
+                id_jugador = mensaje.id_jugador;
+                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
+                window.location.replace("../juego.html?"+parametros);
+                break;
+            case "espectar_partida":
+                id_jugador = mensaje.id_espectador;
+                var espectador = true;
+                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
+                window.location.replace("../juego.html?"+parametros);
+                break;
+        }
     }
-
     $("#myModal").on("hidden.bs.modal", function () {
         cerrarSocket();
     });
-
 </script>
 
 <div class="container">
@@ -353,26 +318,26 @@ recibirMensaje("{
                 <div class="modal-body text-center">
 
 
-                        <table class="table table-striped custab">
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th class="text-primary">Equipo A</th>
-                                <th class="text-primary">Puntos A</th>
-                                <th class="text-danger">Equipo B</th>
-                                <th class="text-danger">Puntos B</th>
-                                <th class="text-center">Espectar</th>
-                            </tr>
-                            </thead>
-                            <tr>
-                                <td>1</td>
-                                <td>Carlos, Marius</td>
-                                <td>60</td>
-                                <td>Víctor, Javier</td>
-                                <td>30</td>
-                                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span>Espectar</a></td>
-                            </tr>
-                        </table>
+                    <table class="table table-striped custab">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th class="text-primary">Equipo A</th>
+                            <th class="text-primary">Puntos A</th>
+                            <th class="text-danger">Equipo B</th>
+                            <th class="text-danger">Puntos B</th>
+                            <th class="text-center">Espectar</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <td>1</td>
+                            <td>Carlos, Marius</td>
+                            <td>60</td>
+                            <td>Víctor, Javier</td>
+                            <td>30</td>
+                            <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span>Espectar</a></td>
+                        </tr>
+                    </table>
 
 
                 </div>
