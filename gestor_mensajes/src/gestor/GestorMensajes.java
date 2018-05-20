@@ -689,6 +689,15 @@ public class GestorMensajes {
         partidasPausadas.remove((Integer) idPartida);
         // Elimina la partida de la lista de partidas activas
         listaPartidas.remove(idPartida);
+        // Elimina las URLs de desconexion abiertas
+        Lobby lobby = lobbies.get(idPartida);
+        for (String nombre : lobby.getTodosNombres()) {
+            try {
+                bd.obtenerUrlSesion(nombre);
+            } catch (SQLException e) {
+                System.out.println("Error eliminando URLs de sesion de jugadores");
+            }
+        }
         /*try {
             //bd.finalizarPartida(lobbies.get(idPartida).getPartidaVO()); // TODO: Obtener partida para poder eliminarla
         } catch (ExceptionCampoInvalido exceptionCampoInvalido) {
@@ -705,14 +714,14 @@ public class GestorMensajes {
             if (jugador != null) {
                 // Si se encuentra al jugador desconectado
                 jugador.desconectar();  // Desconectar al jugador
-                SesionVO sesionAbierta = new SesionVO(jugador.getNombre(), "miID="+jugador.getId()+"&idPartida="+id+"&nombre="+jugador.getNombre()+"&numJugadores="+"2"+"&tapete="+"/img/coche.jpg"+"&espectador=false");
                 try {
+                    String miTapete = bd.obtenerTapeteFavorito(jugador.getNombre()).getRutaImagen();
+                    SesionVO sesionAbierta = new SesionVO(jugador.getNombre(), "miID="+jugador.getId()+"&idPartida="+id+"&nombre="+jugador.getNombre()+"&numJugadores="+lobby.getNumJugadores()+"&tapete="+miTapete+"&espectador=false");
                     bd.crearSesionAbierta(sesionAbierta);
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     System.out.println("No se pudo crear sesión abierta");
                 }
                 if (!lobby.algunConectado()) {
-                    // TODO: Eliminar partida
                     System.out.println("Todos los jugadores desconectados en la partida " + id);
                     finalizarPartida(id);
                 }
