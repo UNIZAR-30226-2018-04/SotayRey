@@ -2,6 +2,8 @@
 <%@ page import="basedatos.modelo.*" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="basedatos.InterfazDatos" %>
+<%@ page import="java.sql.SQLException" %>
+<%@ page import="java.math.BigInteger" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 
 <html lang="en" >
@@ -17,6 +19,10 @@
 </head>
 <body>
 
+<%
+    InterfazDatos bd = InterfazDatos.instancia();
+%>
+
 <style type="text/css">
     .jumbotron{
         color: #040404;
@@ -30,9 +36,6 @@
         font-size: 120%;
     }
 </style>
-
-<%
-%>
 
 <div class="jumbotron">
 </div>
@@ -207,13 +210,13 @@
             console.log(msg.data);
         };
     }
-    function espectarPartida(){
+    function espectarPartida(idPartida){
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         var nombre_jugador = nombreUsuario;
         var socket = new WebSocket("ws://localhost:8080/gm/endpoint");
         var listo = JSON.stringify({
             "tipo_mensaje": "espectar_partida",
-            "id_partida": 387
+            "id_partida": idPartida
         });
         socket.onopen = function() {
             console.log(listo);
@@ -262,7 +265,6 @@
     <!-- Modal -->
     <div class="modal fade" id="buscarPartida" role="dialog">
         <div class="modal-dialog">
-
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
@@ -308,8 +310,6 @@
     </div>
 
 </div>
-
-
 <div class="container">
     <!-- Modal -->
     <div class="modal fade" id="espectarPartida" role="dialog">
@@ -322,8 +322,6 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body text-center">
-
-
                     <table class="table table-striped custab">
                         <thead>
                         <tr>
@@ -335,26 +333,54 @@
                             <th class="text-center">Espectar</th>
                         </tr>
                         </thead>
+<%
+    try {
+        ArrayList<PartidaVO> partidas = bd.obtenerPartidasPublicasCurso();
+        for (PartidaVO partida : partidas) {
+            BigInteger idPartida = partida.getId();
+            String eq1 = "";
+            String eq2 = "";
+            int p1 = partida.getPuntos1();
+            int p2 = partida.getPuntos2();
+            int i = 0;
+            for (UsuarioVO usuario : partida.getUsuarios()) {
+                if (i % 2 == 0) {
+                    eq1 += usuario.getUsername();
+                    if (partida.getUsuarios().size() > 2 && i < 2) {
+                        eq1 += ", ";
+                    }
+                } else {
+                    eq2 += usuario.getUsername();
+                    if (partida.getUsuarios().size() > 2 && i < 2) {
+                        eq2 += ", ";
+                    }
+                }
+                i++;
+            }
+            %>
                         <tr>
-                            <td>1</td>
-                            <td>Carlos, Marius</td>
-                            <td>60</td>
-                            <td>Víctor, Javier</td>
-                            <td>30</td>
-                            <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span>Espectar</a></td>
+                            <td><%=idPartida%></td>
+                            <td><%=eq1%></td>
+                            <td><%=p1%></td>
+                            <td><%=eq2%></td>
+                            <td><%=p2%></td>
+                            <td class="text-center"><a class='btn btn-info btn-xs' onclick="espectarPartida(<%=idPartida%>)"><span class="glyphicon glyphicon-edit"></span>Espectar</a></td>
                         </tr>
+       <% }
+    } catch (SQLException e) {
+        System.out.println("No se pudieron obtener las partidas públicas en curso");
+        //e.printStackTrace();
+    }
+%>
                     </table>
-
 
                 </div>
             </div>
-
         </div>
     </div>
-
 </div>
 
-<button type="button" onclick="espectarPartida()" class="btn btn-default submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> DEBUG ESPECTAR</button>
+<button type="button" onclick="espectarPartida(387)" class="btn btn-default submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> DEBUG ESPECTAR</button>
 <a href="../juego.html?miID=3&idPartida=..&nombre=pepito&numJugadores=2&tapete="> ESPECTADOR PARA DEPURAR </a>
 
 </body>

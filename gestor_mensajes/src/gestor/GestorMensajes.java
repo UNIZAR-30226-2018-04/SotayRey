@@ -380,6 +380,7 @@ public class GestorMensajes {
             jug.put("id_jugador", i);
             if (!timeout) {
                 try {
+                    // TODO: Que no intente obtener puntos del espectador
                     jug.put("puntuacion", partida.consultarPuntos(nombre));
                 } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
                     exceptionJugadorIncorrecto.printStackTrace();
