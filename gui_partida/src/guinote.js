@@ -7,6 +7,8 @@
 /* PORCENTAJES RESPONSIVE */
 var numBotones = 3;
 var zonaJugableY = 0.9; // Porcentaje
+
+
 var ejeXBotones = window.innerWidth;
 var ejeYBotones = window.innerHeight * zonaJugableY + ( window.innerHeight *(1-zonaJugableY)*0.20);
 
@@ -50,12 +52,13 @@ function preload() {
     game.load.image('naipe', 'assets/naipe.png');
     game.load.image('cuadroCarta', 'assets/dragHere.png');
     game.load.image('turno', 'assets/turno.png');
-    game.load.image('tapete', 'assets/tapete.png');
+    game.load.image('tapete', tapete);
     game.load.image('avatar', 'assets/avatar.png');
     game.load.image('victoria', 'assets/victoria.png');
     game.load.image('derrota', 'assets/derrota.png');
     game.load.image('dorsoBase', 'assets/dorsoBase.jpg');
     game.load.image('botonSonido', 'assets/botonSonido.png');
+    game.load.image('botonSalir', 'assets/botonSalir.png');
     game.load.audio('musica', ['assets/musica.mp3']);
 }
 
@@ -87,6 +90,8 @@ triunfo = {};
 triunfo.carta = {}
 triunfo.x = ejeX / 2;
 triunfo.y = (ejeY / 2) * 0.85;
+
+var estanCantando = false;
 
 var arrayJugadoresDefecto = [];
 var arrayJugadores = [];
@@ -294,12 +299,17 @@ function crearCuadroCarta(jugador){
  */
 function dibujarCuadroCarta(jugador){
     //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
+    jugador.cartaLanzada.destroy();
+    jugador.cartaLanzada = crearCarta(0, 0);
+    dibujarCartaLanzada(jugador);
+    /*
     jugador.cartaLanzada.loadTexture('cuadroCarta');
     jugador.cartaLanzada.numero = 0;
     jugador.cartaLanzada.palo = 0;
     jugador.cartaLanzada.width = ejeXCarta;
     jugador.cartaLanzada.height = ejeYCarta;
     jugador.cartaLanzada.angle = jugador.rotacion;
+    */
     //cuadro.scale.setTo(escalaCarta, escalaCarta);
 }
 
@@ -328,6 +338,14 @@ function crearCartas(jugador){
     for (i = 0; i < jugador.numCartas; i++){
         console.log("CRANDO CARTAS PARA " + jugador.XPosMedia);
         jugador.cartasEnMano.create(0, 0, jugador.dorso);
+    }
+
+}
+
+function destruirCartas(jugador){
+    for (i = 0; i < jugador.cartasEnMano.length; i++){
+        console.log("DESTRUYENDO CARTAS PARA " + jugador.XPosMedia);
+        jugador.cartasEnMano.destroy();
     }
 
 }
@@ -564,6 +582,7 @@ function enviarMensaje(obj){
 var estadoInicializado = false;
 
 function representarEstado(estado){
+    console.log("DIBUJO EL ESTADO COMPLETO");
     if(partida_pausa){
         textoDesconectado.destroy();
     }
@@ -585,8 +604,8 @@ function representarEstado(estado){
         if ([item.id] != miID){
 
             // personalizacion
-            game.load.image(item.id.toString()+'avatar', '/img/avatares/african.png');
-            game.load.image(item.id.toString()+'dorso', '/img/hearthstone1.png');
+            game.load.image(item.id.toString()+'avatar', item.avatar);
+            game.load.image(item.id.toString()+'dorso', item.dorso);
             game.load.start();
 
             game.load.onLoadComplete.add(function(){
@@ -596,6 +615,7 @@ function representarEstado(estado){
 
 
                 console.log("JUGADORSITO " + jugador.XPosMedia + " " + item.id);
+              //  destruirCartas(jugador);
                 jugador.numCartas = item.num_cartas;
                 jugador.nombreUsuario.text = item.nombre;
                 crearCartas(jugador);
@@ -608,23 +628,32 @@ function representarEstado(estado){
             }, this);
 
 
-
         }
         else{
             jugador.nombreUsuario.text = item.nombre;
+
+            game.load.image(miID.toString()+'avatar', item.avatar);
+            game.load.start();
+
+            game.load.onLoadComplete.add(function(){
+                var jugador = arrayJugadores[miID];
+                jugador.avatar.loadTexture(miID.toString()+'avatar');
+            }, this);
+
+            jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
+            dibujarCartaLanzada(jugador);
+
         }
     }, this);
 
     // Se pone la mano del jugador
     // TODO si soy espectador esto no se hace
-    game.load.image(miID.toString()+'avatar', '/img/avatares/bellgirl.png');
-    game.load.start();
-
-    game.load.onLoadComplete.add(function(){
+    if (espectador=="false"){
         var jugador = arrayJugadores[miID];
-
-        jugador.avatar.loadTexture(miID.toString()+'avatar');
         var carta = {};
+
+
+        //destruirCartas(jugador);
         estado.mano.forEach(function(item) {
             console.log("CREANDO CARTA: " + item.numero + "  " +item.palo);
             carta = crearCarta(item.numero, item.palo);
@@ -634,13 +663,18 @@ function representarEstado(estado){
             carta.atributo = "HELLOW DA";
             carta.events.onInputDown.add(pulsaCarta, this);
             jugador.cartasEnMano.add(carta);
+
+            dibujarJugador(jugador);
+
+
         }, this);
-        dibujarJugador(jugador);
 
 
-    }, this);
 
+
+    }
     // Se dibujan las cartas en la mesa
+    /*
     estado.jugadores.forEach(function(item) {
         var jugador = arrayJugadores[item.id];
         if (!estadoInicializado){
@@ -648,12 +682,19 @@ function representarEstado(estado){
         }
         dibujarCuadroCarta(jugador);
     }, this);
-
+    */
 
     // HUD
-
+/*
+    tipo_ronda.tipo = datos.tipo_nueva_ronda;
+    numRonda.numero = datos.nueva_ronda;
+    puntuacionMia.puntuacion = datos.puntuaciones[miID].puntuacion; // TODO, siempre ids en orden?
+    puntuacionRival.puntuacion = datos.puntuaciones[(miID+1)%numJugadores].puntuacion;
+    restantes_mazo.restantes = datos.restantes_mazo;
+*/
     datosHUD = {"restantes_mazo": estado.partida.restantes_mazo,
-        "id_jugador": estado.partida.ronda,
+        "nueva_ronda": estado.partida.ronda,
+        "tipo_nueva_ronda" : estado.partida.tipo_ronda,
         "puntuaciones":[{"id_jugador":0,"puntuacion":21},
             {"id_jugador":1,"puntuacion":0},
             {"id_jugador":2,"puntuacion":21},
@@ -683,6 +724,7 @@ function recibirMensaje(msg){
         case "broadcast_accion":
             switch (mensaje.tipo_accion){
                 case "lanzar_carta":
+                    game.load.onLoadComplete.removeAll(); // Cuando un jugador lance una carta es que se han cargado las texturas
                     jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
                     break;
                 case "robar_carta":
@@ -694,6 +736,12 @@ function recibirMensaje(msg){
                     }
                     break;
                 case "cantar":
+                    if(estanCantando){
+                        setTimeout(function() { jugadorCanta(mensaje.id_jugador, mensaje.palo, mensaje.cantidad);}, 4000);
+                    }
+                    else {
+                        jugadorCanta(mensaje.id_jugador, mensaje.palo, mensaje.cantidad);
+                    }
                     break;
                 case "cambiar_triunfo":
                     jugadorCambiaTriunfo(mensaje.id_jugador, mensaje.nuevo_triunfo.numero, mensaje.nuevo_triunfo.palo);
@@ -715,7 +763,8 @@ function recibirMensaje(msg){
             var id = mensaje.id_jugador;
             var timeout = mensaje.timeout;
             partida_pausa = true;
-            setTimeout(function(){ jugadorDesconectado(id); mandarTimeout();}, timeout);
+            jugadorDesconectado(id);
+            setTimeout(function(){ mandarTimeout();}, timeout);
             break;
     }
 }
@@ -729,12 +778,14 @@ function mandarTimeout(){
                 "id_jugador" : miID
             }
         };
-        enviarMensaje(obj);
+        if(!partida_pausa){
+            enviarMensaje(obj);
+        }
     }
 }
 
 
-function jugadorDesconectado(id, cantidad){
+function jugadorDesconectado(id){
     console.log("Jugador desconectado");
     var style = { font: "45px Arial", fill: "#ff0044", align: "center" };
     textoDesconectado = game.add.text(game.world.centerX, game.world.centerY, "PARTIDA EN PAUSA\n"+arrayJugadores[id].nombreUsuario.text +" se ha desconectado", style);
@@ -747,7 +798,7 @@ function crearCarta(numero, palo){
     console.log("ME PIDEN CARTA CON NUMERO: " +numero+" PALO: "+palo);
     var carta;
     var indice = buscarCarta(numero, palo);
-    if (palo == 0){
+    if (numero == 0){
         carta = game.add.sprite(0, 0, 'cuadroCarta');
     }
     else{
@@ -845,18 +896,19 @@ function jugadorCambiaTriunfo(id, numero, palo){
 
 
 
-function jugadorCanta(id, cantidad){
+function jugadorCanta(id, palo, cantidad){
+    estanCantando = true;
     console.log("Jugador canta");
     var style = { font: "65px Arial", fill: "#ff0044", align: "center" };
     //arrayJugadores[id].nombreUsuario
     //var textoCantar = game.add.text(game.world.centerX, game.world.centerY, 0, + 'pepito HA CANTADO ' + cantidad);
-    var textoCantar = game.add.text(game.world.centerX, game.world.centerY, '' + 'pepito HA CANTADO ' + cantidad, style);
+    var textoCantar = game.add.text(game.world.centerX, game.world.centerY, '' + 'pepito HA CANTADO ' + cantidad + ' EN ' + palo, style);
     textoCantar.anchor.setTo(0.5,0.5);
     //textoCantar.alpha = 0;
 
     //game.add.tween(textoCantar).to( { alpha: 0 }, 3500, 'Linear', true, 0, 1000, true);
     //game.add.tween(textoCantar).to({alpha: 0}, 1500, Phaser.Easing.Linear.None, true)
-    setTimeout(function(){ textoCantar.destroy()}, 3500);
+    setTimeout(function(){ textoCantar.destroy(); estanCantando = false;}, 3500);
 }
 
 /**
@@ -981,18 +1033,27 @@ function dibujarBotones(){
     var espacioBoton = ejeX / numBotones;
     //var style = {font: "20px", fill: "#000000", align:"center"};
 
-    var cantar = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
-    var cambiarTriunfo = game.add.text(espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
+    if (espectador=="true"){
+
+    }
+    else{
+        var cantar = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
+        var cambiarTriunfo = game.add.text(espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
+        cantar.text = "CANTAR";
+        cambiarTriunfo.text = "CAMBIAR TRIUNFO";
+        cantar.inputEnabled = true;
+        cantar.events.onInputDown.add(pulsaBoton, this);
+        cambiarTriunfo.inputEnabled = true;
+        cambiarTriunfo.events.onInputDown.add(pulsaBoton, this);
+    }
+
+
     tiempoTurno = game.add.text(espacioBoton + espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
 
-    cantar.text = "CANTAR";
-    cambiarTriunfo.text = "CAMBIAR TRIUNFO";
+
     tiempoTurno.text = "TURNO pepito 15"
 
-    cantar.inputEnabled = true;
-    cantar.events.onInputDown.add(pulsaBoton, this);
-    cambiarTriunfo.inputEnabled = true;
-    cambiarTriunfo.events.onInputDown.add(pulsaBoton, this);
+
 }
 
 
@@ -1051,7 +1112,7 @@ var puntuacionRival = 0;
 var numRonda = 0;
 var restantes_mazo = "NaN";
 var tipo_ronda = "IDAS";
-var color = "#fffff5";
+var color = "#040404";
 var fuente =  "12pt impact";
 
 /**
@@ -1130,6 +1191,21 @@ function finPartida(){
 
 //    puntuacionMia.x = logo.x + logo.width/2 - 80;
  //   puntuacionMia.y = logo.y + logo.height * 1.2;
+
+    // Logo para volver al menu principal
+
+    var botonSalir = game.add.sprite(0, 0, 'botonSalir');
+    botonSalir.width = 150;
+    botonSalir.height = 50;
+    botonSalir.x = game.world.centerX - botonSalir.width/2;
+    botonSalir.y =  logo.y + logo.height - 20;
+    console.log("DIBUJO EL BOTON DE SALIR");
+    botonSalir.inputEnabled = true;
+    botonSalir.events.onInputDown.add(
+        function salir(){
+            window.location.replace("../jsp/matchmaking.jsp");
+        }
+        , this);
 }
 
 var arrastre;
@@ -1170,7 +1246,7 @@ function controlMusica(){
     //playPause.text = "MUSIKOTE";
     playPause.inputEnabled = true;
     playPause.events.onInputDown.add(botonMusica, this);
-    music.play();
+    //music.play();
     playPause.estado = "pause";
 }
 

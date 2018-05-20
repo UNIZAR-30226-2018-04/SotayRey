@@ -1,7 +1,10 @@
 package servlet;
+
 import basedatos.InterfazDatos;
 import basedatos.modelo.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 
@@ -51,41 +54,23 @@ public class ConsultaPerfilServlet extends javax.servlet.http.HttpServlet {
                 }
             }
 
-            if(usuarioVO.getAdmin()){
-                ArrayList<TorneoVO> torneos = null;
+            ArrayList<PartidaVO> historial = null;
 
-                try{
-                    torneos = facade.obtenerTorneosProgramados();
-                }catch (Exception e){
-                    e.printStackTrace();
-                    response.sendRedirect("jsp/matchmaking.jsp");
-                    return;
-                }
-
-                session.setAttribute("torneos", torneos);
-
-                response.sendRedirect("jsp/perfil.jsp");
+            try{
+                historial = facade.obtenerHistorialPartidas(username);
+            } catch (Exception e){
+                e.printStackTrace();
+                response.sendRedirect("jsp/matchmaking.jsp");
+                return;
             }
-            else {
 
-                ArrayList<PartidaVO> historial = null;
+            session.setAttribute("historial", historial);
 
-                try{
-                    historial = facade.obtenerHistorialPartidas(username);
-                } catch (Exception e){
-                    e.printStackTrace();
-                    response.sendRedirect("jsp/matchmaking.jsp");
-                    return;
-                }
-
-                session.setAttribute("historial", historial);
-
-                response.sendRedirect("jsp/perfil.jsp");
-            }
+            response.sendRedirect("jsp/perfil.jsp");
         }
     }
 
-    protected void doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, java.io.IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, java.io.IOException {
         doPost(request,response);
     }
 }

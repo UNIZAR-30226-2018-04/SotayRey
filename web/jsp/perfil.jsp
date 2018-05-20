@@ -57,7 +57,7 @@
             ratio = ganadas/perdidas;
         }
 
-        avatar = (ArticuloUsuarioVO) session.getAttribute("Avatar");
+        avatar = (ArticuloUsuarioVO) session.getAttribute("avatar");
         if(avatar == null){
             avatar = new ArticuloUsuarioVO(null, 'A', true, null);
             avatar.setRutaImagen("#");
@@ -233,67 +233,41 @@
                 </div>
 
                 <% if(usuarioVO != null && usuarioVO.getAdmin()){ %>
+                <br>
                 <a class="btn btn-warning mt-2" href="/MostrarObjetosTienda.do" role="button">
                     <i class="fa fa-shopping-cart mr-2" aria-hidden="true"></i>Gestionar Tienda
                 </a>
-                <!-- TODO: añadir aqui resto de botones del admin -->
-            </div>
-        </div>
-        <% ArrayList<TorneoVO> torneos = (ArrayList<TorneoVO>) session.getAttribute("torneos");
-           if(torneos == null){ %>
-             <h2> No hay torneos programados</h2>
-        <% } else { %>
-        <div class="row mt-2">
-            <h2>Gestión de torneos</h2>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Fecha</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Modificar</th>
-                    <!-- TODO: Añadir campos necesarios -->
-                </tr>
-                </thead>
-                <tbody>
-                <% for(Integer i = 0; i < torneos.size(); i++){
-                      TorneoVO torneo = torneos.get(i);
-                %>
-                    <tr>
-                        <td><%=torneo.getTimeInicio()%></td>
-                        <td><%=torneo.getNombre()%></td>
-                        <td>(Botón modif.)</td>
-                    </tr>
-                <% } %>
-                </tbody>
-            </table>
-        </div>
+                <a class="btn btn-warning mt-2" href="/jsp/torneos.jsp" role="button">
+                    <i class="fa fa-shopping-cart mr-2" aria-hidden="true"></i>Gestionar Torneos
+                </a>
+
         <% } %>
-        <% } else {
-
-                ArrayList<basedatos.modelo.PartidaVO> historial = (ArrayList<PartidaVO>) session.getAttribute("historial");
-                if(historial != null){
-                %>
             </div>
         </div>
 
-            <div class="row mt-2">
-                <h2>Historial de Partidas</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h2>Historial de Partidas</h2>
+                </div>
                 <br>
+                <%ArrayList<basedatos.modelo.PartidaVO> historial = (ArrayList<PartidaVO>) session.getAttribute("historial");
+                    if(historial != null){
+                %>
+                <div class="card-body">
+
                 <table class="table table-hover" id="rank-table0">
                     <thead>
                     <tr>
                         <th>Equipo1</th>
                         <th>Equipo2</th>
                         <th>Resultado</th>
-                        <th>Contringante</th>
-                        <th>Puntos Contringante</th>
                         <th>Tus Puntos</th>
-                        <th>Moneda</th>
+                        <th>Puntos Contringante</th>
                     </tr>
                     </thead>
                     <tbody>
                     <%
-                        for(Integer j = 1; j < historial.size(); j++){
+                        for(Integer j = 0; j < historial.size(); j++){
                             PartidaVO partida = historial.get(j);
                             ArrayList<UsuarioVO> usuarios = (ArrayList<UsuarioVO>) partida.getUsuarios();
                             int equipo = 0;
@@ -314,20 +288,29 @@
                     %>
                     <tr>
                         <% if(usuarios.size() == 2){ %>
-                            <td><%= usuarios.get(0)%></td>
-                            <td><%= usuarios.get(1) %></td>
+                            <td><%= usuarios.get(0).getUsername()%></td>
+                            <td><%= usuarios.get(1).getUsername() %></td>
                         <% } else { %>
-                            <td><%= usuarios.get(0) + ", " + usuarios.get(2) %></td>
-                            <td><%= usuarios.get(1) + ", " + usuarios.get(3) %></td>
+                            <td><%= usuarios.get(0).getUsername() + ", " + usuarios.get(2).getUsername() %></td>
+                            <td><%= usuarios.get(1).getUsername() + ", " + usuarios.get(3).getUsername() %></td>
                         <% } %>
                         <td><%= resultado%></td>
-                        <td>hola</td>
-                        <td>hola</td>
+                        <% if(equipo == 1){ %>
+                            <td><%= partida.getPuntos1()%></td>
+                            <td><%= partida.getPuntos2()%></td>
+                        <% } else { %>
+                            <td><%= partida.getPuntos2()%></td>
+                            <td><%= partida.getPuntos1()%></td>
+                        <% } %>
                     </tr>
                     <% } %>
                     </tbody>
                 </table>
-        <% } }%>
+        <% } else { %>
+                <h3> No hay partidas que mostrar</h3>
+        <%}%>
+                </div>
+        </div>
     </div>
 </body>
 </html>

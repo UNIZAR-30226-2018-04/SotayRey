@@ -1,6 +1,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="basedatos.modelo.*" %>
 <%@ page import="java.util.Arrays" %>
+<%@ page import="basedatos.InterfazDatos" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 
 <html lang="en" >
@@ -31,6 +32,10 @@
     }
 
 </style>
+
+<%
+
+%>
 
 <div class="jumbotron">
 </div>
@@ -166,6 +171,19 @@ recibirMensaje("{
 
  -->
 
+<%
+    // Se necesita para acceder al tapete del usuario y luego enviarselo al juego
+    InterfazDatos facade = null;
+    try {
+        facade = InterfazDatos.instancia();
+    } catch (Exception e) {
+        System.err.println("ERROR: creando interfaz");
+    }
+    UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
+    String nick = usuarioVO.getUsername();
+    String miTapete = facade.obtenerTapeteFavorito(nick).getRutaImagen();
+%>
+
 <script>
 
     function getRadioValue(campo)
@@ -207,6 +225,26 @@ recibirMensaje("{
         };
     }
 
+    function espectarPartida(){
+        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+
+        var nombre_jugador = nombreUsuario;
+        var socket = new WebSocket("ws://localhost:8080/gm/endpoint");
+        var listo = JSON.stringify({
+            "tipo_mensaje": "espectar_partida",
+            "id_partida": 387
+        });
+
+        socket.onopen = function() {
+            console.log(listo);
+            socket.send(listo);
+        };
+        socket.onmessage = function (msg) {
+            recibirMensaje(msg.data);
+            console.log(msg.data);
+        };
+    }
+
     function cerrarSocket(){
         socket.close();
         console.log("socket cerrado");
@@ -217,19 +255,30 @@ recibirMensaje("{
 
          var mensaje = JSON.parse(msg);
 
-         // TODO otro tipo de mensaje que no sea partida lista?
-         var total_jugadores = mensaje.total_jugadores;
-         var id_partida = mensaje.id_partida;
-         var nombre_jugador = mensaje.nombre_jugador;
-         var id_jugador = mensaje.id_jugador;
-         var con_ia = mensaje.con_ia;
+        var total_jugadores = mensaje.total_jugadores;
+        var id_partida = mensaje.id_partida;
+        var nombre_jugador = nombreUsuario;
+        var id_jugador;
+        var con_ia = mensaje.con_ia;
 
-       // var id_partida = 2392383;
-       // var id_jugador = 1213;
-       // var nombre_jugador = "juegadorPrueba";
-       // var parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador;
-        parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores;
-        window.location.replace("../juego.html?"+parametros);
+        var tapete = "<%=miTapete%>";
+        var espectador = false;
+        console.log("EL MENSAJE ES: " + mensaje.tipo_mensaje);
+         switch(mensaje.tipo_mensaje){
+             case "partida_lista":
+                 id_jugador = mensaje.id_jugador;
+                 parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
+                 window.location.replace("../juego.html?"+parametros);
+                 break;
+             case "espectar_partida":
+                 id_jugador = mensaje.id_espectador;
+                 var espectador = true;
+                 parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
+                 window.location.replace("../juego.html?"+parametros);
+                 break;
+         }
+
+
     }
 
     $("#myModal").on("hidden.bs.modal", function () {
@@ -289,6 +338,53 @@ recibirMensaje("{
 
 </div>
 
+
+<div class="container">
+    <!-- Modal -->
+    <div class="modal fade" id="espectarPartida" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-center">Espectar partida</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body text-center">
+
+
+                        <table class="table table-striped custab">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th class="text-primary">Equipo A</th>
+                                <th class="text-primary">Puntos A</th>
+                                <th class="text-danger">Equipo B</th>
+                                <th class="text-danger">Puntos B</th>
+                                <th class="text-center">Espectar</th>
+                            </tr>
+                            </thead>
+                            <tr>
+                                <td>1</td>
+                                <td>Carlos, Marius</td>
+                                <td>60</td>
+                                <td>Víctor, Javier</td>
+                                <td>30</td>
+                                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span>Espectar</a></td>
+                            </tr>
+                        </table>
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<button type="button" onclick="espectarPartida()" class="btn btn-default submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> DEBUG ESPECTAR</button>
+<a href="../juego.html?miID=3&idPartida=..&nombre=pepito&numJugadores=2&tapete="> ESPECTADOR PARA DEPURAR </a>
 
 </body>
 </html>

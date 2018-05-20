@@ -531,7 +531,7 @@ public class EstadoPartida {
         if (ganadorUltimaRonda < 0 || ganadorUltimaRonda > 3){
             throw new ExceptionNoPuedesCantar();
         }
-        else if(jugadores.get(ganadorUltimaRonda).equals(encuentraJugador(jugador)) || jugadores.get(ganadorUltimaRonda+2).equals(encuentraJugador(jugador))){
+        else if(jugadores.get(ganadorUltimaRonda).equals(encuentraJugador(jugador)) || ( jugadores.size() == 4 && jugadores.get(ganadorUltimaRonda+2).equals(encuentraJugador(jugador)))){
             return jugadorEncontrado.anyadirCante(triunfo);
         }
         else{

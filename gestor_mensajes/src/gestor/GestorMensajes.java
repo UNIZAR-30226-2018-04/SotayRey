@@ -28,7 +28,7 @@ public class GestorMensajes {
     private static ArrayList<Integer> partidasPausadas = new ArrayList<Integer>();
     private static HashMap<Integer, Lobby> lobbies = new HashMap<>(); // TODO: En 4 jugadores, orden (eq1, eq2, eq1, eq2)
     private static InterfazDatos bd = null;
-    private static int timeoutDesconectado = 30;
+    private static int timeoutDesconectado = 30000;
 
     @OnOpen
     public void onOpen(Session session) {
@@ -67,14 +67,75 @@ public class GestorMensajes {
         switch(tipo) {
             case "listo_jugador":
                 System.out.println(tipo + " recibido");
-                recibirListo(session, msg);
+                recibirListo(session, msg, intentarReconectar(session, msg));
                 break;
             case "accion":
                 System.out.println(tipo + " recibida");
                 recibirAccion(msg);
                 break;
+            case "timeout":
+                System.out.println(tipo + " recibido");
+                recibirTimeout(msg);
+                break;
+            case "espectar_partida": // Se ha de tener este caso porque hace falta mandarle un identificador único
+                System.out.println(tipo + " recibido");
+                nuevoEspectador(session, msg);
+                break;
             default:
                 System.out.println("Tipo de mensaje no reconocido");
+        }
+    }
+
+    private void nuevoEspectador(Session session, JSONObject msg){
+        System.out.println("ME HA LLEGADO EL ID " + msg.get("id_partida"));
+        int idPartida = (int) (long) msg.get("id_partida");
+        Lobby lobby = new Lobby();
+        if (lobbies.containsKey(idPartida)) {
+            lobby = lobbies.get(idPartida);
+            int nuevoID = lobby.getMaxID();
+            lobby.incrementarMaxID();
+            JSONObject objC = new JSONObject();
+            objC.put("tipo_mensaje", "espectar_partida");
+            objC.put("id_partida", idPartida);
+            objC.put("id_espectador", nuevoID);
+            objC.put("total_jugadores", lobby.getNumJugadores());
+            objC.put("con_ia", false);
+
+            try {
+                System.out.println("ENVIO MENSAJE DE VUELTA");
+                session.getBasicRemote().sendText(objC.toJSONString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private boolean intentarReconectar(Session sesion, JSONObject msg) {
+        // Obtener datos del remitente
+        int idPartida = getIdPartidaMsg(msg);
+        int idJugador = getIdJugadorMsg(msg);
+        if (partidasPausadas.contains(idPartida)) {
+            // La partida estaba pausada
+            Lobby lobby = lobbies.get(idPartida);
+            JugadorGestor jug = lobby.buscarId(idJugador);
+            if (jug.getDesconectado() != null) {
+                jug.reconectar(sesion);
+            }
+            // Eliminar la partida de pausadas
+            partidasPausadas.remove((Integer) idPartida);
+            System.out.println("Partida " + idPartida + " continua, jugador " + jug.getNombre() + " reconectado");
+            return true;
+        }
+        return false;
+    }
+
+    private void recibirTimeout(JSONObject msg) {
+        // Obtener datos del remitente
+        int idPartida = getIdPartidaMsg(msg);
+        if (partidasPausadas.contains(idPartida)) {
+            finalizarPartida(idPartida);
+            System.out.println("Partida con id " + idPartida + " finalizada por timeout");
         }
     }
 
@@ -120,7 +181,7 @@ public class GestorMensajes {
                     try {
                         // LÓGICA DE FINALIZACIÓN DE RONDA
                         partida.siguienteRonda();
-                        broadcastGanaRonda(idPartida);
+                        broadcastGanaRonda(idPartida, false);
                         // Se intenta que todos los jugadores vuelvan a tener 6 cartas
                         broadcastRobarCarta(idPartida);
                         // Asigna el turno al jugador correspondiente
@@ -137,14 +198,15 @@ public class GestorMensajes {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionPartidaFinalizada exceptionPartidaFinalizada) {
                         System.out.println("Partida finalizada: " + idPartida);
-                        broadcastGanaRonda(idPartida);
+                        broadcastGanaRonda(idPartida, false);
                         // Elimina la partida de la lista de partidas activas
-                        listaPartidas.remove(idPartida);
+                        finalizarPartida(idPartida);
                     } catch (ExceptionDeVueltas exceptionDeVueltas) {
                         System.out.println("De vueltas: " + idPartida);
-                        broadcastEstado(idPartida, true);
-                        broadcastGanaRonda(idPartida);
-                        broadcastRobarCarta(idPartida);
+
+                        broadcastEstado(idPartida, true, -1);
+                        broadcastGanaRonda(idPartida, false);
+                        //broadcastRobarCarta(idPartida);
                         // Manda el turno a todos los clientes
                         broadcastTurno(idPartida);
                     }
@@ -206,11 +268,24 @@ public class GestorMensajes {
     private void broadcastCantar(int idPartida) {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
-        JSONObject objC = new JSONObject();
-        objC.put("tipo_mensaje", "broadcast_accion");
-        objC.put("tipo_accion", "cantar");
-        objC.put("id_jugador", partida.getEstado().getTurno());
-        broadcastMensaje(lobby, objC);
+        ArrayList<Cante> cantadas = partida.getRecienCantadas();
+
+        for (Cante c : cantadas){
+            JSONObject objC = new JSONObject();
+            objC.put("tipo_mensaje", "broadcast_accion");
+            objC.put("tipo_accion", "cantar");
+            objC.put("id_jugador", partida.getEstado().getTurno());
+            objC.put("palo", c.getPalo());
+            switch(c.getTipo()) {
+                case LAS20:
+                    objC.put("cantidad", 20);
+                    break;
+                case LAS40:
+                    objC.put("cantidad", 40);
+                    break;
+            }
+            broadcastMensaje(lobby, objC);
+        }
     }
 
     private void broadcastCambiarTriunfo(int idPartida, Carta nuevoTriunfo) {
@@ -286,7 +361,7 @@ public class GestorMensajes {
     }
 
 
-    private void broadcastGanaRonda(int idPartida) {
+    private void broadcastGanaRonda(int idPartida, boolean timeout) {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
         // Incrementa la ronda
@@ -303,12 +378,25 @@ public class GestorMensajes {
         for (String nombre : lobby.getTodosNombres()) {
             JSONObject jug = new JSONObject();
             jug.put("id_jugador", i);
-            try {
-                jug.put("puntuacion", partida.consultarPuntos(nombre));
-            } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
-                exceptionJugadorIncorrecto.printStackTrace();
-            } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
-                exceptionRondaNoAcabada.printStackTrace();
+            if (!timeout) {
+                try {
+                    jug.put("puntuacion", partida.consultarPuntos(nombre));
+                } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                    exceptionJugadorIncorrecto.printStackTrace();
+                } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
+                    // Caso de que no haya acabado la ronda
+                    if (lobby.buscarNombre(nombre).getDesconectado() != null) {
+                        jug.put("puntuacion", 0);
+                    } else {
+                        jug.put("puntuacion", 101);
+                    }
+                }
+            } else {
+                if (lobby.buscarNombre(nombre).getDesconectado() != null) {
+                    jug.put("puntuacion", 0);
+                } else {
+                    jug.put("puntuacion", 101);
+                }
             }
             punts.add(jug);
             i++;
@@ -345,7 +433,7 @@ public class GestorMensajes {
         return (String) msg.get("tipo_accion");
     }
 
-    private void recibirListo(Session session, JSONObject msg) {
+    private void recibirListo(Session session, JSONObject msg, boolean reconexion) {
         // Obtener datos del remitente
         int idPartida = getIdPartidaMsg(msg);
         int idJugador = getIdJugadorMsg(msg);
@@ -363,16 +451,26 @@ public class GestorMensajes {
             lobby.anyadir(jugador);
         }
         lobbies.put(idPartida, lobby);
-
-        if (lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida)) {
+        /*
+        System.out.println(lobby.tam());
+        System.out.println(totalJugadores);
+        System.out.println(listaPartidas.containsKey(idPartida));
+        */
+        if (reconexion) {
+            broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
+            // Manda el turno a todos los clientes
+            broadcastTurno(idPartida);
+        } else if (lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida)) {
             try {
+                lobby.setNumJugadores(totalJugadores);
                 LogicaPartida partida = new LogicaPartida(lobby.getTodosNombres());
                 partida.crearPartida();
                 // TODO: Obtener partidaVO para luego poder eliminarla
                 //lobby.setPartidaVO(nuevaPartida);
                 listaPartidas.put(idPartida, partida);
                 // Manda el estado a todos los clientes
-                broadcastEstado(idPartida, false); // TODO: Detectar cuando se vaya de vueltas
+                broadcastEstado(idPartida, false, -1); // TODO: Detectar cuando se vaya de vueltas
+
                 // Incrementa el numero de ronda a 1
                 lobby.incRonda();
                 // Manda el turno a todos los clientes
@@ -391,6 +489,12 @@ public class GestorMensajes {
             //} catch (SQLException e) {
             //    e.printStackTrace();
             }
+        }
+        else if(lobby.tam() > totalJugadores && listaPartidas.containsKey(idPartida)){
+            System.out.println("ES UN ESPECTADOR Y ENVIO ESTADO INICIAL");
+            broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
+            // Manda el turno a todos los clientes
+            broadcastTurno(idPartida);
         }
     }
 
@@ -427,7 +531,9 @@ public class GestorMensajes {
         }
     }
 
-    private void broadcastEstado(int idPartida, boolean vueltas) {
+    // Si id < 0, se envia a todos, sino al correspondiente
+    // Si es mayor que el numero de jugadores, se toma como espectador
+    private void broadcastEstado(int idPartida, boolean vueltas, int id) {
         EstadoPartida estado = listaPartidas.get(idPartida).getEstado();
         // Obtiene el lobby de la partida actual
         Lobby lobby = lobbies.get(idPartida);
@@ -455,64 +561,67 @@ public class GestorMensajes {
         // Array jugadores
         JSONArray jugadores = new JSONArray();
         ArrayList<Carta> cartasTapete = estado.getCartasEnTapete();
+        ArrayList<String> no_espectadores = estado.getJugadoresId(); // Los que estan realmente jugando
         int i = 0;
         for (String nombre : lobby.getTodosNombres()) {
-            JugadorGestor jugGes = lobby.buscarNombre(nombre);
-            UsuarioVO jugadorVO = null;
-            try {
-                jugadorVO = bd.obtenerDatosUsuario(nombre);
-            } catch (ExceptionCampoInexistente exceptionCampoInexistente) {
-                exceptionCampoInexistente.printStackTrace();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            JSONObject jugador = new JSONObject();
-            jugador.put("id", jugGes.getId());
-            jugador.put("nombre", jugadorVO.getUsername());
-             // TODO: obtener avatar y gestionar usuario no existente.
+            if (no_espectadores.contains(nombre)){
+                JugadorGestor jugGes = lobby.buscarNombre(nombre);
+                UsuarioVO jugadorVO = null;
+                try {
+                    jugadorVO = bd.obtenerDatosUsuario(nombre);
+                } catch (ExceptionCampoInexistente exceptionCampoInexistente) {
+                    exceptionCampoInexistente.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                JSONObject jugador = new JSONObject();
+                jugador.put("id", jugGes.getId());
+                jugador.put("nombre", jugadorVO.getUsername());
+                // TODO: obtener avatar y gestionar usuario no existente.
 
-            // Esta ha modificado Carlos
-            ArticuloUsuarioVO dorso = null;
-            ArticuloUsuarioVO avatar = null;
-            try {
-                dorso = bd.obtenerDorsoFavorito(nombre);
-                avatar = bd.obtenerAvatarFavorito(nombre);
-            } catch (ExceptionCampoInexistente exceptionCampoInexistente) {
-                exceptionCampoInexistente.printStackTrace();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            // TODO: Añadir personalización
-//            jugador.put("dorso" , dorso.getRutaImagen());
-//            jugador.put("avatar", avatar.getRutaImagen());
+                // Esta ha modificado Carlos
+                ArticuloUsuarioVO dorso = null;
+                ArticuloUsuarioVO avatar = null;
+                try {
+                    dorso = bd.obtenerDorsoFavorito(nombre);
+                    avatar = bd.obtenerAvatarFavorito(nombre);
+                } catch (ExceptionCampoInexistente exceptionCampoInexistente) {
+                    exceptionCampoInexistente.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                // TODO: Añadir personalización
+                jugador.put("dorso" , dorso.getRutaImagen());
+                jugador.put("avatar", avatar.getRutaImagen());
 
 
 
-            jugador.put("tipo", "jugador");
-            try {
-                jugador.put("puntos", estado.getPuntosJugador(nombre));
-            } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
-                exceptionJugadorIncorrecto.printStackTrace();
-            }
-            try {
-                jugador.put("num_cartas", estado.getCartasEnMano(nombre).size());
-            } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
-                exceptionJugadorIncorrecto.printStackTrace();
-            }
-            // Carta mesa
-            JSONObject cartaMesa = new JSONObject();
-            if (cartasTapete.size() == 0) {
-                cartaMesa.put("numero", 0);
-                cartaMesa.put("palo", "X");
-            } else {
-                Carta carta = cartasTapete.get(i);
-                cartaMesa.put("numero", carta.getValor());
-                cartaMesa.put("palo", carta.getPalo());
-            }
+                jugador.put("tipo", "jugador");
+                try {
+                    jugador.put("puntos", estado.getPuntosJugador(nombre));
+                } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                    exceptionJugadorIncorrecto.printStackTrace();
+                }
+                try {
+                    jugador.put("num_cartas", estado.getCartasEnMano(nombre).size());
+                } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                    exceptionJugadorIncorrecto.printStackTrace();
+                }
+                // Carta mesa
+                JSONObject cartaMesa = new JSONObject();
+                if (cartasTapete.size() == 0 || i >= cartasTapete.size()) {
+                    cartaMesa.put("numero", 0);
+                    cartaMesa.put("palo", "X");
+                } else if(i < cartasTapete.size()) {
+                    Carta carta = cartasTapete.get(i);
+                    cartaMesa.put("numero", carta.getValor());
+                    cartaMesa.put("palo", carta.getPalo());
+                }
 
-            jugador.put("carta_mesa", cartaMesa);
-            jugadores.add(jugador);
-            i++;
+                jugador.put("carta_mesa", cartaMesa);
+                jugadores.add(jugador);
+                i++;
+            }
         }
         objEstado.put("jugadores", jugadores);
         // Objeto triunfo
@@ -524,22 +633,38 @@ public class GestorMensajes {
         String stringEstado = objEstado.toJSONString();
         for (String nombre : lobby.getTodosNombres()) {
             JugadorGestor jug = lobby.buscarNombre(nombre);
-            // Array mano personalizado para cada jugador
-            JSONArray mano = new JSONArray();
-            try {
-                for (Carta carta : estado.getCartasEnMano(nombre)) {
-                    JSONObject objCarta = new JSONObject();
-                    objCarta.put("numero", carta.getValor());
-                    objCarta.put("palo", carta.getPalo());
-                    mano.add(objCarta);
+            if (no_espectadores.contains(nombre)){ // Es un jugador
+                System.out.println(nombre + " NO ES UN ESPECTADOR");
+                // Array mano personalizado para cada jugador
+                JSONArray mano = new JSONArray();
+                try {
+                    for (Carta carta : estado.getCartasEnMano(nombre)) {
+                        JSONObject objCarta = new JSONObject();
+                        objCarta.put("numero", carta.getValor());
+                        objCarta.put("palo", carta.getPalo());
+                        mano.add(objCarta);
+                    }
+                    JSONObject objEstadoPers = objEstado;
+                    objEstadoPers.put("mano", mano);
+                } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                    exceptionJugadorIncorrecto.printStackTrace();
                 }
-                JSONObject objEstadoPers = objEstado;
-                objEstadoPers.put("mano", mano);
-            } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
-                exceptionJugadorIncorrecto.printStackTrace();
             }
             try {
-                jug.getRemoto().sendText(objEstado.toJSONString());
+                System.out.println("ID DEL JUGADOR REMOTO "  + id);
+                if (id >= 0){
+                    System.out.println(lobby.buscarId(id).getNombre());
+                }
+                System.out.println(jug.getNombre());
+                if(id >= 0 && lobby.buscarId(id).getNombre() == jug.getNombre()) {
+                    System.out.println("LE ENVIO EL ESTADO INICIAL, QUE ES:");
+                    System.out.println(objEstado.toJSONString());
+                    jug.getRemoto().sendText(objEstado.toJSONString());
+                }
+                else if (id < 0){
+                    System.out.println("LE ENVIO EL ESTADO AL JUGADOR: " +id);
+                    jug.getRemoto().sendText(objEstado.toJSONString());
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -558,8 +683,8 @@ public class GestorMensajes {
 
     private void finalizarPartida(int idPartida) {
         System.out.println("Partida finalizada: " + idPartida);
-        broadcastGanaRonda(idPartida);
-        partidasPausadas.remove(idPartida);
+        broadcastGanaRonda(idPartida, true);
+        partidasPausadas.remove((Integer) idPartida);
         // Elimina la partida de la lista de partidas activas
         listaPartidas.remove(idPartida);
         /*try {
@@ -580,6 +705,7 @@ public class GestorMensajes {
                 jugador.desconectar();  // Desconectar al jugador
                 if (!lobby.algunConectado()) {
                     // TODO: Eliminar partida
+                    System.out.println("Todos los jugadores desconectados en la partida " + id);
                     finalizarPartida(id);
                 }
                 else {
