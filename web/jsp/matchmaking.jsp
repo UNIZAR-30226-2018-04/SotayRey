@@ -177,17 +177,23 @@
         }
     }
     var socket;
-    function buscarPartida(){
+    function buscarPartida() {
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         var nombre_jugador = nombreUsuario;
         var socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        var tipo = null;
+        if (parseInt(getRadioValue("esPublica")) == 1) {
+            tipo = "publica";
+        } else {
+            tipo = "privada";
+        }
+
         var listo = JSON.stringify({
             "tipo_mensaje": "busco_partida",
             "nombre_participante": nombre_jugador,
-            "tipo_partida": "publica",
+            "tipo_partida": tipo,
             "total_jugadores": parseInt(getRadioValue("tipoPartidaPublica")),
             "con_ia" : false,
-            "es_publica": parseInt(getRadioValue("esPublica")), // O es privada, != 0 es publica
             //"con_ia": document.getElementsByName("tipoRival")[0].value
         });
         //console.log(msg);
