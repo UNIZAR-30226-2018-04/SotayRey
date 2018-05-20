@@ -177,15 +177,16 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title text-center">Buscando partida...</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body text-center">
                     <p>Espere mientras se encuentran contrincantes</p>
-                    <img src="../img/loading.gif" alt="animacion cargando">
+                    <img src="../img/loading2.gif" alt="animacion cargando">
                 </div>
                 <div class="modal-footer text-center">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="cerrarSocket()">Cancelar búsqueda</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cerrarSocket()">
+                        <i class="fa fa-ban mr-2" aria-hidden="true"></i>Cancelar búsqueda</button>
                 </div>
             </div>
 
@@ -208,7 +209,7 @@
                 </div>
                 <div class="modal-body text-center">
                     <p>Espere mientras se encuentran contrincantes</p>
-                    <img src="../img/loading.gif" alt="animacion cargando">
+                    <img src="../img/loading2.gif" alt="animacion cargando">
                 </div>
                 <div class="modal-footer text-center">
                     <button type="button" onclick="cerrarSocket()" class="btn btn-default" data-dismiss="modal">Cancelar búsqueda</button>
