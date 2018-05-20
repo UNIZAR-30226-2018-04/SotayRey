@@ -140,7 +140,7 @@ public class StatsUsuarioDAO {
 
         // Obtener partidas perdidas por el usuario username
         query = "SELECT COUNT(*) perdidas FROM juega j, partida p WHERE j.usuario = '" + username +
-                "' AND j.partida = p.id AND j.equipo != p.ganador AND p.ganador != 'A' AND p.ganador != null";
+                "' AND j.partida = p.id AND j.equipo != p.ganador AND p.ganador != 'A' AND p.ganador is not null";
         resultSet = statement.executeQuery(query);
         if(!resultSet.isBeforeFirst())
             su.setPerdidas(0);
