@@ -333,12 +333,12 @@
         socket.onopen = function() {
             console.log(listo);
             socket.send(listo);
+            sigoBuscando();
         };
         socket.onmessage = function (msg) {
             recibirMensaje(msg.data);
             console.log(msg.data);
         };
-        //sigoBuscando();
     }
     function sigoBuscando(){
         setTimeout(function(){
@@ -403,11 +403,9 @@
         }
     }
     $("#botIA").click(function() {
-        console.log("Click bot IA");
         $("#botParejas").addClass("disabled");
     });
     $("#botMult").on("click", function() {
-        console.log("Click bot mult");
         $("#botParejas").removeClass("disabled");
     });
     $("#buscarPartida").on("hidden.bs.modal", function () {
