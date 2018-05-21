@@ -1,3 +1,4 @@
+package src;
 import java.util.ArrayList;
 
 public class Nodo {
@@ -50,7 +51,7 @@ public class Nodo {
         for (Nodo h: this.hijos) {
             if (movimientosLegales.contains(h.movimiento)) {
                 double auxUCB = ((h.victorias)/(double)(h.visitas))+0.7*Math.sqrt(Math.log(h.avails)/(double)(h.visitas));
-                if (maxUCB < auxUCB) {
+                if (maxUCB <= auxUCB) {
                    maxUCB = auxUCB;
                    max = h;
                 }

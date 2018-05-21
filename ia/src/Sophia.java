@@ -1,3 +1,4 @@
+package src;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -41,7 +42,7 @@ public class Sophia {
         int maxVisitas = 0;
         CartaIA maxCarta = null;
         for (Nodo n: raiz.getHijos()) {
-            if (n.getVisitas()>maxVisitas) {
+            if (n.getVisitas()>=maxVisitas) {
                 maxVisitas = n.getVisitas();
                 maxCarta = n.getMovimiento();
             }
@@ -51,19 +52,23 @@ public class Sophia {
 
     public static void main(String[] args) {
         EstadoPartidaIA estado = EstadoPartidaIA.nuevaPartida();
+        Random random = new Random();
 
         while (estado.obtenerMovimientos().size()>0) {
             System.out.println(estado);
 
             CartaIA m;
             if (estado.getTurno() == 0) {
-                m = Sophia.ismcts(estado, 5000);
+                m = Sophia.ismcts(estado, 20000);
             } else {
                 Scanner in = new Scanner(System.in);
                 System.out.printf("Que carta quieres jugar?:  ");
+                //  m = Sophia.ismcts(estado, 10000);
                 m = estado.obtenerMovimientos().get(in.nextInt());
+                // m = estado.obtenerMovimientos().get(random.nextInt(estado.obtenerMovimientos().size()));
             }
-            System.out.println("Mejor movimiento: " + m);
+            System.out.println("Es el turno "+estado.getTurno());
+            System.out.println("\nMejor movimiento: " + m+"\n");
             estado.realizarMovimiento(m, estado.getTurno());
         }
 

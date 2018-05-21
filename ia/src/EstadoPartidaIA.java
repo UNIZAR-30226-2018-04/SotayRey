@@ -3,7 +3,7 @@
  * @Fecha: 11-03-18
  * @Fichero: Estado de la partida del guiñote que permite ver las cartas de la partida y sus jugadores
  */
-
+package src;
 import main.java.EstadoPartida;
 
 import java.util.ArrayList;
@@ -84,7 +84,7 @@ public class EstadoPartidaIA {
         // Semilla
         np.random = new Random();
         // Turno
-        np.turno = np.random.nextInt(2);
+        np.turno = 1; //np.random.nextInt(2);
         // Puntos iniciales
         np.puntos = new ArrayList<>(Collections.nCopies(2, 0));
         // Cartas iniciales
@@ -120,19 +120,19 @@ public class EstadoPartidaIA {
         clon.manos.add(new ArrayList<>());
         clon.manos.add(new ArrayList<>());
         this.manos.get(0).forEach(c -> clon.manos.get(0).add(new CartaIA(c)));
-        this.manos.get(1).forEach(c -> clon.manos.get(0).add(new CartaIA(c)));
+        this.manos.get(1).forEach(c -> clon.manos.get(1).add(new CartaIA(c)));
         // Vueltas
         clon.vueltas = this.vueltas;
         // Cartas que ningún jugador conoce
         clon.restantes = new ArrayList<>(this.restantes.size());
         this.restantes.forEach(c -> clon.restantes.add(new CartaIA(c)));
         // Que cantes ha habido {B,C,E,O}
-        this.cantes = new ArrayList<>(4);
+        clon.cantes = new ArrayList<>(4);
         clon.cantes.addAll(this.cantes);
         // Carta del triunfo
         clon.triunfo = new CartaIA(this.triunfo);
         // La carta que ha sido tirada en el tapete
-        clon.cartaTirada = new CartaIA((this.cartaTirada));
+        clon.cartaTirada = this.cartaTirada == null ? null : new CartaIA(this.cartaTirada);
         // Semilla
         clon.random = new Random();
 
@@ -152,9 +152,9 @@ public class EstadoPartidaIA {
         // Se barajean y se reparten al rival
         Collections.shuffle(desconocidas);
         desconocidas.add(clon.triunfo);
-        for (int i = 0; i < clon.manos.get(observador - 1).size(); i++) {
-            clon.manos.get(observador - 1).set(i, desconocidas.get(i));
-            desconocidas.remove(i);
+        for (int i = 0; i < clon.manos.get(1-observador).size(); i++) {
+            clon.manos.get(1-observador).set(i, desconocidas.get(0));
+            desconocidas.remove(0);
         }
 
         // Se vuelve a quitar el triunfo
@@ -189,24 +189,25 @@ public class EstadoPartidaIA {
         puntosJugador += movimiento.getPuntos() + this.cartaTirada.getPuntos();
         this.puntos.set(jugador, puntosJugador);
 
-        // Robar cartas
-        ArrayList<CartaIA> cartasPorRobar = new ArrayList<>();
-        cartasPorRobar.addAll(this.restantes);
-        cartasPorRobar.add(this.triunfo);
 
-        if (cartasPorRobar.size() > 1) {
-            this.manos.get(jugador).add(cartasPorRobar.get(0));
-            cartasPorRobar.remove(0);
-            this.manos.get(jugador - 1).add(cartasPorRobar.get(0));
-            cartasPorRobar.remove(0);
+        // Robar cartas
+        if (this.restantes.size() >= 1) {
+            this.restantes.add(this.triunfo);
+            this.manos.get(jugador).add(this.restantes.get(0));
+            this.restantes.remove(0);
+            this.manos.get(1-jugador).add(this.restantes.get(0));
+            this.restantes.remove(0);
+            if (this.restantes.size()>0) {
+                this.restantes.remove(this.restantes.size() - 1);
+            }
         }
 
         // Se quita la carta del tapete
         this.cartaTirada = null;
 
         // Se comprueban los cates
-        for (CartaIA c1 : this.manos.get(0)) {
-            for (CartaIA c2 : this.manos.get(0)) {
+        for (CartaIA c1 : this.manos.get(jugador)) {
+            for (CartaIA c2 : this.manos.get(jugador)) {
                 if (c1.rank == 6 && c2.rank == 7 && c1.palo == c2.palo && !this.cantes.get(c1.getPaloInt())) {
                     this.puntos.set(jugador, this.puntos.get(jugador) + 20 + 20 * ((c1.palo == this.triunfo.palo) ? 1 : 0));
                     this.cantes.set(c1.getPaloInt(), true);
@@ -215,24 +216,26 @@ public class EstadoPartidaIA {
         }
 
         // Las diez últimas
-        if (this.manos.get(0).size() == 0 && this.manos.get(0).size() == 0) {
+        if (this.manos.get(0).size() == 0 && this.manos.get(1).size() == 0) {
             this.puntos.set(jugador, this.puntos.get(jugador) + 10);
         }
 
         // Si tiene el 7 de triunfo lo cambia
         if (this.manos.get(jugador).contains(new CartaIA(4, this.triunfo.palo))) {
-            this.manos.get(0).remove(new CartaIA(4, this.triunfo.palo));
-            this.manos.get(0).add(this.triunfo);
+            this.manos.get(jugador).remove(new CartaIA(4, this.triunfo.palo));
+            this.manos.get(jugador).add(this.triunfo);
             this.triunfo = new CartaIA(4, this.triunfo.palo);
         }
 
         // Si se ha acabado la partida de ida sin ganador se reparten las vueltas
-        if (this.manos.get(0).size() == 0 && this.puntos.get(0) < 101 && this.puntos.get(0) < 101) {
-            this.turno = 3 - jugador;
+        if (this.manos.get(0).size() == 0 && this.puntos.get(0) < 101 && this.puntos.get(1) < 101) {
+            jugador = 1 - jugador;
             this.vueltas = true;
             this.cantes = new ArrayList<Boolean>(Collections.nCopies(4, false));
             this.barajar();
         }
+
+        this.turno = jugador;
 
 
     }
@@ -268,7 +271,7 @@ public class EstadoPartidaIA {
     }
 
     public int obtenerResultado(int jugador) {
-        return this.puntos.get(jugador) > 0 ? 1 : 0;
+        return this.puntos.get(jugador) >= 101 ? 1 : 0;
     }
 
     /*
@@ -314,8 +317,8 @@ public class EstadoPartidaIA {
             result += c + ",";
         }
         result += "\nCartas 2: ";
-        for (CartaIA cartaIA : this.manos.get(1)) {
-            result += cartaIA + ",";
+        for (CartaIA c : this.manos.get(1)) {
+            result += c + ",";
         }
         result += "\nTriunfo: " + this.triunfo + "\n";
         result += "Cantadas: ";
@@ -325,10 +328,11 @@ public class EstadoPartidaIA {
                 result += palos[i];
             }
         }
-        result += "Cartas Restantes: ";
+        result += "\nCartas Restantes: ";
         for (CartaIA c : this.restantes) {
             result += c + ",";
         }
+        result += "\nVueltas: " + (this.vueltas? "Sí":"No");
         result += "\nTurno: " + this.turno + "\n";
 
         return result;
