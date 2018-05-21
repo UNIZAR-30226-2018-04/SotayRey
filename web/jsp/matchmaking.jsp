@@ -60,10 +60,10 @@
                         <div class="form-group">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                 <label id="botParejas" class="btn btn-secondary active">
-                                    <input  type="radio" name="tipoPartidaPublica" autocomplete="off" value="4" checked> Parejas
+                                    <input  type="radio" name="tipoPartidaPublica" autocomplete="off" value="4"> Parejas
                                 </label>
                                 <label class="btn btn-secondary">
-                                    <input id="botUno" type="radio" name="tipoPartidaPublica" value = "2" autocomplete="off"> Uno contra uno
+                                    <input id="botUno" type="radio" name="tipoPartidaPublica" value = "2" autocomplete="off" checked> Uno contra uno
                                 </label>
                             </div>
                         </div>
@@ -305,17 +305,21 @@
             }
         }
     }
+
+    var ia = getRadioValue("tipoRival") == "true";
+    var nombre_jugador = nombreUsuario;
+    var tipo = null;
+    if (parseInt(getRadioValue("esPublica")) == 1) {
+        tipo = "publica";
+    } else {
+        tipo = "privada";
+    }
+
     function buscarPartida() {
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
-        var nombre_jugador = nombreUsuario;
+
         socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
-        var tipo = null;
-        if (parseInt(getRadioValue("esPublica")) == 1) {
-            tipo = "publica";
-        } else {
-            tipo = "privada";
-        }
-        var ia = getRadioValue("tipoRival") == "true";
+
 
         var listo = JSON.stringify({
             "tipo_mensaje": "busco_partida",
@@ -334,14 +338,30 @@
             recibirMensaje(msg.data);
             console.log(msg.data);
         };
+        //sigoBuscando();
     }
+    function sigoBuscando(){
+        setTimeout(function(){
+            var msg = JSON.stringify({
+                "tipo_mensaje": "sigo_buscando",
+                "nombre_participante": nombre_jugador,
+                "tipo_partida": tipo,
+                "total_jugadores": parseInt(getRadioValue("tipoPartidaPublica")),
+                "con_ia" : ia
+            });
+            socket.send(msg);
+            sigoBuscando();
+        }, 10000);
+    }
+
+
     function espectarPartida(idPartida){
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         var nombre_jugador = nombreUsuario;
         socket = new WebSocket("ws://localhost:8080/gm/endpoint");
         var listo = JSON.stringify({
             "tipo_mensaje": "espectar_partida",
-            "id_partida": idPartida
+            "id_partida": idPartidalo
         });
         socket.onopen = function() {
             console.log(listo);
@@ -367,16 +387,17 @@
         var tapete = "<%=miTapete%>";
         var espectador = false;
         console.log("EL MENSAJE ES: " + mensaje.tipo_mensaje);
+        mensaje.torneo = false; // TODO esto quitarlo
         switch(mensaje.tipo_mensaje){
             case "partida_lista":
                 id_jugador = mensaje.id_jugador;
-                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
+                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador    + "&torneo=" + mensaje.torneo;
                 window.location.replace("../juego.html?"+parametros);
                 break;
             case "espectar_partida":
                 id_jugador = mensaje.id_espectador;
                 var espectador = true;
-                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador;
+                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador +    + "&torneo=" + mensaje.torneo;;
                 window.location.replace("../juego.html?"+parametros);
                 break;
         }

@@ -1,6 +1,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="basedatos.modelo.TorneoVO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ page import="basedatos.InterfazDatos" %>
 
 <html lang="en" >
 <head>
@@ -136,7 +137,7 @@
                                         <td><%=torneo.getPremioPuntuacionPrimera()%></td>
                                         <td>
                                             <div class="btn-toolbar">
-                                                <button type="button" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
+                                                <button type="button" onclick="buscarPartida()" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
                                                 <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
 
                                                 <form action="/GestionarTorneo.do" method="post">
@@ -340,6 +341,105 @@
 </body>
 </html>
 
+<%
+    // Se necesita para acceder al tapete del usuario y luego enviarselo al juego
+    InterfazDatos facade = null;
+    try {
+        facade = InterfazDatos.instancia();
+    } catch (Exception e) {
+        System.err.println("ERROR: creando interfaz");
+    }
+    UsuarioVO usuarioVO2 = (UsuarioVO) session.getAttribute("userId");
+    String nick = usuarioVO2.getUsername();
+    String miTapete = facade.obtenerTapeteFavorito(nick).getRutaImagen();
+%>
+
+<script>
+    var socket;
+    function buscarPartida() {
+        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        var nombre_jugador = nombreUsuario;
+        socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+
+        var listo = JSON.stringify({
+            "tipo_mensaje": "busco_torneo",
+            "nombre_participante": nombre_jugador
+        });
+        socket.onopen = function() {
+            console.log(listo);
+            socket.send(listo);
+        };
+        socket.onmessage = function (msg) {
+            recibirMensaje(msg.data);
+            console.log(msg.data);
+        };
+    }
+
+    function cerrarSocket(){
+        socket.close();
+        console.log("socket cerrado");
+    }
+    function recibirMensaje(msg) {
+        console.log("HE RECIBIDO UN MENSAJE");
+
+        switch(mensaje.tipo_mensaje){
+            case "partida_lista":
+                var mensaje = JSON.parse(msg);
+                var total_jugadores = mensaje.total_jugadores;
+                var id_partida = mensaje.id_partida;
+                var nombre_jugador = nombreUsuario;
+                var id_jugador;
+                var con_ia = mensaje.con_ia;
+                var tapete = "<%=miTapete%>";
+                var espectador = false;
+                console.log("EL MENSAJE ES: " + mensaje.tipo_mensaje);
+                id_jugador = mensaje.id_jugador;
+                parametros = "miID=" + id_jugador + "&idPartida=" + id_partida + "&nombre=" + nombre_jugador + "&numJugadores=" + total_jugadores + "&tapete=" + tapete + "&espectador=" + espectador
+                    + "&torneo=" + mensaje.torneo;
+                window.location.replace("../juego.html?" + parametros);
+                break;
+            case "restante_torneo":
+                setTimeout(function(){
+                    // TODO tipo de mensaje para avisar del comienzo del toreno
+
+                    }, parseInt(mensaje.tiempo)*1000); // Porque esta en segundos
+                break;
+        }
+
+    }
+
+    $("#botIA").click(function() {
+        console.log("Click bot IA");
+        $("#botParejas").addClass("disabled");
+    });
+    $("#botMult").on("click", function() {
+        console.log("Click bot mult");
+        $("#botParejas").removeClass("disabled");
+    });
+    $("#buscarPartida").on("hidden.bs.modal", function () {
+        cerrarSocket();
+    });
+
+    function findGetParameter(parameterName) {
+        var result = null,
+            tmp = [];
+        location.search
+            .substr(1)
+            .split("&")
+            .forEach(function (item) {
+                tmp = item.split("=");
+                if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+            });
+        return result;
+    }
+
+    var sigueTorneo = findGetParameter("sigueTorneo") == "true";
+    if (sigueTorneo) {
+        buscarPartida();
+        $('#unirseTorneo').modal('show');
+    }
+
+</script>
 
 
 

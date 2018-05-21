@@ -766,6 +766,8 @@ function recibirMensaje(msg){
             jugadorDesconectado(id);
             setTimeout(function(){ mandarTimeout();}, timeout);
             break;
+        case "jugador_reconectado":
+            textoDesconectado.destroy();
     }
 }
 
@@ -1193,19 +1195,30 @@ function finPartida(){
  //   puntuacionMia.y = logo.y + logo.height * 1.2;
 
     // Logo para volver al menu principal
-
-    var botonSalir = game.add.sprite(0, 0, 'botonSalir');
-    botonSalir.width = 150;
-    botonSalir.height = 50;
-    botonSalir.x = game.world.centerX - botonSalir.width/2;
-    botonSalir.y =  logo.y + logo.height - 20;
-    console.log("DIBUJO EL BOTON DE SALIR");
-    botonSalir.inputEnabled = true;
-    botonSalir.events.onInputDown.add(
-        function salir(){
-            window.location.replace("../jsp/matchmaking.jsp");
-        }
-        , this);
+    if(torneo){
+        setTimeout(function() {
+            if(tipo == "derrota"){
+                window.location.replace("../jsp/matchmaking.jsp");
+            }
+            else {
+                window.location.replace("../jsp/torneos.jsp?sigueTorneo=true");
+            }
+        } , 2000);
+    }
+    else{ // Boton de salir a la pagina principal
+        var botonSalir = game.add.sprite(0, 0, 'botonSalir');
+        botonSalir.width = 150;
+        botonSalir.height = 50;
+        botonSalir.x = game.world.centerX - botonSalir.width/2;
+        botonSalir.y =  logo.y + logo.height - 20;
+        console.log("DIBUJO EL BOTON DE SALIR");
+        botonSalir.inputEnabled = true;
+        botonSalir.events.onInputDown.add(
+            function salir(){
+                window.location.replace("../jsp/matchmaking.jsp");
+            }
+            , this);
+    }
 }
 
 var arrastre;

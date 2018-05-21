@@ -126,6 +126,7 @@ public class GestorMensajes {
             // Eliminar la partida de pausadas
             partidasPausadas.remove((Integer) idPartida);
             System.out.println("Partida " + idPartida + " continua, jugador " + jug.getNombre() + " reconectado");
+            broadcastJugadorReconectado(idPartida);
             return true;
         }
         return false;
@@ -510,6 +511,13 @@ public class GestorMensajes {
         objTurno.put("tipo_accion", "turno");
         objTurno.put("id_jugador", estado.getTurno());
         objTurno.put("ronda", lobby.getRonda());
+        broadcastMensaje(lobby, objTurno);
+    }
+
+    private void broadcastJugadorReconectado(int idPartida) {
+        Lobby lobby = lobbies.get(idPartida);
+        JSONObject objTurno = new JSONObject();
+        objTurno.put("tipo_mensaje", "jugador_reconectado");
         broadcastMensaje(lobby, objTurno);
     }
 
