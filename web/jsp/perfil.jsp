@@ -261,15 +261,13 @@
                         <th>Equipo1</th>
                         <th>Equipo2</th>
                         <th>Resultado</th>
-                        <th>Contringante</th>
-                        <th>Puntos Contringante</th>
                         <th>Tus Puntos</th>
-                        <th>Moneda</th>
+                        <th>Puntos Contringante</th>
                     </tr>
                     </thead>
                     <tbody>
                     <%
-                        for(Integer j = 1; j < historial.size(); j++){
+                        for(Integer j = 0; j < historial.size(); j++){
                             PartidaVO partida = historial.get(j);
                             ArrayList<UsuarioVO> usuarios = (ArrayList<UsuarioVO>) partida.getUsuarios();
                             int equipo = 0;
@@ -290,15 +288,20 @@
                     %>
                     <tr>
                         <% if(usuarios.size() == 2){ %>
-                            <td><%= usuarios.get(0)%></td>
-                            <td><%= usuarios.get(1) %></td>
+                            <td><%= usuarios.get(0).getUsername()%></td>
+                            <td><%= usuarios.get(1).getUsername() %></td>
                         <% } else { %>
-                            <td><%= usuarios.get(0) + ", " + usuarios.get(2) %></td>
-                            <td><%= usuarios.get(1) + ", " + usuarios.get(3) %></td>
+                            <td><%= usuarios.get(0).getUsername() + ", " + usuarios.get(2).getUsername() %></td>
+                            <td><%= usuarios.get(1).getUsername() + ", " + usuarios.get(3).getUsername() %></td>
                         <% } %>
                         <td><%= resultado%></td>
-                        <td>hola</td>
-                        <td>hola</td>
+                        <% if(equipo == 1){ %>
+                            <td><%= partida.getPuntos1()%></td>
+                            <td><%= partida.getPuntos2()%></td>
+                        <% } else { %>
+                            <td><%= partida.getPuntos2()%></td>
+                            <td><%= partida.getPuntos1()%></td>
+                        <% } %>
                     </tr>
                     <% } %>
                     </tbody>

@@ -342,6 +342,14 @@ function crearCartas(jugador){
 
 }
 
+function destruirCartas(jugador){
+    for (i = 0; i < jugador.cartasEnMano.length; i++){
+        console.log("DESTRUYENDO CARTAS PARA " + jugador.XPosMedia);
+        jugador.cartasEnMano.destroy();
+    }
+
+}
+
 /**
  * Dibuja las cartas que tiene en la mano un jugador
  * @param identificador identificador del jugador a dibujar las cartas
@@ -574,6 +582,7 @@ function enviarMensaje(obj){
 var estadoInicializado = false;
 
 function representarEstado(estado){
+    console.log("DIBUJO EL ESTADO COMPLETO");
     if(partida_pausa){
         textoDesconectado.destroy();
     }
@@ -606,6 +615,7 @@ function representarEstado(estado){
 
 
                 console.log("JUGADORSITO " + jugador.XPosMedia + " " + item.id);
+              //  destruirCartas(jugador);
                 jugador.numCartas = item.num_cartas;
                 jugador.nombreUsuario.text = item.nombre;
                 crearCartas(jugador);
@@ -643,7 +653,7 @@ function representarEstado(estado){
         var carta = {};
 
 
-
+        //destruirCartas(jugador);
         estado.mano.forEach(function(item) {
             console.log("CREANDO CARTA: " + item.numero + "  " +item.palo);
             carta = crearCarta(item.numero, item.palo);
@@ -660,6 +670,8 @@ function representarEstado(estado){
         }, this);
 
 
+
+
     }
     // Se dibujan las cartas en la mesa
     /*
@@ -673,9 +685,16 @@ function representarEstado(estado){
     */
 
     // HUD
-
+/*
+    tipo_ronda.tipo = datos.tipo_nueva_ronda;
+    numRonda.numero = datos.nueva_ronda;
+    puntuacionMia.puntuacion = datos.puntuaciones[miID].puntuacion; // TODO, siempre ids en orden?
+    puntuacionRival.puntuacion = datos.puntuaciones[(miID+1)%numJugadores].puntuacion;
+    restantes_mazo.restantes = datos.restantes_mazo;
+*/
     datosHUD = {"restantes_mazo": estado.partida.restantes_mazo,
-        "id_jugador": estado.partida.ronda,
+        "nueva_ronda": estado.partida.ronda,
+        "tipo_nueva_ronda" : estado.partida.tipo_ronda,
         "puntuaciones":[{"id_jugador":0,"puntuacion":21},
             {"id_jugador":1,"puntuacion":0},
             {"id_jugador":2,"puntuacion":21},
@@ -705,6 +724,7 @@ function recibirMensaje(msg){
         case "broadcast_accion":
             switch (mensaje.tipo_accion){
                 case "lanzar_carta":
+                    game.load.onLoadComplete.removeAll(); // Cuando un jugador lance una carta es que se han cargado las texturas
                     jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
                     break;
                 case "robar_carta":
@@ -743,8 +763,11 @@ function recibirMensaje(msg){
             var id = mensaje.id_jugador;
             var timeout = mensaje.timeout;
             partida_pausa = true;
-            setTimeout(function(){ jugadorDesconectado(id); mandarTimeout();}, timeout);
+            jugadorDesconectado(id);
+            setTimeout(function(){ mandarTimeout();}, timeout);
             break;
+        case "jugador_reconectado":
+            textoDesconectado.destroy();
     }
 }
 
@@ -757,12 +780,14 @@ function mandarTimeout(){
                 "id_jugador" : miID
             }
         };
-        enviarMensaje(obj);
+        if(!partida_pausa){
+            enviarMensaje(obj);
+        }
     }
 }
 
 
-function jugadorDesconectado(id, cantidad){
+function jugadorDesconectado(id){
     console.log("Jugador desconectado");
     var style = { font: "45px Arial", fill: "#ff0044", align: "center" };
     textoDesconectado = game.add.text(game.world.centerX, game.world.centerY, "PARTIDA EN PAUSA\n"+arrayJugadores[id].nombreUsuario.text +" se ha desconectado", style);
@@ -1089,7 +1114,7 @@ var puntuacionRival = 0;
 var numRonda = 0;
 var restantes_mazo = "NaN";
 var tipo_ronda = "IDAS";
-var color = "#fffff5";
+var color = "#040404";
 var fuente =  "12pt impact";
 
 /**
@@ -1170,19 +1195,30 @@ function finPartida(){
  //   puntuacionMia.y = logo.y + logo.height * 1.2;
 
     // Logo para volver al menu principal
-
-    var botonSalir = game.add.sprite(0, 0, 'botonSalir');
-    botonSalir.width = 150;
-    botonSalir.height = 50;
-    botonSalir.x = game.world.centerX - botonSalir.width/2;
-    botonSalir.y =  logo.y + logo.height - 20;
-    console.log("DIBUJO EL BOTON DE SALIR");
-    botonSalir.inputEnabled = true;
-    botonSalir.events.onInputDown.add(
-        function salir(){
-            window.location.replace("../jsp/matchmaking.jsp");
-        }
-        , this);
+    if(torneo){
+        setTimeout(function() {
+            if(tipo == "derrota"){
+                window.location.replace("../jsp/matchmaking.jsp");
+            }
+            else {
+                window.location.replace("../jsp/torneos.jsp?sigueTorneo=true");
+            }
+        } , 2000);
+    }
+    else{ // Boton de salir a la pagina principal
+        var botonSalir = game.add.sprite(0, 0, 'botonSalir');
+        botonSalir.width = 150;
+        botonSalir.height = 50;
+        botonSalir.x = game.world.centerX - botonSalir.width/2;
+        botonSalir.y =  logo.y + logo.height - 20;
+        console.log("DIBUJO EL BOTON DE SALIR");
+        botonSalir.inputEnabled = true;
+        botonSalir.events.onInputDown.add(
+            function salir(){
+                window.location.replace("../jsp/matchmaking.jsp");
+            }
+            , this);
+    }
 }
 
 var arrastre;

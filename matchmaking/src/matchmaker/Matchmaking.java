@@ -58,7 +58,6 @@ public class Matchmaking {
 
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
-        // TODO: Buscar al jugador que ha cerrado la sesion a traves de su sesion
         System.out.println("Conexion cerrada");
         eliminarJugador(session);
     }
@@ -89,13 +88,45 @@ public class Matchmaking {
     private void recibirBusco(Session sesion, JSONObject msg) {
         boolean conIA = (Boolean) msg.get("con_ia");
         if (conIA) {
-            // TODO: Iniciar partida con IA inmediatamente
-        } else {
+            ArrayList<JugadorMatch> jugsMatch = new ArrayList<>();
             // Obtener datos del jugador
             String nombre = (String) msg.get("nombre_participante");
             StatsUsuarioVO stats = null;
             try {
                 stats = bd.obtenerStatsUsuario(nombre);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            String liga = stats.getLigaActual();
+            int totalJugs = 2;
+            String tipo = (String) msg.get("tipo_partida");
+            JugadorMatch jugador = new JugadorMatch(nombre, tipo, totalJugs, liga, sesion);
+            jugsMatch.add(jugador);
+
+            // Se convierten los jugadores a usuarios
+            ArrayList<UsuarioVO> usuarios = convAUsuarios(jugsMatch);
+            PartidaVO nuevaPartida = null;
+            try {
+                // Se añade la IA a la partida
+                usuarios.add(bd.obtenerDatosUsuario("SophIA"));
+                // Se intenta crear la nueva partida
+                nuevaPartida = new PartidaVO(tipo.equals("publica"), usuarios);
+                bd.crearNuevaPartida(nuevaPartida);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (ExceptionCampoInexistente exceptionCampoInexistente) {
+                exceptionCampoInexistente.printStackTrace();
+            }
+            // Se obtiene el id de la nueva partida
+            BigInteger idPartida = nuevaPartida.getId();
+            System.out.println("Nueva partida creada con id " + idPartida.toString());
+            broadcastListo(jugsMatch, idPartida, true); // Notificar al jugador en espera
+        } else {
+            // Obtener datos del jugador
+            String nombre = (String) msg.get("nombre_participante");
+            StatsUsuarioVO stats = null;
+            try {
+                stats = bd.obtenerTodasStatsUsuario(nombre);
             } catch (Exception e) {
                 e.printStackTrace();
             }

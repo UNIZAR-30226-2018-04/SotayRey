@@ -13,18 +13,22 @@ import java.math.BigInteger;
 public class PruebaJulia {
 
     public static void main(String[] args) throws ExceptionCampoInexistente, ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException {
+
+		StatsUsuarioVO prueba = InterfazDatos.instancia().obtenerTodasStatsUsuario("zquerol");
+
+		System.out.println("Ganadas: " + prueba.getGanadas() + " Perdidas: " + prueba.getPerdidas() + " Abandonadas: " + prueba.getAbandonaste() + " Te abandonaron: " + prueba.getTeAbandonaron());
 	
-		SesionVO s = new SesionVO("zcarrera", "www.nadasoloesunaprueba.com");
-		InterfazDatos.instancia().crearSesionAbierta(s);
-		
-		String url = InterfazDatos.instancia().obtenerUrlSesion("zcarrera");
-		System.out.println("Primera url: " + url);
+//		SesionVO s = new SesionVO("zcarrera", "www.nadasoloesunaprueba.com");
+//		InterfazDatos.instancia().crearSesionAbierta(s);
+//		
+//		String url = InterfazDatos.instancia().obtenerUrlSesion("zcarrera");
+//		System.out.println("Primera url: " + url);
 
-		url = InterfazDatos.instancia().obtenerUrlSesion("viniesta");
-		System.out.println("Segunda url: " + url);
+//		url = InterfazDatos.instancia().obtenerUrlSesion("viniesta");
+//		System.out.println("Segunda url: " + url);
 
-		url = InterfazDatos.instancia().obtenerUrlSesion("juliagviu");
-		System.out.println("Tercera url: " + url);
+//		url = InterfazDatos.instancia().obtenerUrlSesion("juliagviu");
+//		System.out.println("Tercera url: " + url);
 
 //		InterfazDatos.instancia().crearSesionAbierta(s);
 
