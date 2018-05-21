@@ -417,4 +417,10 @@ public class InterfazDatos {
 	public ArrayList<TorneoPeriodicoVO> obtenerTorneosPeriodicos() throws  SQLException {
 	    return TorneoPeriodicoDAO.obtenerTorneosPeriodicos(this.cpds);
     }
+
+    /* Devuelve la partida todavía no acabada con el id pedido.
+     */
+    public PartidaVO obtenerPartida(BigInteger id) throws  SQLException {
+	    return PartidaDAO.obtenerPartida(this.cpds,id);
+    }
  }

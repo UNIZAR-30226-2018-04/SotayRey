@@ -623,4 +623,135 @@ public class PartidaDAO {
         }
         return bi;
     }
+
+    public static PartidaVO obtenerPartida(ComboPooledDataSource pool, BigInteger id) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet res;
+        PartidaVO p = null;
+        connection = pool.getConnection();
+        statement = connection.createStatement();
+
+        String partIndiv = "SELECT p.id, p.timeInicio, p.fase_num, p.fase_torneo, p.publica,\n" +
+                "       j1.usuario usuario1, j2.usuario usuario2 \n" +
+                "FROM partida p, juega j1, juega j2\n" +
+                "WHERE p.id = j1.partida AND p.id = j2.partida AND p.timeFin IS NULL\n" +
+                "      AND j1.usuario > j2.usuario \n" +
+                "      AND p.id = " + id + "\n" +
+                "      AND (NOT EXISTS (SELECT * FROM juega jj WHERE jj.partida = p.id \n" +
+                "      AND j1.usuario <> jj.usuario AND j2.usuario <> jj.usuario));\n";
+
+
+        res = statement.executeQuery(partIndiv);
+        if (res.next()) {
+            Timestamp timeInicio = res.getTimestamp("timeInicio");
+            ArrayList<UsuarioVO> usuarios = new ArrayList<>(2);
+            UsuarioVO u1 = new UsuarioVO();
+            u1.setUsername(res.getString("usuario1"));
+            usuarios.add(u1);
+            UsuarioVO u2 = new UsuarioVO();
+            u2.setUsername(res.getString("usuario2"));
+            usuarios.add(u2);
+            p = new PartidaVO(timeInicio, res.getBoolean("publica"), usuarios);
+            int faseNum = res.getInt("fase_num");
+            String sid = res.getString("fase_torneo");
+            if (!res.wasNull()) {
+                BigInteger fase_torneo = new BigInteger(sid);
+                p.setFaseNum(faseNum);
+                p.setTorneoId(fase_torneo);
+            }
+            p.setId(id);
+        }
+
+        String partParejas = "SELECT p.id, p.timeInicio, p.fase_num, p.fase_torneo,p.publica,\n" +
+                "       j1.usuario usuario1, j2.usuario usuario2,\n" +
+                "       j3.usuario usuario3, j4.usuario usuario4,\n" +
+                "       j1.equipo equipo1, j2.equipo equipo2, \n" +
+                "       j3.equipo equipo3, j4.equipo equipo4 \n" +
+                "FROM partida p, juega j1, juega j2, juega j3, juega j4\n" +
+                "WHERE p.id = j1.partida AND p.id = j2.partida AND p.id = j3.partida AND p.id = j4.partida \n" +
+                "       AND p.id = " + id + " AND p.timeFin IS NULL\n" +
+                "       AND j1.usuario > j2.usuario AND j2.usuario > j3.usuario AND j3.usuario > j4.usuario;\n";
+
+        res = statement.executeQuery(partParejas);
+        if (res.next()) {
+            Timestamp timeInicio = res.getTimestamp("timeInicio");
+
+            ArrayList<UsuarioVO> usuarios = new ArrayList<>(4);
+
+            for (int i = 0; i < 4; i++) {
+                usuarios.add(new UsuarioVO());
+            }
+
+            UsuarioVO u1 = new UsuarioVO();
+            u1.setUsername(res.getString("usuario1"));
+            UsuarioVO u2 = new UsuarioVO();
+            u2.setUsername(res.getString("usuario2"));
+            UsuarioVO u3 = new UsuarioVO();
+            u3.setUsername(res.getString("usuario3"));
+            UsuarioVO u4 = new UsuarioVO();
+            u4.setUsername(res.getString("usuario4"));
+
+
+            if (res.getInt("equipo1") == 1) {
+                usuarios.set(0, u1);
+
+
+                if (res.getInt("equipo2") == 1) {
+                    usuarios.set(2, u2);
+
+
+                    usuarios.set(1, u3);
+
+                    usuarios.set(3, u4);
+                } else {
+                    usuarios.set(1, u2);
+                    if (res.getInt("equipo3") == 1) {
+                        usuarios.set(2, u3);
+
+                        usuarios.set(3, u4);
+                    } else {
+                        usuarios.set(3, u3);
+
+                        usuarios.set(2, u4);
+                    }
+                }
+            } else {
+                usuarios.set(1, u1);
+                if (res.getInt("equipo2") == 2) {
+                    usuarios.set(3, u2);
+
+
+                    usuarios.set(0, u3);
+
+                    usuarios.set(2, u4);
+                } else {
+                    usuarios.set(0, u2);
+                    if (res.getInt("equipo3") == 2) {
+                        usuarios.set(3, u3);
+
+                        usuarios.set(2, u4);
+                    } else {
+                        usuarios.set(2, u3);
+
+                        usuarios.set(3, u4);
+                    }
+                }
+            }
+            int faseNum = res.getInt("fase_num");
+            String sid = res.getString("fase_torneo");
+            p = new PartidaVO(timeInicio, res.getBoolean("publica"), usuarios);
+            if (!res.wasNull()) {
+                BigInteger fase_torneo = new BigInteger(sid);
+                p.setFaseNum(faseNum);
+                p.setTorneoId(fase_torneo);
+            }
+            p.setId(id);
+        }
+
+        if (statement != null) statement.close();
+        if (connection != null) connection.close();
+
+        return p;
+    }
 }
