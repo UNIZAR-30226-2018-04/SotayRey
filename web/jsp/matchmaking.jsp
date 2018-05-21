@@ -49,21 +49,21 @@
                     <form action="/......" method="post">
                         <div class="form-group">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                <label class="btn btn-secondary active">
-                                    <input type="radio" name="tipoRival" autocomplete="off" value="false" checked> Multijugador
+                                <label id="botMult" class="btn btn-secondary active">
+                                    <input  type="radio" name="tipoRival" autocomplete="off" value="false" checked> Multijugador
                                 </label>
-                                <label class="btn btn-secondary">
-                                    <input type="radio" name="tipoRival" value = "true" autocomplete="off"> IA
+                                <label id="botIA" class="btn btn-secondary">
+                                    <input  type="radio" name="tipoRival" value = "true" autocomplete="off"> IA
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                <label class="btn btn-secondary active">
-                                    <input type="radio" name="tipoPartidaPublica" autocomplete="off" value="4" checked> Parejas
+                                <label id="botParejas" class="btn btn-secondary active">
+                                    <input  type="radio" name="tipoPartidaPublica" autocomplete="off" value="4" checked> Parejas
                                 </label>
                                 <label class="btn btn-secondary">
-                                    <input type="radio" name="tipoPartidaPublica" value = "2" autocomplete="off"> Uno contra uno
+                                    <input id="botUno" type="radio" name="tipoPartidaPublica" value = "2" autocomplete="off"> Uno contra uno
                                 </label>
                             </div>
                         </div>
@@ -315,14 +315,14 @@
         } else {
             tipo = "privada";
         }
+        var ia = getRadioValue("tipoRival") == "true";
 
         var listo = JSON.stringify({
             "tipo_mensaje": "busco_partida",
             "nombre_participante": nombre_jugador,
             "tipo_partida": tipo,
             "total_jugadores": parseInt(getRadioValue("tipoPartidaPublica")),
-            "con_ia" : false,
-            //"con_ia": document.getElementsByName("tipoRival")[0].value
+            "con_ia" : ia
         });
         //console.log(msg);
         //socket.send(msg)
@@ -381,6 +381,14 @@
                 break;
         }
     }
+    $("#botIA").click(function() {
+        console.log("Click bot IA");
+        $("#botParejas").addClass("disabled");
+    });
+    $("#botMult").on("click", function() {
+        console.log("Click bot mult");
+        $("#botParejas").removeClass("disabled");
+    });
     $("#buscarPartida").on("hidden.bs.modal", function () {
         cerrarSocket();
     });
