@@ -59,11 +59,11 @@
                         </div>
                         <div class="form-group">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                <label id="botParejas" class="btn btn-secondary active">
+                                <label id="botParejas" class="btn btn-secondary">
                                     <input  type="radio" name="tipoPartidaPublica" autocomplete="off" value="4"> Parejas
                                 </label>
-                                <label class="btn btn-secondary">
-                                    <input id="botUno" type="radio" name="tipoPartidaPublica" value = "2" autocomplete="off" checked> Uno contra uno
+                                <label id="botUno" class="btn btn-secondary active">
+                                    <input type="radio" name="tipoPartidaPublica" value = "2" autocomplete="off" checked> Uno contra uno
                                 </label>
                             </div>
                         </div>
@@ -90,7 +90,7 @@
 </div>
 
 <br/>
-
+<!--
 <div class="container">
     <div class="row">
         <div class="col-md-4">
@@ -136,9 +136,8 @@
             </div>
 
         </div>
-
-
-        <div class="col-md-4">
+-->
+        <div class="d-flex justify-content-center">
             <div class="card text-white bg-dark mb-3">
                 <div class="card-header text-center titulo">Espectar una partida</div>
                 <div class="card-body text-center">
@@ -149,11 +148,6 @@
             </div>
 
         </div>
-
-
-    </div>
-</div>
-
 
 <%
     // Se necesita para acceder al tapete del usuario y luego enviarselo al juego
@@ -289,10 +283,10 @@
         </div>
     </div>
 </div>
-
+<!--
 <button type="button" onclick="espectarPartida(387)" class="btn btn-default submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> DEBUG ESPECTAR</button>
 <a href="../juego.html?miID=3&idPartida=..&nombre=pepito&numJugadores=2&tapete="> ESPECTADOR PARA DEPURAR </a>
-
+-->
 <script>
     var socket;
     function getRadioValue(campo)
@@ -361,7 +355,7 @@
         socket = new WebSocket("ws://localhost:8080/gm/endpoint");
         var listo = JSON.stringify({
             "tipo_mensaje": "espectar_partida",
-            "id_partida": idPartidalo
+            "id_partida": idPartida
         });
         socket.onopen = function() {
             console.log(listo);

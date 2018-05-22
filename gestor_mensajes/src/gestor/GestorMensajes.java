@@ -376,32 +376,35 @@ public class GestorMensajes {
         objNR.put("id_jugador", partida.getEstado().getGanadorUltimaRonda());
         // Obtener puntuaciones de cada jugador
         JSONArray punts = new JSONArray();
+        EstadoPartida estado = listaPartidas.get(idPartida).getEstado();
+        ArrayList<String> no_espectadores = estado.getJugadoresId(); // Los que estan realmente jugando
         int i = 0;
         for (String nombre : lobby.getTodosNombres()) {
-            JSONObject jug = new JSONObject();
-            jug.put("id_jugador", i);
-            if (!timeout) {
-                try {
-                    // TODO: Que no intente obtener puntos del espectador
-                    jug.put("puntuacion", partida.consultarPuntos(nombre));
-                } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
-                    exceptionJugadorIncorrecto.printStackTrace();
-                } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
-                    // Caso de que no haya acabado la ronda
+            if (no_espectadores.contains(nombre)) { // Solo extrae puntos de los NO ESPECTADORS (los que estan jugando)
+                JSONObject jug = new JSONObject();
+                jug.put("id_jugador", i);
+                if (!timeout) {
+                    try {
+                        jug.put("puntuacion", partida.consultarPuntos(nombre));
+                    } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
+                        exceptionJugadorIncorrecto.printStackTrace();
+                    } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
+                        // Caso de que no haya acabado la ronda
+                        if (lobby.buscarNombre(nombre).getDesconectado() != null) {
+                            jug.put("puntuacion", 0);
+                        } else {
+                            jug.put("puntuacion", 101);
+                        }
+                    }
+                } else {
                     if (lobby.buscarNombre(nombre).getDesconectado() != null) {
                         jug.put("puntuacion", 0);
                     } else {
                         jug.put("puntuacion", 101);
                     }
                 }
-            } else {
-                if (lobby.buscarNombre(nombre).getDesconectado() != null) {
-                    jug.put("puntuacion", 0);
-                } else {
-                    jug.put("puntuacion", 101);
-                }
+                punts.add(jug);
             }
-            punts.add(jug);
             i++;
         }
         objNR.put("puntuaciones", punts);
@@ -721,26 +724,32 @@ public class GestorMensajes {
             JugadorGestor jugador = lobby.buscarSesion(sesion);
             if (jugador != null) {
                 // Si se encuentra al jugador desconectado
-                jugador.desconectar();  // Desconectar al jugador
-                try {
-                    String miTapete = bd.obtenerTapeteFavorito(jugador.getNombre()).getRutaImagen();
-                    SesionVO sesionAbierta = new SesionVO(jugador.getNombre(), "miID="+jugador.getId()+"&idPartida="+id+"&nombre="+jugador.getNombre()+"&numJugadores="+lobby.getNumJugadores()+"&tapete="+miTapete+"&espectador=false");
-                    bd.crearSesionAbierta(sesionAbierta);
-                } catch (Exception e) {
-                    System.out.println("No se pudo crear sesión abierta");
+                if (jugador.getId() >= lobby.getNumJugadores()){ // Es espectador
+                    System.out.println("Se ha eliminado un espectador");
+                    lobby.eliminar(jugador);
                 }
-                if (!lobby.algunConectado()) {
-                    System.out.println("Todos los jugadores desconectados en la partida " + id);
-                    finalizarPartida(id);
-                }
-                else {
-                    // Pausar la partida
-                    if (!partidasPausadas.contains(id)) {
-                        partidasPausadas.add(id);   // Si la partida no estaba ya pausada, se marca como pausada
+                else{
+                    jugador.desconectar();  // Desconectar al jugador
+                    try {
+                        String miTapete = bd.obtenerTapeteFavorito(jugador.getNombre()).getRutaImagen();
+                        SesionVO sesionAbierta = new SesionVO(jugador.getNombre(), "miID="+jugador.getId()+"&idPartida="+id+"&nombre="+jugador.getNombre()+"&numJugadores="+lobby.getNumJugadores()+"&tapete="+miTapete+"&espectador=false");
+                        bd.crearSesionAbierta(sesionAbierta);
+                    } catch (Exception e) {
+                        System.out.println("No se pudo crear sesión abierta");
                     }
-                    // Notificar al resto de jugadores
-                    broadcastDesconectado(id, jugador.getId());
-                    break;
+                    if (!lobby.algunConectado()) {
+                        System.out.println("Todos los jugadores desconectados en la partida " + id);
+                        finalizarPartida(id);
+                    }
+                    else {
+                        // Pausar la partida
+                        if (!partidasPausadas.contains(id)) {
+                            partidasPausadas.add(id);   // Si la partida no estaba ya pausada, se marca como pausada
+                        }
+                        // Notificar al resto de jugadores
+                        broadcastDesconectado(id, jugador.getId());
+                        break;
+                    }
                 }
             }
         }

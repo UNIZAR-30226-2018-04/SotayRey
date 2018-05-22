@@ -40,6 +40,13 @@ public class Lobby {
         }
     }
 
+    // Unicamente se elimina si era un espectador
+    public void eliminar(JugadorGestor jug) {
+        if(jugadores.containsKey(jug.getNombre())) {
+            jugadores.remove(jug.getNombre());
+        }
+    }
+
     public int getMaxID(){
         return maxID;
     }

@@ -648,7 +648,7 @@ function representarEstado(estado){
 
     // Se pone la mano del jugador
     // TODO si soy espectador esto no se hace
-    if (espectador=="false"){
+    if (!espectador){
         var jugador = arrayJugadores[miID];
         var carta = {};
 
@@ -1035,7 +1035,7 @@ function dibujarBotones(){
     var espacioBoton = ejeX / numBotones;
     //var style = {font: "20px", fill: "#000000", align:"center"};
 
-    if (espectador=="true"){
+    if (espectador){
 
     }
     else{
@@ -1154,16 +1154,26 @@ function actualizarHUD(datos){
     else{
         tipo_ronda.tipo = datos.tipo_nueva_ronda;
         numRonda.numero = datos.nueva_ronda;
-        puntuacionMia.puntuacion = datos.puntuaciones[miID].puntuacion; // TODO, siempre ids en orden?
-        puntuacionRival.puntuacion = datos.puntuaciones[(miID+1)%numJugadores].puntuacion;
+        if(espectador){
+            puntuacionMia.puntuacion = datos.puntuaciones[0].puntuacion; // TODO, siempre ids en orden?
+            puntuacionRival.puntuacion = datos.puntuaciones[1].puntuacion;
+            puntuacionRival.text = "PUNTUACION A: " + puntuacionRival.puntuacion;
+            puntuacionMia.text = "PUNTUACION B: " + puntuacionMia.puntuacion;
+        }
+        else{ // Es un jugador
+            puntuacionMia.puntuacion = datos.puntuaciones[miID].puntuacion; // TODO, siempre ids en orden?
+            puntuacionRival.puntuacion = datos.puntuaciones[(miID+1)%numJugadores].puntuacion;
+            puntuacionRival.text = "PUNTUACION RIVAL: " + puntuacionRival.puntuacion;
+            puntuacionMia.text = "MI PUNTAUCION: " + puntuacionMia.puntuacion;
+        }
         restantes_mazo.restantes = datos.restantes_mazo;
 
         numRonda.text = "NUMERO RONDA: " + numRonda.numero;
-        puntuacionRival.text = "PUNTUACION RIVAL: " + puntuacionRival.puntuacion;
-        puntuacionMia.text = "MI PUNTAUCION: " + puntuacionMia.puntuacion;
         restantes_mazo.text = "CARTAS RESTANTES : " + restantes_mazo.restantes;
     }
-
+    if(datos.hasOwnProperty('tipo_nueva_ronda')){
+        tipo_ronda.text = "TIPO RONDA: " + datos.tipo_nueva_ronda;
+    }
     if(restantes_mazo.restantes <= 1) {
         triunfo.carta.alpha = 0.5;
         tipo_ronda.text = "TIPO RONDA: ARRASTRE";
