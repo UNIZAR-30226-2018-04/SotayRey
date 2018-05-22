@@ -829,6 +829,26 @@ public class EstadoPartida {
         }
         return false;
     }
+
+    /**
+     * @param c Carta lanzada por el jugador
+     * @return el identificador del jugador que ha lanzado la carta c
+     * @throws ExceptionCartaIncorrecta si C no ha sido lanzada
+     */
+    public String getLanzadorCarta(Carta c) throws ExceptionCartaIncorrecta {
+        int pos = cartasEnTapete.indexOf(c);
+        if (pos != -1){
+            int primero = ganadorUltimaRonda;
+            if (primero == -1){
+                primero = 0; // Es la primera ronda
+            }
+            pos = (pos + primero)%jugadores.size();
+            return getJugadoresId().get(pos);
+
+        } else {
+            throw new ExceptionCartaIncorrecta();
+        }
+    }
 }
 
 

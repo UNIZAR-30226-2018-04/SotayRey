@@ -345,4 +345,12 @@ public class LogicaPartida {
         return deVueltas;
     }
 
+    /**
+     * Devuelve el identificador del jugador que ha lanzado al carta c
+     * @return
+     */
+    public String getLanzadorCarta(Carta c) throws ExceptionCartaIncorrecta{
+        return estado.getLanzadorCarta(c);
+    }
+
 }

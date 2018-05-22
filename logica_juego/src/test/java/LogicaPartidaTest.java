@@ -174,6 +174,7 @@ public class LogicaPartidaTest {
             //triunfo es oros
             Carta c = new Carta(10,"E");
             logica.lanzarCarta("j1",c);
+            assertEquals("Fallo en getLanzador", logica.getLanzadorCarta(c), "j1");
             c = new Carta(1,"O");
             logica.lanzarCarta("j2",c);
 
@@ -306,8 +307,10 @@ public class LogicaPartidaTest {
             //triunfo es oros
             Carta c = new Carta(10, "E");
             logica.lanzarCarta("j1", c);
+            assertEquals("Fallo al obtenerLanzador","j1",logica.getLanzadorCarta(c));
             c = new Carta(3, "E");
             logica.lanzarCarta("j2", c);
+            assertEquals("Fallo al obtenerLanzador","j2",logica.getLanzadorCarta(c));
             c = new Carta(7, "B");
             logica.lanzarCarta("j3", c);
 
@@ -326,8 +329,10 @@ public class LogicaPartidaTest {
             //triunfo es oros
             Carta c = new Carta(10, "E");
             logica.lanzarCarta("j1", c);
+            assertEquals("Fallo al obtenerLanzador","j1",logica.getLanzadorCarta(c));
             c = new Carta(3, "E");
             logica.lanzarCarta("j2", c);
+            assertEquals("Fallo al obtenerLanzador","j2",logica.getLanzadorCarta(c));
             c = new Carta(7, "E");
             logica.lanzarCarta("j3", c);
 
