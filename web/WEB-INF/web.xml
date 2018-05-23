@@ -127,4 +127,14 @@
         <servlet-name>BorrarUsuario</servlet-name>
         <url-pattern>/BorrarUsuario.do</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GestionarTorneoServlet</servlet-name>
+        <servlet-class>servlet.GestionarTorneoServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GestionarTorneoServlet</servlet-name>
+        <url-pattern>/GestionarTorneo.do</url-pattern>
+    </servlet-mapping>
 </web-app>

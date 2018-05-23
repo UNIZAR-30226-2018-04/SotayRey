@@ -24,6 +24,11 @@ public class JugadorMatch {
             this.sesion = sesion;
     }
 
+    public JugadorMatch(String nombre, Session sesion) {
+        this.nombre = nombre;
+        this.sesion = sesion;
+    }
+
     public RemoteEndpoint.Basic getRemoto() {
             return this.sesion.getBasicRemote();
         }
