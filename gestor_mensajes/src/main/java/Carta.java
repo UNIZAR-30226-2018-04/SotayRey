@@ -123,7 +123,7 @@ public class Carta {
      * @throws ExceptionCartaIncorrecta
      */
     public void setPalo(String palo) throws ExceptionCartaIncorrecta {
-        if (palo == "C" || palo == "B" || palo == "O"|| palo == "E"){
+        if (palo.equals("C") || palo.equals("B") || palo.equals("O")|| palo.equals("E")){
             this.palo = palo;
         } else throw new ExceptionCartaIncorrecta("Palo incorrecto: " + palo);
     }
