@@ -1207,7 +1207,7 @@ function finPartida(){
     // Logo para volver al menu principal
     if(torneo){
         setTimeout(function() {
-            if(tipo == "derrota"){
+            if(tipo == 'derrota'){
                 window.location.replace("../jsp/matchmaking.jsp");
             }
             else {

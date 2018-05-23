@@ -622,15 +622,28 @@ public class GestorMensajes {
                 }
                 // Carta mesa
                 JSONObject cartaMesa = new JSONObject();
-                if (cartasTapete.size() == 0 || i >= cartasTapete.size()) {
+                String idLanzador = null;
+                Carta cartaLanzada = null;
+                for (Carta carta : cartasTapete){
+                    //System.out.println("HAY UNA CARTA EN EL TAPETE");
+                    try{
+                        idLanzador = estado.getLanzadorCarta(carta);
+                        // Si hay excepcion esto no se ejecutara
+                        //System.out.println("COMPRUEBO " + nombre + "  " + idLanzador);
+                        if (idLanzador.equals(nombre)){
+                            //System.out.println("LA HA LANZADO " + nombre + "  " + idLanzador);
+                            cartaLanzada = carta;
+                        }
+                    } catch (ExceptionCartaIncorrecta e){ }
+                }
+                if (cartaLanzada != null){
+                    cartaMesa.put("numero", cartaLanzada.getValor());
+                    cartaMesa.put("palo", cartaLanzada.getPalo());
+                }
+                else{
                     cartaMesa.put("numero", 0);
                     cartaMesa.put("palo", "X");
-                } else if(i < cartasTapete.size()) {
-                    Carta carta = cartasTapete.get(i);
-                    cartaMesa.put("numero", carta.getValor());
-                    cartaMesa.put("palo", carta.getPalo());
                 }
-
                 jugador.put("carta_mesa", cartaMesa);
                 jugadores.add(jugador);
                 i++;
