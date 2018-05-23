@@ -294,7 +294,10 @@ public class TorneoDAO {
         int participantes = res.getInt("total");
         if ((new Timestamp(System.currentTimeMillis()).after(t.getTimeInicio())) && participantes < Math.pow(2,t.getNumFases())) {
             // Cabe un jugador más
-            statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo) VALUES ('"+ p.getUsername() +"',"+t.getNumFases()+","+t.getId()+")");
+			res = statement.executeQuery("SELECT MAX(multip)+1 m FROM participa_fase WHERE usuario = '"+p.getUsername()+"' AND fase_num = " + t.getNumFases() + " AND fase_torneo = " + t.getId());
+            res.next();
+            int mult = res.getInt("m");
+            statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo,multip) VALUES ('"+ p.getUsername() +"',"+t.getNumFases()+","+t.getId()+","+mult+")");
             if (participantes + 1 == Math.pow(2,t.getNumFases())) {
                 // El torneo esta lleno, se produce el emparejamiento
                 faseLlena = true;

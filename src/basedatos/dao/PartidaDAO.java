@@ -33,7 +33,7 @@ public class PartidaDAO {
             insertPartida = "INSERT INTO partida (timeInicio, publica) VALUES ('" +
                     sd.format(p.getTimeInicio()) + "'," + p.isPublica() + ")";
         } else {
-            if (p.getTorneoId() == BigInteger.valueOf(0)) {
+            if (p.getTorneoId().equals(BigInteger.valueOf(0))) {
                 insertPartida = "INSERT INTO partida (publica) VALUES (" + (p.isPublica() ? 1 : 0) + ")";
             } else {
                 insertPartida = "INSERT INTO partida (fase_num, fase_torneo,publica) VALUES (" + p.getFaseNum() + "," + p.getTorneoId() + ",1)";

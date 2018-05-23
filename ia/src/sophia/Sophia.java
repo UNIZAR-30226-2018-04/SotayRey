@@ -21,9 +21,7 @@ public class Sophia {
         this.estado = new EstadoPartidaIA(ep, vueltas);
     }
 
-    private  Sophia() {
-
-    }
+    private  Sophia() {}
 
 
     /* El jugador rival tira la carta c
@@ -45,6 +43,8 @@ public class Sophia {
         estado.cambiaSieteRival();
     }
 
+    /* Obtener accion de la IA 
+    */
     public AccionIA obtenerAccion() {
         CartaIA m = ismcts(estado,20000);
         return estado.realizarMovimiento(m,0);
