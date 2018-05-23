@@ -11,6 +11,7 @@ package servlet;
 
 import basedatos.InterfazDatos;
 import basedatos.modelo.SesionVO;
+import basedatos.modelo.TorneoPeriodicoVO;
 import basedatos.modelo.TorneoVO;
 import basedatos.modelo.UsuarioVO;
 
@@ -76,29 +77,26 @@ public class LoginServlet extends HttpServlet {
 
                 if (existUser){
                     UsuarioVO user;
-                    try{
-                        user = facade.obtenerDatosUsuario(nick);
-                    } catch (Exception e){
-                        System.err.println("ERROR: autentificando usuario");
-                        e.printStackTrace();
-                        return;
-                    }
-
                     HttpSession sesion= request.getSession();
                     ArrayList<TorneoVO> torneos = null;
-
+                    ArrayList<TorneoPeriodicoVO> tor_period = null;
                     try{
+                        user = facade.obtenerDatosUsuario(nick);
                         torneos = facade.obtenerTorneosProgramados();
+                        tor_period = facade.obtenerTorneosPeriodicos();
                     }catch (Exception e){
+                        System.err.println("ERROR: error en la interfazDatos");
                         e.printStackTrace();
                         response.sendRedirect("jsp/matchmaking.jsp");
                         return;
                     }
 
-                    sesion.setAttribute("torneos", torneos);
 
+                    sesion.setAttribute("torneos", torneos);
+                    sesion.setAttribute("torneos_period", tor_period);
                     sesion.setAttribute("userId", user);
                     sesion.setMaxInactiveInterval(24*60*60);
+
                     String urlAbierta = null;
                     try {
                         urlAbierta = facade.obtenerUrlSesion(nick);
