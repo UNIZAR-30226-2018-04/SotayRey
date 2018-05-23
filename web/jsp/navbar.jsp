@@ -20,7 +20,7 @@
                if (session.getAttribute("userId") == null) { %>
                 <li class="nav-item">
                     <a class="btn btn-outline" href="../jsp/login.jsp" role="button">
-                        <i class="fa fa-sign-in mr-2"></i>Entrar/Registrarse</span>
+                        <i class="fa fa-sign-in mr-2 "></i>Entrar/Registrarse</span>
                     </a>
                 </li>
             <% } else {
