@@ -1,4 +1,5 @@
-package src;
+package sophia;
+
 
 import main.java.Carta;
 
