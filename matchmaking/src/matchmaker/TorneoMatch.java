@@ -20,7 +20,7 @@ public class TorneoMatch {
         this.jugadores = new HashMap<>();
         this.vo = t;
         this.lleno = false;
-        fase = 0;
+        fase = t.getNumFases();
     }
 
     public void setVO(TorneoVO t) {
@@ -47,8 +47,10 @@ public class TorneoMatch {
         return this.fase;
     }
 
-    public void incFase() {
-        this.fase++;
+    public void setFase(int fase) { this.fase = fase; }
+
+    public void decFase() {
+        this.fase--;
     }
 
     public BigInteger getIdTorneo() {

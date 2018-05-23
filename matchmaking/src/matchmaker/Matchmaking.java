@@ -82,25 +82,32 @@ public class Matchmaking {
             case "busco_torneo":
                 recibirBuscoTorneo(session, msg);
                 break;
+            case "empezar_torneo":
+                recibirEmpiezaTorneo(msg);
+                break;
             default:
                 System.out.println("Tipo de mensaje no reconocido");
         }
     }
 
-    private void recibirTimeoutTorneo(Session sesion, JSONObject msg) {
+    private void recibirEmpiezaTorneo(JSONObject msg) {
         BigInteger id = (BigInteger) msg.get("id_torneo");
+        TorneoMatch torneoMatch = torneos.get(id);
+        TorneoVO torneoVO = torneoMatch.getVO();
+        // Obtener máxima fase
+        torneoMatch.setFase(torneoVO.getNumFases());
         // Emparejar
-//        FaseVO fase = new FaseVO(id, torneo.getFase());
-//        try {
-//            // Se llena el objeto fase
-//            bd.obtenerPartidasFaseTorneo(fase);
-//            // Notificar a los jugadores de la partida
-//            for (PartidaVO p : fase.getParejas()) {
-//                iniciarPartidaTorneo(torneo, p);
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+        FaseVO fase = new FaseVO(id, torneoMatch.getFase());
+        try {
+            // Se llena el objeto fase
+            bd.obtenerPartidasFaseTorneo(fase);
+            // Notificar a los jugadores de la partida
+            for (PartidaVO p : fase.getParejas()) {
+               iniciarPartidaTorneo(torneoMatch, p);
+            }
+        } catch (SQLException e) {
+           e.printStackTrace();
+        }
     }
 
     private void recibirBuscoTorneo(Session sesion, JSONObject msg) {
@@ -111,9 +118,7 @@ public class Matchmaking {
         TorneoVO t = null;
         try {
             t = bd.obtenerDatosTorneo(id);
-        } catch (ExceptionCampoInexistente exceptionCampoInexistente) {
-            exceptionCampoInexistente.printStackTrace();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // Si no existe en la lista lo añade

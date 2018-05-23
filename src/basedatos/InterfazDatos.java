@@ -175,7 +175,7 @@ public class InterfazDatos {
 		return TorneoDAO.obtenerTorneosProgramados(this.cpds);
 	}
 
-    /* Inserta al Usuario u al Torneo t en su fase inicial. Si u llena el numero de participantes de la fase
+    /* Inserta al Usuario u al Torneo t en su fase inicial.  Si u llena el numero de participantes de la fase
      * se produce el emparejamiento: utilizar obtenerPartidasFaseTorneo para saber el resultado de ese emparejamiento
      * Devuelve cierto si y solo si cuando se apunta al nuevo usuario se realiza el emparejamiento
      */
