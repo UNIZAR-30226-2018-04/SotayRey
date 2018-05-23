@@ -13,13 +13,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import sophia.Sophia;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -136,7 +139,7 @@ public class GestorMensajes {
         // Obtener datos del remitente
         int idPartida = getIdPartidaMsg(msg);
         if (partidasPausadas.contains(idPartida)) {
-            finalizarPartida(idPartida);
+            finalizarPartida(idPartida, listaPartidas.get(idPartida), true);
             System.out.println("Partida con id " + idPartida + " finalizada por timeout");
         }
     }
@@ -202,7 +205,7 @@ public class GestorMensajes {
                         System.out.println("Partida finalizada: " + idPartida);
                         broadcastGanaRonda(idPartida, false);
                         // Elimina la partida de la lista de partidas activas
-                        finalizarPartida(idPartida);
+                        finalizarPartida(idPartida, partida, false);
                     } catch (ExceptionDeVueltas exceptionDeVueltas) {
                         System.out.println("De vueltas: " + idPartida);
 
@@ -707,14 +710,87 @@ public class GestorMensajes {
         broadcastMensaje(lobby, objDesc);
     }
 
-    private void finalizarPartida(int idPartida) {
-        System.out.println("Partida finalizada: " + idPartida);
-        broadcastGanaRonda(idPartida, true);
+    private void finalizarPartida(int idPartida, LogicaPartida partida, boolean timeout) {
+        // Obtiene info de la partida jugada y lo añade a partidaVO
+        PartidaVO partidaVO = null;
+        try {
+            partidaVO = bd.obtenerPartida(BigInteger.valueOf(idPartida));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Almacena hora final
+        partidaVO.setTimeFin(new Timestamp(System.currentTimeMillis()));
+        // Obtiene puntuaciones
+        ArrayList<String> jugs = partida.getEstado().getJugadoresId();
+        int numJugs = partida.getEstado().getJugadoresId().size();
+        int ptos1 = 0, ptos2 = 0;
+            try {
+                ptos1 = partida.consultarPuntos(jugs.get(0));
+                ptos2 = partida.consultarPuntos(jugs.get(1));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        if (jugs.size() > 2) {
+            // 4 jugadores
+            try {
+                ptos1 += partida.consultarPuntos(jugs.get(2));
+                ptos2 += partida.consultarPuntos(jugs.get(3));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // Almacena puntuaciones
+        partidaVO.setPuntos1(ptos1);
+        partidaVO.setPuntos2(ptos2);
+
+        // Almacena ganadores/abandonadores
+        Lobby lobby = lobbies.get(idPartida);
+        if (timeout) {
+            // Alguien ha abandonado la partida
+            partidaVO.setAbandonador(lobby.getPrimerAbandonador());
+            partidaVO.setGanador('A');
+        } else {
+            // La partida ha finalizado correctamente
+            // Obtener ganadores
+            ArrayList<String> ganadores = new ArrayList<>();
+            try {
+                ganadores = partida.getGanadoresPartida();
+            } catch (ExceptionPartidaSinAcabar exceptionPartidaSinAcabar) {
+                exceptionPartidaSinAcabar.printStackTrace();
+            }
+            // Buscar equipo ganador
+            int i = 0;
+            for (String nombre : jugs) {
+                if (nombre.equals(ganadores.get(0)) || ganadores.size() == 2 && nombre.equals(ganadores.get(1))) {
+                    break;
+                }
+                i++;
+            }
+            // Almacenar equipo ganador
+            partidaVO.setGanador(Character.forDigit(i % 2, 10));
+        }
+        // Almacena cantes
+        int cuarentas = 0, veintes = 0;
+        for (Cante c : partida.getCantes()) {
+            if (c.getTipo() == Cante.TipoCante.LAS20) {
+                veintes++;
+            } else {
+                cuarentas++;
+            }
+        }
+        ArrayList<Integer> cantes = new ArrayList<Integer>();
+        for (String nombre : jugs) {
+            cantes.add(0);
+        }
+        partidaVO.setVeintes(cantes);
+        partidaVO.setCuarentas(cantes);
+
+        broadcastGanaRonda(idPartida, timeout);
+
         partidasPausadas.remove((Integer) idPartida);
         // Elimina la partida de la lista de partidas activas
         listaPartidas.remove(idPartida);
         // Elimina las URLs de desconexion abiertas
-        Lobby lobby = lobbies.get(idPartida);
         for (String nombre : lobby.getTodosNombres()) {
             try {
                 bd.obtenerUrlSesion(nombre);
@@ -722,13 +798,13 @@ public class GestorMensajes {
                 System.out.println("Error eliminando URLs de sesion de jugadores");
             }
         }
-        /*try {
-            //bd.finalizarPartida(lobbies.get(idPartida).getPartidaVO()); // TODO: Obtener partida para poder eliminarla
-        } catch (ExceptionCampoInvalido exceptionCampoInvalido) {
-            exceptionCampoInvalido.printStackTrace();
-        } catch (SQLException e) {
+
+        try {
+            bd.finalizarPartida(partidaVO);
+            System.out.println("Partida finalizada: " + idPartida);
+        } catch (Exception e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     private void desconectar(Session sesion) {
@@ -752,7 +828,7 @@ public class GestorMensajes {
                     }
                     if (!lobby.algunConectado()) {
                         System.out.println("Todos los jugadores desconectados en la partida " + id);
-                        finalizarPartida(id);
+                        finalizarPartida(id, listaPartidas.get(id), true);
                     }
                     else {
                         // Pausar la partida
