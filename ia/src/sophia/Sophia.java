@@ -1,10 +1,56 @@
 package sophia;
+import main.java.Carta;
+import main.java.EstadoPartida;
+
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Sophia {
-    public static CartaIA ismcts(EstadoPartidaIA estadoRaiz, int iteraciones) {
+    private EstadoPartidaIA estado;
+
+    /* Se inicializa la IA a partir del estado de una nueva partida
+     * El EstadoPartida debe ser una partida con las cartas recién repartidas
+     * ya sea de idas o de vueltas. Las cartas de ep deben tener el orden correcto en
+     * el que se van a ir robando.
+     *
+     * Si es partida de vueltas, el parametro vueltas es true y el EstadoPartida ep
+     * debe contener los puntos de los jugadores
+     */
+    public Sophia(EstadoPartida ep, boolean vueltas) {
+        this.estado = new EstadoPartidaIA(ep, vueltas);
+    }
+
+    private  Sophia() {
+
+    }
+
+
+    /* El jugador rival tira la carta c
+     */
+    public void tiraCartaRival(Carta c) {
+        estado.tiraCartaRival(c);
+    }
+
+    /* El jugador rival realiza los cantes indicados en cantes
+     * cantes = {Bastos,Copas,Espadas,Oros}
+     */
+    public void cantaRival(ArrayList<Boolean> cantes) {
+        estado.cantaRival(cantes);
+    }
+
+    /* El jugador rival cambia el 7 de triunfo por el triunfo de la mesa
+     */
+    public void cambiaSieteRival() {
+        estado.cambiaSieteRival();
+    }
+
+    public AccionIA obtenerAccion() {
+        CartaIA m = ismcts(estado,20000);
+        return estado.realizarMovimiento(m,0);
+    }
+
+    private static CartaIA ismcts(EstadoPartidaIA estadoRaiz, int iteraciones) {
         Nodo raiz = new Nodo();
         Random rand = new Random();
         for (int i=0; i<iteraciones; i++) {
@@ -49,32 +95,46 @@ public class Sophia {
         }
         return maxCarta;
     }
-
     public static void main(String[] args) {
-        EstadoPartidaIA estado = EstadoPartidaIA.nuevaPartida();
-        Random random = new Random();
+        CartaIA kk = new CartaIA(7,'B');
+        kk.toCarta();
+        Sophia sp = new Sophia();
+        sp.estado = EstadoPartidaIA.nuevaPartida();
 
-        while (estado.obtenerMovimientos().size()>0) {
-            System.out.println(estado);
+        while (sp.estado.obtenerMovimientos().size()>0) {
+            System.out.println(sp.estado);
 
             CartaIA m;
-            if (estado.getTurno() == 0) {
-                m = Sophia.ismcts(estado, 20000);
+            if (sp.estado.getTurno() == 0) {
+                AccionIA aia = sp.obtenerAccion();
+                System.out.println("Carta IA: "+aia.carta);
             } else {
                 Scanner in = new Scanner(System.in);
+                System.out.printf("Quieres cambiar el 7?:  ");
+                int siete = in.nextInt();
+                if(siete>0){
+                    sp.cambiaSieteRival();
+                }
+                System.out.printf("Que 20s/40 quieres cantar? (B,C,E,O):  ");
+                ArrayList<Boolean> veintes = new ArrayList<>(4);
+                veintes.add(in.nextBoolean());
+                veintes.add(in.nextBoolean());
+                veintes.add(in.nextBoolean());
+                veintes.add(in.nextBoolean());
+                sp.cantaRival(veintes);
                 System.out.printf("Que carta quieres jugar?:  ");
                 //  m = Sophia.ismcts(estado, 10000);
-                m = estado.obtenerMovimientos().get(in.nextInt());
+                m = sp.estado.obtenerMovimientos().get(in.nextInt());
+                sp.tiraCartaRival(m.toCarta());
                 // m = estado.obtenerMovimientos().get(random.nextInt(estado.obtenerMovimientos().size()));
+                System.out.println("Carta rival: " + m.toCarta()+"\n");
             }
-            System.out.println("Es el turno "+estado.getTurno());
-            System.out.println("\nMejor movimiento: " + m+"\n");
-            estado.realizarMovimiento(m, estado.getTurno());
+            System.out.println("Es el turno "+(sp.estado.getTurno()+1));
         }
 
         System.out.println("\n\nFinal de la Partida\n\n");
-        System.out.println(estado);
-        if (estado.obtenerResultado(0)>0) {
+        System.out.println(sp.estado);
+        if (sp.estado.obtenerResultado(0)>0) {
             System.out.println("\n\nGana la IA");
         } else {
             System.out.println("\n\nGana el rival");

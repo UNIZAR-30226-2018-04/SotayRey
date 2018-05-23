@@ -27,24 +27,34 @@ public class CartaIA {
         switch (carta.getValor()) {
             case 1:
                 this.rank = 9;
+                break;
             case 3:
                 this.rank = 8;
+                break;
             case 12:
                 this.rank = 7;
+                break;
             case 10:
                 this.rank = 6;
+                break;
             case 11:
                 this.rank = 5;
+                break;
             case 7:
                 this.rank = 4;
+                break;
             case 6:
                 this.rank = 3;
+                break;
             case 5:
                 this.rank = 2;
+                break;
             case 4:
                 this.rank = 1;
+                break;
             case 2:
                 this.rank = 0;
+                break;
         }
         this.palo = carta.getPalo().charAt(0);
     }
@@ -80,6 +90,49 @@ public class CartaIA {
                 return 0;
 
         }
+    }
+
+    public Carta toCarta() {
+        Carta c = new Carta();
+        try {
+            switch (this.rank) {
+                case 9:
+                    c.setValor(1);
+                    break;
+                case 8:
+                    c.setValor(3);
+                    break;
+                case 7:
+                    c.setValor(12);
+                    break;
+                case 6:
+                    c.setValor(10);
+                    break;
+                case 5:
+                    c.setValor(11);
+                    break;
+                case 4:
+                    c.setValor(7);
+                    break;
+                case 3:
+                    c.setValor(6);
+                    break;
+                case 2:
+                    c.setValor(5);
+                    break;
+                case 1:
+                    c.setValor(4);
+                    break;
+                case 0:
+                    c.setValor(2);
+                    break;
+                default:
+                    c.setValor(-1);
+                    break;
+            }
+            c.setPalo(String.valueOf(this.palo));
+        } catch (Exception e) {}
+        return c;
     }
 
     public static ArrayList<CartaIA> toArray(ArrayList<Carta> cartas) {

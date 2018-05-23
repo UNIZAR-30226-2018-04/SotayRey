@@ -6,7 +6,9 @@
 package sophia;
 
 
+import main.java.Carta;
 import main.java.EstadoPartida;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -78,6 +80,78 @@ public class EstadoPartidaIA {
         // Semilla
         this.random = new Random();
     }
+
+    /* El jugador rival tira la carta c
+     */
+    public void tiraCartaRival(Carta c) {
+        int jugador = 1;
+        // Se elimina la carta del jugador
+        CartaIA movimiento = new CartaIA(c);
+        this.manos.get(jugador).remove(movimiento);
+
+        // Si es el que saca no hay más que hacer
+        if (this.cartaTirada == null) {
+            cartaTirada = movimiento;
+            this.turno = 1 - this.turno;
+            return;
+        }
+        // Si no
+        if (this.cartaTirada.mata(this.triunfo.palo, movimiento)) {
+            // Pierde el jugador de este movimiento
+            jugador = 1 - jugador;
+        }
+
+        // Se actualizan los puntos del jugador que ha ganado
+        int puntosJugador = this.puntos.get(jugador);
+        puntosJugador += movimiento.getPuntos() + this.cartaTirada.getPuntos();
+        this.puntos.set(jugador, puntosJugador);
+
+
+        // Robar cartas
+        if (this.restantes.size() >= 1) {
+            this.restantes.add(this.triunfo);
+            this.manos.get(jugador).add(this.restantes.get(0));
+            this.restantes.remove(0);
+            this.manos.get(1-jugador).add(this.restantes.get(0));
+            this.restantes.remove(0);
+            if (this.restantes.size()>0) {
+                this.restantes.remove(this.restantes.size() - 1);
+            }
+        }
+
+        // Se quita la carta del tapete
+        this.cartaTirada = null;
+
+        // Las diez últimas
+        if (this.manos.get(0).size() == 0 && this.manos.get(1).size() == 0) {
+            this.puntos.set(jugador, this.puntos.get(jugador) + 10);
+        }
+
+        this.turno = jugador;
+
+    }
+
+    /* El jugador rival realiza los cantes indicados en cantes
+     * cantes = {Bastos,Copas,Espadas,Oros}
+     */
+    public void cantaRival(ArrayList<Boolean> cantes) {
+        for (int i=0; i<4; i++) {
+            if (cantes.get(i)) {
+                this.puntos.set(1, this.puntos.get(1) + 20 + 20 * ((i == this.triunfo.getPaloInt()) ? 1 : 0));
+                this.cantes.set(i, true);
+            }
+        }
+    }
+
+    /* El jugador rival cambia el 7 de triunfo por el triunfo de la mesa
+     */
+    public void cambiaSieteRival() {
+        // Si tiene el 7 de triunfo lo cambia
+        this.manos.get(1).remove(new CartaIA(4, this.triunfo.palo));
+        this.manos.get(1).add(this.triunfo);
+        this.triunfo = new CartaIA(4, this.triunfo.palo);
+    }
+
 
     public static EstadoPartidaIA nuevaPartida() {
         EstadoPartidaIA np = new EstadoPartidaIA();
@@ -169,7 +243,11 @@ public class EstadoPartidaIA {
         return clon;
     }
 
-    public void realizarMovimiento(CartaIA movimiento, int jugador) {
+    public AccionIA realizarMovimiento(CartaIA movimiento, int jugador) {
+
+        AccionIA resultado = new AccionIA();
+        resultado.carta = movimiento.toCarta();
+
         // Se elimina la carta del jugador
         this.manos.get(jugador).remove(movimiento);
 
@@ -177,7 +255,7 @@ public class EstadoPartidaIA {
         if (this.cartaTirada == null) {
             cartaTirada = movimiento;
             this.turno = 1 - this.turno;
-            return;
+            return resultado;
         }
         // Si no
         if (this.cartaTirada.mata(this.triunfo.palo, movimiento)) {
@@ -212,6 +290,7 @@ public class EstadoPartidaIA {
                 if (c1.rank == 6 && c2.rank == 7 && c1.palo == c2.palo && !this.cantes.get(c1.getPaloInt())) {
                     this.puntos.set(jugador, this.puntos.get(jugador) + 20 + 20 * ((c1.palo == this.triunfo.palo) ? 1 : 0));
                     this.cantes.set(c1.getPaloInt(), true);
+                    resultado.cantes.set(c1.getPaloInt(),true);
                 }
             }
         }
@@ -219,6 +298,7 @@ public class EstadoPartidaIA {
         // Las diez últimas
         if (this.manos.get(0).size() == 0 && this.manos.get(1).size() == 0) {
             this.puntos.set(jugador, this.puntos.get(jugador) + 10);
+            jugador = 1 - jugador;
         }
 
         // Si tiene el 7 de triunfo lo cambia
@@ -226,20 +306,21 @@ public class EstadoPartidaIA {
             this.manos.get(jugador).remove(new CartaIA(4, this.triunfo.palo));
             this.manos.get(jugador).add(this.triunfo);
             this.triunfo = new CartaIA(4, this.triunfo.palo);
+            resultado.cambiaSiete = true;
         }
 
         // Si se ha acabado la partida de ida sin ganador se reparten las vueltas
         if (this.manos.get(0).size() == 0 && this.puntos.get(0) < 101 && this.puntos.get(1) < 101) {
-            jugador = 1 - jugador;
             this.vueltas = true;
             this.cantes = new ArrayList<Boolean>(Collections.nCopies(4, false));
             this.barajar();
         }
 
         this.turno = jugador;
-
-
+        return resultado;
     }
+
+
 
 
     public ArrayList<CartaIA> obtenerMovimientos() {
@@ -272,7 +353,17 @@ public class EstadoPartidaIA {
     }
 
     public int obtenerResultado(int jugador) {
-        return this.puntos.get(jugador) >= 101 ? 1 : 0;
+        if(this.vueltas) {
+            return this.puntos.get(jugador) >= 101 ? 1 : 0;
+        }
+        else{
+            if(this.puntos.get(0)>=101 && this.puntos.get(1)>=101) {
+                return jugador != this.turno ? 1 : 0;
+            }
+            else {
+                return this.puntos.get(jugador) >= 101 ? 1 : 0;
+            }
+        }
     }
 
     /*
@@ -334,7 +425,7 @@ public class EstadoPartidaIA {
             result += c + ",";
         }
         result += "\nVueltas: " + (this.vueltas? "Sí":"No");
-        result += "\nTurno: " + this.turno + "\n";
+        result += "\nTurno: " + (this.turno+1) + "\n";
 
         return result;
     }
