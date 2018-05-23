@@ -1,4 +1,4 @@
-package src;
+package sophia;
 import java.util.ArrayList;
 
 public class Nodo {

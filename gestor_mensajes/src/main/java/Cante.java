@@ -2,7 +2,7 @@ package main.java;
 
 public class Cante {
     public enum TipoCante{
-        LAS20, LAS40;
+        LAS20, LAS40
     }
 
 

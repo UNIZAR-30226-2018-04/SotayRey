@@ -12,6 +12,7 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,9 +20,7 @@ import java.util.HashMap;
 import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInexistente;
 import basedatos.exceptions.ExceptionCampoInvalido;
-import basedatos.modelo.PartidaVO;
-import basedatos.modelo.StatsUsuarioVO;
-import basedatos.modelo.UsuarioVO;
+import basedatos.modelo.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -34,6 +33,7 @@ public class Matchmaking {
     private static HashMap<String, JugadorMatch> parejas = new HashMap<>();
     private static HashMap<String, JugadorMatch> privIndividual = new HashMap<>();
     private static HashMap<String, JugadorMatch> privParejas = new HashMap<>();
+    private static HashMap<BigInteger, TorneoMatch> torneos = new HashMap<>();
     private static InterfazDatos bd = null;
     private int limiteSigos = 3;
 
@@ -71,18 +71,106 @@ public class Matchmaking {
     private void messageHandler(Session session, JSONObject msg) {
         // Revisar el tipo del mensaje
         String tipo = (String) msg.get("tipo_mensaje");
+        System.out.println(tipo + " recibido");
         switch(tipo) {
             case "busco_partida":
-                System.out.println(tipo + " recibido");
                 recibirBusco(session, msg);
                 break;
             case "sigo_buscando":
-                System.out.println(tipo + " recibida");
                 recibirSigo(msg);
+                break;
+            case "busco_torneo":
+                recibirBuscoTorneo(session, msg);
+                break;
+            case "empezar_torneo":
+                recibirEmpiezaTorneo(msg);
                 break;
             default:
                 System.out.println("Tipo de mensaje no reconocido");
         }
+    }
+
+    private void recibirEmpiezaTorneo(JSONObject msg) {
+        BigInteger id = (BigInteger) msg.get("id_torneo");
+        TorneoMatch torneoMatch = torneos.get(id);
+        TorneoVO torneoVO = torneoMatch.getVO();
+        // Obtener máxima fase
+        torneoMatch.setFase(torneoVO.getNumFases());
+        // Emparejar
+        FaseVO fase = new FaseVO(id, torneoMatch.getFase());
+        try {
+            // Se llena el objeto fase
+            bd.obtenerPartidasFaseTorneo(fase);
+            // Notificar a los jugadores de la partida
+            for (PartidaVO p : fase.getParejas()) {
+               iniciarPartidaTorneo(torneoMatch, p);
+            }
+        } catch (SQLException e) {
+           e.printStackTrace();
+        }
+    }
+
+    private void recibirBuscoTorneo(Session sesion, JSONObject msg) {
+        // Obtener info del mensaje
+        String nombre = (String) msg.get("nombre_participante");
+        BigInteger id = (BigInteger) msg.get("id_torneo");
+        // Obtener datos del torneo
+        TorneoVO t = null;
+        try {
+            t = bd.obtenerDatosTorneo(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Si no existe en la lista lo añade
+        if (t != null && !torneos.containsKey(id)) {
+            torneos.put(id, new TorneoMatch(t));
+        }
+        TorneoMatch torneo = torneos.get(id);
+        // Añade al jugador
+        anyadirJugadorTorneo(torneo, nombre, sesion);
+        // Informa del tiempo hasta la hora de inicio
+        enviarRestante(t, sesion);
+    }
+
+    private void iniciarPartidaTorneo(TorneoMatch t, PartidaVO p) {
+        // Detectar si juega contra la IA
+        boolean conIA = false;
+        for (UsuarioVO u : p.getUsuarios()) {
+            if (u.getUsername().equals("SophIA")) {
+                conIA = true;
+            }
+        }
+        // Obtener info de la partida
+        BigInteger id = p.getId();
+        int numJugadores = p.getUsuarios().size();
+        // Convertir lista de UsuariosVO en JugadoresMatch
+        ArrayList<JugadorMatch> jugadoresMatch = new ArrayList<>();
+        for (UsuarioVO u : p.getUsuarios()) {
+            String nombre = u.getNombre();
+            if (!nombre.equals("SophIA")) {
+                jugadoresMatch.add(new JugadorMatch(nombre, t.getSesion(nombre)));
+            }
+        }
+        // Enviar mensajes de listo para cada jugador
+        broadcastListo(jugadoresMatch, id, conIA, true);
+    }
+
+    private boolean anyadirJugadorTorneo(TorneoMatch t, String nombre, Session sesion) {
+        boolean emparejamiento = false;
+        TorneoVO torneoVO = t.getVO();
+        try {
+            // Apunta al usuario en la BD
+            UsuarioVO jugador = bd.obtenerDatosUsuario(nombre);
+            emparejamiento = bd.apuntarTorneo(jugador, torneoVO);
+            // Almacena la sesión del usuario para notificarlo
+            t.anyadirJugador(nombre, sesion);
+        } catch (Exception e) {
+            System.out.println("No se pudo apuntar al jugador al torneo");
+        }
+        if (emparejamiento) {
+            t.setLleno(true);
+        }
+        return emparejamiento;
     }
 
     private void recibirBusco(Session sesion, JSONObject msg) {
@@ -120,7 +208,7 @@ public class Matchmaking {
             // Se obtiene el id de la nueva partida
             BigInteger idPartida = nuevaPartida.getId();
             System.out.println("Nueva partida creada con id " + idPartida.toString());
-            broadcastListo(jugsMatch, idPartida, true); // Notificar al jugador en espera
+            broadcastListo(jugsMatch, idPartida, true, false); // Notificar al jugador en espera
         } else {
             // Obtener datos del jugador
             String nombre = (String) msg.get("nombre_participante");
@@ -212,7 +300,7 @@ public class Matchmaking {
                 // Se obtiene el id de la nueva partida
                 BigInteger idPartida = nuevaPartida.getId();
                 System.out.println("Nueva partida creada con id " + idPartida.toString());
-                broadcastListo(liga, idPartida, false); // Las partidas con IA se gestionan en otra parte
+                broadcastListo(liga, idPartida, false, false); // Las partidas con IA se gestionan en otra parte
             }
             // Revisar si el número de sigos supera el límite (peor caso posible)
             if (getMaxSigos(lista) >= limiteSigos) {
@@ -229,7 +317,7 @@ public class Matchmaking {
                 // Se obtiene el id de la nueva partida
                 BigInteger idPartida = nuevaPartida.getId();
                 System.out.println("Nueva partida creada con id " + idPartida.toString());
-                broadcastListo(lobby, idPartida, false);    // Las partidas con IA se gestionan en otra parte
+                broadcastListo(lobby, idPartida, false, false);    // Las partidas con IA se gestionan en otra parte
             }
         }
     }
@@ -244,27 +332,41 @@ public class Matchmaking {
         return maxSigos;
     }
 
-    private void broadcastListo(ArrayList<JugadorMatch> lobby, BigInteger idPartida, boolean conIA) {
+    private void broadcastListo(ArrayList<JugadorMatch> lobby, BigInteger idPartida, boolean conIA, boolean torneo) {
         int i = 0;
         for (JugadorMatch jug : lobby) {
-            enviarListo(jug, conIA, idPartida, i);
+            enviarListo(jug, conIA, torneo, idPartida, i);
             i++;
         }
     }
 
-    private void enviarListo(JugadorMatch jug, boolean conIA, BigInteger idPartida, int idJugador) {
+    private void enviarListo(JugadorMatch jug, boolean conIA, boolean torneo, BigInteger idPartida, int idJugador) {
         JSONObject obj = new JSONObject();
         obj.put("tipo_mensaje", "partida_lista");
         obj.put("total_jugadores", jug.getJugadores());
         obj.put("id_partida", idPartida);
         obj.put("nombre_jugador", jug.getNombre());
         obj.put("con_ia", conIA);   // Las partidas con IA se gestionan en otra parte
+        obj.put("torneo", torneo);
         obj.put("id_jugador", idJugador);
         try {
             jug.getRemoto().sendText(obj.toJSONString());
         } catch (IOException e) {
             System.out.println("No se pudo enviar partida_lista al jugador " + jug.getNombre());
-            e.printStackTrace();
+        }
+    }
+
+    private void enviarRestante(TorneoVO t, Session sesion) {
+        if (t != null) {
+            long restante = t.getTimeInicio().getTime() - System.currentTimeMillis();
+            JSONObject obj = new JSONObject();
+            obj.put("tipo_mensaje", "restante_torneo");
+            obj.put("tiempo", restante);
+            try {
+                sesion.getBasicRemote().sendText(obj.toJSONString());
+            } catch (IOException e) {
+                System.out.println("No se pudo enviar restante_torneo");
+            }
         }
     }
 
