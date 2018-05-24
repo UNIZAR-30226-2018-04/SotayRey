@@ -21,6 +21,11 @@ public class JugadorGestor {
         this.desconectado = null;
     }
 
+    public JugadorGestor(int id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
+    }
+
     public RemoteEndpoint.Basic getRemoto() {
         if (this.sesion != null) {
             return this.sesion.getBasicRemote();
