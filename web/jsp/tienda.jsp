@@ -23,7 +23,7 @@
     UsuarioVO usuarioVO;
     StatsUsuarioVO statsVO;
 
-    if (session.getAttribute("userId") == null || (StatsUsuarioVO) session.getAttribute("userMainStats") == null) {
+    if (session.getAttribute("userId") == null || session.getAttribute("userMainStats") == null) {
         error = "userNotFound";
         session.setAttribute("error", error);
         response.sendRedirect("/jsp/login.jsp");
@@ -87,19 +87,22 @@
 
         <div class="btn-toolbar">
             <a href="/jsp/anyadirArticulo.jsp" class="btn btn-warning btn-md my-1 mx-1">
-                <i aria-hidden="true"></i>A&ntilde;adir Articulos
+                <i aria-hidden="true"></i>A&ntilde;adir Art&iacute;culos
             </a>
             <a href="/RefrescarTiendaAdmin.do" class="btn btn-warning btn-md my-1 mx-1">
-                <i aria-hidden="true"></i>Comprar Articulos
+                <i aria-hidden="true"></i>Comprar Art&iacute;culos
             </a>
             <!-- <a href="#" class="btn btn-warning btn-md">Añadir Artículo</a> -->
             <% if (articulos == null || articulos.size() == 0){ %>
-            <a class="btn btn-warning btn-md disabled my-1 mx-1">Modificar Art&iacuteculo</a>
+            <a class="btn btn-warning btn-md disabled my-1 mx-1">Modificar Art&iacute;culos</a>
             <% } else { %>
             <form action="/RefrescarTiendaAdmin.do" method="post">
                 <input type="hidden" name="optionAdmin" value="modify">
-                <input type="submit" class="btn btn-warning btn-md"
-                       value="Modificar Articulo">
+                <%--<a href="/RefrescarTiendaAdmin.do" class="btn btn-warning btn-md my-1 mx-1">--%>
+                    <%--<i aria-hidden="true"></i>Modificar Art&iacute;culos--%>
+                <%--</a>--%>
+                <input type="submit" class="btn btn-warning btn-md my-1 mx-1"
+                       value="Modificar Art&iacute;culos">
             </form>
             <% } %>
         </div>
@@ -111,7 +114,7 @@
         if (articulos == null || articulos.size() == 0){ %>
             <%-- Hay articulos que mostrar--%>
 
-            <div class="container-fluid bg-3 text-center">
+            <div class="container bg-3 text-center">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Tienda sin articulos</strong>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -121,6 +124,8 @@
             </div><br>
 
     <% } else { %>
+
+        <div class="container">
 
         <%-- Hay articulos que mostrar--%>
         <div id="accordion" role="tablist" aria-multiselectable="true">
@@ -143,29 +148,14 @@
 
                                     if (art.getTipo() == t){
                                         if (usuarioVO.getAdmin() && accionAdmin.equals("modificar")){ %>
-                                            <div class="card col-sm-4">
-                                                <div class="card-footer text-center bg-primary text-white">
+                                            <div class=" card col-sm-5 col-md-3 my-1">
+                                                <div class="card-header text-center bg-primary text-white">
                                                     <%=art.getNombre()%>
                                                 </div>
-                                                <style>
-                                                    .image-holder {
-                                                    background-size: cover;
-                                                    background-position: center center;
-                                                    height: 400px;
-                                                    width: 100%;
-                                                }
-                                                .box {
-                                                    border: 1px solid #ddd;
-                                                    display: inline-flex;
-                                                    align-items: center;
-                                                    justify-content: center;
-                                                    flex: 1 50%;
-                                                    min-width: 200px;
-                                                }
-                                                </style>
 
-                                                <div class="col-lg-6 box">
-                                                    <img class="responsive" src="<%=art.getRutaImagen()%>" alt="Card image cap" width="600" height="400">
+                                                <div class="card-body">
+                                                    <img class="card-img-top" src="<%=art.getRutaImagen()%>" alt="Card image cap"
+                                                         style='height: 100%'>
                                                 </div>
                                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modificarArticulo<%=i%>" >
                                                     <i class="fa fa-pencil mr-2" aria-hidden="true"></i>Modifcar
@@ -201,38 +191,44 @@
                                             //Usuario o admin accionando como usuario
 
                                         LigaVO liga = art.getRequiere(); %>
-                                            <div class="card col-sm-4">
-                                                <div class="card-footer text-center bg-primary text-white">
-                                                    <%=art.getNombre()%>
-                                                </div>
-                                                <img class="card-img-top" src="<%=art.getRutaImagen()%>" alt="Card image cap">
-                                                <div class="card-footer" >
-                                                    <% if (liga != null){ %>
-                                                    Se desbloquea al alcanzar la liga <%=liga.getNombre()%>
-                                                    <% } else { %>
-                                                    Desbloqueado
-                                                    <% } %>
-                                                </div>
-                                                <% if (art.isComprado()) { %>
-                                                    <div class="text-center">
-                                                    <button  type="button" class="btn btn-success disabled">Ya adquirido</button>
-                                                    <input type="radio" aria-label="fav" disabled="disabled"
-                                                        <% if (art.isFavorito()){ %>
-                                                           checked="checked" >
-                                                            <button type="submit" class="btn btn-primary disabled"> Favorito </button>
-                                                        <%} else { %>
-                                                            >
-                                                            <button type="submit" class="btn btn-primary" name="id_objeto" id="id_objeto" value="<%=i%>"> Favorito </button>
-                                                        <%}%>
+                                            <div class=" card col-sm-5 col-md-3 my-1">
+                                                <%--<div class="card">--%>
+                                                    <div class="card-header text-center bg-primary text-white">
+                                                        <%=art.getNombre()%>
                                                     </div>
-                                                    <% } else if (art.isDisponible()) { %>
-                                                        <!-- Comprar objeto -->
-                                                        <button type="submit" class="btn btn-primary" value="<%=i%>" name ="id_objeto" id="id_objeto"> Comprar: <%= art.getPrecio()%> monedas </button>
-                                                  <%} else { %>
-                                                        <button  type="button"  class="btn btn-blue-grey">Art&iacuteculo bloqueado</button>
-                                                  <%} %>
-                                            </div>
-                                      <%}
+                                                    <div class="card-body">
+                                                        <img class="card-img-top" src="<%=art.getRutaImagen()%>" alt="Card image cap"
+                                                        style='height: 100%'>
+                                                    </div>
+                                                    <div class="card-footer" style="width: auto" >
+                                                        <% if (liga != null){ %>
+                                                        Se desbloquea al alcanzar la liga <%=liga.getNombre()%>
+                                                        <% } else { %>
+                                                        Desbloqueado
+                                                        <% } %>
+                                                    </div>
+                                                    <% if (art.isComprado()) { %>
+                                                        <div class="text-center">
+                                                        <button  type="button" class="btn btn-success disabled">Ya adquirido</button>
+                                                        <input type="radio" aria-label="fav" disabled="disabled"
+                                                            <% if (art.isFavorito()){ %>
+                                                               checked="checked" >
+                                                                <button type="submit" class="btn btn-primary disabled"> Favorito </button>
+                                                            <%} else { %>
+                                                                >
+                                                                <button type="submit" class="btn btn-primary" name="id_objeto" id="id_objeto" value="<%=i%>"> Favorito </button>
+                                                            <%}%>
+                                                        </div>
+                                                        <% } else if (art.isDisponible()) { %>
+                                                            <!-- Comprar objeto -->
+                                                            <button type="submit" class="btn btn-primary" value="<%=i%>" name ="id_objeto" id="id_objeto"> Comprar: <%= art.getPrecio()%> monedas </button>
+                                                      <%} else { %>
+                                                            <button  type="button"  class="btn btn-blue-grey">Art&iacuteculo bloqueado</button>
+                                                      <%} %>
+                                                </div>
+                                            <%--</div>--%>
+
+                                <%}
                                     }
                                     ++i;
                                 }%>
@@ -242,6 +238,8 @@
                 </div>
           <%} %>
         </div><br> <!-- fin acordion -->
+    </div>
+
 
     <%  } // else hay articulos
     } //else user != null %>
