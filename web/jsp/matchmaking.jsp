@@ -302,12 +302,13 @@
 
     var nombre_jugador = nombreUsuario;
     var tipo = null;
+    var ia = getRadioValue("tipoRival") == "true";
 
     function buscarPartida() {
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
 
         socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
-        var ia = getRadioValue("tipoRival") == "true";
+
         if (parseInt(getRadioValue("esPublica")) == 1) {
             tipo = "publica";
         } else {

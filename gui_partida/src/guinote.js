@@ -1196,12 +1196,14 @@ function finPartida(){
     else{
         tipo = 'derrota';
     }
-    logo = game.add.sprite(game.world.centerX, ejeY * 0.1, tipo);
-    logo.alpha = 0;
-    logo.x = logo.x - logo.width/2;
 
-    game.add.tween(logo).to( { alpha: 1 }, 1500, 'Linear', true, 0);
+    if(!espectador){
+        logo = game.add.sprite(game.world.centerX, ejeY * 0.1, tipo);
+        logo.alpha = 0;
+        logo.x = logo.x - logo.width/2;
 
+        game.add.tween(logo).to( { alpha: 1 }, 1500, 'Linear', true, 0);
+    }
 //    puntuacionMia.x = logo.x + logo.width/2 - 80;
  //   puntuacionMia.y = logo.y + logo.height * 1.2;
 

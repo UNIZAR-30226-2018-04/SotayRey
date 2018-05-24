@@ -4,6 +4,7 @@
 <%@ page import="basedatos.InterfazDatos" %>
 <%@ page import="basedatos.modelo.TorneoPeriodicoVO" %>
 <%@ page import="java.sql.Timestamp" %>
+<%@ page import="java.math.BigInteger" %>
 
 <html lang="en" >
 <head>
@@ -143,9 +144,11 @@
                             for (int i = 0; i < tam; i++) {
                                 int puntPrimera=0, divPrimera=0, fases = 0;
                                 String nombre;
+                                BigInteger idTorneo = BigInteger.valueOf(-1);
                                 Timestamp inicio;
                                 if (j==1){
                                     TorneoVO torneo = torneos.get(i);
+                                    idTorneo = torneo.getId();
                                     nombre = torneo.getNombre();
                                     fases = torneo.getNumFases();
                                     puntPrimera = torneo.getPremioPuntuacionPrimera();
@@ -169,7 +172,7 @@
                                 <td><%=puntPrimera%></td>
                                 <td>
                                     <div class="btn-toolbar">
-                                        <button type="button" onclick="buscarPartida()" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
+                                        <button type="button" onclick="buscarPartida(<%=idTorneo%>)" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
                                         <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
 
                                         <form action="/GestionarTorneo.do" method="post">
@@ -373,13 +376,14 @@
 
 <script>
     var socket;
-    function buscarPartida() {
+    function buscarPartida(idTorneo) {
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         var nombre_jugador = nombreUsuario;
         socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
 
         var listo = JSON.stringify({
             "tipo_mensaje": "busco_torneo",
+            "id_torneo": idTorneo,
             "nombre_participante": nombre_jugador
         });
         socket.onopen = function() {
@@ -417,8 +421,10 @@
                 break;
             case "restante_torneo":
                 setTimeout(function(){
-                    // TODO tipo de mensaje para avisar del comienzo del toreno
-
+                    var listo = JSON.stringify({
+                        "tipo_mensaje": "empezar_torneo",
+                        "id_torneo": nombre_jugador
+                    });
                     }, parseInt(mensaje.tiempo)*1000); // Porque esta en segundos
                 break;
         }
@@ -433,7 +439,7 @@
         console.log("Click bot mult");
         $("#botParejas").removeClass("disabled");
     });
-    $("#buscarPartida").on("hidden.bs.modal", function () {
+    $("#unirseTorneo").on("hidden.bs.modal", function () {
         cerrarSocket();
     });
 
