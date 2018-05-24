@@ -102,7 +102,9 @@
 
     <%  }%>
             <div id="accordion" role="tablist">
-                <% int j=0;for (String n: new String[]{"Torneos Puntuales", "Torneos Peri&oacute;dicos"}) {j++; %>
+                <% int j=0; for (String n: new String[]{"Torneos Programados", "Torneos Peri&oacute;dicos"}) { j++;
+                    if(j==1 || (admin && j == 2)){ // Muestra torneos programados y torneos periódicos para el admin
+                %>
 
                 <div class="card mb-1">
 
@@ -116,7 +118,7 @@
 
 
                     <div id="collapse<%=j%>" class="collapse show" role="tabpanel" aria-labelledby="heading<%=n%>">
-                       <% if((j==1 && torneos == null) || (j==2 && torneos_period == null)){ %>
+                       <% if(torneos_period == null){ %>
                         <div class="card-body text-center">
                             <h2>No hay torneos a los que puedas apuntarte. Vuelve en otro momento</h2>
                         </div>
@@ -134,8 +136,8 @@
                             </thead>
 
                             <tbody>
-                            <%int tam = 0;
-                            if (j==1){
+                            <%int tam;
+                            if (j==1 ){
                                 tam = torneos.size();
                             }else {
                                 tam = torneos_period.size();
@@ -168,17 +170,29 @@
                                 <td><%=divPrimera%></td>
                                 <td><%=puntPrimera%></td>
                                 <td>
-                                    <div class="btn-toolbar">
-                                        <button type="button" onclick="buscarPartida()" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
-                                        <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
+                                    <% if (j==1){ // Torneo puntual %>
+                                        <div class="btn-toolbar">
+                                            <button type="button" onclick="buscarPartida()" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
+                                            <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
 
-                                        <form action="/GestionarTorneo.do" method="post">
-                                            <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">
-                                            <input type="hidden" id="action<%=i%>" name="action_torneo" value="eliminar">
-                                            <input type="submit" class="btn btn-danger mx-1 my-1"
-                                                   value="Eliminar">
-                                        </form>
-                                    </div>
+                                            <form action="/GestionarTorneo.do" method="post">
+                                                <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">
+                                                <input type="hidden" id="action<%=i%>" name="action_torneo" value="eliminar">
+                                                <input type="submit" class="btn btn-danger mx-1 my-1"
+                                                       value="Eliminar">
+                                            </form>
+                                        </div>
+                                    <% } else { %>
+                                        <div class="btn-toolbar">
+                                            <form action="/GestionarTorneo.do" method="post">
+                                                <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">
+                                                <input type="hidden" id="action<%=i%>" name="action_torneo" value="eliminar">
+                                                <input type="hidden" id="period<%=i%>" name="period" value="period">
+                                                <input type="submit" class="btn btn-danger mx-1 my-1"
+                                                       value="Eliminar">
+                                            </form>
+                                        </div>
+                                    <% } %>
                                 </td>
                             </tr>
 
@@ -239,7 +253,8 @@
                         <% } /* fin else, hay torneos */%>
                     </div>
                 </div>
-                <% } /* fin for tipo torneo */ %>
+                <% } // Fin muestra torneos
+                } /* fin for tipo torneo */ %>
 
             </div>
     </div>
