@@ -181,7 +181,7 @@ public class Matchmaking {
             String nombre = (String) msg.get("nombre_participante");
             StatsUsuarioVO stats = null;
             try {
-                stats = bd.obtenerStatsUsuario(nombre);
+                stats = bd.obtenerTodasStatsUsuario(nombre);
             } catch (Exception e) {
                 e.printStackTrace();
             }

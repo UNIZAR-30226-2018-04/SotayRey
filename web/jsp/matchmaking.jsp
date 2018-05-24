@@ -53,7 +53,7 @@
                                     <input  type="radio" name="tipoRival" autocomplete="off" value="false" checked> Multijugador
                                 </label>
                                 <label id="botIA" class="btn btn-secondary">
-                                    <input  type="radio" name="tipoRival" value = "true" autocomplete="off"> IA
+                                    <input  type="radio" name="tipoRival" value="true" autocomplete="off"> IA
                                 </label>
                             </div>
                         </div>
@@ -300,21 +300,19 @@
         }
     }
 
-    var ia = getRadioValue("tipoRival") == "true";
     var nombre_jugador = nombreUsuario;
     var tipo = null;
-    if (parseInt(getRadioValue("esPublica")) == 1) {
-        tipo = "publica";
-    } else {
-        tipo = "privada";
-    }
 
     function buscarPartida() {
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
 
         socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
-
-
+        var ia = getRadioValue("tipoRival") == "true";
+        if (parseInt(getRadioValue("esPublica")) == 1) {
+            tipo = "publica";
+        } else {
+            tipo = "privada";
+        }
         var listo = JSON.stringify({
             "tipo_mensaje": "busco_partida",
             "nombre_participante": nombre_jugador,
@@ -385,7 +383,7 @@
         switch(mensaje.tipo_mensaje){
             case "partida_lista":
                 id_jugador = mensaje.id_jugador;
-                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador    + "&torneo=" + mensaje.torneo;
+                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador+"&torneo="+mensaje.torneo+"&con_ia="+con_ia;
                 window.location.replace("../juego.html?"+parametros);
                 break;
             case "espectar_partida":

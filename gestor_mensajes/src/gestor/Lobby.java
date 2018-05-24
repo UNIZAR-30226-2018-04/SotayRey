@@ -170,6 +170,10 @@ public class Lobby {
         this.ia = new Sophia(ep, true);
     }
 
+    public Sophia getIA() {
+        return this.ia;
+    }
+
     public boolean getContraIA() {
         return this.contraIA;
     }

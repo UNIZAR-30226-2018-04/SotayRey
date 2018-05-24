@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import sophia.AccionIA;
 import sophia.Sophia;
 
 import javax.websocket.*;
@@ -171,6 +172,8 @@ public class GestorMensajes {
                     try {
                         partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
                         broadcastLanzarCarta(idPartida, idJugador, carta);
+                        // Notificación a la IA
+                        notificarIALanzarCarta(lobby, carta);
                         System.out.println("El jugador " + idJugador + " lanza la carta "
                                 + carta.getValor() + carta.getPalo());
                         broadcastTurno(idPartida);
@@ -267,6 +270,15 @@ public class GestorMensajes {
         } else {
             // El jugador ha enviado una accion sin recibir su turno
             System.out.println(idJugador + " quiere accion pero no tiene turno");
+        }
+    }
+
+    private void notificarIALanzarCarta(Lobby lobby, Carta carta) {
+        if (lobby.getContraIA()) {
+            Sophia ia = lobby.getIA();
+            ia.tiraCartaRival(carta);
+            // Leer acción de IA y notificar
+            AccionIA accionIA = ia.obtenerAccion();
         }
     }
 
@@ -447,7 +459,7 @@ public class GestorMensajes {
         int idPartida = getIdPartidaMsg(msg);
         int idJugador = getIdJugadorMsg(msg);
         String nombre = (String) msg.get("nombre_participante");
-
+        boolean ia = (boolean) msg.get("con_ia");
         JugadorGestor jugador = new JugadorGestor(idJugador, nombre, session);
 
         int totalJugadores = (int) (long) msg.get("total_jugadores");
@@ -459,6 +471,7 @@ public class GestorMensajes {
             lobby = lobbies.get(idPartida);
             lobby.anyadir(jugador);
         }
+        lobby.setContraIA(ia);
         lobbies.put(idPartida, lobby);
         /*
         System.out.println(lobby.tam());
@@ -469,17 +482,23 @@ public class GestorMensajes {
             broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
             // Manda el turno a todos los clientes
             broadcastTurno(idPartida);
-        } else if (lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida)) {
+        } else if (!lobby.getContraIA() && lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida) ||
+                    lobby.getContraIA() && lobby.tam() == totalJugadores -1 && !listaPartidas.containsKey(idPartida)) {
             try {
                 lobby.setNumJugadores(totalJugadores);
-                LogicaPartida partida = new LogicaPartida(lobby.getTodosNombres());
+                ArrayList<String> todosNombres = lobby.getTodosNombres();
+                if (lobby.getContraIA()) {
+                    todosNombres.add("SophIA");
+                }
+                LogicaPartida partida = new LogicaPartida(todosNombres);
                 partida.crearPartida();
-                // TODO: Obtener partidaVO para luego poder eliminarla
-                //lobby.setPartidaVO(nuevaPartida);
                 listaPartidas.put(idPartida, partida);
+                // Inicializa IA si toca
+                if (lobby.getContraIA()) {
+                    lobby.inicializarIA(partida.getEstado());
+                }
                 // Manda el estado a todos los clientes
                 broadcastEstado(idPartida, false, -1); // TODO: Detectar cuando se vaya de vueltas
-
                 // Incrementa el numero de ronda a 1
                 lobby.incRonda();
                 // Manda el turno a todos los clientes
@@ -498,8 +517,7 @@ public class GestorMensajes {
             //} catch (SQLException e) {
             //    e.printStackTrace();
             }
-        }
-        else if(lobby.tam() > totalJugadores && listaPartidas.containsKey(idPartida)){
+        } else if(lobby.tam() > totalJugadores && listaPartidas.containsKey(idPartida)) {
             System.out.println("ES UN ESPECTADOR Y ENVIO ESTADO INICIAL");
             broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
             // Manda el turno a todos los clientes

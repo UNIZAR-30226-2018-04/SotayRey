@@ -525,6 +525,7 @@ function listo_jugador(){
         "nombre_participante": nombre,
         "total_jugadores": numJugadores,
         "tipo_participante": "jugador",
+        "con_ia": conIA,
         "remitente" : {
             "id_partida" : idPartida,
             "id_jugador" : miID
