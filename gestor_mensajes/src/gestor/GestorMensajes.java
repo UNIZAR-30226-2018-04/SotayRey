@@ -34,6 +34,8 @@ public class GestorMensajes {
     private static HashMap<Integer, Lobby> lobbies = new HashMap<>(); // TODO: En 4 jugadores, orden (eq1, eq2, eq1, eq2)
     private static InterfazDatos bd = null;
     private static int timeoutDesconectado = 30000;
+    private String nombreIA = "SophIA";
+    private int idIA = 0;
 
     @OnOpen
     public void onOpen(Session session) {
@@ -194,6 +196,8 @@ public class GestorMensajes {
                         broadcastRobarCarta(idPartida);
                         // Asigna el turno al jugador correspondiente
                         broadcastTurno(idPartida);
+                        // Notificación a la IA
+                        notificarIALanzarCarta(idPartida, lobby, carta);
                     } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
                         System.out.println("La ronda aún no ha acabado, ESTA EXCEPCION ES NORMAL, PUEDE SER IGNORADA");
                     } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
@@ -245,9 +249,9 @@ public class GestorMensajes {
                     // Ejecución de la acción
                     try {
                         partida.cambiarCartaPorTriunfo(partida.getEstado().getTurnoId(), cartaTriunfo);
-                        notificarIACambio(idPartida, lobby, cartaTriunfo);
                         // Si se ejecuta correctamente la acción
                         broadcastCambiarTriunfo(idPartida, cartaTriunfo);
+                        notificarIACambio(idPartida, lobby, cartaTriunfo);
                     } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionJugadorSinCarta exceptionJugadorSinCarta) {
@@ -275,7 +279,7 @@ public class GestorMensajes {
     }
 
     private void notificarIALanzarCarta(int idPartida, Lobby lobby, Carta carta) {
-        if (lobby.getContraIA()) {
+        if (lobby.getContraIA() && listaPartidas.get(idPartida).getEstado().getTurno() == idIA) {
             Sophia ia = lobby.getIA();
             ia.tiraCartaRival(carta);
             // Leer acción de IA y notificar
@@ -284,7 +288,7 @@ public class GestorMensajes {
     }
 
     private void notificarIACante(int idPartida, Lobby lobby, Carta carta) {
-        if (lobby.getContraIA()) {
+        if (lobby.getContraIA() && listaPartidas.get(idPartida).getEstado().getTurno() == idIA) {
             Sophia ia = lobby.getIA();
             //ia.cantaRival();
             // Leer acción de IA y notificar
@@ -293,7 +297,7 @@ public class GestorMensajes {
     }
 
     private void notificarIACambio(int idPartida, Lobby lobby, Carta carta) {
-        if (lobby.getContraIA()) {
+        if (lobby.getContraIA() && listaPartidas.get(idPartida).getEstado().getTurno() == idIA) {
             Sophia ia = lobby.getIA();
             ia.cambiaSieteRival();
             // Leer acción de IA y notificar
@@ -302,8 +306,6 @@ public class GestorMensajes {
     }
 
     private void realizarAccionIA(int idPartida) {
-        String nombreIA = "SophIA";
-        int idIA = 1;
         Sophia ia = lobbies.get(idPartida).getIA();
         LogicaPartida partida = listaPartidas.get(idPartida);
         AccionIA accionIA = ia.obtenerAccion();

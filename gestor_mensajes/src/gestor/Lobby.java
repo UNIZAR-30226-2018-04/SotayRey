@@ -2,6 +2,7 @@ package gestor;
 
 import basedatos.modelo.PartidaVO;
 import main.java.EstadoPartida;
+import main.java.Jugador;
 import sophia.Sophia;
 
 import javax.websocket.RemoteEndpoint;
@@ -131,13 +132,17 @@ public class Lobby {
 
     public ArrayList<String> getTodosNombres() {
         ArrayList<String> lista = new ArrayList<String>();
-        for (JugadorGestor jug : jugadores.values()){
-            lista.add(jug.getNombre());
+        for (JugadorGestor jug : jugadores.values()) {
+            if (jug.getNombre().equals("SophIA")) {
+                lista.add(jug.getNombre());
+                break;
+            }
         }
-        /*
-        for (int i = 0; i<numJugadores; i++) {
-            lista.add(buscarId(i).getNombre());
-        **/
+        for (JugadorGestor jug : jugadores.values()){
+            if (!jug.getNombre().equals("SophIA")) {
+                lista.add(jug.getNombre());
+            }
+        }
         return lista;
     }
 
@@ -155,7 +160,7 @@ public class Lobby {
 
     public boolean algunConectado() {
         for (JugadorGestor jug : jugadores.values()) {
-            if (jug.getDesconectado() == null) {
+            if (jug.getSesion() != null) {
                 return true;
             }
         }
