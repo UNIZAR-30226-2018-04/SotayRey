@@ -173,7 +173,7 @@ public class GestorMensajes {
                         partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
                         broadcastLanzarCarta(idPartida, idJugador, carta);
                         // Notificación a la IA
-                        notificarIALanzarCarta(lobby, carta);
+                        notificarIALanzarCarta(idPartida, lobby, carta);
                         System.out.println("El jugador " + idJugador + " lanza la carta "
                                 + carta.getValor() + carta.getPalo());
                         broadcastTurno(idPartida);
@@ -273,13 +273,19 @@ public class GestorMensajes {
         }
     }
 
-    private void notificarIALanzarCarta(Lobby lobby, Carta carta) {
+    private void notificarIALanzarCarta(int idPartida, Lobby lobby, Carta carta) {
         if (lobby.getContraIA()) {
             Sophia ia = lobby.getIA();
             ia.tiraCartaRival(carta);
             // Leer acción de IA y notificar
-            AccionIA accionIA = ia.obtenerAccion();
+            realizarAccionIA(idPartida);
         }
+    }
+
+    private void realizarAccionIA(int idPartida) {
+        Sophia ia = lobbies.get(idPartida).getIA();
+        AccionIA accionIA = ia.obtenerAccion();
+
     }
 
     private void broadcastCantar(int idPartida) {

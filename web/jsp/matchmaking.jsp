@@ -348,7 +348,6 @@
 
 
     function espectarPartida(idPartida){
-        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         var nombre_jugador = nombreUsuario;
         socket = new WebSocket("ws://localhost:8080/gm/endpoint");
         var listo = JSON.stringify({
@@ -389,7 +388,7 @@
             case "espectar_partida":
                 id_jugador = mensaje.id_espectador;
                 var espectador = true;
-                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador +    + "&torneo=" + mensaje.torneo;;
+                parametros = "miID="+id_jugador+"&idPartida="+id_partida+"&nombre="+nombre_jugador+"&numJugadores="+total_jugadores+"&tapete="+tapete+"&espectador="+espectador+"&torneo=" + mensaje.torneo+"&con_ia="+con_ia;
                 window.location.replace("../juego.html?"+parametros);
                 break;
         }
