@@ -60,6 +60,15 @@ function preload() {
     game.load.image('botonSonido', 'assets/botonSonido.png');
     game.load.image('botonSalir', 'assets/botonSalir.png');
     game.load.audio('musica', ['assets/musica.mp3']);
+
+    // SFX
+    game.load.audio('20', 'assets/sfx/20.mp3');
+    game.load.audio('40', 'assets/sfx/40.mp3');
+    game.load.audio('40ReyAs', 'assets/sfx/40ReyAs.mp3');
+    game.load.audio('arrastro', 'assets/sfx/arrastro.mp3');
+    game.load.audio('arrastroZarzal', 'assets/sfx/arrastroZarzal.mp3');
+    game.load.audio('deVueltas', 'assets/sfx/deVueltas.mp3');
+    game.load.audio('vueltas', 'assets/sfx/vueltas.mp3');
 }
 
 /* VARIABLES GLOBALES */
@@ -95,6 +104,15 @@ var estanCantando = false;
 
 var arrayJugadoresDefecto = [];
 var arrayJugadores = [];
+
+// SFX
+var veSFX;
+var cuaSFX;
+var cuaRASFX;
+var arrSFX;
+var arrZarSFX;
+var vueltasSFX;
+var deVueltasSFX;
 
 /**
  *  Inicializa las variables que dependen de la resolucion del dispositivo
@@ -215,6 +233,7 @@ function inicializarDispositivo(){
     //arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
     arrayJugadoresDefecto = [jRef, jIzq, jArriba, jDer];
     arrayJugadoresDefecto2 = [jRef, jArriba];
+
 }
 
 /**
@@ -416,12 +435,28 @@ function create() {
 
 
     controlMusica();
+    addSFX();
+
     actualizarHUD("");
 
     listo_jugador(); // Confirma que el jugador ya esta listo para jugar
 
     dibujarCuadroCarta(jRef); // TODO va un poco mal
 
+}
+
+function addSFX() {
+    veSFX = game.add.audio('20');
+    cuaSFX = game.add.audio('40');
+    cuaRASFX = game.add.audio('40ReyAs');
+    arrSFX = game.add.audio('arrastro');
+    arrZarSFX = game.add.audio('arrastroZarzal');
+    vueltasSFX = game.add.audio('vueltas');
+    deVueltasSFX = game.add.audio('deVueltas');
+
+    /*game.sound.setDecodedCallback([veSFX, cuaSFX, cuaRASFX, arrSFX, arrZarSFX, vueltasSFX, deVueltasSFX], function() {
+        console.log("SFX listos");
+    }, this)*/
 }
 
 /**
@@ -525,6 +560,7 @@ function listo_jugador(){
         "nombre_participante": nombre,
         "total_jugadores": numJugadores,
         "tipo_participante": "jugador",
+        "con_ia": conIA,
         "remitente" : {
             "id_partida" : idPartida,
             "id_jugador" : miID
@@ -906,6 +942,11 @@ function jugadorCanta(id, palo, cantidad){
     //var textoCantar = game.add.text(game.world.centerX, game.world.centerY, 0, + 'pepito HA CANTADO ' + cantidad);
     var textoCantar = game.add.text(game.world.centerX, game.world.centerY, '' + 'pepito HA CANTADO ' + cantidad + ' EN ' + palo, style);
     textoCantar.anchor.setTo(0.5,0.5);
+    if (cantidad == 20) {
+        veSFX.play();
+    } else {
+        cuaSFX.play();
+    }
     //textoCantar.alpha = 0;
 
     //game.add.tween(textoCantar).to( { alpha: 0 }, 3500, 'Linear', true, 0, 1000, true);
@@ -1195,12 +1236,14 @@ function finPartida(){
     else{
         tipo = 'derrota';
     }
-    logo = game.add.sprite(game.world.centerX, ejeY * 0.1, tipo);
-    logo.alpha = 0;
-    logo.x = logo.x - logo.width/2;
 
-    game.add.tween(logo).to( { alpha: 1 }, 1500, 'Linear', true, 0);
+    if(!espectador){
+        logo = game.add.sprite(game.world.centerX, ejeY * 0.1, tipo);
+        logo.alpha = 0;
+        logo.x = logo.x - logo.width/2;
 
+        game.add.tween(logo).to( { alpha: 1 }, 1500, 'Linear', true, 0);
+    }
 //    puntuacionMia.x = logo.x + logo.width/2 - 80;
  //   puntuacionMia.y = logo.y + logo.height * 1.2;
 

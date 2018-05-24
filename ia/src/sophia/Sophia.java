@@ -46,7 +46,9 @@ public class Sophia {
     /* Obtener accion de la IA 
     */
     public AccionIA obtenerAccion() {
-        CartaIA m = ismcts(estado,20000);
+        //int iteraciones = 20000;
+        int iteraciones = 1000;
+        CartaIA m = ismcts(estado,iteraciones);
         return estado.realizarMovimiento(m,0);
     }
 

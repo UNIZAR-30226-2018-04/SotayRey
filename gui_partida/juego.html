@@ -27,7 +27,7 @@ var nombre = findGetParameter("nombre");
 var tapete = findGetParameter("tapete");
 var espectador = findGetParameter("espectador") == "true";
 var torneo = findGetParameter("torneo") == "true"; // para convertirlo a bool
-
+var conIA = findGetParameter("con_ia") == "true";
 console.log("MI IDDDDD ES" + miID + "  "+numJugadores);
 
 var socket = new WebSocket("ws://localhost:8080/gm/endpoint");
