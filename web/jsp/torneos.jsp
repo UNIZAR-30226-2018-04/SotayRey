@@ -132,7 +132,14 @@
                                 <th>N&uacutemero de fases</th>
                                 <th>Premio en monedas al primer puesto</th>
                                 <th>Premio en puntos al primer puesto</th>
+                                <% if (admin){
+                                    if (j==2){%>
+                                <th>D&iacute;as</th>
+                                    <% } %>
+                                <th>Acciones</th>
+                                <% } else { %>
                                 <th>Participar</th>
+                                <% } %>
                             </tr>
                             </thead>
 
@@ -144,7 +151,7 @@
                                 tam = torneos_period.size();
                             }
                             for (int i = 0; i < tam; i++) {
-                                int puntPrimera=0, divPrimera=0, fases = 0;
+                                int puntPrimera=0, divPrimera=0, fases = 0, dias = 0;
                                 String nombre;
                                 BigInteger idTorneo = BigInteger.valueOf(-1);
                                 Timestamp inicio;
@@ -163,6 +170,16 @@
                                         fases = torneo.getNumFases();
                                         puntPrimera = torneo.getPremioPuntuacionPrimera();
                                         divPrimera = torneo.getPremioDivisaPrimera();
+                                        dias = torneo.getDias();
+                                        if (fases == -1){
+                                            fases = 0;
+                                        }
+                                        if (puntPrimera == -1){
+                                            puntPrimera = 0;
+                                        }
+                                        if (divPrimera == -1){
+                                            divPrimera = 0;
+                                        }
                                         inicio = torneo.getTimePrimero();
                                     }%>
 
@@ -173,14 +190,10 @@
                                 <td><%=divPrimera%></td>
                                 <td><%=puntPrimera%></td>
                                 <td>
+                                    <% if (j==1){ // Torneo puntual %>
                                     <div class="btn-toolbar">
                                         <button type="button" onclick="buscarPartida(<%=idTorneo%>)" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
                                         <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
-                                    <% if (j==1){ // Torneo puntual %>
-                                        <div class="btn-toolbar">
-                                            <button type="button" onclick="buscarPartida()" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
-                                            <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
-
                                             <form action="/GestionarTorneo.do" method="post">
                                                 <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">
                                                 <input type="hidden" id="action<%=i%>" name="action_torneo" value="eliminar">
@@ -189,6 +202,8 @@
                                             </form>
                                         </div>
                                     <% } else { %>
+                                    <%=dias%></td>
+                                    <td>
                                         <div class="btn-toolbar">
                                             <form action="/GestionarTorneo.do" method="post">
                                                 <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">
