@@ -570,14 +570,18 @@ public class GestorMensajes {
 
         int totalJugadores = (int) (long) msg.get("total_jugadores");
         Lobby lobby = new Lobby();
+        lobby.setContraIA(ia);
         if (!lobbies.containsKey(idPartida)) {
             // Si la partida aún no existe, la crea
+            if (lobby.getContraIA()) {
+                lobby.anyadir(new JugadorGestor(0, "SophIA"));
+            }
             lobby.anyadir(jugador);
         } else {
             lobby = lobbies.get(idPartida);
             lobby.anyadir(jugador);
         }
-        lobby.setContraIA(ia);
+
         lobbies.put(idPartida, lobby);
         /*
         System.out.println(lobby.tam());
@@ -588,11 +592,9 @@ public class GestorMensajes {
             broadcastEstado(idPartida, false, idJugador); // TODO: Detectar cuando se vaya de vueltas
             // Manda el turno a todos los clientes
             broadcastTurno(idPartida);
-        } else if (!lobby.getContraIA() && lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida) ||
-                    lobby.getContraIA() && lobby.tam() == totalJugadores -1 && !listaPartidas.containsKey(idPartida)) {
+        } else if (lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida)) {
             try {
                 lobby.setNumJugadores(totalJugadores);
-                lobby.anyadir(new JugadorGestor(1, "SophIA"));
                 /*ArrayList<String> todosNombres = lobby.getTodosNombres();
                 if (lobby.getContraIA()) {
                     todosNombres.add("SophIA");
@@ -610,6 +612,9 @@ public class GestorMensajes {
                 lobby.incRonda();
                 // Manda el turno a todos los clientes
                 broadcastTurno(idPartida);
+                if (lobby.getContraIA()) {
+                    realizarAccionIA(idPartida);
+                }
                 System.out.println("Nueva partida añadida con identificador de lobby: " + idPartida);
             } catch (ExceptionEquipoIncompleto exceptionEquipoIncompleto) {
                 exceptionEquipoIncompleto.printStackTrace();

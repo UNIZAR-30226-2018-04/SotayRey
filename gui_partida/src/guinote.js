@@ -454,9 +454,9 @@ function addSFX() {
     vueltasSFX = game.add.audio('vueltas');
     deVueltasSFX = game.add.audio('deVueltas');
 
-    game.sound.setDecodedCallback([veSFX, cuaSFX, cuaRA, arrSFX, arrZarSFX, vueltasSFX, deVueltasSFX], function() {
+    /*game.sound.setDecodedCallback([veSFX, cuaSFX, cuaRASFX, arrSFX, arrZarSFX, vueltasSFX, deVueltasSFX], function() {
         console.log("SFX listos");
-    }, this)
+    }, this)*/
 }
 
 /**
