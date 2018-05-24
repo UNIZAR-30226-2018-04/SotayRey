@@ -2,6 +2,8 @@
 
 USE sotayrey_db;
 
+SET time_zone = "+02:00" -- Pone en hora peninsular la BD
+
 DROP TABLE IF EXISTS sesion_abierta;
 DROP TABLE IF EXISTS participa_fase;
 DROP TABLE IF EXISTS juega;
