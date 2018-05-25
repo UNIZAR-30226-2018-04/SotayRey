@@ -189,14 +189,14 @@
                                 <td><%=nombre%></td>
                                 <td><%=inicio%></td>
                                 <td><%=fases%> </td>
-                                <td><%=divPrimera%></td>
-                                <td><%=puntPrimera%></td>
+                                <td><%=(int)(divPrimera*Math.pow(2,fases-1))%></td>
+                                <td><%=(int)(puntPrimera*Math.pow(2,fases-1))%></td>
                                 <td>
                                     <% if (j==1){ // Torneo puntual %>
                                     <div class="btn-toolbar">
                                         <% if (inicio.before(actual)){ // Ya ha comenzado %>
                                         <button type="button" onclick="/home/cmarius9buscarPartida(<%=idTorneo%>)" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
-                                        <% } if(inicio.after(new Timestamp(System.currentTimeMillis()))){ // Se puede modificar solo si no ha empezado %>
+                                        <% } if(admin && inicio.after(new Timestamp(System.currentTimeMillis()))){ // Se puede modificar solo si no ha empezado %>
                                         <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
                                         <form action="/GestionarTorneo.do" method="post">
                                             <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">

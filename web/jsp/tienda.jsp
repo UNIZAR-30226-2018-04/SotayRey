@@ -149,7 +149,7 @@
                                     if (art.getTipo() == t){
                                         if (usuarioVO.getAdmin() && accionAdmin.equals("modificar")){ %>
                                             <div class=" card col-sm-5 col-md-3 my-1">
-                                                <div class="card-header text-center bg-primary text-white">
+                                                <div class="card-header text-center">
                                                     <%=art.getNombre()%>
                                                 </div>
 
@@ -193,7 +193,7 @@
                                         LigaVO liga = art.getRequiere(); %>
                                             <div class=" card col-sm-5 col-md-3 my-1">
                                                 <%--<div class="card">--%>
-                                                    <div class="card-header text-center bg-primary text-white">
+                                                    <div class="card-header text-center bg-light">
                                                         <%=art.getNombre()%>
                                                     </div>
                                                     <div class="card-body">
