@@ -5,6 +5,7 @@
 <%@ page import="basedatos.modelo.TorneoPeriodicoVO" %>
 <%@ page import="java.sql.Timestamp" %>
 <%@ page import="java.math.BigInteger" %>
+<%@ page import="java.sql.Time" %>
 
 <html lang="en" >
 <head>
@@ -155,6 +156,7 @@
                                 String nombre;
                                 BigInteger idTorneo = BigInteger.valueOf(-1);
                                 Timestamp inicio;
+                                Timestamp actual = new Timestamp(System.currentTimeMillis());
                                 if (j==1){
                                     TorneoVO torneo = torneos.get(i);
                                     idTorneo = torneo.getId();
@@ -192,15 +194,19 @@
                                 <td>
                                     <% if (j==1){ // Torneo puntual %>
                                     <div class="btn-toolbar">
+                                        <% if (inicio.before(actual)){ // Ya ha comenzado %>
                                         <button type="button" onclick="buscarPartida(<%=idTorneo%>)" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
+                                        <% } if(inicio.after(new Timestamp(System.currentTimeMillis()))){ // Se puede modificar solo si no ha empezado %>
                                         <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
-                                            <form action="/GestionarTorneo.do" method="post">
-                                                <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">
-                                                <input type="hidden" id="action<%=i%>" name="action_torneo" value="eliminar">
-                                                <input type="submit" class="btn btn-danger mx-1 my-1"
-                                                       value="Eliminar">
-                                            </form>
-                                        </div>
+                                        <form action="/GestionarTorneo.do" method="post">
+                                            <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">
+                                            <input type="hidden" id="action<%=i%>" name="action_torneo" value="eliminar">
+                                            <input type="submit" class="btn btn-danger mx-1 my-1"
+                                                   value="Eliminar">
+                                        </form>
+                                        <% } %>
+
+                                    </div>
                                     <% } else { %>
                                     <%=dias%></td>
                                     <td>
