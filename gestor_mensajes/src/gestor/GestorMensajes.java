@@ -15,6 +15,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import sophia.AccionIA;
 import sophia.Sophia;
+import sun.rmi.runtime.Log;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
@@ -196,10 +197,12 @@ public class GestorMensajes {
                         broadcastRobarCarta(idPartida);
                         // Asigna el turno al jugador correspondiente
                         broadcastTurno(idPartida);
-                        // Notificación a la IA
-                        notificarIALanzarCarta(idPartida, lobby, carta);
+                        if (partida.getEstado().getTurno() == idIA) {
+                            realizarAccionIA(idPartida);
+                        }
                     } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
                         System.out.println("La ronda aún no ha acabado, ESTA EXCEPCION ES NORMAL, PUEDE SER IGNORADA");
+                        realizarAccionIA(idPartida);
                     } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
                         exceptionCartaYaExiste.printStackTrace();
                     } catch (ExceptionNumeroMaximoCartas exceptionNumeroMaximoCartas) {
@@ -215,10 +218,8 @@ public class GestorMensajes {
                         finalizarPartida(idPartida, partida, false);
                     } catch (ExceptionDeVueltas exceptionDeVueltas) {
                         System.out.println("De vueltas: " + idPartida);
-
                         broadcastEstado(idPartida, true, -1);
                         broadcastGanaRonda(idPartida, false);
-                        //broadcastRobarCarta(idPartida);
                         // Manda el turno a todos los clientes
                         broadcastTurno(idPartida);
                     }
@@ -227,6 +228,7 @@ public class GestorMensajes {
                     try {
                         partida.cantar(partida.getEstado().getTurnoId());
                         broadcastCantar(idPartida);
+                        notificarIACante(idPartida, lobby);
                     } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
@@ -251,7 +253,7 @@ public class GestorMensajes {
                         partida.cambiarCartaPorTriunfo(partida.getEstado().getTurnoId(), cartaTriunfo);
                         // Si se ejecuta correctamente la acción
                         broadcastCambiarTriunfo(idPartida, cartaTriunfo);
-                        notificarIACambio(idPartida, lobby, cartaTriunfo);
+                        notificarIACambio(idPartida, lobby);
                     } catch (ExceptionJugadorIncorrecto exceptionJugadorIncorrecto) {
                         exceptionJugadorIncorrecto.printStackTrace();
                     } catch (ExceptionJugadorSinCarta exceptionJugadorSinCarta) {
@@ -279,29 +281,45 @@ public class GestorMensajes {
     }
 
     private void notificarIALanzarCarta(int idPartida, Lobby lobby, Carta carta) {
-        if (lobby.getContraIA() && listaPartidas.get(idPartida).getEstado().getTurno() == idIA) {
+        if (lobby.getContraIA()) {
             Sophia ia = lobby.getIA();
             ia.tiraCartaRival(carta);
-            // Leer acción de IA y notificar
-            realizarAccionIA(idPartida);
         }
     }
 
-    private void notificarIACante(int idPartida, Lobby lobby, Carta carta) {
-        if (lobby.getContraIA() && listaPartidas.get(idPartida).getEstado().getTurno() == idIA) {
+    private void notificarIACante(int idPartida, Lobby lobby) {
+        if (lobby.getContraIA()) {
             Sophia ia = lobby.getIA();
-            //ia.cantaRival();
-            // Leer acción de IA y notificar
-            realizarAccionIA(idPartida);
+            LogicaPartida partida = listaPartidas.get(idPartida);
+            ArrayList<Cante> cantes = partida.getRecienCantadas();
+            ia.cantaRival(convertirCantes(cantes));
         }
     }
 
-    private void notificarIACambio(int idPartida, Lobby lobby, Carta carta) {
-        if (lobby.getContraIA() && listaPartidas.get(idPartida).getEstado().getTurno() == idIA) {
+    private ArrayList<Boolean> convertirCantes(ArrayList<Cante> cantes) {
+        // {Bastos,Copas,Espadas,Oros}
+        ArrayList<Boolean> resultado = new ArrayList<>();
+        for (int i=0; i<4; i++) {
+            resultado.add(false);
+        }
+        for (Cante c : cantes) {
+            if (c.getPalo().equals("B")) {
+                resultado.set(0, true);
+            } else if (c.getPalo().equals("C")) {
+                resultado.set(1, true);
+            } else if (c.getPalo().equals("E")) {
+                resultado.set(2, true);
+            } else if (c.getPalo().equals("O")) {
+                resultado.set(3, true);
+            } else {}
+        }
+        return resultado;
+    }
+
+    private void notificarIACambio(int idPartida, Lobby lobby) {
+        if (lobby.getContraIA()) {
             Sophia ia = lobby.getIA();
             ia.cambiaSieteRival();
-            // Leer acción de IA y notificar
-            realizarAccionIA(idPartida);
         }
     }
 
@@ -311,6 +329,9 @@ public class GestorMensajes {
         AccionIA accionIA = ia.obtenerAccion();
         // Decodificar acciones IA
         // TODO: Cantes
+        ArrayList<Boolean> cantes = accionIA.cantes;
+
+
         if (accionIA.cambiaSiete) {
             // Hay que encontrar el 7 de la IA
             Carta siete = buscarSiete(partida, nombreIA);
@@ -328,9 +349,6 @@ public class GestorMensajes {
                 // Notificar jugadores
                 broadcastLanzarCarta(idPartida, idIA, accionIA.carta);
                 broadcastTurno(idPartida);
-                if (partida.getEstado().getTurno() == idIA) {
-                    realizarAccionIA(idPartida);
-                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -341,6 +359,11 @@ public class GestorMensajes {
                 broadcastRobarCarta(idPartida);
                 broadcastTurno(idPartida);
                 if (partida.getEstado().getTurno() == idIA) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     realizarAccionIA(idPartida);
                 }
             } catch (ExceptionPartidaFinalizada exceptionPartidaFinalizada) {
@@ -350,14 +373,20 @@ public class GestorMensajes {
                 finalizarPartida(idPartida, partida, false);
             } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
                 System.out.println("La ronda aún no ha acabado");
+                if (partida.getEstado().getTurno() == idIA) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    realizarAccionIA(idPartida);
+                }
             } catch (ExceptionDeVueltas exceptionDeVueltas) {
                 System.out.println("De vueltas: " + idPartida);
-
                 // Notifica del estado a jugadores e IA
                 broadcastEstado(idPartida, true, -1);
                 Lobby lobby = lobbies.get(idPartida);
                 lobby.vueltasIA(partida.getEstado());
-
                 broadcastGanaRonda(idPartida, false);
                 //broadcastRobarCarta(idPartida);
                 // Manda el turno a todos los clientes
@@ -597,10 +626,6 @@ public class GestorMensajes {
         } else if (lobby.tam() == totalJugadores && !listaPartidas.containsKey(idPartida)) {
             try {
                 lobby.setNumJugadores(totalJugadores);
-                /*ArrayList<String> todosNombres = lobby.getTodosNombres();
-                if (lobby.getContraIA()) {
-                    todosNombres.add("SophIA");
-                }*/
                 LogicaPartida partida = new LogicaPartida(lobby.getTodosNombres());
                 partida.crearPartida();
                 listaPartidas.put(idPartida, partida);
@@ -628,8 +653,6 @@ public class GestorMensajes {
                 exceptionJugadorIncorrecto.printStackTrace();
             } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
                 exceptionCartaYaExiste.printStackTrace();
-            //} catch (SQLException e) {
-            //    e.printStackTrace();
             }
         } else if(lobby.tam() > totalJugadores && listaPartidas.containsKey(idPartida)) {
             System.out.println("ES UN ESPECTADOR Y ENVIO ESTADO INICIAL");
