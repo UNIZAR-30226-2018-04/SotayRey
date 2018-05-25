@@ -463,6 +463,7 @@
                         "tipo_mensaje": "empezar_torneo",
                         "id_torneo": nombre_jugador
                     });
+                    socket.send(listo);
                     }, parseInt(mensaje.tiempo)*1000); // Porque esta en segundos
                 break;
         }
