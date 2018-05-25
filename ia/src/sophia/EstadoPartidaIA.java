@@ -251,13 +251,34 @@ public class EstadoPartidaIA {
         // Se elimina la carta del jugador
         this.manos.get(jugador).remove(movimiento);
 
-        // Si es el que saca no hay más que hacer
+        // Si es el que saca, se comprueban cantes y cambio de 7
         if (this.cartaTirada == null) {
             cartaTirada = movimiento;
+
+			// Se comprueban los cantes
+		    for (CartaIA c1 : this.manos.get(jugador)) {
+		        for (CartaIA c2 : this.manos.get(jugador)) {
+		            if (this.restantes.length()<27 && c1.rank == 6 && c2.rank == 7 && c1.palo == c2.palo && !this.cantes.get(c1.getPaloInt())) {
+		                this.puntos.set(jugador, this.puntos.get(jugador) + 20 + 20 * ((c1.palo == this.triunfo.palo) ? 1 : 0));
+		                this.cantes.set(c1.getPaloInt(), true);
+		                resultado.cantes.set(c1.getPaloInt(),true);
+		            }
+		        }
+		    }
+
+			// Si tiene el 7 de triunfo lo cambia
+		    if (this.restantes.length()<27 && this.manos.get(jugador).contains(new CartaIA(4, this.triunfo.palo))) {
+		        this.manos.get(jugador).remove(new CartaIA(4, this.triunfo.palo));
+		        this.manos.get(jugador).add(this.triunfo);
+		        this.triunfo = new CartaIA(4, this.triunfo.palo);
+		        resultado.cambiaSiete = true;
+		    }
+
             this.turno = 1 - this.turno;
             return resultado;
         }
-        // Si no
+
+        // Si no es el que saca
         if (this.cartaTirada.mata(this.triunfo.palo, movimiento)) {
             // Pierde el jugador de este movimiento
             jugador = 1 - jugador;
@@ -284,30 +305,13 @@ public class EstadoPartidaIA {
         // Se quita la carta del tapete
         this.cartaTirada = null;
 
-        // Se comprueban los cates
-        for (CartaIA c1 : this.manos.get(jugador)) {
-            for (CartaIA c2 : this.manos.get(jugador)) {
-                if (c1.rank == 6 && c2.rank == 7 && c1.palo == c2.palo && !this.cantes.get(c1.getPaloInt())) {
-                    this.puntos.set(jugador, this.puntos.get(jugador) + 20 + 20 * ((c1.palo == this.triunfo.palo) ? 1 : 0));
-                    this.cantes.set(c1.getPaloInt(), true);
-                    resultado.cantes.set(c1.getPaloInt(),true);
-                }
-            }
-        }
-
+       
         // Las diez últimas
         if (this.manos.get(0).size() == 0 && this.manos.get(1).size() == 0) {
             this.puntos.set(jugador, this.puntos.get(jugador) + 10);
             jugador = 1 - jugador;
         }
 
-        // Si tiene el 7 de triunfo lo cambia
-        if (this.manos.get(jugador).contains(new CartaIA(4, this.triunfo.palo))) {
-            this.manos.get(jugador).remove(new CartaIA(4, this.triunfo.palo));
-            this.manos.get(jugador).add(this.triunfo);
-            this.triunfo = new CartaIA(4, this.triunfo.palo);
-            resultado.cambiaSiete = true;
-        }
 
         // Si se ha acabado la partida de ida sin ganador se reparten las vueltas
         if (this.manos.get(0).size() == 0 && this.puntos.get(0) < 101 && this.puntos.get(1) < 101) {
