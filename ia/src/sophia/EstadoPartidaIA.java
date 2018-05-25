@@ -70,7 +70,7 @@ public class EstadoPartidaIA {
         this.vueltas = v;
         // Cartas restantes (es necesario eliminar el triunfo del final)
         this.restantes = CartaIA.toArray(p.getMazo());
-        this.restantes.remove(this.restantes.size() - 1);
+        //this.restantes.remove(this.restantes.size() - 1);
         //Cantes
         this.cantes = new ArrayList<Boolean>(Collections.nCopies(4, false));
         // El triunfo
