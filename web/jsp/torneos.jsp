@@ -414,9 +414,11 @@
 %>
 
 <script>
+    var id_torneo = -1;
     var socket;
     function buscarPartida(idTorneo) {
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        id_torneo = idTorneo;
         var nombre_jugador = nombreUsuario;
         socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
 
@@ -461,7 +463,7 @@
                 setTimeout(function(){
                     var listo = JSON.stringify({
                         "tipo_mensaje": "empezar_torneo",
-                        "id_torneo": nombre_jugador
+                        "id_torneo": id_torneo
                     });
                     socket.send(listo);
                     }, parseInt(mensaje.tiempo)*1000); // Porque esta en segundos
