@@ -15,7 +15,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import sophia.AccionIA;
 import sophia.Sophia;
-import sun.rmi.runtime.Log;
+//import sun.rmi.runtime.Log;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
