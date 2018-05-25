@@ -338,7 +338,9 @@ public class Matchmaking {
             i++;
         }
         for (JugadorMatch jug : lobby) {
-            enviarListo(jug, conIA, torneo, idPartida, i);
+            if (jug.getSesion() != null) {
+                enviarListo(jug, conIA, torneo, idPartida, i);
+            }
             i++;
         }
     }
