@@ -1,10 +1,14 @@
 package gestor;
 
 import basedatos.modelo.PartidaVO;
+import main.java.EstadoPartida;
+import main.java.Jugador;
+import sophia.Sophia;
 
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -14,9 +18,10 @@ import java.util.HashMap;
 public class Lobby {
     private HashMap<String, JugadorGestor> jugadores = new HashMap<>();
     private int ronda = 0;
-    private PartidaVO partidaVO = null;
     private int maxID = 4; // Para asignarlo a los espectadores
     private int numJugadores = 0;
+    private Sophia ia = null;
+    private boolean contraIA = false;
 
     public void setNumJugadores(int numJugadores) {
         this.numJugadores = numJugadores;
@@ -32,6 +37,7 @@ public class Lobby {
     public Lobby(JugadorGestor jug) {
         ronda = 0;
         anyadir(jug);
+        contraIA = false;
     }
 
     public void anyadir(JugadorGestor jug) {
@@ -126,13 +132,17 @@ public class Lobby {
 
     public ArrayList<String> getTodosNombres() {
         ArrayList<String> lista = new ArrayList<String>();
-        for (JugadorGestor jug : jugadores.values()){
-            lista.add(jug.getNombre());
+        for (JugadorGestor jug : jugadores.values()) {
+            if (jug.getNombre().equals("SophIA")) {
+                lista.add(jug.getNombre());
+                break;
+            }
         }
-        /*
-        for (int i = 0; i<numJugadores; i++) {
-            lista.add(buscarId(i).getNombre());
-        **/
+        for (JugadorGestor jug : jugadores.values()){
+            if (!jug.getNombre().equals("SophIA")) {
+                lista.add(jug.getNombre());
+            }
+        }
         return lista;
     }
 
@@ -150,16 +160,44 @@ public class Lobby {
 
     public boolean algunConectado() {
         for (JugadorGestor jug : jugadores.values()) {
-            if (jug.getDesconectado() == null) {
+            if (jug.getSesion() != null) {
                 return true;
             }
         }
         return false;
     }
 
-    public void setPartidaVO(PartidaVO p) {
-        this.partidaVO = p;
+    public void inicializarIA(EstadoPartida ep) {
+        this.ia = new Sophia(ep, false);
     }
 
-    public PartidaVO getPartidaVO() {return this.partidaVO;}
+    public void vueltasIA(EstadoPartida ep) {
+        this.ia = new Sophia(ep, true);
+    }
+
+    public Sophia getIA() {
+        return this.ia;
+    }
+
+    public boolean getContraIA() {
+        return this.contraIA;
+    }
+
+    public void setContraIA(boolean valor) {
+        this.contraIA = valor;
+    }
+
+    public int getPrimerAbandonador() {
+        Date primer = new Date();
+        int primerIdx = -1;
+        int i = 0;
+        for (JugadorGestor j : jugadores.values()) {
+            if (j.getDesconectado() != null && j.getDesconectado().before(primer)) {
+                primer = j.getDesconectado();
+                primerIdx = i;
+            }
+            i++;
+        }
+        return primerIdx;
+    }
 }

@@ -168,7 +168,23 @@ public class GestionarTorneoServlet extends HttpServlet {
 
                         break;
                     case "eliminar":
-                        if (session.getAttribute("torneos") != null){
+                        String period = request.getParameter("period");
+                        if (period != null && session.getAttribute("torneos_period") != null){
+                            int pos = Integer.parseInt(request.getParameter("btnEliminar"));
+                            ArrayList<TorneoPeriodicoVO> torneos = (ArrayList<TorneoPeriodicoVO>) session.getAttribute("torneos_period");
+                            try {
+                                TorneoPeriodicoVO t = torneos.get(pos);
+                                facade.eliminarTorneoPeriodico(t.getNombre());
+                                System.out.println("Torneo eliminado periodico");
+                            } catch(Exception e){
+                                System.err.println("ERROR: error elimnando torneo");
+                                e.printStackTrace();
+
+                                error("interno", request, response);
+                                return;
+                            }
+                        }
+                        else if (period == null && session.getAttribute("torneos") != null){
                             int pos = Integer.parseInt(request.getParameter("btnEliminar"));
                             ArrayList<TorneoVO> torneos = (ArrayList<TorneoVO>) session.getAttribute("torneos");
                             try {
@@ -195,8 +211,10 @@ public class GestionarTorneoServlet extends HttpServlet {
                         break;
                 }
                 ArrayList<TorneoVO> torneos = null;
+                ArrayList<TorneoPeriodicoVO> torneos_period = null;
                 try {
                     torneos = facade.obtenerTorneosProgramados();
+                    torneos_period = facade.obtenerTorneosPeriodicos();
                 } catch(Exception e){
                     e.printStackTrace();
 
@@ -207,6 +225,7 @@ public class GestionarTorneoServlet extends HttpServlet {
 
 
                 session.setAttribute("torneos",torneos);
+                session.setAttribute("torneos_period", torneos_period);
                 // Correcto
                 error = "done";
                 request.setAttribute("error", error);

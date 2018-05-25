@@ -35,6 +35,7 @@ public class PartidaVO {
     public PartidaVO(boolean publica, List<UsuarioVO> usuarios) {
         this.publica = publica;
         this.usuarios = usuarios;
+        this.timeInicio = new Timestamp(System.currentTimeMillis());
     }
     /* Constructor para crear una nueva partida en curso, los miembros del equipo
      * uno deben ir en las posiciones pares del vector, los miembros del equipo dos

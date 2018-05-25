@@ -181,7 +181,7 @@ public class Matchmaking {
             String nombre = (String) msg.get("nombre_participante");
             StatsUsuarioVO stats = null;
             try {
-                stats = bd.obtenerStatsUsuario(nombre);
+                stats = bd.obtenerTodasStatsUsuario(nombre);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -196,7 +196,7 @@ public class Matchmaking {
             PartidaVO nuevaPartida = null;
             try {
                 // Se añade la IA a la partida
-                usuarios.add(bd.obtenerDatosUsuario("SophIA"));
+                usuarios.add(0, bd.obtenerDatosUsuario("SophIA"));
                 // Se intenta crear la nueva partida
                 nuevaPartida = new PartidaVO(tipo.equals("publica"), usuarios);
                 bd.crearNuevaPartida(nuevaPartida);
@@ -334,6 +334,9 @@ public class Matchmaking {
 
     private void broadcastListo(ArrayList<JugadorMatch> lobby, BigInteger idPartida, boolean conIA, boolean torneo) {
         int i = 0;
+        if (conIA) {
+            i++;
+        }
         for (JugadorMatch jug : lobby) {
             enviarListo(jug, conIA, torneo, idPartida, i);
             i++;

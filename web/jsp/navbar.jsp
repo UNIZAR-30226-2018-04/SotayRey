@@ -20,7 +20,7 @@
                if (session.getAttribute("userId") == null) { %>
                 <li class="nav-item">
                     <a class="btn btn-outline" href="../jsp/login.jsp" role="button">
-                        <i class="fa fa-sign-in mr-2"></i>Entrar/Registrarse</span>
+                        <i class="fa fa-sign-in mr-2 "></i>Entrar/Registrarse</span>
                     </a>
                 </li>
             <% } else {
@@ -32,7 +32,7 @@
                 </li>
             <li class="nav-item">
                 <a class="btn btn-outline" href="../jsp/torneos.jsp" role="button">
-                    <i class="fa fa-play mr-2"></i>Torneos</a>
+                    <i class="fa fa-star mr-2"></i>Torneos</a>
             </li>
                 <li class="nav-item">
                     <a class="btn btn-outline" href="/MostrarLiga.do" role="button">
