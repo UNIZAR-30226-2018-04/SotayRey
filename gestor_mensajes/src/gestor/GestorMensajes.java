@@ -15,12 +15,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import sophia.AccionIA;
 import sophia.Sophia;
-import sun.rmi.runtime.Log;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 
-import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -197,12 +195,14 @@ public class GestorMensajes {
                         broadcastRobarCarta(idPartida);
                         // Asigna el turno al jugador correspondiente
                         broadcastTurno(idPartida);
-                        if (partida.getEstado().getTurno() == idIA) {
+                        if (partida.getEstado().getTurno() == idIA && lobby.getContraIA()) {
                             realizarAccionIA(idPartida);
                         }
                     } catch (ExceptionRondaNoAcabada exceptionRondaNoAcabada) {
                         System.out.println("La ronda aún no ha acabado, ESTA EXCEPCION ES NORMAL, PUEDE SER IGNORADA");
-                        realizarAccionIA(idPartida);
+                        if (partida.getEstado().getTurno() == idIA && lobby.getContraIA()) {
+                            realizarAccionIA(idPartida);
+                        }
                     } catch (ExceptionCartaYaExiste exceptionCartaYaExiste) {
                         exceptionCartaYaExiste.printStackTrace();
                     } catch (ExceptionNumeroMaximoCartas exceptionNumeroMaximoCartas) {
@@ -459,7 +459,7 @@ public class GestorMensajes {
     private void broadcastRobarCarta(int idPartida) {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
-        ArrayList<String> todosNombres = lobby.getTodosNombres();
+        ArrayList<String> todosNombres = partida.getEstado().getJugadoresRepartirCartas();
         for (String jugador : todosNombres) {
             // Si consigue robar carta para ese jugador, hacer broadcast a todos y sólo a él de esa carta
             Carta cartaRobada = robarCarta(partida, jugador);

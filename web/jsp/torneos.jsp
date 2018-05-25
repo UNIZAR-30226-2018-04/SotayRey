@@ -189,14 +189,14 @@
                                 <td><%=nombre%></td>
                                 <td><%=inicio%></td>
                                 <td><%=fases%> </td>
-                                <td><%=divPrimera%></td>
-                                <td><%=puntPrimera%></td>
+                                <td><%=(int)(divPrimera*Math.pow(2,fases-1))%></td>
+                                <td><%=(int)(puntPrimera*Math.pow(2,fases-1))%></td>
                                 <td>
                                     <% if (j==1){ // Torneo puntual %>
                                     <div class="btn-toolbar">
                                         <% if (inicio.before(actual)){ // Ya ha comenzado %>
                                         <button type="button" onclick="buscarPartida(<%=idTorneo%>)" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
-                                        <% } if(inicio.after(new Timestamp(System.currentTimeMillis()))){ // Se puede modificar solo si no ha empezado %>
+                                        <% } if(admin && inicio.after(new Timestamp(System.currentTimeMillis()))){ // Se puede modificar solo si no ha empezado %>
                                         <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
                                         <form action="/GestionarTorneo.do" method="post">
                                             <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">
@@ -414,9 +414,11 @@
 %>
 
 <script>
+    var id_torneo = -1;
     var socket;
     function buscarPartida(idTorneo) {
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        id_torneo = idTorneo;
         var nombre_jugador = nombreUsuario;
         socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
 
@@ -441,20 +443,19 @@
     }
     function recibirMensaje(msg) {
         console.log("HE RECIBIDO UN MENSAJE");
-
+        var mensaje = JSON.parse(msg);
         switch(mensaje.tipo_mensaje){
             case "partida_lista":
-                var mensaje = JSON.parse(msg);
                 var total_jugadores = mensaje.total_jugadores;
                 var id_partida = mensaje.id_partida;
                 var nombre_jugador = nombreUsuario;
                 var id_jugador;
-                var con_ia = mensaje.con_ia;
+                var con_ia = mensaje.con_ia == "true";
                 var tapete = "<%=miTapete%>";
                 var espectador = false;
                 console.log("EL MENSAJE ES: " + mensaje.tipo_mensaje);
                 id_jugador = mensaje.id_jugador;
-                parametros = "miID=" + id_jugador + "&idPartida=" + id_partida + "&nombre=" + nombre_jugador + "&numJugadores=" + total_jugadores + "&tapete=" + tapete + "&espectador=" + espectador
+                parametros = "miID=" + id_jugador + "&idPartida=" + id_partida + "&nombre=" + nombre_jugador + "&numJugadores=" + total_jugadores + "&tapete=" + tapete + "&espectador=" + espectador + "&con_ia=" + con_ia
                     + "&torneo=" + mensaje.torneo;
                 window.location.replace("../juego.html?" + parametros);
                 break;
@@ -462,8 +463,9 @@
                 setTimeout(function(){
                     var listo = JSON.stringify({
                         "tipo_mensaje": "empezar_torneo",
-                        "id_torneo": nombre_jugador
+                        "id_torneo": id_torneo
                     });
+                    socket.send(listo);
                     }, parseInt(mensaje.tiempo)*1000); // Porque esta en segundos
                 break;
         }

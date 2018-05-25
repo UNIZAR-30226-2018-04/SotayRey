@@ -8,6 +8,7 @@ package main.java;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static java.lang.Math.abs;
@@ -848,6 +849,15 @@ public class EstadoPartida {
         } else {
             throw new ExceptionCartaIncorrecta();
         }
+    }
+
+    public ArrayList<String> getJugadoresRepartirCartas(){
+        ArrayList<String> jug = getJugadoresId();
+        List<String> left = jug.subList(0, ganadorUltimaRonda);
+        List<String> right = jug.subList(ganadorUltimaRonda, jug.size());
+        ArrayList<String> res = new ArrayList<>(right);
+        res.addAll(left);
+        return (res);
     }
 }
 
