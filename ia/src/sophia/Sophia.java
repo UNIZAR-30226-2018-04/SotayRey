@@ -96,8 +96,6 @@ public class Sophia {
         return maxCarta;
     }
     public static void main(String[] args) {
-        CartaIA kk = new CartaIA(7,'B');
-        kk.toCarta();
         Sophia sp = new Sophia();
         sp.estado = EstadoPartidaIA.nuevaPartida();
 
