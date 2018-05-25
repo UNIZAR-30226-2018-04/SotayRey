@@ -36,6 +36,7 @@ public class Matchmaking {
     private static HashMap<BigInteger, TorneoMatch> torneos = new HashMap<>();
     private static InterfazDatos bd = null;
     private int limiteSigos = 3;
+    private int delayTorneos = 20;  // Segundos tras los cuales se añaden las IAs
 
     @OnOpen
     public void onOpen(Session session) {
@@ -91,7 +92,11 @@ public class Matchmaking {
     }
 
     private void recibirEmpiezaTorneo(JSONObject msg) {
-        BigInteger id = (BigInteger) msg.get("id_torneo");
+        BigInteger id = BigInteger.valueOf((long) msg.get("id_torneo"));
+        empezarTorneo(id);
+    }
+
+    private void empezarTorneo(BigInteger id) {
         TorneoMatch torneoMatch = torneos.get(id);
         TorneoVO torneoVO = torneoMatch.getVO();
         // Obtener máxima fase
@@ -103,17 +108,17 @@ public class Matchmaking {
             bd.obtenerPartidasFaseTorneo(fase);
             // Notificar a los jugadores de la partida
             for (PartidaVO p : fase.getParejas()) {
-               iniciarPartidaTorneo(torneoMatch, p);
+                iniciarPartidaTorneo(torneoMatch, p);
             }
         } catch (SQLException e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
     private void recibirBuscoTorneo(Session sesion, JSONObject msg) {
         // Obtener info del mensaje
         String nombre = (String) msg.get("nombre_participante");
-        BigInteger id = (BigInteger) msg.get("id_torneo");
+        BigInteger id = BigInteger.valueOf((long) msg.get("id_torneo"));
         // Obtener datos del torneo
         TorneoVO t = null;
         try {
@@ -127,9 +132,12 @@ public class Matchmaking {
         }
         TorneoMatch torneo = torneos.get(id);
         // Añade al jugador
-        anyadirJugadorTorneo(torneo, nombre, sesion);
-        // Informa del tiempo hasta la hora de inicio
-        enviarRestante(t, sesion);
+        if (anyadirJugadorTorneo(torneo, nombre, sesion)) {
+            empezarTorneo(id);
+        } else {
+            // Informa del tiempo hasta la hora de inicio
+            enviarRestante(t, sesion);
+        }
     }
 
     private void iniciarPartidaTorneo(TorneoMatch t, PartidaVO p) {
@@ -364,6 +372,10 @@ public class Matchmaking {
     private void enviarRestante(TorneoVO t, Session sesion) {
         if (t != null) {
             long restante = t.getTimeInicio().getTime() - System.currentTimeMillis();
+            restante += delayTorneos;
+            if (restante < 0) {
+                restante = 1;
+            }
             JSONObject obj = new JSONObject();
             obj.put("tipo_mensaje", "restante_torneo");
             obj.put("tiempo", restante);
