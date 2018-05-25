@@ -258,7 +258,7 @@ public class EstadoPartidaIA {
 			// Se comprueban los cantes
 		    for (CartaIA c1 : this.manos.get(jugador)) {
 		        for (CartaIA c2 : this.manos.get(jugador)) {
-		            if (this.restantes.length()<27 && c1.rank == 6 && c2.rank == 7 && c1.palo == c2.palo && !this.cantes.get(c1.getPaloInt())) {
+		            if (this.restantes.size()<27 && c1.rank == 6 && c2.rank == 7 && c1.palo == c2.palo && !this.cantes.get(c1.getPaloInt())) {
 		                this.puntos.set(jugador, this.puntos.get(jugador) + 20 + 20 * ((c1.palo == this.triunfo.palo) ? 1 : 0));
 		                this.cantes.set(c1.getPaloInt(), true);
 		                resultado.cantes.set(c1.getPaloInt(),true);
@@ -267,7 +267,7 @@ public class EstadoPartidaIA {
 		    }
 
 			// Si tiene el 7 de triunfo lo cambia
-		    if (this.restantes.length()<27 && this.manos.get(jugador).contains(new CartaIA(4, this.triunfo.palo))) {
+		    if (this.restantes.size()<27 && this.manos.get(jugador).contains(new CartaIA(4, this.triunfo.palo))) {
 		        this.manos.get(jugador).remove(new CartaIA(4, this.triunfo.palo));
 		        this.manos.get(jugador).add(this.triunfo);
 		        this.triunfo = new CartaIA(4, this.triunfo.palo);
