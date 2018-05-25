@@ -75,6 +75,7 @@ public class LogicaPartida {
    public EstadoPartida repartirCarta(String jugador) throws
            ExceptionJugadorIncorrecto, ExceptionMazoVacio,
            ExceptionNumeroMaximoCartas, ExceptionCartaYaExiste{
+
        Carta a = estado.getPrimeraCartaMazo();
        estado.anyadirCartaJugador(jugador, a);
        return new EstadoPartida(estado);

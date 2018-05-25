@@ -459,7 +459,7 @@ public class GestorMensajes {
     private void broadcastRobarCarta(int idPartida) {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
-        ArrayList<String> todosNombres = lobby.getTodosNombres();
+        ArrayList<String> todosNombres = partida.getEstado().getJugadoresRepartirCartas();
         for (String jugador : todosNombres) {
             // Si consigue robar carta para ese jugador, hacer broadcast a todos y sólo a él de esa carta
             Carta cartaRobada = robarCarta(partida, jugador);
