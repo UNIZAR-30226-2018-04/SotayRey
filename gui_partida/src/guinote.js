@@ -59,6 +59,7 @@ function preload() {
     game.load.image('dorsoBase', 'assets/dorsoBase.jpg');
     game.load.image('botonSonido', 'assets/botonSonido.png');
     game.load.image('botonSalir', 'assets/botonSalir.png');
+    game.load.image('bordeHUD', 'assets/bordeHUD.png');
     game.load.audio('musica', ['assets/musica.mp3']);
 
     // SFX
@@ -118,7 +119,9 @@ var deVueltasSFX;
  *  Inicializa las variables que dependen de la resolucion del dispositivo
  */
 function inicializarDispositivo(){
-    if (ejeX > 800){
+    var anchura = window.innerWidth / window.devicePixelRatio;
+    console.log("EL EJE X ES: " + anchura);
+    if (anchura > 800){
         console.log("dispositivo grande");
         console.log(ejeX);
         ejeXCarta = ejeXCartaOriginal;
@@ -127,14 +130,32 @@ function inicializarDispositivo(){
         avatarEjeY = avatarEjeX;
 
     }
-    else if (ejeX > 420){
-        console.log("dispositivo grande");
+    else if (anchura > 420){
+        console.log("dispositivo movil");
         console.log(ejeX);
-        ejeXCarta = (ejeX * 0.65) / 6;
+        ejeXCarta = (ejeX * 0.75) / 6;
+        ejeYCarta = ejeXCarta*(ejeYCartaOriginal/ejeXCartaOriginal);
+        avatarEjeX = ejeXCarta * 0.45;
+        avatarEjeY = avatarEjeX;
+    }
+    else if (anchura > 350){
+        /*
+        console.log("dispositivo movil");
+        ejeXCarta = ejeX / 6;
         ejeYCarta = ejeXCarta*(ejeYCartaOriginal/ejeXCartaOriginal);
         avatarEjeX = ejeXCarta * 0.5;
         avatarEjeY = avatarEjeX;
+
+/*
+        var ejeXCartaOriginal = 80; // esto en una apartado de game options
+        var ejeYCartaOriginal = 123;
+        var ejeXCarta = (ejeX * 0.8) / 6;
+        var ejeYCarta = ejeXCarta*(ejeYCartaOriginal/ejeXCartaOriginal);
+
+        var avatarEjeX = ejeXCarta * 0.5;
+        */
     }
+
     else{
         // El valor que esta por defecto
     }
@@ -206,7 +227,7 @@ function inicializarDispositivo(){
 
     jDer = {};
     jDer.XPosMedia = ejeX * 0.85;
-    jDer.YPosMedia = (ejeY / 2) * 1.2;
+    jDer.YPosMedia = (ejeY / 2) * 1.15;
     jDer.sumX = 0;
     jDer.sumY = ejeXCarta;
     jDer.XLanzar = jDer.XPosMedia - ejeYCarta * 1.10;
@@ -218,8 +239,8 @@ function inicializarDispositivo(){
     jDer.dorso = 'dorsoBase';
 
     if (numJugadores == 4){
-        jDer.nombreUsuario = game.add.text(jDer.XLanzar, jDer.YLanzar - ejeXCarta - 30, 'usuarioIzq', {font: fuente, fill: color});
-        jDer.avatar = game.add.sprite(jDer.XLanzar, jDer.YLanzar - ejeYCarta - avatarEjeY, 'avatar');
+        jDer.nombreUsuario = game.add.text(jDer.XLanzar + ejeXCarta/2, jDer.YLanzar - ejeXCarta - 30, 'usuarioIzq', {font: fuente, fill: color});
+        jDer.avatar = game.add.sprite(jDer.XLanzar + ejeXCarta/2, jDer.YLanzar - ejeYCarta - avatarEjeY, 'avatar');
         jDer.avatar.height = avatarEjeY;
         jDer.avatar.width = avatarEjeX;
     }
@@ -229,6 +250,10 @@ function inicializarDispositivo(){
     turno.height = ejeYCarta * 0.30;
     turno.width = ejeXCarta * 0.30;
 
+    // Marco HUD
+    var marco = game.add.sprite(0, 0, 'bordeHUD');
+    marco.height = 100;
+    marco.width = 190;
 
     //arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
     arrayJugadoresDefecto = [jRef, jIzq, jArriba, jDer];
@@ -259,6 +284,12 @@ function mapearJugadores(){
  * @param palo Palo de la carta de triunfo
  */
 function modificarTriunfo(numero, palo){
+    try{
+        triunfo.carta.destroy();
+    }
+    catch (e) {
+
+    }
     triunfo.carta = crearCarta(numero, palo);
     triunfo.carta.x = triunfo.x;
     triunfo.carta.y = triunfo.y;
@@ -318,7 +349,11 @@ function crearCuadroCarta(jugador){
  */
 function dibujarCuadroCarta(jugador){
     //var cuadro = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
-    jugador.cartaLanzada.destroy();
+    try{
+        jugador.cartaLanzada.destroy();
+    }
+    catch(e) {}
+
     jugador.cartaLanzada = crearCarta(0, 0);
     dibujarCartaLanzada(jugador);
     /*
@@ -728,12 +763,21 @@ function representarEstado(estado){
     puntuacionRival.puntuacion = datos.puntuaciones[(miID+1)%numJugadores].puntuacion;
     restantes_mazo.restantes = datos.restantes_mazo;
 */
-    datosHUD = {"restantes_mazo": estado.partida.restantes_mazo,
+    // Al principio lo envia bien, por lo que hay que hacer la inversa:
+    var restantes = estado.partida.restantes_mazo;
+    if(numJugadores==2){
+        restantes + 1;
+    }
+    else{
+        restantes + 3;
+    }
+
+    datosHUD = {"restantes_mazo": restantes,
         "nueva_ronda": estado.partida.ronda,
         "tipo_nueva_ronda" : estado.partida.tipo_ronda,
-        "puntuaciones":[{"id_jugador":0,"puntuacion":21},
+        "puntuaciones":[{"id_jugador":0,"puntuacion":0},
             {"id_jugador":1,"puntuacion":0},
-            {"id_jugador":2,"puntuacion":21},
+            {"id_jugador":2,"puntuacion":0},
             {"id_jugador":3,"puntuacion":0}],
         "nueva_ronda":2};
 
@@ -749,9 +793,16 @@ function prueba(){
     recibirMensaje(msg);
 }
 
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
+    }
+}
 
 var mensajito = 0;
-
 function recibirMensaje(msg){
     console.log("RECIBO UN MENSAJEEEEEE");
     console.log(msg);
@@ -790,7 +841,11 @@ function recibirMensaje(msg){
         case "gana_ronda":
             //sleep(60000);
             //rondaAcabada();
-            setTimeout(function(){ rondaAcabada(); actualizarHUD(mensaje);}, 1500);
+            //setTimeout(function(){ rondaAcabada(); actualizarHUD(mensaje); }, 1500);
+            sleep(1500);
+            rondaAcabada();
+            actualizarHUD(mensaje);
+            sleep(500);
             break;
         case "estado_inicial" :
             representarEstado(mensaje);
@@ -918,6 +973,7 @@ function jugadorCambiaTriunfo(id, numero, palo){
                 modificarTriunfo(item.numero, item.palo);
                 jugador.cartasEnMano.removeChild(item);
                 var carta = crearCarta(numeroTriunfo, paloTriunfo);
+                carta.inputEnabled = true;
                 carta.events.onInputDown.add(pulsaCarta, this);
                 jugador.cartasEnMano.add(carta);
                 dibujarJugador(jugador);
@@ -1077,7 +1133,7 @@ function dibujarBotones(){
     //var style = {font: "20px", fill: "#000000", align:"center"};
 
     if (espectador){
-
+        game.add.text(20, ejeYBotones, 'ESPECTANDO', { fill: '#ffffff'});
     }
     else{
         var cantar = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
@@ -1155,8 +1211,9 @@ var puntuacionRival = 0;
 var numRonda = 0;
 var restantes_mazo = "NaN";
 var tipo_ronda = "IDAS";
-var color = "#040404";
+var color = "#ffffff";
 var fuente =  "12pt impact";
+var inicioTexto = 10;
 
 /**
  * Actualiza el HUD del jugador
@@ -1170,23 +1227,23 @@ function actualizarHUD(datos){
 
     if (HUDInicializado == false){
         console.log("NO ESTABA ININICIALIZADO");
-        tipo_ronda = game.add.text(0, 0, '', { font: fuente, fill: color});
+        tipo_ronda = game.add.text(inicioTexto, 0, '', { font: fuente, fill: color});
         tipo_ronda.tipo = "IDAS";
         tipo_ronda.text = "TIPO RONDA: " + tipo_ronda.tipo;
 
-        numRonda = game.add.text(0, 20, '', { font: fuente, fill: color});
+        numRonda = game.add.text(inicioTexto, 20, '', { font: fuente, fill: color});
         numRonda.numero = 0;
         numRonda.text = "NUMERO RONDA: " + numRonda.numero;
 
-        puntuacionRival = game.add.text(0, 40, '', { font: fuente, fill: color});
+        puntuacionRival = game.add.text(inicioTexto, 40, '', { font: fuente, fill: color});
         puntuacionRival.puntuacion = 0;
         puntuacionRival.text = "PUNTUACION RIVAL: " + puntuacionRival.puntuacion;
 
-        puntuacionMia = game.add.text(0, 60, '', { font: fuente, fill: color});
+        puntuacionMia = game.add.text(inicioTexto, 60, '', { font: fuente, fill: color});
         puntuacionMia.puntuacion = 0;
         puntuacionMia.text = "MI PUNTAUCION : " + puntuacionMia.puntuacion;
 
-        restantes_mazo = game.add.text(0, 80, '', { font: fuente, fill: color});
+        restantes_mazo = game.add.text(inicioTexto, 80, '', { font: fuente, fill: color});
         restantes_mazo.restantes = 99999999;
         restantes_mazo.text = "CARTAS RESTANTES : " + restantes_mazo.restantes;
 
@@ -1210,7 +1267,26 @@ function actualizarHUD(datos){
         restantes_mazo.restantes = datos.restantes_mazo;
 
         numRonda.text = "NUMERO RONDA: " + numRonda.numero;
-        restantes_mazo.text = "CARTAS RESTANTES : " + restantes_mazo.restantes;
+
+        var restantes = restantes_mazo.restantes;
+        if(numJugadores==2){
+            if( (restantes-1) >= 0){
+                restantes = restantes - 1;
+            }
+            else{
+                restantes = 0;
+            }
+        }
+        else{
+            if ((restantes-3) >= 0){
+                restantes = restantes - 3;
+            }
+            else{
+                retantes = 0;
+            }
+        }
+        restantes_mazo.restantes = restantes;
+        restantes_mazo.text = "CARTAS RESTANTES : " + restantes;
     }
     if(datos.hasOwnProperty('tipo_nueva_ronda')){
         tipo_ronda.text = "TIPO RONDA: " + datos.tipo_nueva_ronda;

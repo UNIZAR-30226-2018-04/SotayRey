@@ -460,6 +460,7 @@ public class GestorMensajes {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
         ArrayList<String> todosNombres = partida.getEstado().getJugadoresRepartirCartas();
+        ArrayList<String> todoElLobby = lobby.getTodosNombres();
         for (String jugador : todosNombres) {
             // Si consigue robar carta para ese jugador, hacer broadcast a todos y sólo a él de esa carta
             Carta cartaRobada = robarCarta(partida, jugador);
@@ -470,7 +471,7 @@ public class GestorMensajes {
             objRob.put("tipo_mensaje", "broadcast_accion");
             objRob.put("tipo_accion", "robar_carta");
             objRob.put("id_jugador", partida.getEstado().getJugadoresId().indexOf(jugador));
-            for (String nombreReceptor : todosNombres) {
+            for (String nombreReceptor : todoElLobby) {
                 if (nombreReceptor.equals(jugador)) {
                     // Debe de recibir la carta robada
                     JSONObject objCarta = new JSONObject();
@@ -516,6 +517,11 @@ public class GestorMensajes {
 
 
     private void broadcastGanaRonda(int idPartida, boolean timeout) {
+        try { // Unicamente para que llegue antes el mensaje de rondaAcabada
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
         // Incrementa la ronda
@@ -525,6 +531,7 @@ public class GestorMensajes {
         objNR.put("tipo_mensaje", "gana_ronda");
         objNR.put("nueva_ronda", lobby.getRonda());
         objNR.put("restantes_mazo", partida.getEstado().getMazo().size());
+        //System.out.println("QUEDAN CARTAS: " + partida.getEstado().getMazo().size());
         objNR.put("id_jugador", partida.getEstado().getGanadorUltimaRonda());
         // Obtener puntuaciones de cada jugador
         JSONArray punts = new JSONArray();
