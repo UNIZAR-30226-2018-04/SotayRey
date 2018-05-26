@@ -72,4 +72,16 @@ public class TorneoMatch {
     public boolean getAcabado() {
         return this.fase == 1 && this.jugadores.size() == 2;
     }
+
+    public String eliminarJugador(Session sesion) {
+        String encontrado = null;
+        for (String nombre : jugadores.keySet()) {
+            if (jugadores.get(nombre) == sesion) {
+                jugadores.remove(nombre);
+                encontrado = nombre;
+                break;
+            }
+        }
+        return encontrado;
+    }
 }
