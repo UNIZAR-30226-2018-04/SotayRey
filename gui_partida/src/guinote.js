@@ -1313,7 +1313,7 @@ function finPartida(){
     var logo;
     var tipo;
 
-    if (puntuacionMia.puntuacion >= 100){
+    if (puntuacionMia.puntuacion > 100){
         tipo = 'victoria';
     }
     else{
@@ -1342,6 +1342,7 @@ function finPartida(){
         } , 2000);
     }
     else{ // Boton de salir a la pagina principal
+        socket.close(); // Para evitar que salgan los mensajes de desconexion de los jugadores
         var botonSalir = game.add.sprite(0, 0, 'botonSalir');
         botonSalir.width = 150;
         botonSalir.height = 50;
