@@ -46,7 +46,7 @@ public class EstadoPartida {
      */
     public EstadoPartida(ArrayList<String> jugadores) throws
             ExceptionEquipoIncompleto {
-        this.random = new Random();
+        this.random = new Random(System.currentTimeMillis());
         if (jugadores.size() != 2 && jugadores.size() != 4){
             throw new ExceptionEquipoIncompleto();
         }
