@@ -262,7 +262,7 @@
                         <th>Equipo2</th>
                         <th>Resultado</th>
                         <th>Tus Puntos</th>
-                        <th>Puntos Contringante</th>
+                        <th>Puntos Contrincante</th>
                     </tr>
                     </thead>
                     <tbody>

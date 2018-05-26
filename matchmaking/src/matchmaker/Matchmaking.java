@@ -114,6 +114,11 @@ public class Matchmaking {
             for (PartidaVO p : fase.getParejas()) {
                 iniciarPartidaTorneo(torneoMatch, p);
             }
+            if (torneoMatch.getFase() == 1) {
+                torneoMatch.setUltRonda(true);
+            } else {
+                torneoMatch.decFase();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -133,6 +138,9 @@ public class Matchmaking {
         // Si no existe en la lista lo añade
         if (t != null && !torneos.containsKey(id)) {
             torneos.put(id, new TorneoMatch(t));
+        } else if (t != null && torneos.get(id).getUltRonda()) {
+            // Ganador
+            enviarGanador(sesion);
         }
         TorneoMatch torneo = torneos.get(id);
         // Añade al jugador
@@ -141,6 +149,18 @@ public class Matchmaking {
         } else {
             // Informa del tiempo hasta la hora de inicio
             enviarRestante(t, sesion);
+        }
+    }
+
+    private void enviarGanador(Session sesion) {
+        JSONObject obj = new JSONObject();
+        obj.put("tipo_mensaje", "ganador_torneo");
+        if (sesion != null) {
+            try {
+                sesion.getBasicRemote().sendText(obj.toJSONString());
+            } catch (IOException e) {
+                System.out.println("No se pudo enviar el mensaje de ganador de torneo");
+            }
         }
     }
 

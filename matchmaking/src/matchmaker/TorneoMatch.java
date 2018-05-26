@@ -15,11 +15,13 @@ public class TorneoMatch {
     private TorneoVO vo;
     private int fase;
     private boolean lleno;
+    private boolean empezadaUltRonda;
 
     public TorneoMatch(TorneoVO t) {
         this.jugadores = new HashMap<>();
         this.vo = t;
         this.lleno = false;
+        this.empezadaUltRonda = false;
         fase = t.getNumFases();
     }
 
@@ -63,5 +65,13 @@ public class TorneoMatch {
 
     public void setLleno(boolean valor) {
         this.lleno = valor;
+    }
+
+    public void setUltRonda(boolean valor) {
+        this.empezadaUltRonda = valor;
+    }
+
+    public boolean getUltRonda() {
+        return empezadaUltRonda;
     }
 }
