@@ -35,8 +35,9 @@ public class GestionarTorneoServlet extends HttpServlet {
             throws ServletException, IOException{
         Timestamp res;
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            Date parsedDate = dateFormat.parse(date + " " + time + ":59");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            String tiempo = date + "T" + time + ":59";
+            Date parsedDate = dateFormat.parse(date + "T" + time + ":59");
             res = new java.sql.Timestamp(parsedDate.getTime());
             return res;
         } catch(Exception e) { //this generic but you can control another types of exception
@@ -96,6 +97,7 @@ public class GestionarTorneoServlet extends HttpServlet {
 
                        timeInicio = transformarFechas(date_ini, time_ini, request, response);
 
+                        Timestamp timeAct = new Timestamp(System.currentTimeMillis());
                         if (timeInicio.after(new Timestamp(System.currentTimeMillis()))){
                             try {
                                 if (tipo.equals("0")){ // Torneo periódico

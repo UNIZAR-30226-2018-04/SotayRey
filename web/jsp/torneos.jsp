@@ -195,7 +195,7 @@
                                     <% if (j==1){ // Torneo puntual %>
                                     <div class="btn-toolbar">
                                         <% if (inicio.before(actual)){ // Ya ha comenzado %>
-                                        <button type="button" onclick="/home/cmarius9buscarPartida(<%=idTorneo%>)" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
+                                        <button type="button" onclick="buscarPartida(<%=idTorneo%>)" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
                                         <% } if(admin && inicio.after(new Timestamp(System.currentTimeMillis()))){ // Se puede modificar solo si no ha empezado %>
                                         <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
                                         <form action="/GestionarTorneo.do" method="post">
