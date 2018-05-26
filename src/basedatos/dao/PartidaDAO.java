@@ -120,14 +120,14 @@ public class PartidaDAO {
 
                 if (p.getGanador() == 'A') {
                     if (p.getAbandonador() == 1) {
-                        statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(2).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
-                    } else {
                         statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(1).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
+                    } else {
+                        statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(0).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
                     }
                 } else if (p.getGanador() == '1') {
-                    statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(1).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
+                    statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(0).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
                 } else {
-                    statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(2).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
+                    statement.executeUpdate("INSERT INTO participa_fase (usuario, fase_num, fase_torneo, multip) VALUES ('" + p.getUsuarios().get(1).getUsername() + "'," + (p.getFaseNum() - 1) + "," + p.getTorneoId() + "," + multip + ")");
                 }
 
                 res = statement.executeQuery("SELECT COUNT(*) total FROM participa_fase p WHERE p.fase_num =" + (p.getFaseNum() - 1) + " AND p.fase_torneo=" + p.getTorneoId());
