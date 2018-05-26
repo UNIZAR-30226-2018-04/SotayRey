@@ -464,10 +464,15 @@ public class PartidaDAO {
             ArrayList<UsuarioVO> usuarios = new ArrayList<>(2);
             UsuarioVO u1 = new UsuarioVO();
             u1.setUsername(res.getString("usuario1"));
-            usuarios.add(u1);
             UsuarioVO u2 = new UsuarioVO();
             u2.setUsername(res.getString("usuario2"));
-            usuarios.add(u2);
+            if (res.getInt("equipo1")==1) {
+                usuarios.add(u1);
+                usuarios.add(u2);
+            } else {
+                usuarios.add(u2);
+                usuarios.add(u1);
+            }
             PartidaVO p = new PartidaVO(timeInicio, true, usuarios);
             p.setId(id);
             partidasCurso.add(p);
@@ -633,7 +638,7 @@ public class PartidaDAO {
         statement = connection.createStatement();
 
         String partIndiv = "SELECT p.id, p.timeInicio, p.fase_num, p.fase_torneo, p.publica,\n" +
-                "       j1.usuario usuario1, j2.usuario usuario2 \n" +
+                "       j1.usuario usuario1, j2.usuario usuario2, j1.equipo equipo1, j2.equipo equipo2 \n" +
                 "FROM partida p, juega j1, juega j2\n" +
                 "WHERE p.id = j1.partida AND p.id = j2.partida AND p.timeFin IS NULL\n" +
                 "      AND j1.usuario > j2.usuario \n" +
@@ -648,10 +653,15 @@ public class PartidaDAO {
             ArrayList<UsuarioVO> usuarios = new ArrayList<>(2);
             UsuarioVO u1 = new UsuarioVO();
             u1.setUsername(res.getString("usuario1"));
-            usuarios.add(u1);
             UsuarioVO u2 = new UsuarioVO();
             u2.setUsername(res.getString("usuario2"));
-            usuarios.add(u2);
+            if (res.getInt("equipo1")==1) {
+                usuarios.add(u1);
+                usuarios.add(u2);
+            } else {
+                usuarios.add(u2);
+                usuarios.add(u1);
+            }
             p = new PartidaVO(timeInicio, res.getBoolean("publica"), usuarios);
             int faseNum = res.getInt("fase_num");
             String sid = res.getString("fase_torneo");
