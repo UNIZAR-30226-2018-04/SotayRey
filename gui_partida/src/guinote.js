@@ -1003,12 +1003,12 @@ function jugadorCanta(id, palo, cantidad){
     var style = { font: "65px Arial", fill: "#ff0044", align: "center" };
     //arrayJugadores[id].nombreUsuario
     //var textoCantar = game.add.text(game.world.centerX, game.world.centerY, 0, + 'pepito HA CANTADO ' + cantidad);
-    var textoCantar = game.add.text(game.world.centerX, game.world.centerY, arrayJugadores[id].nombreUsuario + ' HA CANTADO ' + cantidad + ' EN ' + palo, style);
+    var textoCantar = game.add.text(game.world.centerX, game.world.centerY, arrayJugadores[id].nombreUsuario.text + ' HA CANTADO ' + cantidad + ' EN ' + palo, style);
     textoCantar.anchor.setTo(0.5,0.5);
     if (cantidad == 20) {
         veSFX.play();
     } else {
-        cuaSFX.play();
+        cuaRASFX.play();
     }
     //textoCantar.alpha = 0;
 
@@ -1300,6 +1300,7 @@ function actualizarHUD(datos){
     }
     if(restantes_mazo.restantes <= 1) {
         triunfo.carta.alpha = 0.5;
+        arrSFX.play();
         tipo_ronda.text = "TIPO RONDA: ARRASTRE";
     }
 
