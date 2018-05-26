@@ -876,98 +876,103 @@ public class GestorMensajes {
 
     private void finalizarPartida(int idPartida, LogicaPartida partida, boolean timeout) {
         // Obtiene info de la partida jugada y lo añade a partidaVO
-        PartidaVO partidaVO = null;
-        try {
-            partidaVO = bd.obtenerPartida(BigInteger.valueOf(idPartida));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // Almacena hora final
-        partidaVO.setTimeFin(new Timestamp(System.currentTimeMillis()));
-        // Obtiene puntuaciones
-        ArrayList<String> jugs = partida.getEstado().getJugadoresId();
-        int numJugs = partida.getEstado().getJugadoresId().size();
-        int ptos1 = 0, ptos2 = 0;
+        if (listaPartidas.get(idPartida) != null && lobbies.get(idPartida) != null) {
+            PartidaVO partidaVO = null;
+            try {
+                partidaVO = bd.obtenerPartida(BigInteger.valueOf(idPartida));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // Almacena hora final
+            partidaVO.setTimeFin(new Timestamp(System.currentTimeMillis()));
+            // Obtiene puntuaciones
+            ArrayList<String> jugs = partida.getEstado().getJugadoresId();
+            int numJugs = partida.getEstado().getJugadoresId().size();
+            int ptos1 = 0, ptos2 = 0;
             try {
                 ptos1 = partida.consultarPuntos(jugs.get(0));
                 ptos2 = partida.consultarPuntos(jugs.get(1));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        if (jugs.size() > 2) {
-            // 4 jugadores
+            if (jugs.size() > 2) {
+                // 4 jugadores
+                try {
+                    ptos1 += partida.consultarPuntos(jugs.get(2));
+                    ptos2 += partida.consultarPuntos(jugs.get(3));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            // Almacena puntuaciones
+            partidaVO.setPuntos1(ptos1);
+            partidaVO.setPuntos2(ptos2);
+
+            // Almacena ganadores/abandonadores
+            Lobby lobby = lobbies.get(idPartida);
+            if (timeout) {
+                // Alguien ha abandonado la partida
+                partidaVO.setAbandonador(lobby.getPrimerAbandonador());
+                partidaVO.setGanador('A');
+            } else {
+                // La partida ha finalizado correctamente
+                // Obtener ganadores
+                ArrayList<String> ganadores = new ArrayList<>();
+                try {
+                    ganadores = partida.getGanadoresPartida();
+                } catch (ExceptionPartidaSinAcabar exceptionPartidaSinAcabar) {
+                    exceptionPartidaSinAcabar.printStackTrace();
+                }
+                // Buscar equipo ganador
+                int i = 0;
+                for (String nombre : jugs) {
+                    if (nombre.equals(ganadores.get(0)) || ganadores.size() == 2 && nombre.equals(ganadores.get(1))) {
+                        break;
+                    }
+                    i++;
+                }
+                // Almacenar equipo ganador
+                partidaVO.setGanador(Character.forDigit((i % 2)+1, 10));
+            }
+            // Almacena cantes
+            int cuarentas = 0, veintes = 0;
+            for (Cante c : partida.getCantes()) {
+                if (c.getTipo() == Cante.TipoCante.LAS20) {
+                    veintes++;
+                } else {
+                    cuarentas++;
+                }
+            }
+            ArrayList<Integer> cantes = new ArrayList<Integer>();
+            for (String nombre : jugs) {
+                cantes.add(0);
+            }
+            partidaVO.setVeintes(cantes);
+            partidaVO.setCuarentas(cantes);
+
+            broadcastGanaRonda(idPartida, timeout);
+
+            if (partidasPausadas.contains((Integer) idPartida)) {
+                // Elimina las URLs de desconexion abiertas
+                for (String nombre : lobby.getTodosNombres()) {
+                    try {
+                        bd.obtenerUrlSesion(nombre);
+                    } catch (SQLException e) {
+                        System.out.println("Error eliminando URLs de sesion de jugadores");
+                    }
+                }
+            }
+            partidasPausadas.remove((Integer) idPartida);
+            // Elimina la partida de la lista de partidas activas
+            listaPartidas.remove(idPartida);
+            lobbies.remove(idPartida);
+
             try {
-                ptos1 += partida.consultarPuntos(jugs.get(2));
-                ptos2 += partida.consultarPuntos(jugs.get(3));
+                bd.finalizarPartida(partidaVO);
+                System.out.println("Partida finalizada: " + idPartida);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        // Almacena puntuaciones
-        partidaVO.setPuntos1(ptos1);
-        partidaVO.setPuntos2(ptos2);
-
-        // Almacena ganadores/abandonadores
-        Lobby lobby = lobbies.get(idPartida);
-        if (timeout) {
-            // Alguien ha abandonado la partida
-            partidaVO.setAbandonador(lobby.getPrimerAbandonador());
-            partidaVO.setGanador('A');
-        } else {
-            // La partida ha finalizado correctamente
-            // Obtener ganadores
-            ArrayList<String> ganadores = new ArrayList<>();
-            try {
-                ganadores = partida.getGanadoresPartida();
-            } catch (ExceptionPartidaSinAcabar exceptionPartidaSinAcabar) {
-                exceptionPartidaSinAcabar.printStackTrace();
-            }
-            // Buscar equipo ganador
-            int i = 0;
-            for (String nombre : jugs) {
-                if (nombre.equals(ganadores.get(0)) || ganadores.size() == 2 && nombre.equals(ganadores.get(1))) {
-                    break;
-                }
-                i++;
-            }
-            // Almacenar equipo ganador
-            partidaVO.setGanador(Character.forDigit((i % 2)+1, 10));
-        }
-        // Almacena cantes
-        int cuarentas = 0, veintes = 0;
-        for (Cante c : partida.getCantes()) {
-            if (c.getTipo() == Cante.TipoCante.LAS20) {
-                veintes++;
-            } else {
-                cuarentas++;
-            }
-        }
-        ArrayList<Integer> cantes = new ArrayList<Integer>();
-        for (String nombre : jugs) {
-            cantes.add(0);
-        }
-        partidaVO.setVeintes(cantes);
-        partidaVO.setCuarentas(cantes);
-
-        broadcastGanaRonda(idPartida, timeout);
-
-        partidasPausadas.remove((Integer) idPartida);
-        // Elimina la partida de la lista de partidas activas
-        listaPartidas.remove(idPartida);
-        // Elimina las URLs de desconexion abiertas
-        for (String nombre : lobby.getTodosNombres()) {
-            try {
-                bd.obtenerUrlSesion(nombre);
-            } catch (SQLException e) {
-                System.out.println("Error eliminando URLs de sesion de jugadores");
-            }
-        }
-
-        try {
-            bd.finalizarPartida(partidaVO);
-            System.out.println("Partida finalizada: " + idPartida);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

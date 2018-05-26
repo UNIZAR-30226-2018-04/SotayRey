@@ -1343,7 +1343,7 @@ function finPartida(){
         } , 2000);
     }
     else{ // Boton de salir a la pagina principal
-        //socket.close(); // Para evitar que salgan los mensajes de desconexion de los jugadores
+        socket.close(); // Para evitar que salgan los mensajes de desconexion de los jugadores
         var botonSalir = game.add.sprite(0, 0, 'botonSalir');
         botonSalir.width = 150;
         botonSalir.height = 50;
