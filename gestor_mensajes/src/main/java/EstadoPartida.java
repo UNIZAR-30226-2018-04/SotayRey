@@ -307,7 +307,7 @@ public class EstadoPartida {
         j.quitarCartaEnMano(c);
     }
 
-    
+
 
     /**
      * El jugador pone la carta en la mesa si cumple con las normas del 
@@ -721,7 +721,7 @@ public class EstadoPartida {
         boolean tieneMejor = false;
         for (Carta c: j.getCartasEnMano()) {
             if (!c.equals(carta) && carta.esMismoPalo(c)){
-                tieneMejor = tieneMejor || carta.masPuntuacion(c);
+                tieneMejor = tieneMejor || c.mataCartaOtra(triunfo,carta);
             }
         }
         return tieneMejor;
@@ -740,13 +740,13 @@ public class EstadoPartida {
         cartasEnTapete.add(carta);
         pasarTurno(j.getId());
     }
-    
+
     /**
      * Devuelve true si y solo la carta del triunfo ha sido entregada a algún
      * jugador.
      * @return
      */
-    private boolean getTriunfoEntregado(){
+    public boolean getTriunfoEntregado(){
         return this.triunfo_entregado;
     }
 
@@ -761,15 +761,15 @@ public class EstadoPartida {
      * @throws ExceptionJugadorSinCarta
      */
     private void puedeLanzarDelPalo(Carta c, Carta otro, Jugador j)
-        throws ExceptionCartaIncorrecta, ExceptionJugadorSinCarta{
+            throws ExceptionCartaIncorrecta, ExceptionJugadorSinCarta{
         if (c.mataCartaOtra(triunfo,otro)) {
             //Es más grande la c de arrastre
             ponerCartaMesa(c, j);
         } else {
             if (tieneOtraMejorDelPalo(j,
-                    c)) {
+                    otro)) {
                 throw new ExceptionCartaIncorrecta ("Tienes otra c mejor del " +
-                                "mismo palo");
+                        "mismo palo");
             } else {
                 ponerCartaMesa(c, j);
             }
@@ -796,7 +796,7 @@ public class EstadoPartida {
     }
 
     /**
-     * Devuelve true si y solo si carta es triunfo y mata a cualquier otro 
+     * Devuelve true si y solo si carta es triunfo y mata a cualquier otro
      * triunfo de la cartas en tapete.
      * @param carta
      * @return
@@ -860,6 +860,3 @@ public class EstadoPartida {
         return (res);
     }
 }
-
-
-
