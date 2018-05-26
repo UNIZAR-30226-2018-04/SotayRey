@@ -456,7 +456,7 @@
                 console.log("EL MENSAJE ES: " + mensaje.tipo_mensaje);
                 id_jugador = mensaje.id_jugador;
                 parametros = "miID=" + id_jugador + "&idPartida=" + id_partida + "&nombre=" + nombre_jugador + "&numJugadores=" + total_jugadores + "&tapete=" + tapete + "&espectador=" + espectador + "&con_ia=" + con_ia
-                    + "&torneo=" + mensaje.torneo;
+                    + "&torneo=" + mensaje.torneo + "&id_torneo=" + id_torneo;
                 window.location.replace("../juego.html?" + parametros);
                 break;
             case "restante_torneo":
@@ -499,7 +499,8 @@
 
     var sigueTorneo = findGetParameter("sigueTorneo") == "true";
     if (sigueTorneo) {
-        buscarPartida();
+        id_torneo = parseInt(findGetParameter("id_torneo"));
+        buscarPartida(id_torneo);
         $('#unirseTorneo').modal('show');
     }
 

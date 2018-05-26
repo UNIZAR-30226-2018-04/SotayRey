@@ -642,7 +642,16 @@ function enviarMensaje(obj){
     // TODO se envia el mensaje al backend
     var msg = JSON.stringify(obj);
     console.log(msg);
-    socket.send(msg);
+  //  var enviado = false;
+  //  while(!enviado){
+  //      try{
+            socket.send(msg);
+  //          enviado = true
+   //     } catch(e){
+   //         console.log("El socket no estaba abierto");
+   //     }
+   // }
+
 }
 
 /**
@@ -1330,7 +1339,7 @@ function finPartida(){
                 window.location.replace("../jsp/matchmaking.jsp");
             }
             else {
-                window.location.replace("../jsp/torneos.jsp?sigueTorneo=true");
+                window.location.replace("../jsp/torneos.jsp?sigueTorneo=true&id_torneo="+id_torneo);
             }
         } , 2000);
     }
