@@ -397,6 +397,28 @@
 
     </div>
 
+<!-- Modal Unirse-->
+<div class="modal fade" id="ganadorTorneo" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title text-center">¡Enhorabuena, eres el campeón del torneo!</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body text-center">
+
+                <img class="img-fluid" src="../img/ganadorTorneo.gif" alt="animacion cargando">
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-default" data-dismiss="modal">¡Genial!</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
 
@@ -467,6 +489,10 @@
                     });
                     socket.send(listo);
                     }, parseInt(mensaje.tiempo)*1000); // Porque esta en segundos
+                break;
+            case "ganador_torneo":
+                socket.close();
+                $('#ganadorTorneo').modal('show');
                 break;
         }
 

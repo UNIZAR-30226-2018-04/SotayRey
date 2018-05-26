@@ -880,9 +880,7 @@ function mandarTimeout(){
                 "id_jugador" : miID
             }
         };
-        if(!partida_pausa){
-            enviarMensaje(obj);
-        }
+        enviarMensaje(obj);
     }
 }
 
@@ -1005,12 +1003,12 @@ function jugadorCanta(id, palo, cantidad){
     var style = { font: "65px Arial", fill: "#ff0044", align: "center" };
     //arrayJugadores[id].nombreUsuario
     //var textoCantar = game.add.text(game.world.centerX, game.world.centerY, 0, + 'pepito HA CANTADO ' + cantidad);
-    var textoCantar = game.add.text(game.world.centerX, game.world.centerY, '' + 'pepito HA CANTADO ' + cantidad + ' EN ' + palo, style);
+    var textoCantar = game.add.text(game.world.centerX, game.world.centerY, arrayJugadores[id].nombreUsuario.text + ' HA CANTADO ' + cantidad + ' EN ' + palo, style);
     textoCantar.anchor.setTo(0.5,0.5);
     if (cantidad == 20) {
         veSFX.play();
     } else {
-        cuaSFX.play();
+        cuaRASFX.play();
     }
     //textoCantar.alpha = 0;
 
@@ -1250,7 +1248,7 @@ function actualizarHUD(datos){
 
         puntuacionMia = game.add.text(inicioTexto, 60, '', { font: fuente, fill: color});
         puntuacionMia.puntuacion = 0;
-        puntuacionMia.text = "MI PUNTAUCION : " + puntuacionMia.puntuacion;
+        puntuacionMia.text = "MI PUNTUACION : " + puntuacionMia.puntuacion;
 
         restantes_mazo = game.add.text(inicioTexto, 80, '', { font: fuente, fill: color});
         restantes_mazo.restantes = 99999999;
@@ -1271,7 +1269,7 @@ function actualizarHUD(datos){
             puntuacionMia.puntuacion = datos.puntuaciones[miID].puntuacion; // TODO, siempre ids en orden?
             puntuacionRival.puntuacion = datos.puntuaciones[(miID+1)%numJugadores].puntuacion;
             puntuacionRival.text = "PUNTUACION RIVAL: " + puntuacionRival.puntuacion;
-            puntuacionMia.text = "MI PUNTAUCION: " + puntuacionMia.puntuacion;
+            puntuacionMia.text = "MI PUNTUACION: " + puntuacionMia.puntuacion;
         }
         restantes_mazo.restantes = datos.restantes_mazo;
 
@@ -1302,6 +1300,7 @@ function actualizarHUD(datos){
     }
     if(restantes_mazo.restantes <= 1) {
         triunfo.carta.alpha = 0.5;
+        arrSFX.play();
         tipo_ronda.text = "TIPO RONDA: ARRASTRE";
     }
 
@@ -1315,7 +1314,7 @@ function finPartida(){
     var logo;
     var tipo;
 
-    if (puntuacionMia.puntuacion >= 100){
+    if (puntuacionMia.puntuacion > 100){
         tipo = 'victoria';
     }
     else{
@@ -1344,6 +1343,7 @@ function finPartida(){
         } , 2000);
     }
     else{ // Boton de salir a la pagina principal
+        socket.close(); // Para evitar que salgan los mensajes de desconexion de los jugadores
         var botonSalir = game.add.sprite(0, 0, 'botonSalir');
         botonSalir.width = 150;
         botonSalir.height = 50;
