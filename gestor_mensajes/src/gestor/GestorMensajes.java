@@ -931,7 +931,7 @@ public class GestorMensajes {
                 i++;
             }
             // Almacenar equipo ganador
-            partidaVO.setGanador(Character.forDigit(i % 2, 10));
+            partidaVO.setGanador(Character.forDigit((i % 2)+1, 10));
         }
         // Almacena cantes
         int cuarentas = 0, veintes = 0;

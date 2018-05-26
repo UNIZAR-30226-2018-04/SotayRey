@@ -14,15 +14,12 @@ public class TorneoMatch {
     private HashMap<String, Session> jugadores;
     private TorneoVO vo;
     private int fase;
-    private boolean lleno;
     private boolean empezadaUltRonda;
 
     public TorneoMatch(TorneoVO t) {
         this.jugadores = new HashMap<>();
         this.vo = t;
-        this.lleno = false;
-        this.empezadaUltRonda = false;
-        fase = t.getNumFases();
+        this.fase = t.getNumFases();
     }
 
     public void setVO(TorneoVO t) {
@@ -53,6 +50,15 @@ public class TorneoMatch {
 
     public void decFase() {
         this.fase--;
+        jugadores.clear();
+    }
+
+    public boolean todosConectados() {
+        return jugadores.keySet().size() == Math.pow(2, this.fase);
+    }
+
+    public boolean getMaxFase() {
+        return this.fase == this.vo.getNumFases();
     }
 
     public BigInteger getIdTorneo() {
@@ -63,15 +69,7 @@ public class TorneoMatch {
         return jugadores.get(nombre);
     }
 
-    public void setLleno(boolean valor) {
-        this.lleno = valor;
-    }
-
-    public void setUltRonda(boolean valor) {
-        this.empezadaUltRonda = valor;
-    }
-
-    public boolean getUltRonda() {
-        return empezadaUltRonda;
+    public boolean getAcabado() {
+        return this.fase == 1 && this.jugadores.size() == 2;
     }
 }

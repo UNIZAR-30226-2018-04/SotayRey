@@ -114,9 +114,7 @@ public class Matchmaking {
             for (PartidaVO p : fase.getParejas()) {
                 iniciarPartidaTorneo(torneoMatch, p);
             }
-            if (torneoMatch.getFase() == 1) {
-                torneoMatch.setUltRonda(true);
-            } else {
+            if (torneoMatch.getFase() > 0) {
                 torneoMatch.decFase();
             }
         } catch (SQLException e) {
@@ -135,20 +133,57 @@ public class Matchmaking {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // Si no existe en la lista lo añade
-        if (t != null && !torneos.containsKey(id)) {
-            torneos.put(id, new TorneoMatch(t));
-        } else if (t != null && torneos.get(id).getUltRonda()) {
-            // Ganador
-            enviarGanador(sesion);
+        if (t != null) {
+            // Si no existe en la lista lo añade
+            if (!torneos.containsKey(id)) {
+                // Crear nuevo torneo
+                torneos.put(id, new TorneoMatch(t));
+            }
+            TorneoMatch torneo = torneos.get(id);
+            if (torneo.getMaxFase()) {
+                // Está preparando la primera fase
+                if (anyadirJugadorTorneo(torneo, nombre, sesion)) {
+                    // Ya están todos los jugadores
+                    empezarTorneo(id);
+                } else {
+                    // Informa del tiempo hasta la hora de inicio
+                    enviarRestante(t, sesion);
+                }
+            } else if (torneo.getAcabado()) {
+                // Ya ha acabado la fase final
+                enviarGanador(sesion);
+            } else {
+                // Está preparando una fase intermedia
+                anyadirJugadorFase(torneo, nombre, sesion); // Añade al jugador a la lista de esa fase
+                if (torneo.todosConectados()) {
+                    // Si ya están conectados todos los de esa ronda, comienza
+                    continuarTorneo(id);
+                }
+            }
         }
-        TorneoMatch torneo = torneos.get(id);
-        // Añade al jugador
-        if (anyadirJugadorTorneo(torneo, nombre, sesion)) {
-            empezarTorneo(id);
-        } else {
-            // Informa del tiempo hasta la hora de inicio
-            enviarRestante(t, sesion);
+    }
+
+    private void anyadirJugadorFase(TorneoMatch torneo, String nombre, Session sesion) {
+        torneo.anyadirJugador(nombre, sesion);
+    }
+
+    private void continuarTorneo(BigInteger id) {
+        TorneoMatch torneoMatch = torneos.get(id);
+        TorneoVO torneoVO = torneoMatch.getVO();
+        // Emparejar
+        FaseVO fase = new FaseVO(id, torneoMatch.getFase());
+        try {
+            // Se llena el objeto fase
+            bd.obtenerPartidasFaseTorneo(fase);
+            // Notificar a los jugadores de la partida
+            for (PartidaVO p : fase.getParejas()) {
+                iniciarPartidaTorneo(torneoMatch, p);
+            }
+            if (torneoMatch.getFase() > 1) {
+                torneoMatch.decFase();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -201,9 +236,6 @@ public class Matchmaking {
         } catch (Exception e) {
             System.out.println("No se pudo apuntar al jugador al torneo");
             return true;
-        }
-        if (emparejamiento) {
-            t.setLleno(true);
         }
         return emparejamiento;
     }
