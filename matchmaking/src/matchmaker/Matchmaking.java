@@ -36,6 +36,7 @@ public class Matchmaking {
     private static HashMap<BigInteger, TorneoMatch> torneos = new HashMap<>();
     private static InterfazDatos bd = null;
     private int limiteSigos = 3;
+    private int delayTorneos = 120;  // Segundos tras los cuales se añaden las IAs
 
     @OnOpen
     public void onOpen(Session session) {
@@ -91,8 +92,16 @@ public class Matchmaking {
     }
 
     private void recibirEmpiezaTorneo(JSONObject msg) {
-        BigInteger id = (BigInteger) msg.get("id_torneo");
+        BigInteger id = BigInteger.valueOf((long) msg.get("id_torneo"));
+        empezarTorneo(id);
+    }
+
+    private void empezarTorneo(BigInteger id) {
         TorneoMatch torneoMatch = torneos.get(id);
+        boolean lleno = anyadirJugadorTorneo(torneoMatch, "SophIA", null);
+        while (!lleno) {
+            lleno = anyadirJugadorTorneo(torneoMatch, "SophIA", null);
+        }
         TorneoVO torneoVO = torneoMatch.getVO();
         // Obtener máxima fase
         torneoMatch.setFase(torneoVO.getNumFases());
@@ -103,17 +112,17 @@ public class Matchmaking {
             bd.obtenerPartidasFaseTorneo(fase);
             // Notificar a los jugadores de la partida
             for (PartidaVO p : fase.getParejas()) {
-               iniciarPartidaTorneo(torneoMatch, p);
+                iniciarPartidaTorneo(torneoMatch, p);
             }
         } catch (SQLException e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
     private void recibirBuscoTorneo(Session sesion, JSONObject msg) {
         // Obtener info del mensaje
         String nombre = (String) msg.get("nombre_participante");
-        BigInteger id = (BigInteger) msg.get("id_torneo");
+        BigInteger id = BigInteger.valueOf((long) msg.get("id_torneo"));
         // Obtener datos del torneo
         TorneoVO t = null;
         try {
@@ -127,9 +136,12 @@ public class Matchmaking {
         }
         TorneoMatch torneo = torneos.get(id);
         // Añade al jugador
-        anyadirJugadorTorneo(torneo, nombre, sesion);
-        // Informa del tiempo hasta la hora de inicio
-        enviarRestante(t, sesion);
+        if (anyadirJugadorTorneo(torneo, nombre, sesion)) {
+            empezarTorneo(id);
+        } else {
+            // Informa del tiempo hasta la hora de inicio
+            enviarRestante(t, sesion);
+        }
     }
 
     private void iniciarPartidaTorneo(TorneoMatch t, PartidaVO p) {
@@ -146,7 +158,7 @@ public class Matchmaking {
         // Convertir lista de UsuariosVO en JugadoresMatch
         ArrayList<JugadorMatch> jugadoresMatch = new ArrayList<>();
         for (UsuarioVO u : p.getUsuarios()) {
-            String nombre = u.getNombre();
+            String nombre = u.getUsername();
             if (!nombre.equals("SophIA")) {
                 jugadoresMatch.add(new JugadorMatch(nombre, t.getSesion(nombre)));
             }
@@ -163,9 +175,12 @@ public class Matchmaking {
             UsuarioVO jugador = bd.obtenerDatosUsuario(nombre);
             emparejamiento = bd.apuntarTorneo(jugador, torneoVO);
             // Almacena la sesión del usuario para notificarlo
-            t.anyadirJugador(nombre, sesion);
+            if (!nombre.equals("SophIA")) {
+                t.anyadirJugador(nombre, sesion);
+            }
         } catch (Exception e) {
             System.out.println("No se pudo apuntar al jugador al torneo");
+            return true;
         }
         if (emparejamiento) {
             t.setLleno(true);
@@ -338,7 +353,9 @@ public class Matchmaking {
             i++;
         }
         for (JugadorMatch jug : lobby) {
-            enviarListo(jug, conIA, torneo, idPartida, i);
+            if (jug.getSesion() != null) {
+                enviarListo(jug, conIA, torneo, idPartida, i);
+            }
             i++;
         }
     }
@@ -346,7 +363,11 @@ public class Matchmaking {
     private void enviarListo(JugadorMatch jug, boolean conIA, boolean torneo, BigInteger idPartida, int idJugador) {
         JSONObject obj = new JSONObject();
         obj.put("tipo_mensaje", "partida_lista");
-        obj.put("total_jugadores", jug.getJugadores());
+        if (torneo) {
+            obj.put("total_jugadores", 2);
+        } else {
+            obj.put("total_jugadores", jug.getJugadores());
+        }
         obj.put("id_partida", idPartida);
         obj.put("nombre_jugador", jug.getNombre());
         obj.put("con_ia", conIA);   // Las partidas con IA se gestionan en otra parte
@@ -361,7 +382,10 @@ public class Matchmaking {
 
     private void enviarRestante(TorneoVO t, Session sesion) {
         if (t != null) {
-            long restante = t.getTimeInicio().getTime() - System.currentTimeMillis();
+            long restante = System.currentTimeMillis() - (t.getTimeInicio().getTime() + delayTorneos); // TODO: Definir bien esta resta
+            if (restante < 0) {
+                restante = 1;
+            }
             JSONObject obj = new JSONObject();
             obj.put("tipo_mensaje", "restante_torneo");
             obj.put("tiempo", restante);

@@ -414,9 +414,11 @@
 %>
 
 <script>
+    var id_torneo = -1;
     var socket;
     function buscarPartida(idTorneo) {
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        id_torneo = idTorneo;
         var nombre_jugador = nombreUsuario;
         socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
 
@@ -441,20 +443,19 @@
     }
     function recibirMensaje(msg) {
         console.log("HE RECIBIDO UN MENSAJE");
-
+        var mensaje = JSON.parse(msg);
         switch(mensaje.tipo_mensaje){
             case "partida_lista":
-                var mensaje = JSON.parse(msg);
                 var total_jugadores = mensaje.total_jugadores;
                 var id_partida = mensaje.id_partida;
                 var nombre_jugador = nombreUsuario;
                 var id_jugador;
-                var con_ia = mensaje.con_ia;
+                var con_ia = mensaje.con_ia == "true";
                 var tapete = "<%=miTapete%>";
                 var espectador = false;
                 console.log("EL MENSAJE ES: " + mensaje.tipo_mensaje);
                 id_jugador = mensaje.id_jugador;
-                parametros = "miID=" + id_jugador + "&idPartida=" + id_partida + "&nombre=" + nombre_jugador + "&numJugadores=" + total_jugadores + "&tapete=" + tapete + "&espectador=" + espectador
+                parametros = "miID=" + id_jugador + "&idPartida=" + id_partida + "&nombre=" + nombre_jugador + "&numJugadores=" + total_jugadores + "&tapete=" + tapete + "&espectador=" + espectador + "&con_ia=" + con_ia
                     + "&torneo=" + mensaje.torneo;
                 window.location.replace("../juego.html?" + parametros);
                 break;
@@ -462,8 +463,9 @@
                 setTimeout(function(){
                     var listo = JSON.stringify({
                         "tipo_mensaje": "empezar_torneo",
-                        "id_torneo": nombre_jugador
+                        "id_torneo": id_torneo
                     });
+                    socket.send(listo);
                     }, parseInt(mensaje.tiempo)*1000); // Porque esta en segundos
                 break;
         }
