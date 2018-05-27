@@ -424,4 +424,8 @@ public class InterfazDatos {
     public PartidaVO obtenerPartida(BigInteger id) throws  SQLException {
 	    return PartidaDAO.obtenerPartida(this.cpds,id);
     }
+
+	public void cerrarPoolConexiones() {
+		this.cpds.close();
+	}
  }

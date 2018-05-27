@@ -853,8 +853,8 @@ public class EstadoPartida {
 
     public ArrayList<String> getJugadoresRepartirCartas(){
         ArrayList<String> jug = getJugadoresId();
-        List<String> left = jug.subList(0, ganadorUltimaRonda);
-        List<String> right = jug.subList(ganadorUltimaRonda, jug.size());
+        List<String> left = jug.subList(0, turno);
+        List<String> right = jug.subList(turno, jug.size());
         ArrayList<String> res = new ArrayList<>(right);
         res.addAll(left);
         return (res);

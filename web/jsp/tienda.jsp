@@ -22,15 +22,24 @@
 
     UsuarioVO usuarioVO;
     StatsUsuarioVO statsVO;
+    ArrayList<LigaVO> ligas;
 
-    if (session.getAttribute("userId") == null || session.getAttribute("userMainStats") == null) {
+    if (session.getAttribute("userId") == null || session.getAttribute("userMainStats") == null
+            || session.getAttribute("ligas") == null) {
         error = "userNotFound";
         session.setAttribute("error", error);
         response.sendRedirect("/jsp/login.jsp");
+        return;
     } else {
         usuarioVO = (UsuarioVO) session.getAttribute("userId");
-        statsVO = (StatsUsuarioVO) session.getAttribute("userMainStats");
         admin = usuarioVO.getAdmin();
+        statsVO = (StatsUsuarioVO) session.getAttribute("userMainStats");
+        ligas = (ArrayList<LigaVO>) session.getAttribute("ligas");
+        if(ligas == null || statsVO == null){
+            response.sendRedirect("/jsp/login.jsp");
+            return;
+        }
+
         if (admin){
             accionAdmin = (String) session.getAttribute("accionAdmin");
             if (accionAdmin == null){
@@ -41,6 +50,8 @@
             monedas = statsVO.getDivisa();
         } catch (NullPointerException e){
             e.printStackTrace();
+            response.sendRedirect("/jsp/login.jsp");
+            return;
         } %>
 
 <body>
@@ -186,11 +197,9 @@
                                                     </div>
                                                 </div>
                                              </div>
-                                      <%} else {
 
-                                            //Usuario o admin accionando como usuario
+                                      <%} else { //Usuario o admin accionando como usuario %>
 
-                                        LigaVO liga = art.getRequiere(); %>
                                             <div class=" card col-sm-5 col-md-3 my-1">
                                                 <%--<div class="card">--%>
                                                     <div class="card-header text-center bg-light">
@@ -201,10 +210,22 @@
                                                         style='height: 100%'>
                                                     </div>
                                                     <div class="card-footer" style="width: auto" >
-                                                        <% if (liga != null){ %>
-                                                        Se desbloquea al alcanzar la liga <%=liga.getNombre()%>
+                                                        <%--<% LigaVO liga_req = art.getRequiere();--%>
+                                                            <%--String name_liga_max = statsVO.getLigaMaxima();--%>
+                                                            <%--LigaVO liga_max = null;--%>
+                                                            <%--for (LigaVO l: ligas) {--%>
+                                                                <%--if (l.getNombre().equals(name_liga_max)){--%>
+                                                                    <%--liga_max = l;--%>
+                                                                    <%--break;--%>
+                                                                <%--}--%>
+                                                            <%--}--%>
+                                                        <%--if (liga_req == null || (liga_max != null &&--%>
+                                                                <%--liga_max.getPorcentajeMin() < liga_req.getPorcentajeMin()) ){ %>--%>
+                                                       <% LigaVO liga_req = art.getRequiere();
+                                                           if (art.isDisponible()){ %>
+                                                            Desbloqueado
                                                         <% } else { %>
-                                                        Desbloqueado
+                                                        Se desbloquea al alcanzar la liga <%=liga_req.getNombre()%>
                                                         <% } %>
                                                     </div>
                                                     <% if (art.isComprado()) { %>
@@ -219,12 +240,12 @@
                                                                 <button type="submit" class="btn btn-primary" name="id_objeto" id="id_objeto" value="<%=i%>"> Favorito </button>
                                                             <%}%>
                                                         </div>
-                                                        <% } else if (art.isDisponible()) { %>
-                                                            <!-- Comprar objeto -->
-                                                            <button type="submit" class="btn btn-primary" value="<%=i%>" name ="id_objeto" id="id_objeto"> Comprar: <%= art.getPrecio()%> monedas </button>
-                                                      <%} else { %>
-                                                            <button  type="button"  class="btn btn-blue-grey">Art&iacuteculo bloqueado</button>
-                                                      <%} %>
+                                                    <% } else if (art.isDisponible()) { %>
+                                                        <!-- Comprar objeto -->
+                                                        <button type="submit" class="btn btn-primary" value="<%=i%>" name ="id_objeto" id="id_objeto"> Comprar: <%= art.getPrecio()%> monedas </button>
+                                                    <%} else { %>
+                                                          <button  type="button"  class="btn btn-blue-grey">Art&iacuteculo bloqueado</button>
+                                                    <%} %>
                                                 </div>
                                             <%--</div>--%>
 

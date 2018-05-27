@@ -2,6 +2,7 @@ package servlet;
 
 import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInvalido;
+import basedatos.modelo.LigaVO;
 import basedatos.modelo.UsuarioVO;
 
 import javax.servlet.RequestDispatcher;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @author Víctor Soria
@@ -130,9 +132,11 @@ public class RegistroServlet extends HttpServlet {
                         System.out.println(e.toString());
                         return;
                     }
-
+                    ArrayList<LigaVO> ligas = null;
                     try {
                         facade.crearUsuario(usuarioVo);
+                        ligas = facade.obtenerLigas();
+
                     } catch (Exception e){
                         error= "existentUser";
                         request.setAttribute("error",error);
@@ -141,6 +145,7 @@ public class RegistroServlet extends HttpServlet {
                     }
                     HttpSession sesion= request.getSession();
                     sesion.setAttribute("userId", usuarioVo);
+                    sesion.setAttribute("ligas", ligas);
                     sesion.setMaxInactiveInterval(24*60*60);
 
 

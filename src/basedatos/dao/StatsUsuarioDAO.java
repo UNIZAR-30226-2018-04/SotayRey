@@ -102,11 +102,11 @@ public class StatsUsuarioDAO {
         su.setLigaActual(resultSet.getString("ligaActual"));
 
         // Obtener el puesto
-        query = "SELECT rank puesto FROM" +
-                "(SELECT @rank:=@rank+1 AS rank, u1.username user, u1.puntuacion FROM (SELECT @rank:=0) r, pertenece_liga p1, usuario u1" +
+        query = " SELECT rank puesto FROM (SELECT @rank:=@rank+1 AS rank, user FROM" +
+                "(SELECT u1.username user, u1.puntuacion FROM pertenece_liga p1, usuario u1" +
                 " WHERE liga = '"+ su.getLigaActual() + "' AND p1.usuario = u1.username" +
                 " AND NOT EXISTS (SELECT * FROM pertenece_liga p2 WHERE p2.usuario = p1.usuario AND p2.timeEntrada > p1.timeEntrada)" +
-                " ORDER BY puntuacion DESC) t" +
+                " ORDER BY puntuacion DESC) t, (SELECT @rank:=0) r) a" +
                 " WHERE user = '" + su.getUsername() + "'";
         resultSet = statement.executeQuery(query);
 
