@@ -1519,6 +1519,7 @@ p.setPuntos1(86);
 p.setPuntos2(101);
 p.setAbandonador(0);
 InterfazDatos.instancia().finalizarPartida(p);
+InterfazDatos.instancia().cerrarPoolConexiones();
 
 
     }

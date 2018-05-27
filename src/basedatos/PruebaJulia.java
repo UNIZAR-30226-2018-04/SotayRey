@@ -18,6 +18,8 @@ public class PruebaJulia {
 
 		System.out.println("Ganadas: " + prueba.getGanadas() + " Perdidas: " + prueba.getPerdidas() + " Abandonadas: " + prueba.getAbandonaste() + " Te abandonaron: " + prueba.getTeAbandonaron() + " Liga: " + prueba.getLigaActual() + " Puesto: " + prueba.getPuesto());
 
+		InterfazDatos.instancia().cerrarPoolConexiones();
+
 //		a = new ArrayList<>();
 //		v = new ArrayList<>(Collections.nCopies(2, 0));
 //		a.add(InterfazDatos.instancia().obtenerDatosUsuario("viniesta"));

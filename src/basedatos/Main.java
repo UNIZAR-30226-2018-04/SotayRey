@@ -558,5 +558,7 @@ public class Main {
         InterfazDatos.instancia().crearUsuario(new UsuarioVO("morenosonia", "1234","montserratsanjuan@palomino.com","Miguel","Alemany",false));
         InterfazDatos.instancia().crearUsuario(new UsuarioVO("boixisabel", "1234","martinezrocio@rebollo.com","Josefina","Atienza",false));
         InterfazDatos.instancia().crearUsuario(new UsuarioVO("marquezsilvia", "1234","juan-franciscoangel@arranz.org","Gregorio","Bernal",false));
+
+		InterfazDatos.instancia().cerrarPoolConexiones();
     }
 }
