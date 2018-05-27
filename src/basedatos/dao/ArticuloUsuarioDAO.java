@@ -8,16 +8,16 @@
 package basedatos.dao;
 
 import basedatos.exceptions.ExceptionCampoInexistente;
+import basedatos.modelo.ArticuloUsuarioVO;
+import basedatos.modelo.LigaVO;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-
-import basedatos.modelo.*;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 
 public class ArticuloUsuarioDAO {
@@ -73,7 +73,7 @@ public class ArticuloUsuarioDAO {
         statement = connection.createStatement();
 
         try {
-            String obtener = "(SELECT aa.nombre, aa.precio, aa.descripcion, aa.rutaImagen, aa.tipo, aa.requiere_liga, coalesce(pp.preferido, '0') as preferido, coalesce(pp.preferido*0+1, '0') as comprado, coalesce(aa.porcentaje_min>(SELECT MIN(lig.porcentaje_min) FROM pertenece_liga pert, liga lig WHERE pert.liga = lig.nombre AND pert.usuario = '" + username + "'), '1') as disponible FROM (SELECT a.nombre, a.precio, a.descripcion, a.rutaImagen, a.tipo, a.requiere_liga, l.porcentaje_min FROM articulo a LEFT JOIN liga l ON l.nombre=a.requiere_liga) aa LEFT JOIN (SELECT * FROM posee p WHERE p.usuario = '" + username + "') pp ON aa.nombre = pp.articulo)";
+            String obtener = "(SELECT aa.nombre, aa.precio, aa.descripcion, aa.rutaImagen, aa.tipo, aa.requiere_liga, coalesce(pp.preferido, '0') as preferido, coalesce(pp.preferido*0+1, '0') as comprado, coalesce(aa.porcentaje_min>=(SELECT MIN(lig.porcentaje_min) FROM pertenece_liga pert, liga lig WHERE pert.liga = lig.nombre AND pert.usuario = '" + username + "'), '1') as disponible FROM (SELECT a.nombre, a.precio, a.descripcion, a.rutaImagen, a.tipo, a.requiere_liga, l.porcentaje_min FROM articulo a LEFT JOIN liga l ON l.nombre=a.requiere_liga) aa LEFT JOIN (SELECT * FROM posee p WHERE p.usuario = '" + username + "') pp ON aa.nombre = pp.articulo)";
             res = statement.executeQuery(obtener);
 
             while (res.next()) {
