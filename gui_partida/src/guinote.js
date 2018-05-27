@@ -161,7 +161,7 @@ function inicializarDispositivo(){
     }
 
     // Para los nombres de los usuarios
-    var color = "#ffffff";
+    var color = "#040404";
     var fuente =  "15pt impact";
 
     jRef = {};
