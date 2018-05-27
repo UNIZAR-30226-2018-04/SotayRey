@@ -192,7 +192,7 @@ public class Lobby {
         int primerIdx = -1;
         int i = 0;
         for (JugadorGestor j : jugadores.values()) {
-            if (j.getDesconectado() != null && j.getDesconectado().before(primer)) {
+            if (!j.getNombre().equals("SophIA") && j.getDesconectado() != null && j.getDesconectado().before(primer)) {
                 primer = j.getDesconectado();
                 primerIdx = i;
             }

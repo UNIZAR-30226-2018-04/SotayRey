@@ -19,10 +19,6 @@
 </head>
 <body>
 
-<%
-    InterfazDatos bd = InterfazDatos.instancia();
-%>
-
 <style type="text/css">
     .jumbotron{
         color: #040404;
@@ -247,7 +243,7 @@
                         </thead>
 <%
     try {
-        ArrayList<PartidaVO> partidas = bd.obtenerPartidasPublicasCurso();
+        ArrayList<PartidaVO> partidas = facade.obtenerPartidasPublicasCurso();
         for (PartidaVO partida : partidas) {
             BigInteger idPartida = partida.getId();
             String eq1 = "";
