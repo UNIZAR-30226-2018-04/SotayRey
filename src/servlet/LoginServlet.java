@@ -33,14 +33,12 @@ public class LoginServlet extends HttpServlet {
 
         String error;
         try {
-            if (token != null){
-
-            } else if (nick== null || nick.equals("")) {
+            if ((nick== null || nick.equals("")) && token == null) {
                 error = "emptyUser";
                 request.setAttribute("error", error);
                 RequestDispatcher dispatcher = request.getRequestDispatcher("jsp/login.jsp");
                 dispatcher.forward(request, response);
-            } else if (pass == null || pass.equals("")) {
+            } else if (pass == null || pass.equals("") && token==null) {
                 error = "emptyPass";
                 request.setAttribute("error", error);
                 RequestDispatcher dispatcher = request.getRequestDispatcher("jsp/login.jsp");
@@ -58,9 +56,21 @@ public class LoginServlet extends HttpServlet {
                 }
 
                 boolean existUser;
+                UsuarioVO user = null;
+
                 try{
-                    existUser = facade.autentificarUsuario(nick, pass);
-                    System.out.println("Usuario autentificado");
+
+
+                    if (token == null){
+                        existUser = facade.autentificarUsuario(nick, pass);
+                        if (existUser){
+                            user = facade.obtenerDatosUsuario(nick);
+                        }
+                    } else {
+                        user = facade.autentificarUsuarioFacebook(token);
+                        // Existe usuario si no ha devuelto null la consulta
+                        existUser = (user != null);
+                    }
                 }catch(Exception e){
                     error= "userNotFound";
                     request.setAttribute("error",error);
@@ -73,13 +83,12 @@ public class LoginServlet extends HttpServlet {
                 }
 
                 if (existUser){
-                    UsuarioVO user;
+                    System.out.println("Usuario autentificado");
                     HttpSession sesion= request.getSession();
                     ArrayList<TorneoVO> torneos = null;
                     ArrayList<TorneoPeriodicoVO> tor_period = null;
                     ArrayList<LigaVO> ligas = null;
                     try{
-                        user = facade.obtenerDatosUsuario(nick);
                         torneos = facade.obtenerTorneosProgramados();
                         tor_period = facade.obtenerTorneosPeriodicos();
                         ligas = facade.obtenerLigas();
