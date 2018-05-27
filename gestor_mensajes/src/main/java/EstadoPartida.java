@@ -46,7 +46,7 @@ public class EstadoPartida {
      */
     public EstadoPartida(ArrayList<String> jugadores) throws
             ExceptionEquipoIncompleto {
-        this.random = new Random();
+        this.random = new Random(System.currentTimeMillis());
         if (jugadores.size() != 2 && jugadores.size() != 4){
             throw new ExceptionEquipoIncompleto();
         }
@@ -72,7 +72,7 @@ public class EstadoPartida {
      * cartas de la baraja española en un orden aleatorio.
      */
     public EstadoPartida(){
-        this.random = new Random();
+        this.random = new Random(System.currentTimeMillis());
         this.mazo = barajear();
         this.cartasEnTapete = new ArrayList<>();
         this.jugadores = new ArrayList<>();
@@ -88,7 +88,7 @@ public class EstadoPartida {
      * Constructor que genera una copia del estado partida "p".
      */
     public EstadoPartida(EstadoPartida p){
-        this.random = new Random();
+        this.random = new Random(System.currentTimeMillis());
         this.mazo = p.getMazo();
         this.cartasEnTapete = p.getCartasEnTapete();
         this.jugadores = p.getJugadores();
