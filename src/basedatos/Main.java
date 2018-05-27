@@ -15,9 +15,9 @@ public class Main {
 
         //Ligas
         LigaVO l1 = new LigaVO("As de Oros", "Para los que dominan el arte del Guiñote", 0, 20);
-        LigaVO l2 = new LigaVO("Caudillos de Pueblo", "Los que levantan rumores entre las olivas de las tabernas de sus pueblos", 21, 50);
-        LigaVO l3 = new LigaVO("Cantamañanas", "Sus integrantes saben lo que es un triunfo", 51, 70);
-        LigaVO l4 = new LigaVO("Sacudetapetes", "Jugadores que podrían mirar primero unas partidas antes de intentar jugar", 71, 100);
+        LigaVO l2 = new LigaVO("Caudillos de Pueblo", "Los que levantan rumores entre las olivas de las tabernas de sus pueblos", 20, 50);
+        LigaVO l3 = new LigaVO("Cantamañanas", "Sus integrantes saben lo que es un triunfo", 50, 70);
+        LigaVO l4 = new LigaVO("Sacudetapetes", "Jugadores que podrían mirar primero unas partidas antes de intentar jugar", 70, 100);
 
         InterfazDatos.instancia().crearLiga(l1);
         InterfazDatos.instancia().crearLiga(l2);
@@ -25,17 +25,21 @@ public class Main {
         InterfazDatos.instancia().crearLiga(l4);
 
         //Artículos
-        ArticuloVO t1 = new ArticuloVO("Tapete Verde", 0, "El tapete que te dan en cualquier bar (huele a cerveza rancia)", "/rutaImagen", 'T');
-        ArticuloVO t2 = new ArticuloVO("Eterno Amor Elevado", 200, "Si todavía tienes alguna neurona funcional, este tapete también es verde... ¡¡Y no se fuma!!", "/rutaImagen", 'T',l2);
-        ArticuloVO t3 = new ArticuloVO("Calaveras", 100, "Por si sufrías acoso de pequeño, ahora puedes ser el más malote", "/rutaImagen", 'T',l3);
+        ArticuloVO t1 = new ArticuloVO("Tapete Verde", 0, "El tapete que te dan en cualquier bar (huele a cerveza rancia)", "/img/tapete.png", 'T');
+        ArticuloVO t2 = new ArticuloVO("Eterno Amor Elevado", 200, "Si todavía tienes alguna neurona funcional, este tapete también es verde... ¡¡Y no se fuma!!", "/img/space.jpg", 'T',l2);
+        ArticuloVO t3 = new ArticuloVO("Orgullo aragones", 100, "Por si sufrías acoso de pequeño, ahora puedes ser el más malote", "/img/aragon.jpg", 'T',l3);
 
-        ArticuloVO a1 = new ArticuloVO("Una cara", 100, "Te favorece más que la foto de comunión", "/rutaImagen", 'A');
-        ArticuloVO a2 = new ArticuloVO("Cosecha de Paz", 200, "Demuestra a tus rivales que dejaste la escuela a los 15", "/rutaImagen", 'A',l2);
-        ArticuloVO a3 = new ArticuloVO("Huesitos", 100, "Deja el tinder y liga presumiendo de este avatar de calavera", "/rutaImagen", 'A',l3);
+        ArticuloVO a1 = new ArticuloVO("Una cara", 0, "Te favorece más que la foto de comunión", "/img/afro.png", 'A');
+		ArticuloVO a2 = new ArticuloVO("Buceador", 20, "Te favorece más que la foto de comunión", "/img/diver.png", 'A',l3);
+		ArticuloVO a3 = new ArticuloVO("Buceadora", 20, "Te favorece más que la foto de comunión", "/img/diver-1.png", 'A',l3);
+        ArticuloVO a4 = new ArticuloVO("La que has liao", 100, "Demuestra a tus rivales que dejaste la escuela a los 15", "/img/chicken.png", 'A',l2);
+        ArticuloVO a5 = new ArticuloVO("El amo", 250, "Deja el tinder y liga presumiendo de este avatar de calavera", "/img/horse.png", 'A',l1);
 
-        ArticuloVO b1 = new ArticuloVO("Heracleto Furnier", 0, "Vaya coincidencia de nombre", "/rutaImagen", 'B');
-        ArticuloVO b2 = new ArticuloVO("Cartas de Cáñamo", 200, "Tu juega y no las quemes", "/rutaImagen", 'B',l2);
-        ArticuloVO b3 = new ArticuloVO("Baraja de la Muerte", 100, "Tío, hasta tiene avatar a juego", "/rutaImagen", 'B',l3);
+        ArticuloVO b1 = new ArticuloVO("Heracleto Furnier", 0, "Vaya coincidencia de nombre", "/img/carta1.jpg", 'B');
+		ArticuloVO b2 = new ArticuloVO("Heracleto en rojo", 15, "Vaya coincidencia de nombre", "/img/carta2.jpg", 'B',l4);
+        ArticuloVO b3 = new ArticuloVO("Cartas Epicas", 100, "Tu juega y no las quemes", "/img/yugioh.jpg", 'B',l3);
+		ArticuloVO b4 = new ArticuloVO("Espirales infinitas", 150, "Tu juega y no las quemes", "/img/circulo.jpg", 'B',l2);
+        ArticuloVO b5 = new ArticuloVO("Baraja de la Muerte", 200, "Tío, hasta tiene avatar a juego", "/img/hearthstone1.png", 'B',l1);
 
         InterfazDatos.instancia().crearArticulo(t1);
         InterfazDatos.instancia().crearArticulo(t2);
@@ -43,11 +47,17 @@ public class Main {
         InterfazDatos.instancia().crearArticulo(a1);
         InterfazDatos.instancia().crearArticulo(a2);
         InterfazDatos.instancia().crearArticulo(a3);
+		InterfazDatos.instancia().crearArticulo(a4);
+		InterfazDatos.instancia().crearArticulo(a5);
         InterfazDatos.instancia().crearArticulo(b1);
         InterfazDatos.instancia().crearArticulo(b2);
         InterfazDatos.instancia().crearArticulo(b3);
+		InterfazDatos.instancia().crearArticulo(b4);
+		InterfazDatos.instancia().crearArticulo(b5);
 
         // Usuarios
+		InterfazDatos.instancia().crearUsuario(new UsuarioVO("admin1", "1234","admin1@gmail.com","Julia","Guerrero",true));
+        InterfazDatos.instancia().crearUsuario(new UsuarioVO("admin2", "1234","admin2@gmail.com","Sergio","Izquierdo",true));
         InterfazDatos.instancia().crearUsuario(new UsuarioVO("cabezasgabriel", "1234","mercedesarnal@gmail.com","Blanca","Iglesias",false));
         InterfazDatos.instancia().crearUsuario(new UsuarioVO("domingo01", "1234","eva53@gmail.com","Alberto","Lloret",false));
         InterfazDatos.instancia().crearUsuario(new UsuarioVO("ricardoromero", "1234","lourdes78@aguilar-corominas.com","Remedios","Escobar",false));

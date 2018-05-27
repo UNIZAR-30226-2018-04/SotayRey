@@ -1,7 +1,7 @@
 DELIMITER |
 
 CREATE 
-	EVENT `crear_torneo1` 
+	EVENT `Torneo_semanal` 
 	ON SCHEDULE EVERY 30 SECOND
 	DO
 	BEGIN
