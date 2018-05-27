@@ -10,7 +10,7 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
 
-public class PartidaVO {
+public class PartidaVO implements Comparable {
     private BigInteger id;
     private Timestamp timeInicio;
     private Timestamp timeFin;
@@ -67,6 +67,12 @@ public class PartidaVO {
      * uno deben ir en las posiciones pares del vector, los miembros del equipo dos
      * en las impares
      */
+
+    @Override
+    public int compareTo(Object o) {
+        PartidaVO p = (PartidaVO) o;
+        return p.timeInicio.compareTo(this.timeInicio);
+    }
 
     public PartidaVO(BigInteger id, Timestamp timeInicio, Timestamp timeFin, boolean publica, char ganador, List<UsuarioVO> usuarios, List<Integer> cuarentas, List<Integer> veintes, int puntos1, int puntos2, int abandonador) {
         this.id = id;
@@ -184,4 +190,6 @@ public class PartidaVO {
     public void setAbandonador(int abandonador) {
         this.abandonador = abandonador;
     }
+
+
 }
