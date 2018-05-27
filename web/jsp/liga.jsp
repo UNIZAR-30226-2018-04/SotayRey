@@ -17,21 +17,20 @@
     <%
         if (session.getAttribute("userId") == null) {
             response.sendRedirect("/jsp/login.jsp");
+            return;
         }
-
-        //TODO: Capturar nombre de usuario para mostrarlo en verde
 
         ArrayList<LigaVO> ligas = (ArrayList<LigaVO>) session.getAttribute("ligas");
         if(ligas == null){
-            //TODO: Error?
-            response.sendRedirect("/jsp/home.jsp");
+            response.sendRedirect("/jsp/login.jsp");
+            return
         }
 
         if(ligas.size() == 0){
-            //TODO: Error?
             response.sendRedirect("/jsp/home.jsp");
+            return;
         }
-        //https://cloud10.todocoleccion.online/calendarios-antiguos/tc/2014/12/04/21/46580351.jpg
+
     %>
 
     <style type="text/css">

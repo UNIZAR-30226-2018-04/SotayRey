@@ -38,8 +38,13 @@
 
     if (session.getAttribute("userId") == null) {
         response.sendRedirect("/jsp/login.jsp");
+        return;
     } else {
         usuarioVO = (UsuarioVO) session.getAttribute("userId");
+        if(usuarioVO == null){
+            response.sendRedirect("/jsp/login.jsp");
+            return;
+        }
         nick = usuarioVO.getUsername();
         email = usuarioVO.getCorreo();
         nombre = usuarioVO.getNombre();

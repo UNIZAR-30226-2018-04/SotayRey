@@ -27,12 +27,14 @@
         String error = "userNotFound";
         request.setAttribute("error", error);
         response.sendRedirect("/jsp/login.jsp");
+        return;
     } else {
         usuarioVO = (UsuarioVO) session.getAttribute("userId");
         if (!usuarioVO.getAdmin()){
             String error = "adminNotFound";
             request.setAttribute("error", error);
             response.sendRedirect("/jsp/login.jsp");
+            return;
         }
         if (session.getAttribute("ligas") == null){ %>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">

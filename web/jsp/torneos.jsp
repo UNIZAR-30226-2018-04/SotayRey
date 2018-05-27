@@ -33,11 +33,24 @@
         RequestDispatcher dispatcher = request.getRequestDispatcher
                 ("/jsp/login.jsp");
         dispatcher.forward(request, response);
+        return;
     } else {
         usuarioVO = (UsuarioVO) session.getAttribute("userId");
+        if(usuarioVO == null){
+            RequestDispatcher dispatcher = request.getRequestDispatcher
+                    ("/jsp/login.jsp");
+            dispatcher.forward(request, response);
+            return;
+        }
         admin = usuarioVO.getAdmin();
         torneos = (ArrayList<TorneoVO>) session.getAttribute("torneos");
         torneos_period = (ArrayList<TorneoPeriodicoVO>) session.getAttribute("torneos_period");
+        if(torneos == null || torneos_period == null){
+            RequestDispatcher dispatcher = request.getRequestDispatcher
+                    ("/jsp/login.jsp");
+            dispatcher.forward(request, response);
+            return;
+        }
     }
 %>
 
