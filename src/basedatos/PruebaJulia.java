@@ -14,9 +14,37 @@ public class PruebaJulia {
 
     public static void main(String[] args) throws ExceptionCampoInexistente, ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException {
 
-		StatsUsuarioVO prueba = InterfazDatos.instancia().obtenerTodasStatsUsuario("zquerol");
+		StatsUsuarioVO prueba = InterfazDatos.instancia().obtenerTodasStatsUsuario("juliagviu");
 
-		System.out.println("Ganadas: " + prueba.getGanadas() + " Perdidas: " + prueba.getPerdidas() + " Abandonadas: " + prueba.getAbandonaste() + " Te abandonaron: " + prueba.getTeAbandonaron());
+		System.out.println("Ganadas: " + prueba.getGanadas() + " Perdidas: " + prueba.getPerdidas() + " Abandonadas: " + prueba.getAbandonaste() + " Te abandonaron: " + prueba.getTeAbandonaron() + " Liga: " + prueba.getLigaActual() + " Puesto: " + prueba.getPuesto());
+
+		InterfazDatos.instancia().cerrarPoolConexiones();
+
+//		a = new ArrayList<>();
+//		v = new ArrayList<>(Collections.nCopies(2, 0));
+//		a.add(InterfazDatos.instancia().obtenerDatosUsuario("viniesta"));
+//		a.add(InterfazDatos.instancia().obtenerDatosUsuario("juan"));
+//		p = new PartidaVO(true, a);
+//		InterfazDatos.instancia().crearNuevaPartida(p);
+//		System.out.println("Partida1\n Ganador: " + p.getGanador() + " Usuarios: ");
+
+//		ArrayList<PartidaVO> a = new ArrayList<PartidaVO>();
+//		
+//		a = InterfazDatos.instancia().obtenerPartidasPublicasCurso();
+//		
+//		for(PartidaVO i:a){
+//			System.out.println(i.getId());
+//		}
+
+		
+//		p.setCuarentas(v);
+//		p.setVeintes(v);
+//		p.setTimeFin(new Timestamp(System.currentTimeMillis()));
+//		p.setGanador('A');
+//		p.setPuntos1(35);
+//		p.setPuntos2(64);
+//		p.setAbandonador(1);
+//		InterfazDatos.instancia().finalizarPartida(p);
 	
 //		SesionVO s = new SesionVO("zcarrera", "www.nadasoloesunaprueba.com");
 //		InterfazDatos.instancia().crearSesionAbierta(s);

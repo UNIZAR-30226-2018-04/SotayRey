@@ -2,7 +2,7 @@ DROP EVENT IF EXISTS actualizacion_ligas;
 
 CREATE 
 	EVENT `actualizacion_ligas` 
-	ON SCHEDULE EVERY 1 DAY STARTS '2018-05-04 03:00:00'
+	ON SCHEDULE EVERY 1 HOUR STARTS '2018-05-27 14:41:20'
 	DO
 		INSERT INTO pertenece_liga(usuario,liga)
 		SELECT perus.user, l.nombre

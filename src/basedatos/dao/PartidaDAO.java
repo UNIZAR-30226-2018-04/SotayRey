@@ -251,7 +251,7 @@ public class PartidaDAO {
         statement = connection.createStatement();
 
         String partIndiv = "SELECT p.id, p.timeInicio, p.timeFin, p.publica, p.ganador, \n" +
-                "       j1.usuario usuario1, j2.usuario usuario2, \n" +
+                "       j1.usuario usuario1, j1.equipo equipo1, j2.equipo equipo2, j2.usuario usuario2, \n" +
                 "       j1.cuarentas cuarentas1, j2.cuarentas cuarentas2, \n" +
                 "       j1.veintes veintes1, j2.veintes veintes2, \n" +
                 "       j1.puntos puntos1, j2.puntos puntos2, \n" +
@@ -261,7 +261,8 @@ public class PartidaDAO {
                 "      AND (j1.usuario = '" + user + "' OR j2.usuario = '" + user + "') \n" +
                 "      AND j1.usuario > j2.usuario \n" +
                 "      AND (NOT EXISTS (SELECT * FROM juega jj WHERE jj.partida = p.id \n" +
-                "      AND j1.usuario <> jj.usuario AND j2.usuario <> jj.usuario));\n";
+                "      AND j1.usuario <> jj.usuario AND j2.usuario <> jj.usuario)) " +
+                "ORDER BY p.timeInicio ASC;\n";
 
 
         res = statement.executeQuery(partIndiv);
@@ -278,10 +279,15 @@ public class PartidaDAO {
             ArrayList<UsuarioVO> usuarios = new ArrayList<>();
             UsuarioVO u1 = new UsuarioVO();
             u1.setUsername(res.getString("usuario1"));
-            usuarios.add(u1);
             UsuarioVO u2 = new UsuarioVO();
             u2.setUsername(res.getString("usuario2"));
-            usuarios.add(u2);
+            if (res.getInt("equipo1")==1) {
+                usuarios.add(u1);
+                usuarios.add(u2);
+            } else {
+                usuarios.add(u2);
+                usuarios.add(u1);
+            }
             ArrayList<Integer> cuarentas = new ArrayList<>();
             cuarentas.add(res.getInt("cuarentas1"));
             cuarentas.add(res.getInt("cuarentas2"));
@@ -310,7 +316,8 @@ public class PartidaDAO {
                 "WHERE p.id = j1.partida AND p.id = j2.partida AND p.id = j3.partida AND p.id = j4.partida \n" +
                 "       AND (j1.usuario = '" + user + "' OR j2.usuario = '" + user + "' \n" +
                 "       OR j3.usuario = '" + user + "' OR j4.usuario = '" + user + "') \n" +
-                "       AND j1.usuario > j2.usuario AND j2.usuario > j3.usuario AND j3.usuario > j4.usuario;\n";
+                "       AND j1.usuario > j2.usuario AND j2.usuario > j3.usuario AND j3.usuario > j4.usuario " +
+                "ORDER BY p.timeInicio ASC;\n";
 
         res = statement.executeQuery(partParejas);
         while (res.next()) {

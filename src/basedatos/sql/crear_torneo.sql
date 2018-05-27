@@ -1,8 +1,11 @@
+DROP EVENT IF EXISTS torneo_semanal;
+
+
 DELIMITER |
 
 CREATE 
-	EVENT `crear_torneo1` 
-	ON SCHEDULE EVERY 30 SECOND
+	EVENT `Torneo_semanal` 
+	ON SCHEDULE EVERY 1 WEEK
 	DO
 	BEGIN
 		DECLARE i INTEGER;

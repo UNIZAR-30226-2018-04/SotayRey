@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Properties;
+import java.util.*;
 
 public class InterfazDatos {
 
@@ -226,7 +225,9 @@ public class InterfazDatos {
     /* Devuelve un array con todas las partidas jugadas por el usuario identificado por username
      */
     public ArrayList<PartidaVO> obtenerHistorialPartidas(String username) throws SQLException {
-        return PartidaDAO.obtenerHistorialPartidas(username, this.cpds);
+        ArrayList<PartidaVO> res = PartidaDAO.obtenerHistorialPartidas(username, this.cpds);
+        Collections.sort(res);
+        return res;
     }
 
     /* Devuelve un array con todas las partidas públicas que todavía no han finalizado
@@ -423,4 +424,8 @@ public class InterfazDatos {
     public PartidaVO obtenerPartida(BigInteger id) throws  SQLException {
 	    return PartidaDAO.obtenerPartida(this.cpds,id);
     }
+
+	public void cerrarPoolConexiones() {
+		this.cpds.close();
+	}
  }

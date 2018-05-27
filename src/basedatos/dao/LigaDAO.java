@@ -109,7 +109,7 @@ public class LigaDAO {
         Statement statement = null;
         connection = pool.getConnection();
         statement = connection.createStatement();
-        String query = "SELECT * FROM liga";
+        String query = "SELECT * FROM liga ORDER BY porcentaje_min";
         ResultSet resultSet = statement.executeQuery(query);
 
         ArrayList<LigaVO> lista_ligas = new ArrayList<>();
