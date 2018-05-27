@@ -10,10 +10,7 @@
 package servlet;
 
 import basedatos.InterfazDatos;
-import basedatos.modelo.SesionVO;
-import basedatos.modelo.TorneoPeriodicoVO;
-import basedatos.modelo.TorneoVO;
-import basedatos.modelo.UsuarioVO;
+import basedatos.modelo.*;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -80,10 +77,12 @@ public class LoginServlet extends HttpServlet {
                     HttpSession sesion= request.getSession();
                     ArrayList<TorneoVO> torneos = null;
                     ArrayList<TorneoPeriodicoVO> tor_period = null;
+                    ArrayList<LigaVO> ligas = null;
                     try{
                         user = facade.obtenerDatosUsuario(nick);
                         torneos = facade.obtenerTorneosProgramados();
                         tor_period = facade.obtenerTorneosPeriodicos();
+                        ligas = facade.obtenerLigas();
                     }catch (Exception e){
                         System.err.println("ERROR: error en la interfazDatos");
                         e.printStackTrace();
@@ -91,7 +90,7 @@ public class LoginServlet extends HttpServlet {
                         return;
                     }
 
-
+                    sesion.setAttribute("ligas", ligas);
                     sesion.setAttribute("torneos", torneos);
                     sesion.setAttribute("torneos_period", tor_period);
                     sesion.setAttribute("userId", user);
