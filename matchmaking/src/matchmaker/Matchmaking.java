@@ -151,7 +151,10 @@ public class Matchmaking {
                 }
             } else if (torneo.getAcabado()) {
                 // Ya ha acabado la fase final
+                // Notifica al ganador
                 enviarGanador(sesion);
+                // Eliminar el torneo de memoria
+                torneos.remove(id);
             } else {
                 // Está preparando una fase intermedia
                 anyadirJugadorFase(torneo, nombre, sesion); // Añade al jugador a la lista de esa fase
@@ -511,6 +514,17 @@ public class Matchmaking {
             if (eliminarJugLista(sesion, lista)) {
                 System.out.println("Jugador correctamente eliminado.");
                 break;
+            }
+        }
+        for (BigInteger idTorneo : torneos.keySet()) {
+            TorneoMatch torneo = torneos.get(idTorneo);
+            String encontrado = torneo.eliminarJugador(sesion);
+            if (encontrado != null) {
+                try {
+                    bd.abandonarTorneo(bd.obtenerDatosUsuario(encontrado), bd.obtenerDatosTorneo(idTorneo));
+                } catch (Exception e) {
+                    System.out.println("No se pudo eliminar al jugador " + encontrado);
+                }
             }
         }
     }
