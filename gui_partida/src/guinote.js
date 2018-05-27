@@ -5,7 +5,7 @@
 //var ejeY = window.innerHeight * window.devicePixelRatio;
 
 /* PORCENTAJES RESPONSIVE */
-var numBotones = 3;
+var numBotones = 2;
 var zonaJugableY = 0.9; // Porcentaje
 
 
@@ -252,8 +252,8 @@ function inicializarDispositivo(){
 
     // Marco HUD
     var marco = game.add.sprite(0, 0, 'bordeHUD');
-    marco.height = 100;
-    marco.width = 190;
+    marco.height = 110;
+    marco.width = 250;
 
     //arrayJugadoresDefecto = [jRef, jArriba, jIzq, jDer];
     arrayJugadoresDefecto = [jRef, jIzq, jArriba, jDer];
@@ -1109,7 +1109,7 @@ var tiempoTurno;
 var tiempoRestante;
 
 
-
+/*
 function crearTiempo(idJugador){
     tiempoRestante = 30;
     tiempoTurno.text = "TURNO " + arrayJugadores[idJugador].nombreUsuario.text + " " + tiempoRestante + " s";
@@ -1131,7 +1131,7 @@ function actualizarTiempo(idJugador){
 
     tiempoTurno.text = "TURNO " + arrayJugadores[idJugador].nombreUsuario + " 15";
 }
-
+*/
 /**
  * Dibuja los botones de accion y asocia la funcion para enviar el mensaje: cantar20, cantar40 y cambiarTriunfo
  */
@@ -1140,11 +1140,12 @@ function dibujarBotones(){
     //var style = {font: "20px", fill: "#000000", align:"center"};
 
     if (espectador){
-        game.add.text(20, ejeYBotones, 'ESPECTANDO', { fill: '#ffffff'});
+        game.add.text(30, ejeYBotones, 'ESPECTANDO', { fill: '#ffffff'});
     }
     else{
-        var cantar = game.add.text(0, ejeYBotones, '', { fill: '#ffffff'});
-        var cambiarTriunfo = game.add.text(espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
+
+        var cantar = game.add.text(30, ejeYBotones, '', { fill: '#ffffff'});
+        var cambiarTriunfo = game.add.text(espacioBoton, ejeYBotones, '', {fill: '#ffffff'});
         cantar.text = "CANTAR";
         cambiarTriunfo.text = "CAMBIAR TRIUNFO";
         cantar.inputEnabled = true;
@@ -1154,10 +1155,10 @@ function dibujarBotones(){
     }
 
 
-    tiempoTurno = game.add.text(espacioBoton + espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
+    //tiempoTurno = game.add.text(espacioBoton + espacioBoton/2, ejeYBotones, '', {fill: '#ffffff'});
 
 
-    tiempoTurno.text = "TURNO pepito 15"
+    //tiempoTurno.text = "TURNO pepito 15"
 
 
 }
@@ -1205,8 +1206,8 @@ function dibujarTurno(id_jugador){
     turno.height = ejeYCarta;
     turno.angle = jugador.rotacion;
     turno.alpha = 0.5;
-    idContador++;
-    crearTiempo(id_jugador);
+    //idContador++;
+    //crearTiempo(id_jugador);
 
 }
 
