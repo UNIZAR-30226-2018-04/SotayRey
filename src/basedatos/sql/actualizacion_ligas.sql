@@ -1,3 +1,5 @@
+DROP EVENT IF EXISTS actualizacion_ligas;
+
 CREATE 
 	EVENT `actualizacion_ligas` 
 	ON SCHEDULE EVERY 1 DAY STARTS '2018-05-04 03:00:00'
