@@ -456,7 +456,7 @@ public class PartidaDAO {
         statement = connection.createStatement();
 
         String partIndiv = "SELECT p.id, p.timeInicio, \n" +
-                "       j1.usuario usuario1, j2.usuario usuario2 \n" +
+                "       j1.usuario usuario1, j2.usuario usuario2, j1.equipo equipo1, j2.equipo equipo2\n" +
                 "FROM partida p, juega j1, juega j2\n" +
                 "WHERE p.id = j1.partida AND p.id = j2.partida AND p.publica = 1 AND p.timeFin IS NULL\n" +
                 "      AND j1.usuario > j2.usuario \n" +

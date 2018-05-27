@@ -14,9 +14,10 @@ public class PruebaJulia {
 
     public static void main(String[] args) throws ExceptionCampoInexistente, ExceptionCampoInvalido, PropertyVetoException, SQLException, IOException {
 
-		StatsUsuarioVO prueba = InterfazDatos.instancia().obtenerTodasStatsUsuario("juliagviu");
+//		StatsUsuarioVO prueba = InterfazDatos.instancia().obtenerTodasStatsUsuario("juliagviu");
 
-		System.out.println("Ganadas: " + prueba.getGanadas() + " Perdidas: " + prueba.getPerdidas() + " Abandonadas: " + prueba.getAbandonaste() + " Te abandonaron: " + prueba.getTeAbandonaron() + " Liga: " + prueba.getLigaActual() + " Puesto: " + prueba.getPuesto());
+//		System.out.println("Ganadas: " + prueba.getGanadas() + " Perdidas: " + prueba.getPerdidas() + " Abandonadas: " + prueba.getAbandonaste() + " Te abandonaron: " + prueba.getTeAbandonaron() + " Liga: " + prueba.getLigaActual() + " Puesto: " + prueba.getPuesto());
+		InterfazDatos.instancia().crearUsuario(new UsuarioVO("SophIA", "SophIA","sophia@sotayrey.com","SophIA","Inteligencia Artificial",false));
 
 		InterfazDatos.instancia().cerrarPoolConexiones();
 
