@@ -29,11 +29,17 @@
         error = "userNotFound";
         session.setAttribute("error", error);
         response.sendRedirect("/jsp/login.jsp");
+        return;
     } else {
         usuarioVO = (UsuarioVO) session.getAttribute("userId");
         admin = usuarioVO.getAdmin();
         statsVO = (StatsUsuarioVO) session.getAttribute("userMainStats");
         ligas = (ArrayList<LigaVO>) session.getAttribute("ligas");
+        if(ligas == null || statsVO == null){
+            response.sendRedirect("/jsp/login.jsp");
+            return;
+        }
+
         if (admin){
             accionAdmin = (String) session.getAttribute("accionAdmin");
             if (accionAdmin == null){
@@ -44,6 +50,8 @@
             monedas = statsVO.getDivisa();
         } catch (NullPointerException e){
             e.printStackTrace();
+            response.sendRedirect("/jsp/login.jsp");
+            return;
         } %>
 
 <body>

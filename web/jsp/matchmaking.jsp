@@ -158,8 +158,16 @@
         System.err.println("ERROR: creando interfaz");
     }
     UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
+    if(usuarioVO == null) {
+        response.sendRedirect("/jsp/login.jsp");
+        return;
+    }
     String nick = usuarioVO.getUsername();
     String miTapete = facade.obtenerTapeteFavorito(nick).getRutaImagen();
+    if(miTapete == null){
+        response.sendRedirect("/jsp/login.jsp");
+        return;
+    }
 %>
 
 
