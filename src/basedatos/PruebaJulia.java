@@ -17,9 +17,9 @@ public class PruebaJulia {
 //		StatsUsuarioVO prueba = InterfazDatos.instancia().obtenerTodasStatsUsuario("juliagviu");
 
 //		System.out.println("Ganadas: " + prueba.getGanadas() + " Perdidas: " + prueba.getPerdidas() + " Abandonadas: " + prueba.getAbandonaste() + " Te abandonaron: " + prueba.getTeAbandonaron() + " Liga: " + prueba.getLigaActual() + " Puesto: " + prueba.getPuesto());
-		InterfazDatos.instancia().crearUsuario(new UsuarioVO("SophIA", "SophIA","sophia@sotayrey.com","SophIA","Inteligencia Artificial",false));
+		//InterfazDatos.instancia().crearUsuario(new UsuarioVO("SophIA", "SophIA","sophia@sotayrey.com","SophIA","Inteligencia Artificial",false));
 
-		InterfazDatos.instancia().cerrarPoolConexiones();
+		
 
 //		a = new ArrayList<>();
 //		v = new ArrayList<>(Collections.nCopies(2, 0));
@@ -29,13 +29,25 @@ public class PruebaJulia {
 //		InterfazDatos.instancia().crearNuevaPartida(p);
 //		System.out.println("Partida1\n Ganador: " + p.getGanador() + " Usuarios: ");
 
-//		ArrayList<PartidaVO> a = new ArrayList<PartidaVO>();
-//		
-//		a = InterfazDatos.instancia().obtenerPartidasPublicasCurso();
-//		
-//		for(PartidaVO i:a){
-//			System.out.println(i.getId());
-//		}
+		ArrayList<TorneoVO> a = new ArrayList<>();
+		
+		a = InterfazDatos.instancia().obtenerTorneosProgramados();
+		
+		for(TorneoVO i:a){
+			System.out.println(i.getPremioDivisaPrimera());
+		}
+
+
+		ArrayList<TorneoPeriodicoVO> a2 = new ArrayList<>();
+		
+		a2 = InterfazDatos.instancia().obtenerTorneosPeriodicos();
+		
+		for(TorneoPeriodicoVO i:a2){
+			System.out.println(i.getPremioDivisaPrimera());
+		}
+
+
+		InterfazDatos.instancia().cerrarPoolConexiones();
 
 		
 //		p.setCuarentas(v);
