@@ -23,7 +23,7 @@
         ArrayList<LigaVO> ligas = (ArrayList<LigaVO>) session.getAttribute("ligas");
         if(ligas == null){
             response.sendRedirect("/jsp/login.jsp");
-            return
+            return;
         }
 
         if(ligas.size() == 0){

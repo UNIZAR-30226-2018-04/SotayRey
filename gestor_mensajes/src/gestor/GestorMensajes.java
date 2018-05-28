@@ -219,6 +219,10 @@ public class GestorMensajes {
                     } catch (ExceptionDeVueltas exceptionDeVueltas) {
                         System.out.println("De vueltas: " + idPartida);
                         broadcastEstado(idPartida, true, -1);
+                        lobby = lobbies.get(idPartida);
+                        if (lobby.getContraIA()) {
+                            lobby.vueltasIA(partida.getEstado());
+                        }
                         broadcastGanaRonda(idPartida, false);
                         // Manda el turno a todos los clientes
                         broadcastTurno(idPartida);
@@ -356,6 +360,7 @@ public class GestorMensajes {
             try {
                 partida.siguienteRonda();
                 // Se intenta que todos los jugadores vuelvan a tener 6 cartas
+                broadcastGanaRonda(idPartida, false);
                 broadcastRobarCarta(idPartida);
                 broadcastTurno(idPartida);
                 if (partida.getEstado().getTurno() == idIA) {
@@ -386,7 +391,9 @@ public class GestorMensajes {
                 // Notifica del estado a jugadores e IA
                 broadcastEstado(idPartida, true, -1);
                 Lobby lobby = lobbies.get(idPartida);
-                lobby.vueltasIA(partida.getEstado());
+                if (lobby.getContraIA()) {
+                    lobby.vueltasIA(partida.getEstado());
+                }
                 broadcastGanaRonda(idPartida, false);
                 //broadcastRobarCarta(idPartida);
                 // Manda el turno a todos los clientes
@@ -876,7 +883,7 @@ public class GestorMensajes {
 
     private void finalizarPartida(int idPartida, LogicaPartida partida, boolean timeout) {
         // Obtiene info de la partida jugada y lo añade a partidaVO
-        if (listaPartidas.get(idPartida) != null && lobbies.get(idPartida) != null) {
+        if (listaPartidas.get(idPartida) != null || lobbies.get(idPartida) != null) {
             PartidaVO partidaVO = null;
             try {
                 partidaVO = bd.obtenerPartida(BigInteger.valueOf(idPartida));
@@ -962,6 +969,7 @@ public class GestorMensajes {
                     }
                 }
             }
+
             partidasPausadas.remove((Integer) idPartida);
             // Elimina la partida de la lista de partidas activas
             listaPartidas.remove(idPartida);
