@@ -159,7 +159,7 @@
                             </thead>
 
                             <tbody>
-                            <%int tam;
+                            <%int tam, tiempo2H= 7200000;
                             if (j==1 ){
                                 tam = torneos.size();
                             }else {
@@ -170,7 +170,8 @@
                                 String nombre;
                                 BigInteger idTorneo = BigInteger.valueOf(-1);
                                 Timestamp inicio;
-                                Timestamp actual = new Timestamp(System.currentTimeMillis());
+//                                Timestamp actual = new Timestamp(System.currentTimeMillis() - 7200000);
+                                Timestamp actual = new Timestamp(System.currentTimeMillis();
                                 if (j==1){
                                     TorneoVO torneo = torneos.get(i);
                                     idTorneo = torneo.getId();
@@ -197,11 +198,13 @@
                                             divPrimera = 0;
                                         }
                                         inicio = torneo.getTimePrimero();
-                                    }%>
+                                    }
+                                    Timestamp muestraInicio = new Timestamp(inicio.getTime() +  tiempo2H); // Anyade 2h a la hora del torneo para mostrarla
+                                    %>
 
                             <tr class="active">
                                 <td><%=nombre%></td>
-                                <td><%=inicio%></td>
+                                <td><%=muestraInicio%></td>
                                 <td><%=fases%> </td>
                                 <td><%=(int)(divPrimera*Math.pow(2,fases-1))%></td>
                                 <td><%=(int)(puntPrimera*Math.pow(2,fases-1))%></td>
@@ -210,7 +213,7 @@
                                     <div class="btn-toolbar">
                                         <% if (inicio.before(actual)){ // Ya ha comenzado %>
                                         <button type="button" onclick="buscarPartida(<%=idTorneo%>)" class="btn btn-success mx-1 my-1" data-toggle="modal" data-target="#unirseTorneo">Unirse</button>
-                                        <% } if(admin && inicio.after(new Timestamp(System.currentTimeMillis()))){ // Se puede modificar solo si no ha empezado %>
+                                        <% } if(admin && inicio.after(actual)){ // Se puede modificar solo si no ha empezado %>
                                         <button type="button" class="btn btn-warning mx-1 my-1" data-toggle="modal" data-target="#modificarTorneo<%=i%>">Modificar</button>
                                         <form action="/GestionarTorneo.do" method="post">
                                             <input type="hidden" id="<%=i%>" name="btnEliminar" value="<%=i%>">

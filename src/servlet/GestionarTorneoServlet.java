@@ -36,15 +36,14 @@ public class GestionarTorneoServlet extends HttpServlet {
         Timestamp res;
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            String tiempo = date + "T" + time + ":59";
             Date parsedDate = dateFormat.parse(date + "T" + time + ":59");
-            res = new java.sql.Timestamp(parsedDate.getTime());
+            res = new java.sql.Timestamp(parsedDate.getTime() - 7200000);
             return res;
         } catch(Exception e) { //this generic but you can control another types of exception
             System.err.println("ERROR: transformando fechas");
             e.printStackTrace();
             error("date", request, response);
-            return new Timestamp(System.currentTimeMillis());
+            return new Timestamp(System.currentTimeMillis() - 7200000);
         }
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -80,7 +79,8 @@ public class GestionarTorneoServlet extends HttpServlet {
                 String date_ini;
                 String time_ini;
                 Timestamp timeInicio;
-
+//                Timestamp timeAct = new Timestamp(System.currentTimeMillis() - 7200000); // Para local
+                Timestamp timeAct = new Timestamp(System.currentTimeMillis());
                 switch (action_torneo){
                     case "crear":
 
@@ -97,8 +97,8 @@ public class GestionarTorneoServlet extends HttpServlet {
 
                        timeInicio = transformarFechas(date_ini, time_ini, request, response);
 
-                        Timestamp timeAct = new Timestamp(System.currentTimeMillis());
-                        if (timeInicio.after(new Timestamp(System.currentTimeMillis()))){
+
+                        if (timeInicio.after(timeAct)){
                             try {
                                 if (tipo.equals("0")){ // Torneo periódico
                                     dias = Integer.parseInt(request.getParameter("dias"));
@@ -137,7 +137,7 @@ public class GestionarTorneoServlet extends HttpServlet {
 
                         timeInicio = transformarFechas(date_ini, time_ini, request, response);
 
-                        if (timeInicio.after(new Timestamp(System.currentTimeMillis()))){
+                        if (timeInicio.after(timeAct)){
                             try {
                                 if (session.getAttribute("torneos") != null) {
                                     int pos = Integer.parseInt(request.getParameter("pos_torneo_mod"));
