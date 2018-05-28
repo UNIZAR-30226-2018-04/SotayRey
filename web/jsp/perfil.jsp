@@ -286,12 +286,12 @@
                                 resultado = "Abandonada";
                             } else if(( partida.getGanador() == '1' && equipo == 1) ||
                                       ( partida.getGanador() == '2' && equipo == 2)){
-                                // Modificado porque los mostraba de forma invertida
-                                //resultado = "Ganada";
-                                resultado = "Perdida";
-                            } else {
-                                //resultado = "Perdida";
+                                // Vuelto a modificar porque ya está bien en la BD
                                 resultado = "Ganada";
+                                //resultado = "Perdida";
+                            } else {
+                                resultado = "Perdida";
+                                //resultado = "Ganada";
                             }
                     %>
                     <tr>
@@ -304,9 +304,11 @@
                         <% } %>
                         <td><%= resultado%></td>
                         <% if(equipo == 1){ %>
+                            <!-- Aqui antes estaba en orden: 1,2 -->
                             <td><%= partida.getPuntos1()%></td>
                             <td><%= partida.getPuntos2()%></td>
                         <% } else { %>
+                            <!-- Aqui antes estaba en orden: 2,1 -->
                             <td><%= partida.getPuntos2()%></td>
                             <td><%= partida.getPuntos1()%></td>
                         <% } %>
