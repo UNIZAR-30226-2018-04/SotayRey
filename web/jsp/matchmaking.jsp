@@ -312,6 +312,7 @@
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         ia = getRadioValue("tipoRival") == "true";
         socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        //socket = new WebSocket("wss://ec2-54-68-240-71.us-west-2.compute.amazonaws.com:8443/mm/matchmaking");
 
         if (parseInt(getRadioValue("esPublica")) == 1) {
             tipo = "publica";
@@ -355,6 +356,7 @@
     function espectarPartida(idPartida){
         var nombre_jugador = nombreUsuario;
         socket = new WebSocket("ws://localhost:8080/gm/endpoint");
+        //socket = new WebSocket("wss://ec2-54-68-240-71.us-west-2.compute.amazonaws.com:8443/gm/endpoint");
         var listo = JSON.stringify({
             "tipo_mensaje": "espectar_partida",
             "id_partida": idPartida
