@@ -696,11 +696,18 @@ function representarEstado(estado){
                 jugador.avatar.loadTexture(item.id.toString()+'avatar');
                 jugador.dorso = item.id.toString()+'dorso';
                 var numeroCartas = item.num_cartas;
-                console.log("LA CARTA LANZADA ES: " + jugador.cartaLanzada.numero);
-                if (jugador.cartaLanzada.numero != 0){
-                    numeroCartas = numeroCartas - 1;
+                try{
+                    console.log("LA CARTA LANZADA ES: " + jugador.cartaLanzada.numero);
+                    if (jugador.cartaLanzada.numero != 0){
+                        numeroCartas = numeroCartas - 1;
+                    }
                 }
+                catch(e) {}
               //  destruirCartas(jugador);
+                if(!conIA){
+                    jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
+                    dibujarCartaLanzada(jugador);
+                }
                 console.log("DIBUJO: " + numeroCartas);
                 jugador.numCartas = numeroCartas;
                 jugador.nombreUsuario.text = item.nombre;
@@ -831,7 +838,6 @@ function recibirMensaje(msg){
                     if(mensaje.id_jugador==0 && conIA){
                         if(arrayJugadores[mensaje.id_jugador].nombreUsuario.text=="usuarioRef"){
                             game.onLoadComplete.add(function(){
-                                sleep(2000);
                                 jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
                             }, this)
                         }

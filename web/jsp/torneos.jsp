@@ -456,7 +456,8 @@
         //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
         id_torneo = idTorneo;
         var nombre_jugador = nombreUsuario;
-        socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        //socket = new WebSocket("ws://localhost:8080/mm/matchmaking");
+        socket = new WebSocket("wss://ec2-54-68-240-71.us-west-2.compute.amazonaws.com:8443/mm/matchmaking");
 
         var listo = JSON.stringify({
             "tipo_mensaje": "busco_torneo",
