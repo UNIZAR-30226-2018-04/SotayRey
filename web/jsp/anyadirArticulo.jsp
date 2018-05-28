@@ -93,7 +93,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="liga">Tipo del artículo</label>
+                    <label for="liga">Liga requerida para acceder al artículo</label>
                         <select id="liga" name="liga" class="form-control">
                             <% for (LigaVO l: ligas) { %>
                                 <option value="<%=l.getNombre()%>"><%=l.getNombre()%></option>
