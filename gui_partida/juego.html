@@ -32,6 +32,7 @@ var conIA = findGetParameter("con_ia") == "true";
 console.log("MI IDDDDD ES" + miID + "  "+numJugadores);
 
 var socket = new WebSocket("ws://localhost:8080/gm/endpoint");
+//var socket = new WebSocket("wss://ec2-54-68-240-71.us-west-2.compute.amazonaws.com:8443/gm/endpoint");
 socket.onmessage = function (msg) {
 console.log(msg.data);
 recibirMensaje(msg.data);

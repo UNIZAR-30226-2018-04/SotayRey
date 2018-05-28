@@ -281,12 +281,18 @@ public class PartidaDAO {
             u1.setUsername(res.getString("usuario1"));
             UsuarioVO u2 = new UsuarioVO();
             u2.setUsername(res.getString("usuario2"));
+            int puntos1, puntos2;
             if (res.getInt("equipo1")==1) {
                 usuarios.add(u1);
                 usuarios.add(u2);
+                puntos1 = res.getInt("puntos1");
+                puntos2 = res.getInt("puntos2");
+                System.out.println(puntos1+" "+puntos2);
             } else {
                 usuarios.add(u2);
                 usuarios.add(u1);
+                puntos1 = res.getInt("puntos2");
+                puntos2 = res.getInt("puntos1");
             }
             ArrayList<Integer> cuarentas = new ArrayList<>();
             cuarentas.add(res.getInt("cuarentas1"));
@@ -294,8 +300,6 @@ public class PartidaDAO {
             ArrayList<Integer> veintes = new ArrayList<>();
             veintes.add(res.getInt("veintes1"));
             veintes.add(res.getInt("veintes2"));
-            int puntos1 = res.getInt("puntos1");
-            int puntos2 = res.getInt("puntos2");
             int abandonador = res.getInt("abandonador");
             historial.add(new PartidaVO(id, timeInicio, timeFin, publica, ganador, usuarios, cuarentas, veintes, puntos1, puntos2, abandonador));
         }

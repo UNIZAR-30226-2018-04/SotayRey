@@ -39,6 +39,8 @@ console.log(window.devicePixelRatio);
 console.log(ejeY);
 //var scaleRatio = window.devicePixelRatio / 3;
 
+var partidaAcabada = false;
+
 // para que sea responsive:  https://www.joshmorony.com/how-to-scale-a-game-for-all-device-sizes-in-phaser/
 // en vez de Phaser.AUTO -> Phaser.CANVAS
 //var game = new Phaser.Game(ejeX, ejeY / zonaJugableY, Phaser.CANVAS, '', { preload: preload, create: create, update: update, render: render });
@@ -145,13 +147,11 @@ function inicializarDispositivo(){
         ejeYCarta = ejeXCarta*(ejeYCartaOriginal/ejeXCartaOriginal);
         avatarEjeX = ejeXCarta * 0.5;
         avatarEjeY = avatarEjeX;
-
 /*
         var ejeXCartaOriginal = 80; // esto en una apartado de game options
         var ejeYCartaOriginal = 123;
         var ejeXCarta = (ejeX * 0.8) / 6;
         var ejeYCarta = ejeXCarta*(ejeYCartaOriginal/ejeXCartaOriginal);
-
         var avatarEjeX = ejeXCarta * 0.5;
         */
     }
@@ -161,8 +161,10 @@ function inicializarDispositivo(){
     }
 
     // Para los nombres de los usuarios
-    var color = "#040404";
-    var fuente =  "15pt impact";
+    var color = "#ffffff";
+    var fuente =  "17pt impact";
+    var colorBorde = 'black';
+    var gordura = 4;
 
     jRef = {};
     jRef.nombre = "ref";
@@ -177,7 +179,8 @@ function inicializarDispositivo(){
     jRef.numCartas;
     jRef.cartasEnMano = game.add.group();
     jRef.rotacion = 0;
-    jRef.nombreUsuario = game.add.text(jRef.XLanzar + ejeXCarta * 1.10, jRef.YLanzar + ejeYCarta * 0.8, 'usuarioRef', {font: fuente, fill: color});
+    jRef.nombreUsuario = game.add.text(jRef.XLanzar + ejeXCarta * 1.10, jRef.YLanzar + ejeYCarta * 0.8, 'usuarioRef', {font: fuente, fill: color, stroke: colorBorde, strokeThickness: gordura});
+
     jRef.avatar = game.add.sprite(jRef.XLanzar + ejeXCarta*1.10, jRef.YLanzar + avatarEjeY/2, 'avatar');
     //game.physics.arcade.enable([jRef.avatar]);
     //jRef.avatar.body.setCircle(45);
@@ -198,7 +201,7 @@ function inicializarDispositivo(){
     jIzq.cartasEnMano = game.add.group();
     jIzq.rotacion = 90;
     if (numJugadores == 4){
-        jIzq.nombreUsuario = game.add.text(jIzq.XLanzar - ejeYCarta, jIzq.YLanzar - 30, 'usuarioIzq', {font: fuente, fill: color});
+        jIzq.nombreUsuario = game.add.text(jIzq.XLanzar - ejeYCarta, jIzq.YLanzar - 30, 'usuarioIzq', {font: fuente, fill: color, stroke: colorBorde, strokeThickness: gordura});
         jIzq.avatar = game.add.sprite(jIzq.XLanzar - ejeXCarta*1.10, jIzq.YLanzar - 90, 'avatar');
         jIzq.avatar.height = avatarEjeY;
         jIzq.avatar.width = avatarEjeX;
@@ -216,7 +219,7 @@ function inicializarDispositivo(){
     jArriba.numCartas;
     jArriba.cartasEnMano = game.add.group();
     jArriba.rotacion = 0;
-    jArriba.nombreUsuario = game.add.text(jArriba.XLanzar + ejeXCarta + 10, jArriba.YLanzar + ejeYCarta/2, 'usuarioArriba', {font: fuente, fill: color});
+    jArriba.nombreUsuario = game.add.text(jArriba.XLanzar + ejeXCarta + 10, jArriba.YLanzar + ejeYCarta/2, 'usuarioArriba', {font: fuente, fill: color, stroke: colorBorde, strokeThickness: gordura});
     jArriba.avatar = game.add.sprite(jArriba.XLanzar + ejeXCarta + 30, jArriba.YLanzar, 'avatar');
     //game.physics.arcade.enable([jRef.avatar]);
     //jRef.avatar.body.setCircle(45);
@@ -239,7 +242,7 @@ function inicializarDispositivo(){
     jDer.dorso = 'dorsoBase';
 
     if (numJugadores == 4){
-        jDer.nombreUsuario = game.add.text(jDer.XLanzar + ejeXCarta/2, jDer.YLanzar - ejeXCarta - 30, 'usuarioIzq', {font: fuente, fill: color});
+        jDer.nombreUsuario = game.add.text(jDer.XLanzar + ejeXCarta/2, jDer.YLanzar - ejeXCarta - 30, 'usuarioIzq', {font: fuente, fill: color, stroke: colorBorde, strokeThickness: gordura});
         jDer.avatar = game.add.sprite(jDer.XLanzar + ejeXCarta/2, jDer.YLanzar - ejeYCarta - avatarEjeY, 'avatar');
         jDer.avatar.height = avatarEjeY;
         jDer.avatar.width = avatarEjeX;
@@ -340,6 +343,9 @@ function inicializarCuadroCarta(jugador){
  * @param jugador Jugador a dibujar el cuadro
  */
 function crearCuadroCarta(jugador){
+    try{
+        jugador.cartaLanzada.destroy();
+    }catch(e){}
     jugador.cartaLanzada = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
 }
 
@@ -692,16 +698,24 @@ function representarEstado(estado){
 
                 jugador.avatar.loadTexture(item.id.toString()+'avatar');
                 jugador.dorso = item.id.toString()+'dorso';
-
-
-                console.log("JUGADORSITO " + jugador.XPosMedia + " " + item.id);
+                var numeroCartas = item.num_cartas;
+                try{
+                    console.log("LA CARTA LANZADA ES: " + jugador.cartaLanzada.numero);
+                    if (jugador.cartaLanzada.numero != 0){
+                        numeroCartas = numeroCartas - 1;
+                    }
+                }
+                catch(e) {}
               //  destruirCartas(jugador);
-                jugador.numCartas = item.num_cartas;
+                if(!conIA){
+                    jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
+                    dibujarCartaLanzada(jugador);
+                }
+                console.log("DIBUJO: " + numeroCartas);
+                jugador.numCartas = numeroCartas;
                 jugador.nombreUsuario.text = item.nombre;
                 crearCartas(jugador);
                 dibujarJugador(jugador);
-                jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
-                dibujarCartaLanzada(jugador);
 
                 arrayJugadores[item.id] = jugador;
 
@@ -720,6 +734,9 @@ function representarEstado(estado){
                 jugador.avatar.loadTexture(miID.toString()+'avatar');
             }, this);
 
+            try{
+                jugador.cartaLanzada.destroy();
+            }catch(e){}
             jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
             dibujarCartaLanzada(jugador);
 
@@ -820,10 +837,35 @@ function recibirMensaje(msg){
         case "broadcast_accion":
             switch (mensaje.tipo_accion){
                 case "lanzar_carta":
-                    game.load.onLoadComplete.removeAll(); // Cuando un jugador lance una carta es que se han cargado las texturas
-                    jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                    if(mensaje.id_jugador==0 && conIA){
+                        console.log("LA IA SE DUERME");
+                        //sleep(1000);
+                        console.log("LA IA SE DESPIERTA");
+                        if(arrayJugadores[mensaje.id_jugador].nombreUsuario.text=="usuarioRef"){
+                            game.onLoadComplete.add(function(){
+                                console.log("EJECUTO LA DE CARGA");
+                                jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                            }, this)
+                        }
+                        else{
+                            console.log("EJECUTO LA NORMAL");
+                            jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                        }
+                        var ia = arrayJugadores[mensaje.id_jugador];
+                        if(ia.cartasEnMano.length == 6){
+                            var cartita = ia.cartasEnMano.getFirstAlive();
+                            ia.cartasEnMano.removeChild(cartita);
+                            ia.num_cartas = ia.num_cartas - 1;
+                            dibujarJugador(ia);
+                        }
+                    }
+                    else{
+                        console.log("LANZO YOOOOOOOOOOOOOOOOOOO");
+                        jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                    }
                     break;
                 case "robar_carta":
+                    game.load.onLoadComplete.removeAll(); // Cuando un jugador robe una carta es que se han cargado las texturas
                     if (mensaje.id_jugador != miID){
                         jugadorRobaCarta(mensaje.id_jugador, "nada", "nada");
                     }
@@ -884,13 +926,16 @@ function mandarTimeout(){
     }
 }
 
-
 function jugadorDesconectado(id){
-    console.log("Jugador desconectado");
-    var style = { font: "45px Arial", fill: "#ff0044", align: "center" };
-    textoDesconectado = game.add.text(game.world.centerX, game.world.centerY, "PARTIDA EN PAUSA\n"+arrayJugadores[id].nombreUsuario.text +" se ha desconectado", style);
-    textoDesconectado.x = textoDesconectado.x - textoDesconectado.width/2;
-
+    if(!partidaAcabada){
+      console.log("Jugador desconectado");
+      var style = { font: "45px Arial", fill: "#ff0044", align: "center" };
+      try{
+        textoDesconectado.destroy();
+      } catch(e){ }
+      textoDesconectado = game.add.text(game.world.centerX, game.world.centerY, "PARTIDA EN PAUSA\n"+arrayJugadores[id].nombreUsuario.text +" se ha desconectado", style);
+      textoDesconectado.x = textoDesconectado.x - textoDesconectado.width/2;
+    }
 }
 
 
@@ -940,6 +985,9 @@ function jugadorLanzaCarta(idJugador, numero, palo){
         var cartita = jugador.cartasEnMano.getFirstAlive();
         jugador.cartasEnMano.removeChild(cartita);
         dibujarJugador(jugador);
+        try{
+            jugador.cartaLanzada.destroy();
+        }catch(e){}
         jugador.cartaLanzada = crearCarta(numero, palo);
         dibujarCartaLanzada(jugador);
 
@@ -952,6 +1000,9 @@ function jugadorLanzaCarta(idJugador, numero, palo){
                 console.log("EJECUTO ESTO");
                 jugador.cartasEnMano.removeChild(item);
                 dibujarJugador(jugador);
+                try{
+                    jugador.cartaLanzada.destroy();
+                }catch(e){}
                 jugador.cartaLanzada = crearCarta(numero, palo);
                 console.log("DIBUJO MI CARTA DE REFEREEENCIA");
                 dibujarCartaLanzada(jugador);
@@ -1115,9 +1166,7 @@ function crearTiempo(idJugador){
     tiempoTurno.text = "TURNO " + arrayJugadores[idJugador].nombreUsuario.text + " " + tiempoRestante + " s";
     var idNuevoContador = idContador;
     setTimeout(function(){ updateCounter(idJugador, idNuevoContador);}, 1000);
-
 }
-
 function updateCounter(idJugador, idEsteContador){
     //console.log("ACTUALIZO CONTADOR " + idContador);
     if (tiempoRestante > 0 && idContador == idEsteContador){
@@ -1126,9 +1175,7 @@ function updateCounter(idJugador, idEsteContador){
         setTimeout(function(){ updateCounter(idJugador, idEsteContador);}, 1000);
     }
 }
-
 function actualizarTiempo(idJugador){
-
     tiempoTurno.text = "TURNO " + arrayJugadores[idJugador].nombreUsuario + " 15";
 }
 */
@@ -1301,7 +1348,6 @@ function actualizarHUD(datos){
     }
     if(restantes_mazo.restantes <= 1) {
         triunfo.carta.alpha = 0.5;
-        arrSFX.play();
         tipo_ronda.text = "TIPO RONDA: ARRASTRE";
     }
 

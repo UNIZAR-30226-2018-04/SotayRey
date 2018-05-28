@@ -497,7 +497,7 @@ public class EstadoPartida {
 
             // Asigna turno a jugador ganador
             turno = (turno + ganador)%n_jug;
-            ganadorUltimaRonda = ganador;
+            ganadorUltimaRonda = turno;
 
             // Suma puntos y cartas a ganador
             asignaCartasJugador(jugadores.get(turno));

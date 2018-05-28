@@ -363,6 +363,9 @@ public class InterfazDatos {
                 dorsoFavorito = art;
             }
         }
+        if (username.equals("SophIA")) {
+            return new ArticuloUsuarioVO("SophIA la chula",99999,"Marcando estilo en el hood","/img/sophia.png",'A',true,true,true,"SophIA");
+        }
         return dorsoFavorito;
     }
 
