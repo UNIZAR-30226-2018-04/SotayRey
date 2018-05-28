@@ -171,7 +171,7 @@
                                 BigInteger idTorneo = BigInteger.valueOf(-1);
                                 Timestamp inicio;
 //                                Timestamp actual = new Timestamp(System.currentTimeMillis() - 7200000);
-                                Timestamp actual = new Timestamp(System.currentTimeMillis();
+                                Timestamp actual = new Timestamp(System.currentTimeMillis());
                                 if (j==1){
                                     TorneoVO torneo = torneos.get(i);
                                     idTorneo = torneo.getId();
