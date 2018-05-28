@@ -340,6 +340,9 @@ function inicializarCuadroCarta(jugador){
  * @param jugador Jugador a dibujar el cuadro
  */
 function crearCuadroCarta(jugador){
+    try{
+        jugador.cartaLanzada.destroy();
+    }catch(e){}
     jugador.cartaLanzada = game.add.sprite(jugador.XLanzar, jugador.YLanzar, 'cuadroCarta');
 }
 
@@ -692,16 +695,17 @@ function representarEstado(estado){
 
                 jugador.avatar.loadTexture(item.id.toString()+'avatar');
                 jugador.dorso = item.id.toString()+'dorso';
-
-
-                console.log("JUGADORSITO " + jugador.XPosMedia + " " + item.id);
+                var numeroCartas = item.num_cartas;
+                console.log("LA CARTA LANZADA ES: " + jugador.cartaLanzada.numero);
+                if (jugador.cartaLanzada.numero != 0){
+                    numeroCartas = numeroCartas - 1;
+                }
               //  destruirCartas(jugador);
-                jugador.numCartas = item.num_cartas;
+                console.log("DIBUJO: " + numeroCartas);
+                jugador.numCartas = numeroCartas;
                 jugador.nombreUsuario.text = item.nombre;
                 crearCartas(jugador);
                 dibujarJugador(jugador);
-                jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
-                dibujarCartaLanzada(jugador);
 
                 arrayJugadores[item.id] = jugador;
 
@@ -720,6 +724,9 @@ function representarEstado(estado){
                 jugador.avatar.loadTexture(miID.toString()+'avatar');
             }, this);
 
+            try{
+                jugador.cartaLanzada.destroy();
+            }catch(e){}
             jugador.cartaLanzada = crearCarta(item.carta_mesa.numero, item.carta_mesa.palo);
             dibujarCartaLanzada(jugador);
 
@@ -820,10 +827,34 @@ function recibirMensaje(msg){
         case "broadcast_accion":
             switch (mensaje.tipo_accion){
                 case "lanzar_carta":
-                    game.load.onLoadComplete.removeAll(); // Cuando un jugador lance una carta es que se han cargado las texturas
-                    jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                    console.log("ANTES DE DORMIRME: " + mensaje.id_jugador + "  " + conIA);
+                    if(mensaje.id_jugador==0 && conIA){
+                        if(arrayJugadores[mensaje.id_jugador].nombreUsuario.text=="usuarioRef"){
+                            game.onLoadComplete.add(function(){
+                                sleep(2000);
+                                jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                            }, this)
+                        }
+                        else{
+                            jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                        }
+                        var ia = arrayJugadores[mensaje.id_jugador];
+                        console.log("LA IA TIENE: " + ia.cartasEnMano.length);
+                        if(ia.cartasEnMano.length == 6){
+                            var cartita = ia.cartasEnMano.getFirstAlive();
+                            ia.cartasEnMano.removeChild(cartita);
+                            ia.num_cartas = ia.num_cartas - 1;
+                            dibujarJugador(ia);
+                        }
+
+                        sleep(1000);
+                    }
+                    else{
+                        jugadorLanzaCarta(mensaje.id_jugador, mensaje.carta.numero, mensaje.carta.palo);
+                    }
                     break;
                 case "robar_carta":
+                    game.load.onLoadComplete.removeAll(); // Cuando un jugador robe una carta es que se han cargado las texturas
                     if (mensaje.id_jugador != miID){
                         jugadorRobaCarta(mensaje.id_jugador, "nada", "nada");
                     }
@@ -940,6 +971,9 @@ function jugadorLanzaCarta(idJugador, numero, palo){
         var cartita = jugador.cartasEnMano.getFirstAlive();
         jugador.cartasEnMano.removeChild(cartita);
         dibujarJugador(jugador);
+        try{
+            jugador.cartaLanzada.destroy();
+        }catch(e){}
         jugador.cartaLanzada = crearCarta(numero, palo);
         dibujarCartaLanzada(jugador);
 
@@ -952,6 +986,9 @@ function jugadorLanzaCarta(idJugador, numero, palo){
                 console.log("EJECUTO ESTO");
                 jugador.cartasEnMano.removeChild(item);
                 dibujarJugador(jugador);
+                try{
+                    jugador.cartaLanzada.destroy();
+                }catch(e){}
                 jugador.cartaLanzada = crearCarta(numero, palo);
                 console.log("DIBUJO MI CARTA DE REFEREEENCIA");
                 dibujarCartaLanzada(jugador);
@@ -1301,7 +1338,6 @@ function actualizarHUD(datos){
     }
     if(restantes_mazo.restantes <= 1) {
         triunfo.carta.alpha = 0.5;
-        arrSFX.play();
         tipo_ronda.text = "TIPO RONDA: ARRASTRE";
     }
 
