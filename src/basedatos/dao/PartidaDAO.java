@@ -323,7 +323,6 @@ public class PartidaDAO {
                 "       AND j1.usuario > j2.usuario AND j2.usuario > j3.usuario AND j3.usuario > j4.usuario " +
                 "ORDER BY p.timeInicio ASC;\n";
 
-        System.out.println(partParejas);
         res = statement.executeQuery(partParejas);
         while (res.next()) {
             String ganador1 = res.getString("ganador");
