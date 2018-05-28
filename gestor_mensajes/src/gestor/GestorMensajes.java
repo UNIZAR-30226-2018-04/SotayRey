@@ -179,10 +179,10 @@ public class GestorMensajes {
                                 System.out.println("CARTA: " + c.getValor() + " -- " + c.getPalo());
                             }
                         }
-                        partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
-                        broadcastLanzarCarta(idPartida, idJugador, carta);
                         System.out.println("El jugador " + idJugador + " lanza la carta "
                                 + carta.getValor() + carta.getPalo());
+                        partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
+                        broadcastLanzarCarta(idPartida, idJugador, carta);
                         broadcastTurno(idPartida);
                         // Notificación a la IA
                         notificarIALanzarCarta(idPartida, lobby, carta);
