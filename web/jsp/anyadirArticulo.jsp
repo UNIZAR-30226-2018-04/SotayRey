@@ -119,7 +119,7 @@
 
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-save mr-2" aria-hidden="true"></i>Guardar</button>
-            </divform>
+            </form>
         </div>
     </div>
 </div>
