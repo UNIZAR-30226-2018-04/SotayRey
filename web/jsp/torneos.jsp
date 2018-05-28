@@ -23,8 +23,8 @@
     boolean admin = false;
     String error;
     String accionAdmin = "";
-    ArrayList<TorneoVO> torneos = new ArrayList<>();
-    ArrayList<TorneoPeriodicoVO> torneos_period  = new ArrayList<>();
+    ArrayList<TorneoVO> torneos = null;
+    ArrayList<TorneoPeriodicoVO> torneos_period  = null;
     UsuarioVO usuarioVO;
 
     if (session.getAttribute("userId") == null) {
@@ -43,14 +43,15 @@
             return;
         }
         admin = usuarioVO.getAdmin();
-        torneos = (ArrayList<TorneoVO>) session.getAttribute("torneos");
-        torneos_period = (ArrayList<TorneoPeriodicoVO>) session.getAttribute("torneos_period");
-        if(torneos == null || torneos_period == null){
+        if(session.getAttribute("torneos") == null ||
+                session.getAttribute("torneos_period") == null){
             RequestDispatcher dispatcher = request.getRequestDispatcher
                     ("/jsp/login.jsp");
             dispatcher.forward(request, response);
             return;
         }
+        torneos = (ArrayList<TorneoVO>) session.getAttribute("torneos");
+        torneos_period = (ArrayList<TorneoPeriodicoVO>) session.getAttribute("torneos_period");
     }
 %>
 
@@ -133,7 +134,7 @@
 
 
                     <div id="collapse<%=j%>" class="collapse show" role="tabpanel" aria-labelledby="heading<%=n%>">
-                       <% if(torneos_period == null){ %>
+                       <% if((torneos_period.size() == 0 && j==2) || (torneos.size() == 0 && j == 1)){ %>
                         <div class="card-body text-center">
                             <h2>No hay torneos a los que puedas apuntarte. Vuelve en otro momento</h2>
                         </div>
