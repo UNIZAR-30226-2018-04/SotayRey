@@ -270,14 +270,14 @@
                                                         <div class="col-sm">
 
                                                         <input type="date" class="form-control my-1" name="date_ini" id="date_ini<%=i%>"
-                                                        placeholder="N.º de fases" value="<%=inicio.toString().split(" ")[0]%>">
+                                                        placeholder="N.º de fases" value="<%=muestraInicio.toString().split(" ")[0]%>">
                                                     </div>
                                                     </div>
                                                     <div class="row">
                                                         <label for="time_ini<%=i%>" class="text-sm-left">Tiempo inicio:</label>
                                                         <div class="col-sm">
                                                             <input type="time" class="form-control my-1" name="time_ini" id="time_ini<%=i%>"
-                                                            placeholder="N.º de fases" value="<%=inicio.toString().split(" ")[1]%>">
+                                                            placeholder="N.º de fases" value="<%=muestraInicio.toString().split(" ")[1]%>">
                                                         </div>
                                                     </div>
                                                 </div>

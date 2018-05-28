@@ -55,19 +55,21 @@ public class GestionarTorneoServlet extends HttpServlet {
             response.sendRedirect("jsp/login.jsp");
         }else{
             UsuarioVO usuarioVO = (UsuarioVO) session.getAttribute("userId");
+            InterfazDatos facade;
+            try{
+                facade = InterfazDatos.instancia();
+            }catch (Exception e){
+                e.printStackTrace();
+                response.sendRedirect("jsp/torneos.jsp");
+                return;
+            }
+            String action_torneo = null;
+
             if (usuarioVO.getAdmin() && request.getParameter("action_torneo") != null){
-                InterfazDatos facade;
-                try{
-                    facade = InterfazDatos.instancia();
-                }catch (Exception e){
-                    e.printStackTrace();
-                    response.sendRedirect("jsp/torneos.jsp");
-                    return;
-                }
 
                 TorneoVO torneo;
 
-                String action_torneo = request.getParameter("action_torneo");
+                action_torneo = request.getParameter("action_torneo");
 
                 String nombre;
                 String desc;
@@ -81,7 +83,7 @@ public class GestionarTorneoServlet extends HttpServlet {
                 Timestamp timeInicio;
 //                Timestamp timeAct = new Timestamp(System.currentTimeMillis() - 7200000); // Para local
                 Timestamp timeAct = new Timestamp(System.currentTimeMillis());
-                switch (action_torneo){
+                switch (action_torneo) {
                     case "crear":
 
                         nombre = request.getParameter("nombre");
@@ -95,24 +97,23 @@ public class GestionarTorneoServlet extends HttpServlet {
                         date_ini = request.getParameter("date_ini");
                         time_ini = request.getParameter("time_ini");
 
-                       timeInicio = transformarFechas(date_ini, time_ini, request, response);
+                        timeInicio = transformarFechas(date_ini, time_ini, request, response);
 
 
-                        if (timeInicio.after(timeAct)){
+                        if (timeInicio.after(timeAct)) {
                             try {
-                                if (tipo.equals("0")){ // Torneo periódico
+                                if (tipo.equals("0")) { // Torneo periódico
                                     dias = Integer.parseInt(request.getParameter("dias"));
                                     facade.crearTorneoPeriodico(new TorneoPeriodicoVO(nombre, desc,
                                             timeInicio, dias, numFases, premioPuntuacionPrimera, premioDivisaPrimera));
                                     System.out.println("Torneo periodico creado");
-                                }
-                                else {
+                                } else {
                                     facade.crearTorneo(new TorneoVO(nombre, desc, timeInicio,
                                             true, numFases, premioPuntuacionPrimera, premioDivisaPrimera));
                                     System.out.println("Torneo puntual creado");
                                 }
 
-                            } catch (Exception e){
+                            } catch (Exception e) {
                                 System.err.println("ERROR: creando torneo en la bd.");
                                 e.printStackTrace();
 
@@ -137,7 +138,7 @@ public class GestionarTorneoServlet extends HttpServlet {
 
                         timeInicio = transformarFechas(date_ini, time_ini, request, response);
 
-                        if (timeInicio.after(timeAct)){
+                        if (timeInicio.after(timeAct)) {
                             try {
                                 if (session.getAttribute("torneos") != null) {
                                     int pos = Integer.parseInt(request.getParameter("pos_torneo_mod"));
@@ -146,7 +147,7 @@ public class GestionarTorneoServlet extends HttpServlet {
                                     torneo.setPremioDivisaPrimera(premioDivisaPrimera);
                                     torneo.setPremioPuntuacionPrimera(premioPuntuacionPrimera);
                                     torneo.setTimeInicio(timeInicio);
-                                    facade.modificarTorneo( torneo);
+                                    facade.modificarTorneo(torneo);
                                     System.out.println("Torneo modificado");
                                 } else {
                                     // Torneos no encontrado, es imposible si está registrado
@@ -154,7 +155,7 @@ public class GestionarTorneoServlet extends HttpServlet {
 
                                     error("interno", request, response);
                                 }
-                            } catch (Exception e){
+                            } catch (Exception e) {
                                 System.err.println("ERROR: creando torneo en la bd.");
                                 e.printStackTrace();
 
@@ -171,29 +172,28 @@ public class GestionarTorneoServlet extends HttpServlet {
                         break;
                     case "eliminar":
                         String period = request.getParameter("period");
-                        if (period != null && session.getAttribute("torneos_period") != null){
+                        if (period != null && session.getAttribute("torneos_period") != null) {
                             int pos = Integer.parseInt(request.getParameter("btnEliminar"));
                             ArrayList<TorneoPeriodicoVO> torneos = (ArrayList<TorneoPeriodicoVO>) session.getAttribute("torneos_period");
                             try {
                                 TorneoPeriodicoVO t = torneos.get(pos);
                                 facade.eliminarTorneoPeriodico(t.getNombre());
                                 System.out.println("Torneo eliminado periodico");
-                            } catch(Exception e){
+                            } catch (Exception e) {
                                 System.err.println("ERROR: error elimnando torneo");
                                 e.printStackTrace();
 
                                 error("interno", request, response);
                                 return;
                             }
-                        }
-                        else if (period == null && session.getAttribute("torneos") != null){
+                        } else if (period == null && session.getAttribute("torneos") != null) {
                             int pos = Integer.parseInt(request.getParameter("btnEliminar"));
                             ArrayList<TorneoVO> torneos = (ArrayList<TorneoVO>) session.getAttribute("torneos");
                             try {
                                 TorneoVO t = torneos.get(pos);
                                 facade.eliminarTorneo(t.getId());
                                 System.out.println("Torneo eliminado");
-                            } catch(Exception e){
+                            } catch (Exception e) {
                                 System.err.println("ERROR: error elimnando torneo");
                                 e.printStackTrace();
 
@@ -212,39 +212,33 @@ public class GestionarTorneoServlet extends HttpServlet {
 
                         break;
                 }
-                ArrayList<TorneoVO> torneos = null;
-                ArrayList<TorneoPeriodicoVO> torneos_period = null;
-                try {
-                    torneos = facade.obtenerTorneosProgramados();
-                    torneos_period = facade.obtenerTorneosPeriodicos();
-                } catch(Exception e){
-                    e.printStackTrace();
-
-                    error("interno", request, response);
-                    return;
-                }
-
-
-
-                session.setAttribute("torneos",torneos);
-                session.setAttribute("torneos_period", torneos_period);
-                // Correcto
-                error = "done";
-                request.setAttribute("error", error);
-                RequestDispatcher dispatcher = request.getRequestDispatcher
-                        ("jsp/torneos.jsp");
-                dispatcher.forward(request, response);
-
-            } else {
-                // Error usuario no encontrado
-                error = "userNotFound";
-                request.setAttribute("error", error);
-                RequestDispatcher dispatcher = request.getRequestDispatcher
-                        ("jsp/login.jsp");
-                dispatcher.forward(request, response);
-                return;
 
             }
+            ArrayList<TorneoVO> torneos = null;
+            ArrayList<TorneoPeriodicoVO> torneos_period = null;
+            try {
+                torneos = facade.obtenerTorneosProgramados();
+                torneos_period = facade.obtenerTorneosPeriodicos();
+            } catch(Exception e){
+                e.printStackTrace();
+
+                error("interno", request, response);
+                return;
+            }
+
+
+
+            session.setAttribute("torneos",torneos);
+            session.setAttribute("torneos_period", torneos_period);
+
+            if (action_torneo != null){
+                // Accion del torneo realizada correctamente
+                error = "done";
+                request.setAttribute("error", error);
+            }
+            RequestDispatcher dispatcher = request.getRequestDispatcher
+                    ("jsp/torneos.jsp");
+            dispatcher.forward(request, response);
         }
     }
 
