@@ -14,7 +14,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Perfil</title>
+    <title>Articulo</title>
     <%@ include file="navbar.jsp" %>
     <!-- Bootstrap -->
     <%@ include file="../html/imports.html"%>
@@ -71,7 +71,7 @@
     <div class="row">
         <div class="col-md-6 mt-4">
             <h1 class="text-xl-left"> Añadir artículo a la tienda  </h1>
-            <form action="/AnyadirArticuloTienda.do" method="post" >
+            <form action="/AnyadirArticuloTienda.do" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="modNombre">Nombre</label>
                     <input type="text" class="form-control" id="modNombre" name="modNombre" placeholder="Escriba el nombre del artículo">
@@ -100,13 +100,26 @@
                             <%}%>
                         </select>
                 </div>
+
+                <%--<div class="form-group">--%>
+                    <%--<label for="imagen">Imagen</label>--%>
+                    <%--<input type="file" class="form-control-file" id="imagen" name="imagen">--%>
+                <%--</div>--%>
+
+                <%--<div class="form-group">--%>
+                    <%--<label for="imagen">Imagen</label>--%>
+                    <%--<input type="file" class="form-control-file" id="imagen" name="imagen">--%>
+                    <%--<input type="submit" />--%>
+                <%--</div>--%>
+
                 <div class="form-group">
-                    <label for="imagen">Imagen</label>
-                    <input type="file" class="form-control-file" id="imagen" name="imagen">
+                    <label for="imagen">Nombre de la imagen</label>
+                    <input type="text" class="form-control" id="imagen" name="imagen">
                 </div>
+
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-save mr-2" aria-hidden="true"></i>Guardar</button>
-            </form>
+            </divform>
         </div>
     </div>
 </div>
