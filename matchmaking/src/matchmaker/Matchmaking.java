@@ -338,56 +338,66 @@ public class Matchmaking {
                 lista = parejas;
             }
         }
-        jugador.incSigos();
+        if (jugador != null) {
+            jugador.incSigos();
+        }
         // Revisar condiciones
         emparejar(lista);
     }
 
     private void emparejar(HashMap<String, JugadorMatch> lista) {
         // Obtener info del tipo de lista
-        JugadorMatch aux = (JugadorMatch) lista.values().toArray()[0];
-        String tipo = aux.getTipo();
-        int jugsPartida = aux.getJugadores();
-
-        // Revisar si hay suficientes jugadores para emparejar
-        if (lista.size() >= jugsPartida) {
-            // Revisar si hay suficientes jugadores de la misma liga
-            ArrayList<ArrayList<JugadorMatch>> jugsMismaLiga = jugadoresMismaLiga(lista, jugsPartida);
-            // Para cada liga que tiene minimo jugsPartida jugadores
-            for (ArrayList<JugadorMatch> liga : jugsMismaLiga) {
-                // Elimina a los jugadores de la lista de espera
-                for (JugadorMatch jug : liga) {
-                    lista.remove(jug.getNombre());
-                }
-                // Se convierten los jugadores a usuarios
-                ArrayList<UsuarioVO> usuarios = convAUsuarios(liga);
-                PartidaVO nuevaPartida = new PartidaVO(tipo.equals("publica"), usuarios);
-                try {
-                    bd.crearNuevaPartida(nuevaPartida);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                // Se obtiene el id de la nueva partida
-                BigInteger idPartida = nuevaPartida.getId();
-                System.out.println("Nueva partida creada con id " + idPartida.toString());
-                broadcastListo(liga, idPartida, false, false); // Las partidas con IA se gestionan en otra parte
+        JugadorMatch aux = null;
+        if (lista.size() >= 1) {
+            JugadorMatch[] auxList = (JugadorMatch[]) lista.values().toArray();
+            if (auxList.length >= 1) {
+                aux = auxList[0];
             }
-            // Revisar si el número de sigos supera el límite (peor caso posible)
-            if (getMaxSigos(lista) >= limiteSigos) {
-                // Emparejar de la forma más sencilla posible
-                ArrayList<JugadorMatch> lobby = quitarNJugadores(lista.values(), jugsPartida);
-                ArrayList<UsuarioVO> usuarios = convAUsuarios(lobby);
-                // Se crea la nueva partida con los jugadores convertidos a usuarios
-                PartidaVO nuevaPartida = new PartidaVO(tipo.equals("publica"), usuarios);
-                try {
-                    bd.crearNuevaPartida(nuevaPartida);
-                } catch (SQLException e) {
-                    e.printStackTrace();
+            if (aux != null) {
+                String tipo = aux.getTipo();
+                int jugsPartida = aux.getJugadores();
+
+                // Revisar si hay suficientes jugadores para emparejar
+                if (lista.size() >= jugsPartida) {
+                    // Revisar si hay suficientes jugadores de la misma liga
+                    ArrayList<ArrayList<JugadorMatch>> jugsMismaLiga = jugadoresMismaLiga(lista, jugsPartida);
+                    // Para cada liga que tiene minimo jugsPartida jugadores
+                    for (ArrayList<JugadorMatch> liga : jugsMismaLiga) {
+                        // Elimina a los jugadores de la lista de espera
+                        for (JugadorMatch jug : liga) {
+                            lista.remove(jug.getNombre());
+                        }
+                        // Se convierten los jugadores a usuarios
+                        ArrayList<UsuarioVO> usuarios = convAUsuarios(liga);
+                        PartidaVO nuevaPartida = new PartidaVO(tipo.equals("publica"), usuarios);
+                        try {
+                            bd.crearNuevaPartida(nuevaPartida);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        // Se obtiene el id de la nueva partida
+                        BigInteger idPartida = nuevaPartida.getId();
+                        System.out.println("Nueva partida creada con id " + idPartida.toString());
+                        broadcastListo(liga, idPartida, false, false); // Las partidas con IA se gestionan en otra parte
+                    }
+                    // Revisar si el número de sigos supera el límite (peor caso posible)
+                    if (getMaxSigos(lista) >= limiteSigos) {
+                        // Emparejar de la forma más sencilla posible
+                        ArrayList<JugadorMatch> lobby = quitarNJugadores(lista.values(), jugsPartida);
+                        ArrayList<UsuarioVO> usuarios = convAUsuarios(lobby);
+                        // Se crea la nueva partida con los jugadores convertidos a usuarios
+                        PartidaVO nuevaPartida = new PartidaVO(tipo.equals("publica"), usuarios);
+                        try {
+                            bd.crearNuevaPartida(nuevaPartida);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        // Se obtiene el id de la nueva partida
+                        BigInteger idPartida = nuevaPartida.getId();
+                        System.out.println("Nueva partida creada con id " + idPartida.toString());
+                        broadcastListo(lobby, idPartida, false, false);    // Las partidas con IA se gestionan en otra parte
+                    }
                 }
-                // Se obtiene el id de la nueva partida
-                BigInteger idPartida = nuevaPartida.getId();
-                System.out.println("Nueva partida creada con id " + idPartida.toString());
-                broadcastListo(lobby, idPartida, false, false);    // Las partidas con IA se gestionan en otra parte
             }
         }
     }
@@ -429,7 +439,9 @@ public class Matchmaking {
         obj.put("torneo", torneo);
         obj.put("id_jugador", idJugador);
         try {
-            jug.getRemoto().sendText(obj.toJSONString());
+            if (jug.getRemoto() != null) {
+                jug.getRemoto().sendText(obj.toJSONString());
+            }
         } catch (IOException e) {
             System.out.println("No se pudo enviar partida_lista al jugador " + jug.getNombre());
         }
