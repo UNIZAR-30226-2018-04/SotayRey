@@ -323,13 +323,18 @@ public class PartidaDAO {
                 "       AND j1.usuario > j2.usuario AND j2.usuario > j3.usuario AND j3.usuario > j4.usuario " +
                 "ORDER BY p.timeInicio ASC;\n";
 
+        System.out.println(partParejas);
         res = statement.executeQuery(partParejas);
         while (res.next()) {
+            String ganador1 = res.getString("ganador");
+            if (ganador1 == null) {
+                continue;
+            }
             BigInteger id = new BigInteger(res.getString("id"));
             Timestamp timeInicio = res.getTimestamp("timeInicio");
             Timestamp timeFin = res.getTimestamp("timeFin");
             boolean publica = res.getBoolean("publica");
-            char ganador = res.getString("ganador").charAt(0);
+            char ganador = ganador1.charAt(0);
 
             ArrayList<UsuarioVO> usuarios = new ArrayList<>(4);
             ArrayList<Integer> cuarentas = new ArrayList<>(4);
