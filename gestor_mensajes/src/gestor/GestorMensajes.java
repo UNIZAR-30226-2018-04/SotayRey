@@ -171,6 +171,14 @@ public class GestorMensajes {
                     }
                     // Ejecución de la acción
                     try {
+                        ArrayList<Jugador> jugadores = estado.getJugadores();
+                        for(Jugador j : jugadores){
+                            System.out.println("JUGADOR CON ID " +j.getId());
+                            ArrayList<Carta> cartasMano = j.getCartasEnMano();
+                            for (Carta c : cartasMano){
+                                System.out.println("CARTA: " + c.getValor() + " -- " + c.getPalo());
+                            }
+                        }
                         partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
                         broadcastLanzarCarta(idPartida, idJugador, carta);
                         System.out.println("El jugador " + idJugador + " lanza la carta "
