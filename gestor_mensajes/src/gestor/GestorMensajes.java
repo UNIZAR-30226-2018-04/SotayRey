@@ -154,6 +154,10 @@ public class GestorMensajes {
         Lobby lobby = lobbies.get(idPartida);
         LogicaPartida partida = listaPartidas.get(idPartida);
         EstadoPartida estado = partida.getEstado();
+        System.out.println("Jugadores al entrar en la llamada: ");
+        for (String j: estado.getJugadoresId()){
+            System.out.println(j);
+        }
 
         if (idJugador == estado.getTurno()) {
             // El jugador tiene turno, se elige qué acción se realiza
@@ -180,9 +184,9 @@ public class GestorMensajes {
                             }
                         }
                         partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
-                        broadcastLanzarCarta(idPartida, idJugador, carta);
                         System.out.println("El jugador " + idJugador + " lanza la carta "
                                 + carta.getValor() + carta.getPalo());
+                        broadcastLanzarCarta(idPartida, idJugador, carta);
                         broadcastTurno(idPartida);
                         // Notificación a la IA
                         notificarIALanzarCarta(idPartida, lobby, carta);
