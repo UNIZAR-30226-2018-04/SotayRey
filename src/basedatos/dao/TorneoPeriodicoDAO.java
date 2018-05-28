@@ -64,7 +64,8 @@ public class TorneoPeriodicoDAO {
         while(resultSet.next()) {
 
             Statement statement1 = connection.createStatement();
-            ResultSet res2 = statement1.executeQuery("SELECT t.descripcion, f.num, f.premioDiv, f.premioPunt FROM torneo t, fase f WHERE t.nombre='"+resultSet.getString("Name").substring(7)+"' and f.num = (SELECT COUNT(*) FROM fase f2 where f2.torneo = f.torneo)");
+            ResultSet res2 = statement1.executeQuery("SELECT t.descripcion, f.num, f.premioDiv, f.premioPunt FROM torneo t, fase f WHERE t.nombre='torneo_"+resultSet.getString("Name").substring(7)+"' and f.num = (SELECT COUNT(*) FROM fase f2 where f2.torneo = f.torneo)");
+			
             TorneoPeriodicoVO t;
             if (res2.next()) {
                 t = new TorneoPeriodicoVO(resultSet.getString("Name").substring(7), res2.getString("descripcion"), resultSet.getTimestamp("Starts"), resultSet.getInt("Interval value"), res2.getInt("num"), res2.getInt("premioPunt"), res2.getInt("premioDiv"));

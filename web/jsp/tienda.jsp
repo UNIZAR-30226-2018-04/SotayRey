@@ -201,7 +201,6 @@
                                       <%} else { //Usuario o admin accionando como usuario %>
 
                                             <div class=" card col-sm-5 col-md-3 my-1">
-                                                <%--<div class="card">--%>
                                                     <div class="card-header text-center bg-light">
                                                         <%=art.getNombre()%>
                                                     </div>
@@ -210,17 +209,6 @@
                                                         style='height: 100%'>
                                                     </div>
                                                     <div class="card-footer" style="width: auto" >
-                                                        <%--<% LigaVO liga_req = art.getRequiere();--%>
-                                                            <%--String name_liga_max = statsVO.getLigaMaxima();--%>
-                                                            <%--LigaVO liga_max = null;--%>
-                                                            <%--for (LigaVO l: ligas) {--%>
-                                                                <%--if (l.getNombre().equals(name_liga_max)){--%>
-                                                                    <%--liga_max = l;--%>
-                                                                    <%--break;--%>
-                                                                <%--}--%>
-                                                            <%--}--%>
-                                                        <%--if (liga_req == null || (liga_max != null &&--%>
-                                                                <%--liga_max.getPorcentajeMin() < liga_req.getPorcentajeMin()) ){ %>--%>
                                                        <% LigaVO liga_req = art.getRequiere();
                                                            if (art.isDisponible()){ %>
                                                             Desbloqueado
@@ -247,7 +235,6 @@
                                                           <button  type="button"  class="btn btn-blue-grey">Art&iacuteculo bloqueado</button>
                                                     <%} %>
                                                 </div>
-                                            <%--</div>--%>
 
                                 <%}
                                     }
