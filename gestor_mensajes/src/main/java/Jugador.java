@@ -262,8 +262,8 @@ public class Jugador {
             return false;
         Jugador jugador = (Jugador) o;
         // field comparison
-        return     (id == jugador.id)
-                && (puntos == puntos)
+        return     (this.id.equals(jugador.id))
+                && (this.puntos == jugador.puntos)
                 && cartasEnMano.equals(jugador.cartasEnMano)
                 && cartasGanadas.equals(jugador.cartasGanadas);
     }
