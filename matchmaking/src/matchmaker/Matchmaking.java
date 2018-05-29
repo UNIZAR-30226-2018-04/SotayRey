@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 
 import basedatos.InterfazDatos;
 import basedatos.exceptions.ExceptionCampoInexistente;
@@ -349,9 +350,9 @@ public class Matchmaking {
         // Obtener info del tipo de lista
         JugadorMatch aux = null;
         if (lista.size() >= 1) {
-            JugadorMatch[] auxList = (JugadorMatch[]) lista.values().toArray();
+            Object[] auxList = lista.values().toArray();
             if (auxList.length >= 1) {
-                aux = auxList[0];
+                aux = (JugadorMatch) auxList[0];
             }
             if (aux != null) {
                 String tipo = aux.getTipo();
