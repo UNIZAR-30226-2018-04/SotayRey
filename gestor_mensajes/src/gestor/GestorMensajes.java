@@ -159,6 +159,7 @@ public class GestorMensajes {
             System.out.println(j);
         }
 
+        System.out.println(idJugador);
         if (idJugador == estado.getTurno()) {
             // El jugador tiene turno, se elige qué acción se realiza
             switch (tipoAccion) {
@@ -177,7 +178,7 @@ public class GestorMensajes {
                     try {
                         ArrayList<Jugador> jugadores = estado.getJugadores();
                         for(Jugador j : jugadores){
-                            System.out.println("JUGADOR CON ID " + j.getId());
+                            System.out.println("JUGADOR CON ID " + j.getId() + idJugador);
                             ArrayList<Carta> cartasMano = j.getCartasEnMano();
                             for (Carta c : cartasMano){
                                 System.out.println("CARTA: " + c.getValor() + " -- " + c.getPalo());
