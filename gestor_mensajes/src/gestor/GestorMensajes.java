@@ -173,7 +173,7 @@ public class GestorMensajes {
                     try {
                         ArrayList<Jugador> jugadores = estado.getJugadores();
                         for(Jugador j : jugadores){
-                            System.out.println("JUGADOR CON ID " + idJugador);
+                            System.out.println("JUGADOR CON ID " + j.getId());
                             ArrayList<Carta> cartasMano = j.getCartasEnMano();
                             for (Carta c : cartasMano){
                                 System.out.println("CARTA: " + c.getValor() + " -- " + c.getPalo());
