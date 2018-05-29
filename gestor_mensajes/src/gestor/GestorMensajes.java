@@ -189,7 +189,7 @@ public class GestorMensajes {
                                 + carta.getValor() + carta.getPalo());
                         // TODO: Error lanzar inicio partida 4
                         //partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
-                        partida.lanzarCarta(lobby.buscarId(idJugador).getNombre(), carta);
+//                        partida.lanzarCarta(lobby.buscarId(idJugador).getNombre(), carta);
                         broadcastLanzarCarta(idPartida, idJugador, carta);
                         broadcastTurno(idPartida);
                         // Notificación a la IA
