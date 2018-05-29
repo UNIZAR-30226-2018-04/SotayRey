@@ -177,7 +177,7 @@ public class GestorMensajes {
                     try {
                         ArrayList<Jugador> jugadores = estado.getJugadores();
                         for(Jugador j : jugadores){
-                            System.out.println("JUGADOR CON ID " +j.getId());
+                            System.out.println("JUGADOR CON ID " + j.getId());
                             ArrayList<Carta> cartasMano = j.getCartasEnMano();
                             for (Carta c : cartasMano){
                                 System.out.println("CARTA: " + c.getValor() + " -- " + c.getPalo());
@@ -186,6 +186,9 @@ public class GestorMensajes {
                         partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
                         System.out.println("El jugador " + idJugador + " lanza la carta "
                                 + carta.getValor() + carta.getPalo());
+                        // TODO: Error lanzar inicio partida 4
+                        //partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
+                        partida.lanzarCarta(lobby.buscarId(idJugador).getNombre(), carta);
                         broadcastLanzarCarta(idPartida, idJugador, carta);
                         broadcastTurno(idPartida);
                         // Notificación a la IA
