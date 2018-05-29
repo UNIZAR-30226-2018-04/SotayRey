@@ -22,6 +22,7 @@ public class Lobby {
     private int numJugadores = 0;
     private Sophia ia = null;
     private boolean contraIA = false;
+    private boolean finalizada = false;
 
     public void setNumJugadores(int numJugadores) {
         this.numJugadores = numJugadores;
@@ -206,5 +207,13 @@ public class Lobby {
             i++;
         }
         return primerIdx;
+    }
+
+    public void finalizar() {
+        this.finalizada = true;
+    }
+
+    public boolean getFinalizada() {
+        return this.finalizada;
     }
 }
