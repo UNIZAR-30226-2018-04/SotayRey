@@ -184,12 +184,11 @@ public class GestorMensajes {
                                 System.out.println("CARTA: " + c.getValor() + " -- " + c.getPalo());
                             }
                         }
-                        partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
+                        partida.lanzarCarta(lobby.buscarId(idJugador).getNombre(), carta);
                         System.out.println("El jugador " + idJugador + " lanza la carta "
                                 + carta.getValor() + carta.getPalo());
                         // TODO: Error lanzar inicio partida 4
                         //partida.lanzarCarta(estado.getJugadoresId().get(idJugador), carta);
-//                        partida.lanzarCarta(lobby.buscarId(idJugador).getNombre(), carta);
                         broadcastLanzarCarta(idPartida, idJugador, carta);
                         broadcastTurno(idPartida);
                         // Notificación a la IA
@@ -899,7 +898,11 @@ public class GestorMensajes {
 
     private void finalizarPartida(int idPartida, LogicaPartida partida, boolean timeout) {
         // Obtiene info de la partida jugada y lo añade a partidaVO
-        if (listaPartidas.get(idPartida) != null || lobbies.get(idPartida) != null) {
+        if (listaPartidas.containsKey(idPartida) && lobbies.containsKey(idPartida)) {
+            //Lobby lobby = lobbies.get(idPartida);
+            //listaPartidas.remove(idPartida);
+            //lobbies.remove(idPartida);
+
             PartidaVO partidaVO = null;
             try {
                 partidaVO = bd.obtenerPartida(BigInteger.valueOf(idPartida));

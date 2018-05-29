@@ -131,16 +131,23 @@ public class Lobby {
     }
 
     public ArrayList<String> getTodosNombres() {
+        boolean conIA = false;
         ArrayList<String> lista = new ArrayList<String>();
         for (JugadorGestor jug : jugadores.values()) {
             if (jug.getNombre().equals("SophIA")) {
                 lista.add(jug.getNombre());
+                conIA = true;
                 break;
             }
         }
-        for (JugadorGestor jug : jugadores.values()){
-            if (!jug.getNombre().equals("SophIA")) {
-                lista.add(jug.getNombre());
+        int i;
+        if (conIA) {
+            for (i=1; i<jugadores.size(); i++){
+                lista.add(this.buscarId(i).getNombre());
+            }
+        } else {
+            for (i=0; i<jugadores.size(); i++){
+                lista.add(this.buscarId(i).getNombre());
             }
         }
         return lista;
