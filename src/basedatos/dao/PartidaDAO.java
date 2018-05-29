@@ -767,7 +767,7 @@ public class PartidaDAO {
             String sid = res.getString("fase_torneo");
             p = new PartidaVO(timeInicio, res.getBoolean("publica"), usuarios);
             if (!res.wasNull() && sid != null) {
-                BigInteger fase_torneo = new BigInteger(sid);   // TODO: Casca aquí
+                BigInteger fase_torneo = new BigInteger(sid);
                 p.setFaseNum(faseNum);
                 p.setTorneoId(fase_torneo);
             }
