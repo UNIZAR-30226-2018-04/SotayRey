@@ -939,11 +939,7 @@ public class GestorMensajes {
 
                 // Almacena ganadores/abandonadores
                 //Lobby lobby = lobbies.get(idPartida);
-                if (timeout) {
-                    // Alguien ha abandonado la partida
-                    partidaVO.setAbandonador(lobby.getPrimerAbandonador());
-                    partidaVO.setGanador('A');
-                } else {
+                if (!timeout || ptos1 > 100 || ptos2 > 100) {
                     // La partida ha finalizado correctamente
                     // Obtener ganadores
                     ArrayList<String> ganadores = new ArrayList<>();
@@ -962,6 +958,10 @@ public class GestorMensajes {
                     }
                     // Almacenar equipo ganador
                     partidaVO.setGanador(Character.forDigit((i % 2)+1, 10));
+                } else {
+                    // Alguien ha abandonado la partida
+                    partidaVO.setAbandonador(lobby.getPrimerAbandonador());
+                    partidaVO.setGanador('A');
                 }
                 // Almacena cantes
                 int cuarentas = 0, veintes = 0;
